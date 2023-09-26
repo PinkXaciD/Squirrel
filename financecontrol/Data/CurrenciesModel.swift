@@ -17,6 +17,10 @@ extension CoreDataViewModel {
         
         do {
             savedCurrencies = try context.fetch(request)
+            if savedCurrencies == [] {
+                addCurrency(name: "US Dollar", tag: "USD", isFavorite: true)
+                UserDefaults.standard.set("USD", forKey: "defaultCurrency")
+            }
         } catch let error {
             print("Error fetching currencies: \(error)")
         }

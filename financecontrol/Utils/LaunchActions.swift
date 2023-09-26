@@ -6,36 +6,27 @@
 //
 
 import Foundation
-import SwiftUI
 
 struct LaunchActions {
-    @AppStorage("updateTime") var updateTime: String = dateConvertFromDate(Date.distantPast)
-    @AppStorage("defaultCurrency") var defaultCurrency: String = "USD"
     
-    func updateRates() {
-            
+    init() {
+        
         let currentDate = dateConvertFromDate(Date.now)
+        let updateTime = UserDefaults.standard.string(forKey: "updateTime") ?? dateConvertFromDate(Date.distantPast)
         
         if dateConvertFromString(updateTime) < Date.now.pastHour {
-            print(dateConvertFromString(updateTime))
             print("Rates are not up to date")
             print("Last updated at: \(updateTime)")
-            updateTime = dateConvertFromDate(Date.now)
-            print("Updated to: \(updateTime)")
+            UserDefaults.standard.set(true, forKey: "updateRates")
+            let newUpdateTime: String = dateConvertFromDate(Date.now)
+            UserDefaults.standard.set(newUpdateTime, forKey: "updateTime")
+            print("Updated to: \(newUpdateTime)")
             print("Rates updated")
         } else {
             print("Rates are up to date")
             print("Current date: \(currentDate)")
             print("Updated at: \(updateTime)")
-        }
-    }
-    
-    func addCurrencies() {
-        let vm = CoreDataViewModel()
-        
-        if vm.savedCurrencies == [] {
-            vm.addCurrency(name: "US Dollar", tag: "USD", isFavorite: true)
-            defaultCurrency = "USD"
+            print(dateConvertFromString(updateTime))
         }
     }
 }

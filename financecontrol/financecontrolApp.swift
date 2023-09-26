@@ -10,8 +10,7 @@ import SwiftUI
 @main
 struct financecontrolApp: App {
     init() {
-        LaunchActions().updateRates()
-        LaunchActions().addCurrencies()
+        let _ = LaunchActions.init()
     }
     
     var body: some Scene {

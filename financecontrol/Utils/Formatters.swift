@@ -5,7 +5,6 @@
 //  Created by PinkXaciD on R 5/07/13.
 //
 
-import Foundation
 import SwiftUI
 
 private let currentCalendar = Calendar.current.identifier
@@ -31,6 +30,7 @@ func dateConvertFromString(_ date: String) -> Date {
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
         dateFormatter.timeStyle = .short
+        dateFormatter.locale = Locale(languageCode: Locale.LanguageCode("en"), languageRegion: Locale.autoupdatingCurrent.region)
         return dateFormatter
     }()
     return dateFormatter.date(from: date) ?? Date.distantPast
@@ -41,7 +41,7 @@ func dateConvertFromDate(_ date: Date) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
         dateFormatter.timeStyle = .short
-        dateFormatter.calendar = Calendar.autoupdatingCurrent
+        dateFormatter.calendar = Calendar(identifier: .gregorian)
         dateFormatter.locale = Locale(languageCode: Locale.LanguageCode("en"), languageRegion: Locale.autoupdatingCurrent.region)
         return dateFormatter
     }()
@@ -140,7 +140,7 @@ func asDate(_ str: String) -> Date {
 }
 
 func lastWeekOperations(vm: CoreDataViewModel, currency: String) -> String {
-    return (vm.operationsSumWeek()/baseCurrencyConvert(currency))
+    return (vm.operationsSumWeek()/(RatesViewModel().rates[currency] ?? 1))
         .formatted(.currency(code: currency))
 }
 
@@ -176,15 +176,4 @@ func themeConvert(_ theme: String) -> ColorScheme? {
     default:
         return nil
     }
-}
-
-func baseCurrencyConvert(_ currency: String) -> Double {
-    let rvm = RatesViewModel(update: false)
-    let rates = rvm.rates
-    print(rates)
-    if let result = rates[currency.lowercased()] {
-        return result
-    }
-    print("Base Currency Convert error")
-    return 1
 }

@@ -9,22 +9,56 @@ import SwiftUI
 
 struct RatesView: View {
     
-    @StateObject private var rvm: RatesViewModel = RatesViewModel(update: true)
+    @StateObject private var rvm: RatesViewModel = RatesViewModel()
+    
+    private var filteredRates: [(String, Double)] {
+        let rates = rvm.rates
+        
+        return rates.filter { Locale.commonISOCurrencyCodes.contains($0.key.uppercased()) }
+            .sorted { $0.key < $1.key }
+            .map { ($0.key.uppercased(), $0.value) }
+    }
     
     var body: some View {
         
         List {
-            
-            let filtered = rvm.rates
-            
-            ForEach(Array(filtered.keys), id: \.self) { key in
-                
-                HStack {
-                    Text(key)
-                    Spacer()
-                    Text(String(filtered[key] ?? 0))
+            Section {
+                ForEach(filteredRates, id: \.0) { (key, value) in
+                    RatesRowView(code: key, rate: value)
                 }
+            } header: {
+                RatesHeaderView()
             }
+        }
+        .navigationTitle("Rates")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+struct RatesRowView: View {
+    
+    let code: String
+    let rate: Double
+    
+    var body: some View {
+        HStack {
+            Text(Locale.current.localizedString(forCurrencyCode: code) ?? "Error")
+            
+            Spacer()
+            
+            Text(String(rate).currencyFormat)
+        }
+    }
+}
+
+struct RatesHeaderView: View {
+    var body: some View {
+        HStack {
+            Text("Name")
+            
+            Spacer()
+            
+            Text("1 USD")
         }
     }
 }

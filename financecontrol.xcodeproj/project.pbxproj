@@ -41,6 +41,8 @@
 		8D88CDC12AA0E37000668DEC /* CategoryEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D88CDBD2AA0E37000668DEC /* CategoryEntity+CoreDataProperties.swift */; };
 		8D88CDC22AA0E37000668DEC /* SpendingEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D88CDBE2AA0E37000668DEC /* SpendingEntity+CoreDataClass.swift */; };
 		8D88CDC32AA0E37000668DEC /* SpendingEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D88CDBF2AA0E37000668DEC /* SpendingEntity+CoreDataProperties.swift */; };
+		8D9B50122AC1A5C800C7732B /* RatesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D9B50112AC1A5C800C7732B /* RatesModel.swift */; };
+		8D9B50162AC2FCCD00C7732B /* RatesErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D9B50152AC2FCCD00C7732B /* RatesErrors.swift */; };
 		8DB294BA2A7C0FF800170BA2 /* NumbersViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DB294B92A7C0FF800170BA2 /* NumbersViewModifier.swift */; };
 		8DBAABEA2A866E7D0089521E /* SpendingCompleteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DBAABE92A866E7D0089521E /* SpendingCompleteView.swift */; };
 		8DBFEBCE2A49ED4800165414 /* financecontrolApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DBFEBCD2A49ED4800165414 /* financecontrolApp.swift */; };
@@ -119,6 +121,9 @@
 		8D88CDBD2AA0E37000668DEC /* CategoryEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "CategoryEntity+CoreDataProperties.swift"; path = "DataManagment/CategoryEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		8D88CDBE2AA0E37000668DEC /* SpendingEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SpendingEntity+CoreDataClass.swift"; path = "DataManagment/SpendingEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
 		8D88CDBF2AA0E37000668DEC /* SpendingEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SpendingEntity+CoreDataProperties.swift"; path = "DataManagment/SpendingEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		8D9B50112AC1A5C800C7732B /* RatesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatesModel.swift; sourceTree = "<group>"; };
+		8D9B50132AC1BE9700C7732B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		8D9B50152AC2FCCD00C7732B /* RatesErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatesErrors.swift; sourceTree = "<group>"; };
 		8DB294B92A7C0FF800170BA2 /* NumbersViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumbersViewModifier.swift; sourceTree = "<group>"; };
 		8DBAABE92A866E7D0089521E /* SpendingCompleteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpendingCompleteView.swift; sourceTree = "<group>"; };
 		8DBFEBCA2A49ED4800165414 /* financecontrol.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = financecontrol.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -333,12 +338,14 @@
 			path = Spending;
 			sourceTree = "<group>";
 		};
-		8D6059E02AB874C30043A293 /* Networking */ = {
+		8D6059E02AB874C30043A293 /* Rates */ = {
 			isa = PBXGroup;
 			children = (
 				8D6059E12AB874FA0043A293 /* RatesViewModel.swift */,
+				8D9B50112AC1A5C800C7732B /* RatesModel.swift */,
+				8D9B50152AC2FCCD00C7732B /* RatesErrors.swift */,
 			);
-			path = Networking;
+			path = Rates;
 			sourceTree = "<group>";
 		};
 		8D7EFB092A850934009797E8 /* Extensions */ = {
@@ -378,12 +385,13 @@
 		8DBFEBCC2A49ED4800165414 /* financecontrol */ = {
 			isa = PBXGroup;
 			children = (
+				8D9B50132AC1BE9700C7732B /* Info.plist */,
 				8DBFEBCD2A49ED4800165414 /* financecontrolApp.swift */,
 				8DBFEBCF2A49ED4800165414 /* ContentView.swift */,
 				8DBFEBD12A49ED4900165414 /* Assets.xcassets */,
 				8D08C5D42A55A69200E79476 /* DataContainer.xcdatamodeld */,
 				8D4E08162AAA14FA00B3544F /* Data */,
-				8D6059E02AB874C30043A293 /* Networking */,
+				8D6059E02AB874C30043A293 /* Rates */,
 				8D7EFB092A850934009797E8 /* Extensions */,
 				8DBFEBF72A49ED7600165414 /* Views */,
 				8D4B69A82A66ED1E008F098B /* SubViews */,
@@ -576,6 +584,7 @@
 				8D0763A82A4B257F00D2C3FF /* CurrencySelector.swift in Sources */,
 				8DB294BA2A7C0FF800170BA2 /* NumbersViewModifier.swift in Sources */,
 				8DBFEBD02A49ED4800165414 /* ContentView.swift in Sources */,
+				8D9B50122AC1A5C800C7732B /* RatesModel.swift in Sources */,
 				8D1E71E52AAF1C1A004A17B4 /* CategoryEditView.swift in Sources */,
 				8D78BB8A2A9A1B570075DC70 /* PieChart.swift in Sources */,
 				8DBAABEA2A866E7D0089521E /* SpendingCompleteView.swift in Sources */,
@@ -608,6 +617,7 @@
 				8DCB30312A9769B900DC9ABB /* EditPlaceView.swift in Sources */,
 				8DE48D122A72DA88008A2DD4 /* CategoriesEditView.swift in Sources */,
 				8DEED7282A5C4A3700C79752 /* SettingsView.swift in Sources */,
+				8D9B50162AC2FCCD00C7732B /* RatesErrors.swift in Sources */,
 				8D0763AB2A4B3AAF00D2C3FF /* DateSelector.swift in Sources */,
 				8DBFEBF92A49ED9A00165414 /* HomeView.swift in Sources */,
 				8DE29BA82A683F01002F5C42 /* NewCategoryView.swift in Sources */,
@@ -697,7 +707,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -751,7 +761,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -773,6 +783,7 @@
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = financecontrol/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Squirrel;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -810,6 +821,7 @@
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = financecontrol/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Squirrel;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

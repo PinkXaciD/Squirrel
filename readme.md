@@ -5,7 +5,7 @@
 ![Images](README/Screenshots/Header.png)
 
 ## Why Squirrel is not another spending tracker app?
-- Super simple and intuitive interface
+- Simple and intuitive interface
 - No account needed
 - All data stored locally, on your device
 
@@ -13,7 +13,7 @@
 - Simple and clear charts
 ![Charts](README/Screenshots/Charts.png)
 
-- Track expences in different currencies
+- Track expenses in different currencies with exchange rates updated once an hour.
 ![Spendings](README/Screenshots/Currencies.png)
 
 - Light and dark mode with different accent colors
@@ -22,4 +22,4 @@
 - Data export (in progress)
 
 ## How to install?
-Follow link on top to AppStore/TestFlight or build it by yourself!
+Follow link on top to AppStore/TestFlight or build it yourself!

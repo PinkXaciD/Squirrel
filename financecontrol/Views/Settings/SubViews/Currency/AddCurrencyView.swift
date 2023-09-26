@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Foundation
 
 struct AddCurrencyView: View {
     @Environment(\.dismiss) private var dismiss
