@@ -11,6 +11,8 @@ import Foundation
 
 final class RatesModel {
     
+    let errorHandler = ErrorHandler.instance
+    
     init() {
         print("RatesModel initialized")
     }
@@ -18,46 +20,61 @@ final class RatesModel {
     deinit {
         print("RatesModel deinitialized")
     }
-    
+
 }
 
 //MARK: Rates Model networking
 
 extension RatesModel {
     
-    private func getURL() throws -> String {
-        
-        guard let filePath = Bundle.main.path(forResource: "Info", ofType: "plist") else {
-            throw APIURLError.noInfoFound
-        }
-        
-        let plist = NSDictionary(contentsOfFile: filePath)
-        
-        guard let value = plist?.object(forKey: "API_URL") as? String else {
-            throw APIURLError.noURLFound
-        }
-        
-        return value
-    }
-    
-    func downloadRates() async throws -> [String:Double] {
-        
-        var urlString: String = ""
+    func downloadRates(timeStamp: Date? = nil) async throws -> Rates {
         
         do {
-            urlString = try getURL()
+            let apiURLComponents = try getURLComponents()
+            let apiKey = try getApiKey()
+            var timeStampString: String?
+            
+            if let timeStamp = timeStamp {
+                
+                let formatter = ISO8601DateFormatter()
+                        
+                timeStampString = "\"" + formatter.string(from: timeStamp) + "\""
+            }
+            
+            let urlComponents = apiURLComponents.createComponents(timestamp: timeStampString)
+            
+            guard let url: URL = urlComponents.url else {
+                throw URLError(.badURL)
+            }
+            
+            var request: URLRequest {
+                var request = URLRequest(url: url)
+                request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
+                return request
+            }
+
+            let (data, response) = try await URLSession.shared.data(for: request)
+            return try handleResponse(data: data, response: response)
+
         } catch {
-            throw error
-        }
-        
-        guard let url: URL = URL(string: urlString) else {
-            throw URLError(.badURL)
-        }
-        
-        do {
-            let (data, response) = try await URLSession.shared.data(from: url)
-            return try handleResponse(data: data, response: response).usd
-        } catch {
+            await MainActor.run {
+                switch error {
+                case InfoPlistError.failedToReadURLComponents:
+                    ErrorType(infoPlistError: .failedToReadURLComponents).publish()
+                case InfoPlistError.noAPIKeyFound:
+                    ErrorType(infoPlistError: .noAPIKeyFound).publish()
+                case InfoPlistError.noURLFound:
+                    ErrorType(infoPlistError: .noURLFound).publish()
+                case InfoPlistError.noInfoFound:
+                    ErrorType(infoPlistError: .noInfoFound).publish()
+                case URLError.badURL:
+                    ErrorType(urlError: URLError(URLError.badURL)).publish()
+                case URLError.badServerResponse:
+                    ErrorType(urlError: URLError(URLError.badServerResponse)).publish()
+                default:
+                    print(error)
+                }
+            }
             throw error
         }
     }
@@ -69,10 +86,64 @@ extension RatesModel {
         }
         
         do {
-            let result = try JSONDecoder().decode(Rates.self, from: data)
-            return result
+            return try JSONDecoder().decode(Rates.self, from: data)
         } catch {
             throw error
         }
+    }
+}
+
+//MARK: Info.plist
+
+extension RatesModel {
+    
+    private func getURLComponents() throws -> APIURLComponents {
+        
+        guard 
+            let filePath = Bundle.main.path(forResource: "Info", ofType: "plist")
+        else {
+            throw InfoPlistError.noInfoFound
+        }
+        
+        let plist = NSDictionary(contentsOfFile: filePath)
+        
+        guard 
+            let apiURLDict = plist?.object(forKey: "API_URL") as? Dictionary<String, String>
+        else {
+            throw InfoPlistError.noURLFound
+        }
+        
+        guard
+            let scheme = apiURLDict["scheme"],
+            let host = apiURLDict["host"],
+            let path = apiURLDict["path"]
+        else {
+            throw InfoPlistError.failedToReadURLComponents
+        }
+        
+        var result: APIURLComponents {
+            var result = APIURLComponents()
+            result.scheme = scheme
+            result.host = host
+            result.path = path
+            return result
+        }
+        
+        return result
+    }
+    
+    private func getApiKey() throws -> String {
+        
+        guard let filePath = Bundle.main.path(forResource: "Info", ofType: "plist") else {
+            throw InfoPlistError.noInfoFound
+        }
+        
+        let plist = NSDictionary(contentsOfFile: filePath)
+        
+        guard let value = plist?.object(forKey: "API_KEY") as? String else {
+            throw InfoPlistError.noAPIKeyFound
+        }
+        
+        return value
     }
 }

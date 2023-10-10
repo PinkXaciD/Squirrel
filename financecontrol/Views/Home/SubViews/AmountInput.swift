@@ -20,6 +20,7 @@ struct AmountInput: View {
         case place
         case comment
     }
+    
     @FocusState private var focusedField: Field?
     
     @State private var amount: String = ""
@@ -40,28 +41,36 @@ struct AmountInput: View {
         
         NavigationView {
             List {
-                TextField("0.00", text: $amount)
-                    .multilineTextAlignment(.center)
-                    .numbersOnly($amount)
-                    .amountStyle()
-                    .focused($focusedField, equals: .amount)
-                    .onAppear(perform: amountFocus)
-                
-                HStack {
-                    Text("Currency")
-                    CurrencySelector(currency: $currency, favorites: true)
+                Section {
+                    TextField("0.00", text: $amount)
+                        .multilineTextAlignment(.center)
+                        .numbersOnly($amount)
+                        .amountStyle()
+                        .focused($focusedField, equals: .amount)
+                        .onAppear(perform: amountFocus)
+                    
+                    HStack {
+                        Text("Currency")
+                        CurrencySelector(currency: $currency, favorites: true)
+                    }
+                    
+                    HStack {
+                        Text("Category")
+                        CategorySelector(category: $categoryId)
+                    }
+                    .onChange(of: categoryId) { newValue in
+                        category = vm.findCategory(newValue)?.name ?? "Error"
+                    }
+                    
+                    DatePicker("Date", selection: $date, in: Date.distantPast...Date.now)
+                        .datePickerStyle(.compact)
+                } footer: {
+                    if !Calendar.current.isDateInToday(date) {
+                        Text("Historical exchange rates are presented as the stock exchange closed on the requested day")
+                    } else if !Calendar.current.isDate(date, equalTo: Date.now, toGranularity: .hour) {
+                        Text("Exchange rates will be presented for the current hour")
+                    }
                 }
-                
-                HStack {
-                    Text("Category")
-                    CategorySelector(category: $categoryId)
-                }
-                .onChange(of: categoryId) { newValue in
-                    category = vm.findCategory(newValue)?.name ?? "Error"
-                }
-                
-                DatePicker("Date", selection: $date, in: Date.distantPast...Date.now)
-                    .datePickerStyle(.compact)
                 
                 Section {
                     TextField("Place name", text: $place)
@@ -122,10 +131,12 @@ struct AmountInput: View {
     }
     
     var trailingToolbar: ToolbarItem<(), some View> {
+        
         ToolbarItem(placement: .navigationBarTrailing) {
+            
             Button("Done", action: done)
-            .font(Font.body.weight(.semibold))
-            .disabled(!utils.checkAll(amount: amount, place: place, category: category, comment: comment))
+                .font(Font.body.weight(.semibold))
+                .disabled(!utils.checkAll(amount: amount, place: place, category: category, comment: comment))
         }
     }
     
@@ -144,12 +155,44 @@ struct AmountInput: View {
                 comment = ""
             }
             
-            let amountUSD = doubleAmount / (rvm.rates[currency.lowercased()] ?? 1)
-            print(amountUSD)
+            var amountUSD: Double = doubleAmount / (rvm.rates[currency] ?? 1)
             
-            vm.addSpending(amount: doubleAmount, amountUSD: amountUSD, currency: currency, date: date, comment: comment, place: place, categoryId: categoryId)
-            
-            dismiss()
+            if !Calendar.current.isDate(date, inSameDayAs: Date.now) {
+                Task {
+                    do {
+                        let oldRates = try await rvm.getHistoricalRates(date).rates
+                        await MainActor.run {
+                            amountUSD = doubleAmount / (oldRates[currency] ?? 1)
+                            
+                            vm.addSpending(
+                                amount: doubleAmount,
+                                amountUSD: amountUSD,
+                                currency: currency,
+                                date: date,
+                                comment: comment,
+                                place: place,
+                                categoryId: categoryId
+                            )
+                            
+                            dismiss()
+                        }
+                    } catch {
+                        print(error)
+                    }
+                }
+            } else {
+                vm.addSpending(
+                    amount: doubleAmount,
+                    amountUSD: amountUSD,
+                    currency: currency,
+                    date: date,
+                    comment: comment,
+                    place: place,
+                    categoryId: categoryId
+                )
+                
+                dismiss()
+            }
         }
     }
     
@@ -171,7 +214,6 @@ struct AmountInput: View {
 
 struct AmountInput_Previews: PreviewProvider {
     static var previews: some View {
-        @State var sheetType: String = "Something"
         
         AmountInput()
             .environmentObject(CoreDataViewModel())

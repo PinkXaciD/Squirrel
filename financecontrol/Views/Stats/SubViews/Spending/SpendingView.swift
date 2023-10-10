@@ -25,7 +25,7 @@ struct SpendingView: View {
                     .padding(.vertical, 10)
                 
                 if entity.currency != defaultCurrency {
-                    Text(Double(entity.amountUSD * (rvm.rates[defaultCurrency.lowercased()] ?? 1))
+                    Text(Double(entity.amountUSD * (rvm.rates[defaultCurrency] ?? 1))
                         .formatted(.currency(code: defaultCurrency))
                     )
                 }

@@ -14,7 +14,7 @@ struct LaunchActions {
         let currentDate = dateConvertFromDate(Date.now)
         let updateTime = UserDefaults.standard.string(forKey: "updateTime") ?? dateConvertFromDate(Date.distantPast)
         
-        if dateConvertFromString(updateTime) < Date.now.pastHour {
+        if !Calendar.current.isDate(dateConvertFromString(updateTime), equalTo: Date.now, toGranularity: .hour) {
             print("Rates are not up to date")
             print("Last updated at: \(updateTime)")
             UserDefaults.standard.set(true, forKey: "updateRates")
@@ -26,7 +26,6 @@ struct LaunchActions {
             print("Rates are up to date")
             print("Current date: \(currentDate)")
             print("Updated at: \(updateTime)")
-            print(dateConvertFromString(updateTime))
         }
     }
 }

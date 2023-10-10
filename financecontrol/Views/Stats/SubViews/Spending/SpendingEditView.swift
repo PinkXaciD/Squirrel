@@ -170,9 +170,55 @@ struct SpendingEditView: View {
         
         if let newAmount = Double(newAmount) {
             
-            let amountUSD = newAmount / (rvm.rates[newCurrency.isEmpty ? (entity.currency?.lowercased() ?? "Error") : newCurrency.lowercased()] ?? 1)
+            var amountUSD: Double = 0
             
-            vm.editSpending(spending: entity, amount: newAmount,amountUSD: amountUSD, currency: newCurrency, place: newPlace, categoryId: newCategoryId, date: newDate, comment: newComment)
+            if !Calendar.current.isDate(newDate, equalTo: Date.now, toGranularity: .day) {
+                Task {
+                    do {
+                        let oldRates = try await rvm.getHistoricalRates(newDate).rates
+                        amountUSD = newAmount / (oldRates[newCurrency.isEmpty ? entity.wrappedCurrency : newCurrency] ?? 1)
+                        
+                        vm.editSpending(
+                            spending: entity,
+                            amount: newAmount,
+                            amountUSD: amountUSD,
+                            currency: newCurrency,
+                            place: newPlace,
+                            categoryId: newCategoryId,
+                            date: newDate,
+                            comment: newComment
+                        )
+                    } catch {
+                        print(error)
+                        
+                        amountUSD = newAmount / (rvm.rates[newCurrency.isEmpty ? (entity.currency ?? "Error") : newCurrency] ?? 1)
+                        
+                        vm.editSpending(
+                            spending: entity,
+                            amount: newAmount,
+                            amountUSD: amountUSD,
+                            currency: newCurrency,
+                            place: newPlace,
+                            categoryId: newCategoryId,
+                            date: newDate,
+                            comment: newComment
+                        )
+                    }
+                }
+            } else {
+                amountUSD = newAmount / (rvm.rates[newCurrency.isEmpty ? (entity.currency ?? "Error") : newCurrency] ?? 1)
+                
+                vm.editSpending(
+                    spending: entity,
+                    amount: newAmount,
+                    amountUSD: amountUSD,
+                    currency: newCurrency,
+                    place: newPlace,
+                    categoryId: newCategoryId,
+                    date: newDate,
+                    comment: newComment
+                )
+            }
         }
         
     }

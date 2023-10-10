@@ -11,8 +11,8 @@ import CoreData
 //MARK: Rates Structure
 
 struct Rates: Codable {
-    let date: String
-    let usd: [String: Double]
+    let timestamp: String
+    let rates: [String: Double]
 }
 
 //MARK: Rates View Model
@@ -34,13 +34,19 @@ final class RatesViewModel: ObservableObject {
         
         if UserDefaults.standard.bool(forKey: "updateRates") {
             Task {
-                if let safeRates = await getRates() {
+                do {
+                    let safeRates = try await getRates()
+                    
                     await MainActor.run {
-                        rates = safeRates
-                        addRates(safeRates)
+                        rates = safeRates.rates
+                        addRates(safeRates.rates)
                     }
+                    
                     UserDefaults.standard.set(false, forKey: "updateRates")
+//                    UserDefaults.standard.set(safeRates.date, forKey: "updateTime")
                     print("Rates fetched from web")
+                } catch {
+                    print(error)
                 }
             }
         }
@@ -51,15 +57,29 @@ final class RatesViewModel: ObservableObject {
 
 extension RatesViewModel {
     
-    private func getRates() async -> [String:Double]? {
+    private func getRates() async throws -> Rates {
         
         do {
             return try await RatesModel().downloadRates()
         } catch {
-            print(error)
+            throw error
         }
+    }
+    
+    /// Returning exchange rates for given date
+    /// - Parameter timeStamp: Date for which courses must be returned
+    /// - Returns: Rates for given date or fallback rates
+    /// - Throws: InfoPlistError.noInfoFound if can't find Info.plist file
+    /// - Throws: InfoPlistError.noURLFound if no API\_URL dict found in Info.plist
+    /// - Throws: InfoPlistError.noApiKeyFound if no API\_KEY string found in Info.plist
+    /// - Throws: InfoPlistError.failedToReadURLComponents if can't create an URL from API\_URL components
+    func getHistoricalRates(_ timeStamp: Date) async throws -> Rates {
         
-        return nil
+        do {
+            return try await RatesModel().downloadRates(timeStamp: timeStamp)
+        } catch {
+            throw error
+        }
     }
 }
 
@@ -80,10 +100,6 @@ extension RatesViewModel {
     
     private func fetchRates() throws -> [String:Double] {
         
-        enum RatesFetchError: Error {
-            case EmptyDatabase
-        }
-        
         let request = RatesEntity.fetchRequest()
         var newRates: [String:Double] = [:]
         
@@ -93,7 +109,7 @@ extension RatesViewModel {
                 newRates.updateValue(element.rate, forKey: element.name ?? "Error")
             }
             if newRates == [:] {
-                throw RatesFetchError.EmptyDatabase
+                throw RatesFetchError.emptyDatabase
             }
             return newRates
         } catch {
@@ -101,7 +117,7 @@ extension RatesViewModel {
         }
     }
     
-    func addRates(_ data: [String:Double]) {
+    private func addRates(_ data: [String:Double]) {
         
         if let description = NSEntityDescription.entity(forEntityName: "RatesEntity", in: context) {
             

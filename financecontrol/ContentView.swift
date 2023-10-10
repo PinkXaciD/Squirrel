@@ -12,6 +12,9 @@ struct ContentView: View {
     @AppStorage("theme") var theme: String = "None"
     @StateObject private var vm = CoreDataViewModel()
     @StateObject private var rvm = RatesViewModel()
+    
+    @ObservedObject private var errorHandler = ErrorHandler.instance
+    @Environment(\.openURL) private var openURL
         
     var body: some View {
         
@@ -40,6 +43,22 @@ struct ContentView: View {
         }
         .tint(colorIdentifier(color: tint))
         .preferredColorScheme(themeConvert(theme))
+        .alert("Something went wrong...", isPresented: .constant(errorHandler.showAlert), presenting: errorHandler.appError) { error in
+            
+            Button("Create an issue on GitHub") {
+                errorHandler.dropError()
+                openURL(URL(string: "https://github.com/PinkXaciD/Squirrel/issues")!)
+            }
+            
+            Button(role: .cancel) {
+                errorHandler.dropError()
+            } label: {
+                Text("OK")
+            }
+
+        } message: { error in
+            Text("\(error.errorDescription).\n\(error.recoverySuggestion)")
+        }
     }
 }
 

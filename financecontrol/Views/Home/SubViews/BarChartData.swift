@@ -8,9 +8,6 @@
 import SwiftUI
 
 struct BarChartData {
-    enum BarChartDataError: Error {
-    case noDateProvided
-    }
     
     var data: [SpendingEntity]
     

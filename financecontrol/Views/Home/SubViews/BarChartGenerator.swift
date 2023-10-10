@@ -50,12 +50,12 @@ struct BarChartGenerator: View {
         
         var amount: String = ""
         if data?[index].value != nil {
-            amount = ((data?[index].value ?? 0) * (rvm.rates[defaultCurrency.lowercased()] ?? 1))
+            amount = ((data?[index].value ?? 0) * (rvm.rates[defaultCurrency] ?? 1))
                 .formatted(.currency(code: defaultCurrency)
                 )
         } else {
 //            amount = lastWeekOperations(vm: vm, currency: defaultCurrency)
-            amount = String((vm.operationsSumWeek() * (rvm.rates[defaultCurrency.lowercased()] ?? 1)).formatted(.currency(code: defaultCurrency)))
+            amount = String((vm.operationsSumWeek() * (rvm.rates[defaultCurrency] ?? 1)).formatted(.currency(code: defaultCurrency)))
         }
         
         return VStack {

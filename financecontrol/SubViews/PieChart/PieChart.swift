@@ -34,7 +34,7 @@ struct PieChart: View {
                             Text("All Spendings")
                                 .padding(.top, 10)
                             
-                            Text(String(vm.operationsSum() * (rvm.rates[defaultCurrency.lowercased()] ?? 1)).currencyFormat)
+                            Text(String(vm.operationsSum() * (rvm.rates[defaultCurrency] ?? 1)).currencyFormat)
                                 .lineLimit(1)
                                 .font(.system(size: 30, weight: .semibold, design: .rounded))
                                 .frame(maxWidth: width/1.4)

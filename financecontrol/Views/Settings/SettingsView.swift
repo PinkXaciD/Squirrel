@@ -16,6 +16,8 @@ struct SettingsView: View {
     @State private var autoDarkModeToggle: Bool = true
     @State private var darkModeToggle: Bool = false
     
+    let version: String? = Bundle.main.releaseVersionNumber
+    
     var body: some View {
         
         NavigationView {
@@ -24,7 +26,7 @@ struct SettingsView: View {
                 
                 NavigationLink {
                     
-                    Text("Subject to change")
+                    AboutView()
                         .navigationTitle("About")
                         .navigationBarTitleDisplayMode(.inline)
                     
@@ -126,6 +128,17 @@ struct SettingsView: View {
                     
                     Text("categories")
                     
+                }
+            
+                Section {
+                    
+                    NavigationLink("Debug") {
+                        DebugView()
+                            .navigationTitle("Debug menu")
+                            .navigationBarTitleDisplayMode(.inline)
+                    }
+                } header: {
+                    Text("Debug")
                 } footer: {
                     
                     HStack {
@@ -140,7 +153,7 @@ struct SettingsView: View {
                             Text("Squirrel")
                                 .bold()
                             
-                            Text("Ver. 0.0.1 α")
+                            Text("Ver. \(version ?? "") α")
                         }
                         .padding()
                         
