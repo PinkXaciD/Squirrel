@@ -28,12 +28,20 @@ struct ErrorType: Identifiable, Equatable {
     let failureReason: String
     let recoverySuggestion: String
     let helpAnchor: String
+    var createIssue: Bool = true
     
-    init(_ error: LocalizedError) {
-        self.errorDescription = error.errorDescription ?? ""
-        self.failureReason = error.failureReason ?? ""
-        self.recoverySuggestion = error.recoverySuggestion ?? ""
-        self.helpAnchor = error.helpAnchor ?? ""
+    init(error: Error) {
+        self.errorDescription = "Unknown error: \(error.localizedDescription)"
+        self.failureReason = error.localizedDescription
+        self.recoverySuggestion = "Please submit bug report and try to restart the app"
+        self.helpAnchor = ""
+    }
+    
+    init(localizedError: LocalizedError) {
+        self.errorDescription = localizedError.errorDescription ?? ""
+        self.failureReason = localizedError.failureReason ?? ""
+        self.recoverySuggestion = localizedError.recoverySuggestion ?? ""
+        self.helpAnchor = localizedError.helpAnchor ?? ""
     }
     
     init(infoPlistError: InfoPlistError) {
@@ -57,12 +65,27 @@ struct ErrorType: Identifiable, Equatable {
             self.recoverySuggestion = "Try to restart the app"
             self.helpAnchor = ""
             
+        case URLError(.notConnectedToInternet):
+            self.errorDescription = urlError.localizedDescription
+            self.failureReason = urlError.localizedDescription
+            self.recoverySuggestion = "Check your internet connection"
+            self.helpAnchor = ""
+            self.createIssue = false
+            
         default:
-            self.errorDescription = "URL failed: \(urlError.localizedDescription)"
+            self.errorDescription = urlError.localizedDescription
             self.failureReason = urlError.localizedDescription
             self.recoverySuggestion = "Try to restart the app"
             self.helpAnchor = ""
         }
+    }
+    
+    init(errorDescription: String, failureReason: String, recoverySuggestion: String, helpAnchor: String = "") {
+        self.errorDescription = errorDescription
+        self.failureReason = failureReason
+        self.recoverySuggestion = recoverySuggestion
+        self.helpAnchor = helpAnchor
+        self.createIssue = false
     }
     
     func publish() {

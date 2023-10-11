@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Foundation
 
 struct AmountInput: View {
     @EnvironmentObject private var vm: CoreDataViewModel
@@ -62,9 +61,11 @@ struct AmountInput: View {
                         category = vm.findCategory(newValue)?.name ?? "Error"
                     }
                     
-                    DatePicker("Date", selection: $date, in: Date.distantPast...Date.now)
+                    DatePicker("Date", selection: $date, in: Date.init(timeIntervalSinceReferenceDate: 0)...Date.now)
                         .datePickerStyle(.compact)
+                    
                 } footer: {
+                    
                     if !Calendar.current.isDateInToday(date) {
                         Text("Historical exchange rates are presented as the stock exchange closed on the requested day")
                     } else if !Calendar.current.isDate(date, equalTo: Date.now, toGranularity: .hour) {
@@ -76,7 +77,6 @@ struct AmountInput: View {
                     TextField("Place name", text: $place)
                         .focused($focusedField, equals: .place)
                         
-                    
                     if #available(iOS 16.0, *) {
                         TextField("Comment", text: $comment, axis: .vertical)
                             .onAppear(perform: clearComment)
@@ -98,7 +98,7 @@ struct AmountInput: View {
                 }
                 
             }
-            .navigationTitle("Add Expence")
+            .navigationTitle("Add Expense")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 keyboardToolbar
@@ -155,40 +155,51 @@ struct AmountInput: View {
                 comment = ""
             }
             
-            var amountUSD: Double = doubleAmount / (rvm.rates[currency] ?? 1)
+            var spending = SpendingEntityLocal(
+                amountUSD: 0,
+                amount: doubleAmount,
+                comment: comment,
+                currency: currency,
+                date: date,
+                place: place,
+                categoryId: categoryId
+            )
             
             if !Calendar.current.isDate(date, inSameDayAs: Date.now) {
                 Task {
                     do {
                         let oldRates = try await rvm.getHistoricalRates(date).rates
                         await MainActor.run {
-                            amountUSD = doubleAmount / (oldRates[currency] ?? 1)
+                            spending.amountUSD = doubleAmount / (oldRates[currency] ?? 1)
                             
                             vm.addSpending(
-                                amount: doubleAmount,
-                                amountUSD: amountUSD,
-                                currency: currency,
-                                date: date,
-                                comment: comment,
-                                place: place,
-                                categoryId: categoryId
+                                spending: spending
                             )
                             
                             dismiss()
                         }
                     } catch {
-                        print(error)
+                        if let error = error as? InfoPlistError {
+                            ErrorType(infoPlistError: error).publish()
+                        } else {
+                            ErrorType(error: error).publish()
+                        }
+                        
+                        spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
+                        
+                        vm.addSpending(
+                            spending: spending
+                        )
+                        
+                        dismiss()
                     }
                 }
             } else {
+                
+                spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
+                
                 vm.addSpending(
-                    amount: doubleAmount,
-                    amountUSD: amountUSD,
-                    currency: currency,
-                    date: date,
-                    comment: comment,
-                    place: place,
-                    categoryId: categoryId
+                    spending: spending
                 )
                 
                 dismiss()

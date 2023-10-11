@@ -34,7 +34,7 @@ struct DebugView: View {
             Section {
                 
                 Button("Throw Empty database error") {
-                    ErrorType(RatesFetchError.emptyDatabase).publish()
+                    ErrorType(localizedError: RatesFetchError.emptyDatabase).publish()
                 }
             } header: {
                 Text("Rates fetch errors")

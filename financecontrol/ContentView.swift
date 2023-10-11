@@ -45,9 +45,11 @@ struct ContentView: View {
         .preferredColorScheme(themeConvert(theme))
         .alert("Something went wrong...", isPresented: .constant(errorHandler.showAlert), presenting: errorHandler.appError) { error in
             
-            Button("Create an issue on GitHub") {
-                errorHandler.dropError()
-                openURL(URL(string: "https://github.com/PinkXaciD/Squirrel/issues")!)
+            if error.createIssue {
+                Button("Create an issue on GitHub") {
+                    errorHandler.dropError()
+                    openURL(URL(string: "https://github.com/PinkXaciD/Squirrel/issues")!)
+                }
             }
             
             Button(role: .cancel) {

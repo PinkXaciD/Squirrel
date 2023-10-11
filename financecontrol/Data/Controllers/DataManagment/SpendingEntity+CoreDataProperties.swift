@@ -46,3 +46,13 @@ extension SpendingEntity {
 extension SpendingEntity : Identifiable {
 
 }
+
+struct SpendingEntityLocal {
+    var amountUSD: Double
+    var amount: Double
+    var comment: String
+    var currency: String
+    var date: Date
+    var place: String
+    var categoryId: UUID
+}

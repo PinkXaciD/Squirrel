@@ -12,13 +12,15 @@ struct AboutView: View {
     @Environment(\.openURL) private var openURL
     let version: String? = Bundle.main.releaseVersionNumber
     
+    @State private var showDebug: Bool = false
+    
     var body: some View {
         Form {
             Section {
                 
             } footer: {
-                HStack {
-                    Spacer()
+                VStack(alignment: .center) {
+//                    Spacer()
                     
                     if let image = Bundle.main.icon {
                         Image(uiImage: image)
@@ -29,10 +31,14 @@ struct AboutView: View {
                         .font(.body)
                         .bold()
                         .foregroundColor(.primary)
-                        .padding()
+                        .padding(.top)
                     
-                    Spacer()
+//                    Spacer()
                 }
+                .frame(maxWidth: .infinity)
+                .onTapGesture(count: 5, perform: {
+                    showDebug.toggle()
+                })
             }
             
             Section {
@@ -55,16 +61,26 @@ struct AboutView: View {
                 Text("Open-source libraries")
             }
             
-            Button("Submit bugreport") {
-                openURL(URL(string: "https://github.com/PinkXaciD/Squirrel/issues")!)
+            Section {
+                Button("Submit bugreport") {
+                    openURL(URL(string: "https://github.com/PinkXaciD/Squirrel/issues")!)
+                }
+                
+                Button("Contribute") {
+                    
+                }
+                
+                Button("Buy me a coffee") {
+                    
+                }
             }
             
-            Button("Contribute") {
-                
-            }
-            
-            Button("Buy me a coffee") {
-                
+            if showDebug {
+                NavigationLink("Debug") {
+                    DebugView()
+                        .navigationTitle("Debug")
+                        .navigationBarTitleDisplayMode(.inline)
+                }
             }
         }
     }

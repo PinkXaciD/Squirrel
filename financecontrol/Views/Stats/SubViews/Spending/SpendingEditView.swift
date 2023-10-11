@@ -64,10 +64,9 @@ struct SpendingEditView: View {
                     CategorySelector(category: $newCategoryId)
                 }
                 
-                DatePicker("Date", selection: $newDate, in: Date.distantPast...Date.now)
+                DatePicker("Date", selection: $newDate, in: Date.init(timeIntervalSinceReferenceDate: 0)...Date.now)
                     .datePickerStyle(.compact)
             }
-            
             Section(header: Text("place and comment")) {
                 NavigationLink {
                     EditPlaceView(newPlace: $newPlace)
@@ -169,58 +168,50 @@ struct SpendingEditView: View {
     private func done(entity: SpendingEntity) {
         
         if let newAmount = Double(newAmount) {
-            
-            var amountUSD: Double = 0
+                        
+            var newSpending = SpendingEntityLocal(
+                amountUSD: 0,
+                amount: newAmount,
+                comment: newComment,
+                currency: newCurrency,
+                date: newDate,
+                place: newPlace,
+                categoryId: newCategoryId
+            )
             
             if !Calendar.current.isDate(newDate, equalTo: Date.now, toGranularity: .day) {
                 Task {
                     do {
                         let oldRates = try await rvm.getHistoricalRates(newDate).rates
-                        amountUSD = newAmount / (oldRates[newCurrency.isEmpty ? entity.wrappedCurrency : newCurrency] ?? 1)
+                        newSpending.amountUSD = newAmount / (oldRates[newCurrency.isEmpty ? entity.wrappedCurrency : newCurrency] ?? 1)
                         
                         vm.editSpending(
                             spending: entity,
-                            amount: newAmount,
-                            amountUSD: amountUSD,
-                            currency: newCurrency,
-                            place: newPlace,
-                            categoryId: newCategoryId,
-                            date: newDate,
-                            comment: newComment
+                            newSpending: newSpending
                         )
                     } catch {
-                        print(error)
                         
-                        amountUSD = newAmount / (rvm.rates[newCurrency.isEmpty ? (entity.currency ?? "Error") : newCurrency] ?? 1)
+                        if let error = error as? InfoPlistError {
+                            ErrorType(infoPlistError: error).publish()
+                        }
+                        
+                        newSpending.amountUSD = newAmount / (rvm.rates[newCurrency.isEmpty ? (entity.currency ?? "Error") : newCurrency] ?? 1)
                         
                         vm.editSpending(
                             spending: entity,
-                            amount: newAmount,
-                            amountUSD: amountUSD,
-                            currency: newCurrency,
-                            place: newPlace,
-                            categoryId: newCategoryId,
-                            date: newDate,
-                            comment: newComment
+                            newSpending: newSpending
                         )
                     }
                 }
             } else {
-                amountUSD = newAmount / (rvm.rates[newCurrency.isEmpty ? (entity.currency ?? "Error") : newCurrency] ?? 1)
+                newSpending.amountUSD = newAmount / (rvm.rates[newCurrency.isEmpty ? (entity.currency ?? "Error") : newCurrency] ?? 1)
                 
                 vm.editSpending(
                     spending: entity,
-                    amount: newAmount,
-                    amountUSD: amountUSD,
-                    currency: newCurrency,
-                    place: newPlace,
-                    categoryId: newCategoryId,
-                    date: newDate,
-                    comment: newComment
+                    newSpending: newSpending
                 )
             }
         }
-        
     }
     
     private func clearComment() {
@@ -229,10 +220,10 @@ struct SpendingEditView: View {
     
     private func updateValues() {
         newAmount = String(entity.amount)
-        newCurrency = entity.currency ?? "Error"
-        newDate = entity.date ?? Date()
-        newPlace = entity.place ?? "Error"
-        newCategory = entity.category?.name ?? "Error"
+        newCurrency = entity.wrappedCurrency
+        newDate = entity.wrappedDate
+        newPlace = entity.place ?? ""
+        newCategory = entity.categoryName
         newCategoryId = entity.category?.id ?? UUID()
         newComment = entity.comment ?? ""
         focusedField = .amount

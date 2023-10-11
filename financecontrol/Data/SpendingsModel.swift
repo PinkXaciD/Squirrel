@@ -22,26 +22,21 @@ extension CoreDataViewModel {
         }
     }
     
-    func addSpending(
-        amount: Double,
-        amountUSD: Double,
-        currency: String,
-        date: Date,
-        comment: String,
-        place: String,
-        categoryId: UUID
-    ) {
-        if let description = NSEntityDescription.entity(forEntityName: "SpendingEntity", in: context), let category = findCategory(categoryId) {
-            
+    func addSpending(spending: SpendingEntityLocal) {
+        
+        if
+            let description = NSEntityDescription.entity(forEntityName: "SpendingEntity", in: context),
+            let category = findCategory(spending.categoryId)
+        {
             let newSpending = SpendingEntity(entity: description, insertInto: context)
             
             newSpending.id = UUID()
-            newSpending.amount = amount
-            newSpending.amountUSD = amountUSD
-            newSpending.currency = currency
-            newSpending.date = date
-            newSpending.place = place
-            newSpending.comment = comment
+            newSpending.amount = spending.amount
+            newSpending.amountUSD = spending.amountUSD
+            newSpending.currency = spending.currency
+            newSpending.date = spending.date
+            newSpending.place = spending.place
+            newSpending.comment = spending.comment
             
             addToCategory(newSpending, category)
             
@@ -50,24 +45,15 @@ extension CoreDataViewModel {
         }
     }
     
-    func editSpending(
-        spending: SpendingEntity,
-        amount: Double,
-        amountUSD: Double,
-        currency: String,
-        place: String,
-        categoryId: UUID,
-        date: Date,
-        comment: String
-    ) {
-        spending.amount = amount
-        spending.amountUSD = amountUSD
-        spending.currency = currency
-        spending.place = place
-        spending.date = date
-        spending.comment = comment
+    func editSpending(spending: SpendingEntity,newSpending: SpendingEntityLocal) {
+        spending.amount = newSpending.amount
+        spending.amountUSD = newSpending.amountUSD
+        spending.currency = newSpending.currency
+        spending.place = newSpending.place
+        spending.date = newSpending.date
+        spending.comment = newSpending.comment
         
-        if let category = findCategory(categoryId) {
+        if let category = findCategory(newSpending.categoryId) {
             spending.category = category
         }
         

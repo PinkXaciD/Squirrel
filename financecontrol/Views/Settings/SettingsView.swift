@@ -128,17 +128,6 @@ struct SettingsView: View {
                     
                     Text("categories")
                     
-                }
-            
-                Section {
-                    
-                    NavigationLink("Debug") {
-                        DebugView()
-                            .navigationTitle("Debug menu")
-                            .navigationBarTitleDisplayMode(.inline)
-                    }
-                } header: {
-                    Text("Debug")
                 } footer: {
                     
                     HStack {

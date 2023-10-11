@@ -58,21 +58,19 @@ extension RatesModel {
 
         } catch {
             await MainActor.run {
-                switch error {
-                case InfoPlistError.failedToReadURLComponents:
-                    ErrorType(infoPlistError: .failedToReadURLComponents).publish()
-                case InfoPlistError.noAPIKeyFound:
-                    ErrorType(infoPlistError: .noAPIKeyFound).publish()
-                case InfoPlistError.noURLFound:
-                    ErrorType(infoPlistError: .noURLFound).publish()
-                case InfoPlistError.noInfoFound:
-                    ErrorType(infoPlistError: .noInfoFound).publish()
-                case URLError.badURL:
-                    ErrorType(urlError: URLError(URLError.badURL)).publish()
-                case URLError.badServerResponse:
-                    ErrorType(urlError: URLError(URLError.badServerResponse)).publish()
-                default:
-                    print(error)
+                if let error = error as? InfoPlistError {
+                    ErrorType(infoPlistError: error).publish()
+                } else if let error = error as? URLError {
+                    switch error {
+                    case URLError.badServerResponse, URLError.badURL:
+                        ErrorType(urlError: error).publish()
+                    default:
+                        ErrorType(
+                            errorDescription: error.localizedDescription,
+                            failureReason: error.localizedDescription,
+                            recoverySuggestion: "Check your internet connection"
+                        ).publish()
+                    }
                 }
             }
             throw error

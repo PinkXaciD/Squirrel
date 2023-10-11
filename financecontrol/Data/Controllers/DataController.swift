@@ -18,7 +18,7 @@ final class DataManager {
         self.container = NSPersistentContainer(name: "DataContainer")
         container.loadPersistentStores { description, error in
             if let error = error {
-                print("Error loading persistance stores: \(error.localizedDescription)")
+                ErrorType(error: error).publish()
             }
         }
         self.context = container.viewContext
@@ -28,8 +28,8 @@ final class DataManager {
         
         do {
             try context.save()
-        } catch let error {
-            print("Error saving context: \(error.localizedDescription)")
+        } catch {
+            ErrorType(error: error).publish()
         }
     }
 }
