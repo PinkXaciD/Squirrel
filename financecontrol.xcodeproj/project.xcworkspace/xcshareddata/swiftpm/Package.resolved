@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "applepie",
+      "kind" : "localSourceControl",
+      "location" : "/Users/pinkxacid/CodeProjects/Xcode/Packages/ApplePie",
+      "state" : {
+        "branch" : "main",
+        "revision" : "274ef0c34cbf9d790f810709747c41f11df8b7ed"
+      }
+    }
+  ],
+  "version" : 2
+}

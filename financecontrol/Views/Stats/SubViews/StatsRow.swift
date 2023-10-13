@@ -13,24 +13,25 @@ struct StatsRow: View {
     let entity: SpendingEntity
     
     @State private var editSpending: Bool = false
+    @State private var showSheet: Bool = false
     
     var body: some View {
-        NavigationLink {
-            SpendingCompleteView(edit: false, entity: entity)
-                .environmentObject(vm)
+        Button {
+            showSheet.toggle()
         } label: {
             HStack {
-                
                 VStack(alignment: .leading, spacing: 5) {
-                    if entity.place != "" {
+                    if let place = entity.place, !place.isEmpty {
                         
                         Text(entity.category?.name ?? "Error")
                             .font(.caption)
                             .foregroundColor(Color.secondary)
                         
-                        Text(entity.place ?? "Error")
+                        Text(place)
+                            .foregroundColor(.primary)
                     } else {
                         Text(entity.category?.name ?? "Error")
+                            .foregroundColor(.primary)
                     }
                 }
                 
@@ -42,6 +43,7 @@ struct StatsRow: View {
                         .foregroundColor(Color.secondary)
                     
                     Text("\((entity.amount * -1.0).formatted(.currency(code: entity.wrappedCurrency)))")
+                        .foregroundColor(.primary)
                 }
             }
         }
@@ -67,7 +69,14 @@ struct StatsRow: View {
             .disabled(true)
             .opacity(0)
         }
+        .sheet(isPresented: $showSheet) {
+            SpendingCompleteView(edit: false, entity: entity)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.hidden)
+        }
     }
+    
+    // MARK: Variables
     
     var editButton: some View {
         Button {
@@ -92,6 +101,8 @@ struct StatsRow: View {
             }
         }
     }
+    
+    // MARK: Functions
     
     func deleteSpending(_ entity: SpendingEntity) {
         vm.deleteSpending(entity)

@@ -13,6 +13,7 @@ struct CurrencySelector: View {
     
     @Binding var currency: String
     var favorites: Bool
+    var spacer: Bool = true
     
     var body: some View {
         let savedCurrencies = vm.savedCurrencies
@@ -54,7 +55,9 @@ struct CurrencySelector: View {
                 .pickerStyle(.inline)
                 .labelsHidden()
             } label: {
-                Spacer()
+                if spacer {
+                    Spacer()
+                }
                 Text(currency)
             }
         }
