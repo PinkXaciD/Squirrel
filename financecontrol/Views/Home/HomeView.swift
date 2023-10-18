@@ -15,17 +15,12 @@ struct HomeView: View {
         
         NavigationView {
             List {
-                Section {
-                    BarChartGenerator()
-                        .padding(.vertical)
-                }
+                barChartSection
                 
-                Section {
-                    addButton
-                }
-                .sheet(isPresented: $showingSheet) {
-                    AmountInput()
-                }
+                addButton
+                    .sheet(isPresented: $showingSheet) {
+                        AddSpendingView()
+                    }
             }
             .navigationTitle("Home")
         }
@@ -37,12 +32,21 @@ struct HomeView: View {
             HStack(spacing: 15) {
                 Image(systemName: "plus")
                     .imageScale(.large)
-                Text("Add Expence")
+                Text("Add Expense")
             }
         }
         .padding()
     }
     
+    var barChartSection: some View {
+        Section {
+            BarChartGenerator()
+                .padding(.vertical)
+        }
+    }
+}
+
+extension HomeView {
     func toggleSheet() {
         showingSheet.toggle()
     }

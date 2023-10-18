@@ -16,71 +16,84 @@ struct AboutView: View {
     
     var body: some View {
         Form {
-            Section {
-                
-            } footer: {
-                VStack(alignment: .center) {
-//                    Spacer()
-                    
-                    if let image = Bundle.main.icon {
-                        Image(uiImage: image)
-                            .cornerRadius(10)
-                    }
-                    
-                    Text("Squirrel, version \(version ?? "")")
-                        .font(.body)
-                        .bold()
-                        .foregroundColor(.primary)
-                        .padding(.top)
-                    
-//                    Spacer()
-                }
-                .frame(maxWidth: .infinity)
-                .onTapGesture(count: 5, perform: {
-                    showDebug.toggle()
-                })
-            }
             
-            Section {
-                Text("An open-source spending tracker. \nDeveloped by PinkXaciD. Exchange rates API by nulledzero")
-                
-                Button("App site") {
-                    
-                }
-                
-                Button("GitHub") {
-                    openURL(URL(string: "https://github.com/PinkXaciD/Squirrel")!)
-                }
-            }
-                        
-            Section {
-                Button("ApplePie, Swift framework for creating pie charts") {
-                    openURL(URL(string: "https://github.com/PinkXaciD/ApplePie")!)
-                }
-            } header: {
-                Text("Open-source libraries")
-            }
+            aboutSection
             
-            Section {
-                Button("Submit bugreport") {
-                    openURL(URL(string: "https://github.com/PinkXaciD/Squirrel/issues")!)
-                }
-                
-                Button("Contribute") {
-                    
-                }
-                
-                Button("Buy me a coffee") {
-                    
-                }
-            }
+            openSourceSection
             
+            githubSection
+                                                
             if showDebug {
-                NavigationLink("Debug") {
-                    DebugView()
-                        .navigationTitle("Debug")
-                        .navigationBarTitleDisplayMode(.inline)
-                }
+                debugSection
+            }
+        }
+    }
+    
+    var aboutSection: some View {
+        
+        Section(header: aboutHeader) {
+            Text("An open-source spending tracker. \nDeveloped by PinkXaciD. Exchange rates API by nulledzero")
+            
+            Button("App site") {
+                
+            }
+            
+            Button("GitHub") {
+                openURL(URL(string: "https://github.com/PinkXaciD/Squirrel")!)
+            }
+        }
+    }
+    
+    var aboutHeader: some View {
+        VStack(alignment: .center) {
+            
+            if let image = Bundle.main.icon {
+                Image(uiImage: image)
+                    .cornerRadius(10)
+            }
+            
+            Text("Squirrel, version \(version ?? "")")
+                .font(.body)
+                .bold()
+                .foregroundColor(.primary)
+                .padding(.top)
+        }
+        .frame(maxWidth: .infinity)
+        .textCase(nil)
+        .onTapGesture(count: 5) {
+            showDebug.toggle()
+        }
+        .padding(.vertical, 15)
+    }
+    
+    var openSourceSection: some View {
+        
+        Section(header: Text("Open-source libraries")) {
+            Button("ApplePie, Swift framework for creating pie charts") {
+                openURL(URL(string: "https://github.com/PinkXaciD/ApplePie")!)
+            }
+        }
+    }
+    
+    var githubSection: some View {
+        
+        Section {
+            Button("Submit bugreport") {
+                openURL(URL(string: "https://github.com/PinkXaciD/Squirrel/issues/new")!)
+            }
+            
+            Button("Buy me a coffee") {
+                
+            }
+        }
+    }
+    
+    var debugSection: some View {
+        Section {
+            NavigationLink("Debug") {
+                DebugView()
+                    .navigationTitle("Debug")
+                    .navigationBarTitleDisplayMode(.inline)
             }
         }
     }

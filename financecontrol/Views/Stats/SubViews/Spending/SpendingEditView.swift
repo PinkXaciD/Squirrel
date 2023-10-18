@@ -53,6 +53,7 @@ struct SpendingEditView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .onAppear(perform: appearActions)
+        .interactiveDismissDisabled()
     }
     
     // MARK: Variables
@@ -88,7 +89,7 @@ struct SpendingEditView: View {
                 .numbersOnly($newAmount)
             
             HStack {
-                CurrencySelector(currency: $newCurrency, favorites: false, spacer: false)
+                CurrencySelector(currency: $newCurrency, showFavorites: false, spacer: false)
             }
         }
         .padding(.bottom)
@@ -132,13 +133,14 @@ struct SpendingEditView: View {
     
     var closeToolbar: ToolbarItem<(), some View> {
         ToolbarItem(placement: .navigationBarLeading) {
-            Button("Close") {
-                dismiss()
-            }
+            Button("Cancel", action: editButton)
         }
     }
-    
-    // MARK: Functions
+}
+
+// MARK: Functions
+
+extension SpendingEditView {
     
     private func doneButton() {
         clearFocus()
@@ -148,11 +150,19 @@ struct SpendingEditView: View {
         }
     }
     
+    private func editButton() {
+        withAnimation {
+            edit.toggle()
+        }
+    }
+    
     private func appearActions() {
+        
         if update {
             updateValues()
             update = false
         }
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             switch focus {
             case "amount":
@@ -181,7 +191,15 @@ struct SpendingEditView: View {
                 categoryId: newCategoryId
             )
             
-            if !Calendar.current.isDate(newDate, equalTo: Date.now, toGranularity: .day) {
+            if Calendar.current.isDate(newDate, equalTo: Date.now, toGranularity: .day) { // If day == today
+                
+                newSpending.amountUSD = newAmount / (rvm.rates[newCurrency.isEmpty ? (entity.currency ?? "Error") : newCurrency] ?? 1)
+                
+                vm.editSpending(
+                    spending: entity,
+                    newSpending: newSpending
+                )
+            } else { // If day != today
                 Task {
                     do {
                         let oldRates = try await rvm.getHistoricalRates(newDate).rates
@@ -205,13 +223,6 @@ struct SpendingEditView: View {
                         )
                     }
                 }
-            } else {
-                newSpending.amountUSD = newAmount / (rvm.rates[newCurrency.isEmpty ? (entity.currency ?? "Error") : newCurrency] ?? 1)
-                
-                vm.editSpending(
-                    spending: entity,
-                    newSpending: newSpending
-                )
             }
         }
     }

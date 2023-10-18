@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct NewCategoryView: View {
+struct AddCategoryView: View {
     @EnvironmentObject private var vm: CoreDataViewModel
     
     @Binding var id: UUID
@@ -36,7 +36,7 @@ struct NewCategoryView: View {
             
             Section {
                 CustomColorSelector(colorSelected: $colorSelected, colorSelectedDescription: $colorSelectedDescription)
-                .padding(.vertical, 10)
+                    .padding(.vertical, 10)
                 
             } header: {
                 
@@ -87,7 +87,7 @@ struct NewCategoryView_Previews: PreviewProvider {
     static var previews: some View {
         @State var id = UUID()
         
-        NewCategoryView(id: $id, insert: false)
+        AddCategoryView(id: $id, insert: false)
             .environmentObject(CoreDataViewModel())
     }
 }

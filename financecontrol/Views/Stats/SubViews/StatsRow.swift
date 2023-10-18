@@ -12,65 +12,29 @@ struct StatsRow: View {
     
     let entity: SpendingEntity
     
-    @State private var editSpending: Bool = false
+    @State var editSpending: Bool = false
     @State private var showSheet: Bool = false
     
     var body: some View {
+        
         Button {
             showSheet.toggle()
         } label: {
-            HStack {
-                VStack(alignment: .leading, spacing: 5) {
-                    if let place = entity.place, !place.isEmpty {
-                        
-                        Text(entity.category?.name ?? "Error")
-                            .font(.caption)
-                            .foregroundColor(Color.secondary)
-                        
-                        Text(place)
-                            .foregroundColor(.primary)
-                    } else {
-                        Text(entity.category?.name ?? "Error")
-                            .foregroundColor(.primary)
-                    }
-                }
-                
-                Spacer()
-                
-                VStack(alignment: .trailing, spacing: 5) {
-                    Text("\(dateFormat(date: entity.wrappedDate, time: false))")
-                        .font(.caption)
-                        .foregroundColor(Color.secondary)
-                    
-                    Text("\((entity.amount * -1.0).formatted(.currency(code: entity.wrappedCurrency)))")
-                        .foregroundColor(.primary)
-                }
-            }
+            buttonLabel
         }
         .swipeActions(edge: .leading) {
             editButton
-                .tint(Color.yellow)
         }
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             deleteButton
-                .tint(Color.red)
         }
         .contextMenu {
             editButton
             
             deleteButton
         }
-        .background {
-            NavigationLink(isActive: $editSpending) {
-                SpendingCompleteView(edit: true, entity: entity)
-            } label: {
-                EmptyView()
-            }
-            .disabled(true)
-            .opacity(0)
-        }
         .sheet(isPresented: $showSheet) {
-            SpendingCompleteView(edit: false, entity: entity)
+            SpendingCompleteView(edit: $editSpending, entity: entity)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.hidden)
         }
@@ -78,9 +42,40 @@ struct StatsRow: View {
     
     // MARK: Variables
     
+    var buttonLabel: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 5) {
+                if let place = entity.place, !place.isEmpty {
+                    
+                    Text(entity.category?.name ?? "Error")
+                        .font(.caption)
+                        .foregroundColor(Color.secondary)
+                    
+                    Text(place)
+                        .foregroundColor(.primary)
+                } else {
+                    Text(entity.category?.name ?? "Error")
+                        .foregroundColor(.primary)
+                }
+            }
+            
+            Spacer()
+            
+            VStack(alignment: .trailing, spacing: 5) {
+                Text("\(dateFormat(date: entity.wrappedDate, time: false))")
+                    .font(.caption)
+                    .foregroundColor(Color.secondary)
+                
+                Text("\((entity.amount * -1.0).formatted(.currency(code: entity.wrappedCurrency)))")
+                    .foregroundColor(.primary)
+            }
+        }
+    }
+    
     var editButton: some View {
         Button {
             editSpending.toggle()
+            showSheet.toggle()
         } label: {
             Label {
                 Text("Edit")
@@ -88,6 +83,7 @@ struct StatsRow: View {
                 Image(systemName: "pencil")
             }
         }
+        .tint(Color.yellow)
     }
     
     var deleteButton: some View {
@@ -100,6 +96,7 @@ struct StatsRow: View {
                 Image(systemName: "trash.fill")
             }
         }
+        .tint(Color.red)
     }
     
     // MARK: Functions

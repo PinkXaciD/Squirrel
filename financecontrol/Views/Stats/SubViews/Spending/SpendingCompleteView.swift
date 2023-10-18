@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SpendingCompleteView: View {
-    @State var edit: Bool
+    @Binding var edit: Bool
     
     @State var entity: SpendingEntity
     @State var editFocus: String = "nil"

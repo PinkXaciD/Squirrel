@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct SpendingView: View {
+    
     @EnvironmentObject private var vm: CoreDataViewModel
     @EnvironmentObject private var rvm: RatesViewModel
     
@@ -38,7 +39,7 @@ struct SpendingView: View {
     
     // MARK: Variables
     
-    var infoSection: some View {
+    private var infoSection: some View {
         
         Section(header: infoHeader) {
             HStack {
@@ -63,7 +64,7 @@ struct SpendingView: View {
         }
     }
     
-    var infoHeader: some View {
+    private var infoHeader: some View {
         VStack(alignment: .center, spacing: 8) {
             if let place = entity.place, !place.isEmpty {
                 Text(place)
@@ -87,13 +88,13 @@ struct SpendingView: View {
                 .font(.system(.body, design: .rounded))
             }
         }
-        .padding(.bottom)
+        .padding(.bottom, 20)
         .textCase(nil)
         .foregroundColor(categoryColor)
         .frame(maxWidth: .infinity)
     }
     
-    var commentSection: some View {
+    private var commentSection: some View {
         Section(header: Text("Comment")) {
             if let comment = entity.comment, !comment.isEmpty {
                 Text(comment)
@@ -107,7 +108,7 @@ struct SpendingView: View {
         }
     }
     
-    var editToolbar: ToolbarItem<(), some View> {
+    private var editToolbar: ToolbarItem<(), some View> {
         ToolbarItem {
             Button {
                 editAction()
@@ -117,15 +118,18 @@ struct SpendingView: View {
         }
     }
     
-    var closeToolbar: ToolbarItem<(), some View> {
+    private var closeToolbar: ToolbarItem<(), some View> {
         ToolbarItem(placement: .navigationBarLeading) {
             Button("Close") {
                 dismiss()
             }
         }
     }
+}
+
+extension SpendingView {
     
-    func editAction(_ field: String = "nil") {
+    private func editAction(_ field: String = "nil") {
         editFocus = field
         withAnimation {
             edit.toggle()

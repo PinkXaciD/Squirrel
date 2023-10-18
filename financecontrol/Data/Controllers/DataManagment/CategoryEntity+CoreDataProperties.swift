@@ -19,6 +19,7 @@ extension CategoryEntity {
     @NSManaged public var color: String?
     @NSManaged public var id: UUID?
     @NSManaged public var isShadowed: Bool
+    @NSManaged public var isFavorite: Bool
     @NSManaged public var name: String?
     @NSManaged public var spendings: NSSet?
 

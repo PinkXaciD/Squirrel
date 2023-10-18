@@ -8,9 +8,8 @@
 import SwiftUI
 
 struct AddCurrencyView: View {
-    @Environment(\.dismiss) private var dismiss
     
-    @EnvironmentObject var vm: CoreDataViewModel
+    @EnvironmentObject private var vm: CoreDataViewModel
     
     @State private var search: String = ""
     
@@ -18,10 +17,14 @@ struct AddCurrencyView: View {
     
     var currenciesFull: [Dictionary<String, String>.Element] {
         let currenciesFiltered = excludeAdded()
-        var currenciesFull = [String:String]()
-        for currency in currenciesFiltered {
-            currenciesFull.updateValue(Locale.current.localizedString(forCurrencyCode: currency) ?? "Error", forKey: currency)
+        var currenciesFull: [String:String] {
+            var currenciesFull = [String:String]()
+            for currency in currenciesFiltered {
+                currenciesFull.updateValue(Locale.current.localizedString(forCurrencyCode: currency) ?? "Error", forKey: currency)
+            }
+            return currenciesFull
         }
+        
         let sorted = currenciesFull.sorted {
             $0.value < $1.value
         }
@@ -31,15 +34,13 @@ struct AddCurrencyView: View {
     var body: some View {
         List {
             let searchResult = searchFunc()
-            ForEach(0..<searchResult.count, id: \.self) { index in
-                HStack {
-                    Text(searchResult[index].value.capitalized)
-                    Rectangle()
-                        .foregroundColor(CustomColor.background)
-                }
-                .onTapGesture {
-                    vm.addCurrency(name: searchResult[index].value, tag: searchResult[index].key)
-                    dismiss()
+            
+            Section(header: Text("Tap to add")) {
+                ForEach(0..<searchResult.count, id: \.self) { index in
+                    
+                    let currency = searchResult[index]
+                    
+                    NewCurrencyRow(name: currency.value, code: currency.key)
                 }
             }
         }
@@ -54,7 +55,9 @@ struct AddCurrencyView: View {
     private func excludeAdded() -> [String] {
         var removeSet: Set<String> = Set()
         for entity in vm.savedCurrencies {
-            removeSet.insert(entity.tag!)
+            if let tag = entity.tag {
+                removeSet.insert(tag)
+            }
         }
         return currencies.filter { !removeSet.contains($0) }
     }
@@ -62,14 +65,14 @@ struct AddCurrencyView: View {
     private func searchFunc() -> [Dictionary<String, String>.Element] {
         if search == "" {
             return currenciesFull
-        }
-        if !currencies.contains(search.uppercased()) {
+        } else if !currencies.contains(search.uppercased()) {
             return currenciesFull.filter {
                 $0.value.localizedCaseInsensitiveContains(search)
             }
-        }
-        return currenciesFull.filter {
-            $0.key.localizedCaseInsensitiveContains(search)
+        } else {
+            return currenciesFull.filter {
+                $0.key.localizedCaseInsensitiveContains(search)
+            }
         }
     }
 }

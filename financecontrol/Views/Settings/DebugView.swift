@@ -9,48 +9,54 @@ import SwiftUI
 
 struct DebugView: View {
     var body: some View {
-        List {
-            Section {
-                
-                Button("Throw Info.plist error") {
-                    ErrorType(infoPlistError: .noInfoFound).publish()
-                }
-                
-                Button("Throw URL error") {
-                    ErrorType(infoPlistError: .noURLFound).publish()
-                }
-                
-                Button("Throw URL components error") {
-                    ErrorType(infoPlistError: .failedToReadURLComponents).publish()
-                }
-                
-                Button("Throw API key error") {
-                    ErrorType(infoPlistError: .noAPIKeyFound).publish()
-                }
-            } header: {
-                Text("info.plist errors")
+        Form {
+            infoPlistSection
+            
+            ratesFetchErrorSection
+            
+            urlErrorSection
+        }
+    }
+    
+    private var infoPlistSection: some View {
+        Section(header: Text("Info.plist error")) {
+            
+            Button("Throw Info.plist error") {
+                ErrorType(infoPlistError: .noInfoFound).publish()
             }
             
-            Section {
-                
-                Button("Throw Empty database error") {
-                    ErrorType(localizedError: RatesFetchError.emptyDatabase).publish()
-                }
-            } header: {
-                Text("Rates fetch errors")
+            Button("Throw URL error") {
+                ErrorType(infoPlistError: .noURLFound).publish()
             }
             
-            Section {
-                
-                Button("Throw URL bad response error") {
-                    ErrorType(urlError: URLError(.badServerResponse)).publish()
-                }
-                
-                Button("Throw bad URL error") {
-                    ErrorType(urlError: URLError(.badURL)).publish()
-                }
-            } header: {
-                Text("URL errors")
+            Button("Throw URL components error") {
+                ErrorType(infoPlistError: .failedToReadURLComponents).publish()
+            }
+            
+            Button("Throw API key error") {
+                ErrorType(infoPlistError: .noAPIKeyFound).publish()
+            }
+        }
+    }
+    
+    private var ratesFetchErrorSection: some View {
+        Section(header: Text("Rates fetch errors")) {
+            
+            Button("Throw Empty database error") {
+                ErrorType(localizedError: RatesFetchError.emptyDatabase).publish()
+            }
+        }
+    }
+    
+    private var urlErrorSection: some View {
+        Section(header: Text("URL errors")) {
+            
+            Button("Throw URL bad response error") {
+                ErrorType(urlError: URLError(.badServerResponse)).publish()
+            }
+            
+            Button("Throw bad URL error") {
+                ErrorType(urlError: URLError(.badURL)).publish()
             }
         }
     }
