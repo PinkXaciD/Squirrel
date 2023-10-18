@@ -8,18 +8,25 @@
 import SwiftUI
 
 struct SpendingCompleteView: View {
-    @State var edit: Bool
+    @Binding var edit: Bool
     
     @State var entity: SpendingEntity
+    @State var editFocus: String = "nil"
     
     var body: some View {
+        
+        let categoryColor = CustomColor.nordAurora[entity.category?.color ?? ""] ?? .primary
+        
         if !edit {
-            SpendingView(entity: entity, edit: $edit)
-                .onTapGesture(perform: editToggle)
-                .navigationTitle("Details")
+            NavigationView {
+                SpendingView(entity: entity, edit: $edit, editFocus: $editFocus, categoryColor: categoryColor)
+                    .tint(categoryColor)
+            }
         } else {
-            SpendingEditView(entity: $entity, update: true, focus: "amount", edit: $edit)
-                .navigationTitle("Edit")
+            NavigationView {
+                SpendingEditView(entity: $entity, update: true, edit: $edit, categoryColor: categoryColor, focus: editFocus)
+                    .tint(categoryColor)
+            }
         }
     }
     

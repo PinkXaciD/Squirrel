@@ -13,8 +13,8 @@ struct SpendingEditView: View {
     
     @Binding var entity: SpendingEntity
     @State var update: Bool
-    var focus: String
     @Binding var edit: Bool
+    var categoryColor: Color
     
     let utils = InputUtils()
     @Environment(\.dismiss) private var dismiss
@@ -29,92 +29,87 @@ struct SpendingEditView: View {
     
     @State private var alertIsPresented: Bool = false
     
-    enum Field {
+    enum SpendingEditViewField {
         case amount
         case comment
+        case place
     }
     
-    @FocusState var focusedField: Field?
+    @FocusState var focusedField: SpendingEditViewField?
     
-    @FocusState var placeIsFocused: Bool
+    var focus: String = "amount"
     
     var body: some View {
-        List {
-            Section(header: Text("amount")) {
-                TextField(newAmount, text: $newAmount)
-                    .padding(.vertical, 10)
-                    .amountStyle()
-                    .numbersOnly($newAmount)
-                    .focused($focusedField, equals: .amount)
-                    .onAppear {
-                        focusedField = .amount
-                    }
-                
-                HStack {
-                    Text("Currency")
-                    
-                    CurrencySelector(currency: $newCurrency, favorites: true)
-                }
-            }
+        
+        Form {
+            infoSection
             
-            Section(header: Text("info")) {
-                HStack {
-                    Text("Category")
-                    
-                    CategorySelector(category: $newCategoryId)
-                }
-                
-                DatePicker("Date", selection: $newDate, in: Date.init(timeIntervalSinceReferenceDate: 0)...Date.now)
-                    .datePickerStyle(.compact)
-            }
-            Section(header: Text("place and comment")) {
-                NavigationLink {
-                    EditPlaceView(newPlace: $newPlace)
-                } label: {
-                    HStack {
-                        Text("Place")
-                        Spacer()
-                        if entity.place != "" {
-                            Text(entity.place ?? "No place")
-                                .foregroundColor(Color.secondary)
-                        } else {
-                            Text("No place provided")
-                                .foregroundColor(Color.secondary)
-                        }
-                    }
-                }
-                
-                if #available(iOS 16.0, *) {
-                    TextField("Comment", text: $newComment, axis: .vertical)
-                        .focused($focusedField, equals: .comment)
-                } else {
-                    TextEditor(text: $newComment)
-                        .onTapGesture(perform: clearComment)
-                        .focused($focusedField, equals: .comment)
-                }
-            }
-            
-            Button("Delete", role: .destructive) {
-                alertIsPresented.toggle()
-            }
-            .alert("Delete this spending?", isPresented: $alertIsPresented) {
-                Button("Cancel", role: .cancel) {}
-                Button("Delete", role: .destructive) {
-                    dismiss()
-                    vm.deleteSpending(entity)
-                }
-            }
-            .onAppear(perform: appearActions)
+            commentSection
+        }
+        .toolbar {
+            doneToolbar
+            closeToolbar
+            keyboardToolbar
         }
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            keyboardToolbar
-            
-            trailingToolbar
-        }
+        .onAppear(perform: appearActions)
+        .interactiveDismissDisabled()
     }
     
     // MARK: Variables
+    
+    var infoSection: some View {
+        Section(header: infoHeader) {
+            HStack {
+                Text("Category")
+                
+                CategorySelector(category: $newCategoryId)
+            }
+            
+            DatePicker("Date", selection: $newDate, in: Date.init(timeIntervalSinceReferenceDate: 0)...Date.now)
+                .datePickerStyle(.compact)
+        }
+    }
+    
+    var infoHeader: some View {
+        
+        VStack(alignment: .center, spacing: 8) {
+            TextField("Place (Optional)", text: $newPlace)
+                .font(.system(.title2, weight: .bold))
+                .multilineTextAlignment(.center)
+                .overlay(textFieldOverlay)
+                .focused($focusedField, equals: .place)
+            
+            TextField("Amount", text: $newAmount)
+                .font(.system(.largeTitle, design: .rounded, weight: .bold))
+                .multilineTextAlignment(.center)
+                .overlay(textFieldOverlay)
+                .focused($focusedField, equals: .amount)
+                .keyboardType(.decimalPad)
+                .numbersOnly($newAmount)
+            
+            HStack {
+                CurrencySelector(currency: $newCurrency, showFavorites: false, spacer: false)
+            }
+        }
+        .padding(.bottom)
+        .textCase(nil)
+        .foregroundColor(categoryColor)
+        .frame(maxWidth: .infinity)
+    }
+    
+    var textFieldOverlay: some View {
+        
+        RoundedRectangle(cornerRadius: 10)
+            .stroke(Color(uiColor: UIColor.secondarySystemGroupedBackground), lineWidth: 1)
+    }
+    
+    var commentSection: some View {
+        Section(header: Text("Comment")) {
+            TextField("Comment (Optional)", text: $newComment, axis: .vertical)
+                .focused($focusedField, equals: .comment)
+        }
+    }
     
     var keyboardToolbar: ToolbarItemGroup<some View> {
         ToolbarItemGroup(placement: .keyboard) {
@@ -126,17 +121,26 @@ struct SpendingEditView: View {
         }
     }
     
-    var trailingToolbar: ToolbarItem<(), some View> {
+    var doneToolbar: ToolbarItem<(), some View> {
         ToolbarItem(placement: ToolbarItemPlacement.navigationBarTrailing) {
             Button(action: doneButton) {
-                Text("Done")
+                Text("Save")
                     .fontWeight(.semibold)
             }
             .disabled(!utils.checkAll(amount: newAmount, place: newPlace, category: newCategory, comment: newComment))
         }
     }
     
-    // MARK: Functions
+    var closeToolbar: ToolbarItem<(), some View> {
+        ToolbarItem(placement: .navigationBarLeading) {
+            Button("Cancel", action: editButton)
+        }
+    }
+}
+
+// MARK: Functions
+
+extension SpendingEditView {
     
     private func doneButton() {
         clearFocus()
@@ -146,22 +150,30 @@ struct SpendingEditView: View {
         }
     }
     
+    private func editButton() {
+        withAnimation {
+            edit.toggle()
+        }
+    }
+    
     private func appearActions() {
+        
         if update {
             updateValues()
             update = false
         }
-        focusSet(focus)
-    }
-    
-    private func focusSet(_ focus: String) {
-        switch focus {
-        case "amount":
-            focusedField = .amount
-        case "comment":
-            focusedField = .comment
-        default:
-            focusedField = .none
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            switch focus {
+            case "amount":
+                focusedField = .amount
+            case "comment":
+                focusedField = .comment
+            case "place":
+                focusedField = .place
+            default:
+                focusedField = nil
+            }
         }
     }
     
@@ -179,7 +191,15 @@ struct SpendingEditView: View {
                 categoryId: newCategoryId
             )
             
-            if !Calendar.current.isDate(newDate, equalTo: Date.now, toGranularity: .day) {
+            if Calendar.current.isDate(newDate, equalTo: Date.now, toGranularity: .day) { // If day == today
+                
+                newSpending.amountUSD = newAmount / (rvm.rates[newCurrency.isEmpty ? (entity.currency ?? "Error") : newCurrency] ?? 1)
+                
+                vm.editSpending(
+                    spending: entity,
+                    newSpending: newSpending
+                )
+            } else { // If day != today
                 Task {
                     do {
                         let oldRates = try await rvm.getHistoricalRates(newDate).rates
@@ -203,13 +223,6 @@ struct SpendingEditView: View {
                         )
                     }
                 }
-            } else {
-                newSpending.amountUSD = newAmount / (rvm.rates[newCurrency.isEmpty ? (entity.currency ?? "Error") : newCurrency] ?? 1)
-                
-                vm.editSpending(
-                    spending: entity,
-                    newSpending: newSpending
-                )
             }
         }
     }
@@ -240,7 +253,7 @@ struct SpendingEditView_Previews: PreviewProvider {
         @State var entity: SpendingEntity = CoreDataViewModel().savedSpendings[0]
         @State var edit: Bool = true
         
-        SpendingEditView(entity: $entity, update: true, focus: "amount", edit: $edit)
+        SpendingEditView(entity: $entity, update: true, edit: $edit, categoryColor: .accentColor, focus: "amount")
             .environmentObject(CoreDataViewModel())
     }
 }

@@ -78,6 +78,14 @@ extension CoreDataViewModel {
     func changeShadowStateOfCategory(_ category: CategoryEntity) {
         
         category.isShadowed.toggle()
+        category.isFavorite = false
+        manager.save()
+        fetchCategories()
+    }
+    
+    func changeFavoriteStateOfCategory(_ category: CategoryEntity) {
+        
+        category.isFavorite.toggle()
         manager.save()
         fetchCategories()
     }

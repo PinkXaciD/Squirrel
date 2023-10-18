@@ -19,7 +19,7 @@ struct StatsView: View {
             List {
                 PieChartGenerator()
                 
-                ForEach(0..<listData.count, id: \.self) { index in
+                ForEach(0 ..< listData.count, id: \.self) { index in
                     Section(header: Text(listData[index].key)) {
                         ForEach(listData[index].value) { entity in
                             StatsRow(entity: entity)

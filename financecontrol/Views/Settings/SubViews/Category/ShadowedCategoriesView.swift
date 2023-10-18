@@ -8,53 +8,24 @@
 import SwiftUI
 
 struct ShadowedCategoriesView: View {
-    
     @EnvironmentObject var vm: CoreDataViewModel
     
     @State private var alertIsShowing: Bool = false
     
     var body: some View {
-        
-        List {
-            
-            if vm.shadowedCategories != [] {
-                
+        if !vm.shadowedCategories.isEmpty {
+            List {
                 ForEach(vm.shadowedCategories) { category in
-                    
-                    HStack {
-                        
-                        Image(systemName: "circle.fill")
-                            .foregroundColor(Color[category.color ?? ""])
-                        
-                        Text(category.name ?? "Error")
-                    }
-                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                        
-                        Button(role: .destructive) {
-                            vm.deleteCategory(category)
-                        } label: {
-                            Label("Delete", systemImage: "trash.fill")
-                        }
-                        .tint(Color.red)
-                    }
-                    .swipeActions(edge: .leading) {
-                        
-                        Button {
-                            vm.changeShadowStateOfCategory(category)
-                        } label: {
-                            Label("Restore", systemImage: "arrow.uturn.backward")
-                        }
-                        .tint(Color.green)
-                    }
+                    ShadowedCategoriesRow(category: category)
                 }
-                
-            } else {
-                
-                Text("No deleted categories")
-                    .font(Font.body.weight(.semibold))
             }
+            .navigationTitle("Archived categories")
+            
+        } else {
+            Text("No archived categories")
+                .font(.system(.title2, weight: .semibold))
+                .navigationTitle("Archived categories")
         }
-        .navigationTitle("Deleted categories")
     }
 }
 

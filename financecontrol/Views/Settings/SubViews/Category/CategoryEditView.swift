@@ -34,6 +34,8 @@ struct CategoryEditSubView: View {
     @State private var name: String
     @State private var colorSelected: Color
     @State private var colorSelectedDescription: String
+    
+    @FocusState var nameIsFocused: Bool
         
     init(category: CategoryEntity, dismiss: Binding<Bool>) {
         self.category = category
@@ -46,10 +48,10 @@ struct CategoryEditSubView: View {
     var body: some View {
                 
         Form {
-            
             Section {
-                
                 TextField("Enter name", text: $name)
+                    .focused($nameIsFocused)
+                    .onAppear(perform: nameFocus)
             }
             
             Section {
@@ -59,7 +61,7 @@ struct CategoryEditSubView: View {
             
             Section {
                 
-                Button("Done") {
+                Button("Save") {
                     vm.editCategory(category, name: name, color: colorSelectedDescription)
                     dismiss.toggle()
                 }
@@ -67,5 +69,9 @@ struct CategoryEditSubView: View {
                 .disabled(name.isEmpty || colorSelectedDescription.isEmpty)
             }
         }
+    }
+    
+    private func nameFocus() {
+        nameIsFocused = true
     }
 }

@@ -12,31 +12,16 @@ struct CurrencySelector: View {
     @EnvironmentObject var vm: CoreDataViewModel
     
     @Binding var currency: String
-    var favorites: Bool
+    var showFavorites: Bool
+    var spacer: Bool = true
     
     var body: some View {
-        let savedCurrencies = vm.savedCurrencies
-        
-        if favorites {
+        if showFavorites {
             Menu {
-                Picker("Currency selection", selection: $currency) {
-                    ForEach(savedCurrencies) { currency in
-                        if currency.isFavorite {
-                            Text(currency.name!).tag(currency.tag!)
-                        }
-                    }
-                }
-                .pickerStyle(.inline)
-                .labelsHidden()
+                CurrencyPicker(selectedCurrency: $currency, onlyFavorites: true)
                 
                 Menu {
-                    Picker("Currency selection", selection: $currency) {
-                        ForEach(savedCurrencies) { currency in
-                            Text(currency.name!).tag(currency.tag!)
-                        }
-                    }
-                    .pickerStyle(.inline)
-                    .labelsHidden()
+                    CurrencyPicker(selectedCurrency: $currency, onlyFavorites: false)
                 } label: {
                     Text("Other")
                 }
@@ -46,18 +31,36 @@ struct CurrencySelector: View {
             }
         } else {
             Menu {
-                Picker("Currency selection", selection: $currency) {
-                    ForEach(savedCurrencies) { currency in
-                        Text(currency.name!).tag(currency.tag!)
-                    }
-                }
-                .pickerStyle(.inline)
-                .labelsHidden()
+                CurrencyPicker(selectedCurrency: $currency, onlyFavorites: false)
             } label: {
-                Spacer()
+                if spacer {
+                    Spacer()
+                }
                 Text(currency)
             }
         }
+    }
+}
+
+struct CurrencyPicker: View {
+    
+    @EnvironmentObject private var vm: CoreDataViewModel
+    
+    @Binding var selectedCurrency: String
+    let onlyFavorites: Bool
+    
+    var body: some View {
+        let currencies = onlyFavorites ? vm.savedCurrencies.filter({ $0.isFavorite }) : vm.savedCurrencies
+        
+        Picker("Select currency", selection: $selectedCurrency) {
+            ForEach(currencies) { currency in
+                if let name = currency.name, let tag = currency.tag {
+                    Text(name).tag(tag)
+                }
+            }
+        }
+        .pickerStyle(.inline)
+        .labelsHidden()
     }
 }
 
@@ -65,7 +68,7 @@ struct CurrencySelector_Previews: PreviewProvider {
     static var previews: some View {
         @State var currency: String = "USD"
         Menu {
-            CurrencySelector(currency: $currency, favorites: false)
+            CurrencySelector(currency: $currency, showFavorites: false)
         } label: {
             Text(currency)
         }
