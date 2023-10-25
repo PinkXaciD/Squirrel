@@ -20,9 +20,9 @@ struct DefaultCurrencySelector: View {
         List {
             Picker("Currency selection", selection: $defaultCurrency) {
                 ForEach(currencies) { currency in
-                    
                     if let name = currency.name?.capitalized, let tag = currency.tag {
                         CurrencyRow(name: name, tag: tag, currency: currency).tag(tag)
+                            .padding(.vertical, 1)
                     } else {
                         Text("Error")
                     }
@@ -50,7 +50,7 @@ struct DefaultCurrencySelector: View {
         }
     }
     
-    private var trailingToolbar: ToolbarItem<(), some View> {
+    private var trailingToolbar: ToolbarItem<Void, some View> {
         ToolbarItem(placement: .navigationBarTrailing) {
             NavigationLink {
                 AddCurrencyView()

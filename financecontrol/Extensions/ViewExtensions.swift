@@ -25,4 +25,44 @@ extension View {
         self
             .modifier(NumbersViewModifier(text: text))
     }
+    
+    /// Adds Custom alert to the View
+    /// - Parameters:
+    ///   - type: Type of custom alert
+    ///   - presenting: State of presentation
+    ///   - message: Text inside an alert
+    /// - Returns: View with added custom alert overlay
+    func customAlert(_ type: CustomAlertType, presenting: Binding<Bool>, message: String = "") -> some View {
+        
+        let offset = -(
+            UIScreen.main.bounds.height / 2
+        ) + (
+            UIApplication.shared.windows.first?.safeAreaInsets.top ?? 0
+        )
+            
+        return self
+            .overlay {
+                CustomAlertView(
+                    isPresented: presenting,
+                    type: type,
+                    text: message
+                )
+                .scaleEffect(presenting.wrappedValue ? 1 : 0.3)
+                .offset(y:(presenting.wrappedValue ? (offset + 60) : (offset - 130)))
+                .onTapGesture {
+                    withAnimation(.bouncy) {
+                        presenting.wrappedValue = false
+                    }
+                }
+                .onChange(of: presenting.wrappedValue) { newValue in
+                    if newValue {
+                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3) {
+                            withAnimation(.bouncy) {
+                                presenting.wrappedValue = false
+                            }
+                        }
+                    }
+                }
+            }
+    }
 }

@@ -10,6 +10,7 @@ import SwiftUI
 struct AddSpendingView: View {
     @EnvironmentObject private var vm: CoreDataViewModel
     @EnvironmentObject private var rvm: RatesViewModel
+    
     @AppStorage("color") private var tint: String = "Blue"
     @AppStorage("defaultCurrency") private var defaultCurrency: String = "USD"
     
@@ -33,7 +34,7 @@ struct AddSpendingView: View {
     @State private var commentColor: Color = Color.secondary
     
     @State private var amountIsFocused: Bool = true
-    @State private var editCategories: Bool = false
+    @State private var buttonIsPressed: Bool = true
 
     let utils = InputUtils() // For checking
     
@@ -144,9 +145,18 @@ struct AddSpendingView: View {
         
         ToolbarItem(placement: .navigationBarTrailing) {
             
-            Button("Done", action: done)
-                .font(Font.body.weight(.semibold))
-                .disabled(!utils.checkAll(amount: amount, place: place, category: category, comment: comment))
+            Button {
+                done()
+            } label: {
+                if buttonIsPressed {
+                    Text("Done")
+                } else {
+                    ProgressView()
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .font(Font.body.weight(.semibold))
+            .disabled(!utils.checkAll(amount: amount, place: place, category: category, comment: comment) || !buttonIsPressed)
         }
     }
 }
@@ -161,6 +171,8 @@ extension AddSpendingView {
     
     private func done() {
         if let doubleAmount = Double(amount) {
+            
+            buttonIsPressed = false
             
             if comment == "Enter your comment here" {
                 comment = ""
@@ -183,9 +195,7 @@ extension AddSpendingView {
                         await MainActor.run {
                             spending.amountUSD = doubleAmount / (oldRates[currency] ?? 1)
                             
-                            vm.addSpending(
-                                spending: spending
-                            )
+                            vm.addSpending(spending: spending)
                             
                             dismiss()
                         }
@@ -198,9 +208,7 @@ extension AddSpendingView {
                         
                         spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
                         
-                        vm.addSpending(
-                            spending: spending
-                        )
+                        vm.addSpending(spending: spending)
                         
                         dismiss()
                     }
@@ -209,9 +217,7 @@ extension AddSpendingView {
                 
                 spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
                 
-                vm.addSpending(
-                    spending: spending
-                )
+                vm.addSpending(spending: spending)
                 
                 dismiss()
             }

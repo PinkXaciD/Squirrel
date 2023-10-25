@@ -45,11 +45,20 @@ struct SpendingEditView: View {
             infoSection
             
             commentSection
+            
+            deleteButton
         }
         .toolbar {
             doneToolbar
             closeToolbar
             keyboardToolbar
+        }
+        .alert("Delete this expense?", isPresented: $alertIsPresented) {
+            Button("Cancel", role: .cancel) {}
+            Button("Delete", role: .destructive) {
+                dismiss()
+                vm.deleteSpending(entity)
+            }
         }
         .navigationBarTitleDisplayMode(.inline)
         .onAppear(perform: appearActions)
@@ -75,13 +84,13 @@ struct SpendingEditView: View {
         
         VStack(alignment: .center, spacing: 8) {
             TextField("Place (Optional)", text: $newPlace)
-                .font(.system(.title2, weight: .bold))
+                .font(.title2.bold())
                 .multilineTextAlignment(.center)
                 .overlay(textFieldOverlay)
                 .focused($focusedField, equals: .place)
             
             TextField("Amount", text: $newAmount)
-                .font(.system(.largeTitle, design: .rounded, weight: .bold))
+                .font(.system(.largeTitle, design: .rounded).bold())
                 .multilineTextAlignment(.center)
                 .overlay(textFieldOverlay)
                 .focused($focusedField, equals: .amount)
@@ -108,6 +117,14 @@ struct SpendingEditView: View {
         Section(header: Text("Comment")) {
             TextField("Comment (Optional)", text: $newComment, axis: .vertical)
                 .focused($focusedField, equals: .comment)
+        }
+    }
+    
+    var deleteButton: some View {
+        Section {
+            Button("Delete", role: .destructive) {
+                alertIsPresented.toggle()
+            }
         }
     }
     

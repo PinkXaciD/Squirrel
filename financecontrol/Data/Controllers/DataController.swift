@@ -8,7 +8,6 @@
 import CoreData
 
 final class DataManager {
-    
     static let instance = DataManager()
     
     let container: NSPersistentContainer
@@ -16,7 +15,7 @@ final class DataManager {
 
     init() {
         self.container = NSPersistentContainer(name: "DataContainer")
-        container.loadPersistentStores { description, error in
+        container.loadPersistentStores { _, error in
             if let error = error {
                 ErrorType(error: error).publish()
             }
@@ -25,7 +24,6 @@ final class DataManager {
     }
     
     func save() {
-        
         do {
             try context.save()
         } catch {
@@ -35,7 +33,6 @@ final class DataManager {
 }
 
 final class CoreDataViewModel: ObservableObject {
-    
     let container: NSPersistentContainer
     let context: NSManagedObjectContext
     let manager = DataManager.instance
@@ -52,4 +49,80 @@ final class CoreDataViewModel: ObservableObject {
     @Published var savedCategories: [CategoryEntity] = []
     @Published var shadowedCategories: [CategoryEntity] = []
     @Published var savedCurrencies: [CurrencyEntity] = []
+}
+
+extension CoreDataViewModel {
+    func exportJSON() throws -> URL? {
+        do {
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.sortedKeys, .prettyPrinted]
+            encoder.dateEncodingStrategy = .iso8601
+            
+            let data = try encoder.encode(savedCategories)
+            
+            if let jsonString = String(
+                data: data,
+                encoding: .utf8
+            ), let tempURL = FileManager.default.urls(
+                for: .documentDirectory,
+                in: .userDomainMask
+            ).first {
+                var dateFormatter: DateFormatter {
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yyyy-MM-dd_HH-mm"
+                    dateFormatter.timeZone = .autoupdatingCurrent
+                    return dateFormatter
+                }
+                
+                let pathURL = tempURL.appending(component: "SquirrelExport_\(dateFormatter.string(from: Date.now)).json")
+                try jsonString.write(to: pathURL, atomically: true, encoding: .utf8)
+                
+                return pathURL
+            }
+            
+            return nil
+        } catch {
+            throw error
+        }
+    }
+    
+    func importJSON(_ url: URL) -> Int? {
+        var importedCount = 0
+        
+        do {
+            if url.startAccessingSecurityScopedResource() {
+                let jsonData = try Data(contentsOf: url)
+                let decoder = JSONDecoder()
+                decoder.dateDecodingStrategy = .iso8601
+                decoder.userInfo[.moc] = manager.context
+                
+                let tempData = try decoder.decode([CategoryEntity].self, from: jsonData)
+                
+                url.stopAccessingSecurityScopedResource()
+                
+                importedCount = tempData.count
+                
+                let existingCategoryIds = savedCategories.map { $0.id } + shadowedCategories.map { $0.id }
+                
+                for category in tempData {
+                    if existingCategoryIds.contains(category.id) {
+                        manager.context.delete(category)
+                        importedCount -= 1
+                    }
+                }
+
+                manager.save()
+                
+                fetchCategories()
+                fetchSpendings()
+                
+                return importedCount
+            } else {
+                return nil
+            }
+        } catch {
+            ErrorType(error: error).publish()
+            return nil
+        }
+    }
 }

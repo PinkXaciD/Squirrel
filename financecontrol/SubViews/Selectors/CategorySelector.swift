@@ -16,7 +16,7 @@ struct CategorySelector: View {
     
     var body: some View {
         
-        let favorites = vm.savedCategories.filter({ $0.isFavorite })
+        let favorites = vm.savedCategories.filter { $0.isFavorite }
         
         Menu {
             if favorites.isEmpty {

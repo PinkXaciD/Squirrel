@@ -13,7 +13,7 @@ struct AddCurrencyView: View {
     
     @State private var search: String = ""
     
-    var currencies = Locale.commonISOCurrencyCodes
+    var currencies = Locale.customCommonISOCurrencyCodes
     
     var currenciesFull: [Dictionary<String, String>.Element] {
         let currenciesFiltered = excludeAdded()
@@ -41,6 +41,7 @@ struct AddCurrencyView: View {
                     let currency = searchResult[index]
                     
                     NewCurrencyRow(name: currency.value, code: currency.key)
+                        .padding(.vertical, 1)
                 }
             }
         }
@@ -63,15 +64,11 @@ struct AddCurrencyView: View {
     }
     
     private func searchFunc() -> [Dictionary<String, String>.Element] {
-        if search == "" {
+        if search.isEmpty {
             return currenciesFull
-        } else if !currencies.contains(search.uppercased()) {
-            return currenciesFull.filter {
-                $0.value.localizedCaseInsensitiveContains(search)
-            }
         } else {
             return currenciesFull.filter {
-                $0.key.localizedCaseInsensitiveContains(search)
+                $0.value.localizedCaseInsensitiveContains(search) || $0.key.localizedCaseInsensitiveContains(search)
             }
         }
     }

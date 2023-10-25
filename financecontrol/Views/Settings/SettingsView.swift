@@ -12,8 +12,12 @@ struct SettingsView: View {
     @AppStorage("defaultCurrency") var defaultCurrency: String = "USD"
     @AppStorage("theme") var theme: String = "None"
     
-    @State private var autoDarkModeToggle: Bool = true
-    @State private var darkModeToggle: Bool = false
+    @State private var autoDarkMode: Bool = true
+    @State private var darkMode: Bool = false
+    
+    @State private var presentCustomAlert: Bool = false
+    @State private var customAlertMessage: String = ""
+    @State private var customAlertType: CustomAlertType = .unknown
     
     let version: String? = Bundle.main.releaseVersionNumber
     
@@ -25,18 +29,18 @@ struct SettingsView: View {
                 
                 themeSection
                     .onAppear(perform: appearActions)
-                    .onChange(of: autoDarkModeToggle) { newValue in
+                    .onChange(of: autoDarkMode) { newValue in
                         if newValue {
                             theme = "auto"
                         } else {
-                            if darkModeToggle {
+                            if darkMode {
                                 theme = "dark"
                             } else {
                                 theme = "light"
                             }
                         }
                     }
-                    .onChange(of: darkModeToggle) { newValue in
+                    .onChange(of: darkMode) { newValue in
                         if newValue {
                             withAnimation {
                                 theme = "dark"
@@ -51,12 +55,15 @@ struct SettingsView: View {
                 currencySection
                 
                 categorySection
+                
+                exportImportSection
             }
             .listStyle(.insetGrouped)
-            .animation(.linear, value: autoDarkModeToggle)
+            .animation(.linear, value: autoDarkMode)
             .navigationTitle("Settings")
         } // End of Nav View
         .navigationViewStyle(.stack)
+        .customAlert(customAlertType, presenting: $presentCustomAlert, message: customAlertMessage)
     }
     
     var aboutSection: some View {
@@ -83,10 +90,10 @@ struct SettingsView: View {
                 }
             }
             
-            Toggle("Automatic Dark Mode", isOn: $autoDarkModeToggle)
+            Toggle("Automatic Dark Mode", isOn: $autoDarkMode)
             
-            if !autoDarkModeToggle {
-                Toggle("Dark Mode", isOn: $darkModeToggle)
+            if !autoDarkMode {
+                Toggle("Dark Mode", isOn: $darkMode)
             }
             
         }
@@ -114,11 +121,19 @@ struct SettingsView: View {
     }
     
     var categorySection: some View {
-        Section(header: Text("Categories"), footer: footer) {
+        Section(header: Text("Categories")) {
             NavigationLink("Categories") {
                 CategoriesEditView()
             }
             
+        }
+    }
+    
+    private var exportImportSection: some View {
+        Section(header: Text("Export and Import"), footer: footer) {
+            NavigationLink("Export and import data") {
+                ExportImportView(presentAlert: $presentCustomAlert, alertMessage: $customAlertMessage, alertType: $customAlertType)
+            }
         }
     }
     
@@ -146,13 +161,13 @@ struct SettingsView: View {
 extension SettingsView {
     func appearActions() {
         if theme == "light" {
-            autoDarkModeToggle = false
-            darkModeToggle = false
+            autoDarkMode = false
+            darkMode = false
         } else if theme == "dark" {
-            autoDarkModeToggle = false
-            darkModeToggle = true
+            autoDarkMode = false
+            darkMode = true
         } else {
-            autoDarkModeToggle = true
+            autoDarkMode = true
         }
     }
 }

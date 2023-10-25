@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import ApplePie
 
 struct StatsView: View {
     @EnvironmentObject private var vm: CoreDataViewModel

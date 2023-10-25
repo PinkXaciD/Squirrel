@@ -23,7 +23,8 @@ struct ShadowedCategoriesView: View {
             
         } else {
             Text("No archived categories")
-                .font(.system(.title2, weight: .semibold))
+                .font(.title2)
+                .fontWeight(.semibold)
                 .navigationTitle("Archived categories")
         }
     }

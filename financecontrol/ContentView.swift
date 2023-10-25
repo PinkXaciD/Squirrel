@@ -52,10 +52,8 @@ struct ContentView: View {
                 }
             }
             
-            Button(role: .cancel) {
+            Button("OK", role: .cancel) {
                 errorHandler.dropError()
-            } label: {
-                Text("OK")
             }
 
         } message: { error in

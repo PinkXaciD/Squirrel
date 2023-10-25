@@ -50,6 +50,7 @@ extension RatesModel {
             var request: URLRequest {
                 var request = URLRequest(url: url)
                 request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
+                request.timeoutInterval = TimeInterval(10)
                 return request
             }
 

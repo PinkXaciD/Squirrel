@@ -19,7 +19,8 @@
 - Light and dark mode with different accent colors
 ![Themes](README/Screenshots/Themes.png)
 
-- Data export (this feature will be in the next update)
+- Data export and import in JSON format
+![Export](README/Screenshots/Export.png)
 
 ## How to install?
 Currently not available on the App Store, but you can build this app yourself!
