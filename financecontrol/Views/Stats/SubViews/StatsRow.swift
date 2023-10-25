@@ -34,9 +34,13 @@ struct StatsRow: View {
             deleteButton
         }
         .sheet(isPresented: $showSheet) {
-            SpendingCompleteView(edit: $editSpending, entity: entity)
-                .presentationDetents([.medium, .large])
-                .presentationDragIndicator(.hidden)
+            if #available(iOS 16.0, *) {
+                SpendingCompleteView(edit: $editSpending, entity: entity)
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.hidden)
+            } else {
+                SpendingCompleteView(edit: $editSpending, entity: entity)
+            }
         }
     }
     

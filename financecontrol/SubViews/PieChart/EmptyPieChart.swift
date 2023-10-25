@@ -41,19 +41,16 @@ struct EmptyPieChart: View {
             }
             .frame(width: size, height: size, alignment: .center)
             .onAppear(perform: appearActions)
-            .onDisappear(perform: disappearActions)
+            
             Spacer()
         }
+        .padding(.vertical)
     }
     
     func appearActions() {
         withAnimation(.easeOut(duration: 0.2)) {
             scaleAnimation = 1
         }
-    }
-    
-    func disappearActions() {
-        scaleAnimation = 0.75
     }
 }
 

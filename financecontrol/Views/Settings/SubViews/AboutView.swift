@@ -52,7 +52,7 @@ struct AboutView: View {
                     .cornerRadius(10)
             }
             
-            Text("Squirrel, version \(version ?? "")")
+            Text("Squirrel, version \(version ?? "unknown")")
                 .font(.body)
                 .bold()
                 .foregroundColor(.primary)
@@ -78,7 +78,7 @@ struct AboutView: View {
     var githubSection: some View {
         
         Section {
-            Button("Submit bugreport") {
+            Button("Create a new issue on GitHub") {
                 openURL(URL(string: "https://github.com/PinkXaciD/Squirrel/issues/new")!)
             }
             

@@ -9,7 +9,7 @@ import SwiftUI
 import ApplePie
 
 struct PieChart: View {
-    @EnvironmentObject var vm: CoreDataViewModel
+    @EnvironmentObject private var vm: CoreDataViewModel
     @EnvironmentObject private var rvm: RatesViewModel
     
     @AppStorage("defaultCurrency") var defaultCurrency: String = "USD"
@@ -25,30 +25,15 @@ struct PieChart: View {
         Section {
             VStack(spacing: 15) {
                 GeometryReader { geometry in
-                    let width = geometry.size.width
                     
                     ZStack {
                         ApplePie().generatePie(chartData(UIScreen.main.bounds.width))
                         
-                        VStack(alignment: .center) {
-                            Text("All Spendings")
-                                .padding(.top, 10)
-                            
-                            Text(String(vm.operationsSum() * (rvm.rates[defaultCurrency] ?? 1)).currencyFormat)
-                                .lineLimit(1)
-                                .font(.system(size: 30, weight: .semibold, design: .rounded))
-                                .frame(maxWidth: width/1.4)
-                                .scaledToFit()
-                                .minimumScaleFactor(0.01)
-                            
-                            Text(defaultCurrency)
-                                .foregroundColor(Color.secondary)
-                        }
+                        CenterChartView(width: geometry.size.width)
                     }
                 } // End of GR
                 .frame(width: size, height: size)
                 .onAppear(perform: appearActions)
-                .onDisappear(perform: disappearActions)
                 
                 Divider()
                 HStack {
@@ -73,7 +58,7 @@ struct PieChart: View {
         }
     }
     
-    func chartData(_ screenWidth: CGFloat) -> ApplePieChartData {
+    private func chartData(_ screenWidth: CGFloat) -> ApplePieChartData {
 //        let colors: [Color] = donutColors()
         let pcData = PieChartData(vm)
         
@@ -99,14 +84,35 @@ struct PieChart: View {
         return data
     }
     
-    func appearActions() {
+    private func appearActions() {
         withAnimation(.easeOut(duration: 0.15)) {
             scaleAnimation = 1
         }
     }
+}
+
+struct CenterChartView: View {
+    @EnvironmentObject private var vm: CoreDataViewModel
+    @EnvironmentObject private var rvm: RatesViewModel
+    @AppStorage("defaultCurrency") var defaultCurrency: String = "USD"
     
-    func disappearActions() {
-        
+    let width: CGFloat
+    
+    var body: some View {
+        VStack(alignment: .center) {
+            Text("All Expenses")
+                .padding(.top, 10)
+            
+            Text(String(vm.operationsSum() * (rvm.rates[defaultCurrency] ?? 1)).currencyFormat)
+                .lineLimit(1)
+                .font(.system(size: 30, weight: .semibold, design: .rounded))
+                .frame(maxWidth: width/1.4)
+                .scaledToFit()
+                .minimumScaleFactor(0.01)
+            
+            Text(defaultCurrency)
+                .foregroundColor(Color.secondary)
+        }
     }
 }
 

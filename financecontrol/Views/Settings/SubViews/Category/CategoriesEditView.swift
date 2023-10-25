@@ -40,8 +40,15 @@ struct CategoriesEditView: View {
                 AddCategoryView(id: $id, insert: false)
             }
             
-            NavigationLink("Archieved categories") {
+            NavigationLink {
                 ShadowedCategoriesView()
+            } label: {
+                HStack {
+                    Text("Archieved categories")
+                    Spacer()
+                    Text("\(vm.shadowedCategories.count)")
+                        .foregroundStyle(.secondary)
+                }
             }
         }
     }

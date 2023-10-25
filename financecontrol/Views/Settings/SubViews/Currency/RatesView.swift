@@ -8,22 +8,21 @@
 import SwiftUI
 
 struct RatesView: View {
-    
-    @StateObject private var rvm: RatesViewModel = RatesViewModel()
+    @StateObject private var rvm: RatesViewModel = .init()
     
     private var filteredRates: [(String, Double)] {
         let rates = rvm.rates
         
-        return rates.filter { Locale.commonISOCurrencyCodes.contains($0.key.uppercased()) }
+        return rates
+            .filter { Locale.customCommonISOCurrencyCodes.contains($0.key.uppercased()) }
             .sorted { $0.key < $1.key }
             .map { ($0.key.uppercased(), $0.value) }
     }
     
     var body: some View {
-        
         List {
             Section {
-                ForEach(filteredRates, id: \.0) { (key, value) in
+                ForEach(filteredRates, id: \.0) { key, value in
                     RatesRowView(code: key, rate: value)
                 }
             } header: {
@@ -36,7 +35,6 @@ struct RatesView: View {
 }
 
 struct RatesRowView: View {
-    
     let code: String
     let rate: Double
     

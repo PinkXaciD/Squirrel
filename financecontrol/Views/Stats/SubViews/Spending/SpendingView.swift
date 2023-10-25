@@ -68,14 +68,14 @@ struct SpendingView: View {
         VStack(alignment: .center, spacing: 8) {
             if let place = entity.place, !place.isEmpty {
                 Text(place)
-                    .font(.system(.title2, weight: .bold))
+                    .font(.title2.bold())
                     .onTapGesture {
                         editAction("place")
                     }
             }
             
             Text(entity.amount.formatted(.currency(code: entity.wrappedCurrency)))
-                .font(.system(.largeTitle, design: .rounded, weight: .bold))
+                .font(.system(.largeTitle, design: .rounded).bold())
                 .onTapGesture {
                     editAction("amount")
                 }
