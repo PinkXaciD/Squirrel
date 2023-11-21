@@ -3,4 +3,109 @@
    uuid = "ABCF6EC7-E74A-491B-8D6E-DC83F87ADD05"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.SymbolicBreakpoint">
+         <BreakpointContent
+            uuid = "849A68A5-65B3-46ED-B2AE-0160B502F051"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            symbolName = "CGPostError"
+            moduleName = "">
+            <Locations>
+               <Location
+                  uuid = "849A68A5-65B3-46ED-B2AE-0160B502F051 - 6b2a6ff60c6dfa83"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "CGPostError"
+                  moduleName = "CoreGraphics"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A27FC88B-CC82-419E-942C-DB7CA5C3855B"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../Library/Developer/Xcode/DerivedData/financecontrol-cibdojutjizynwcegsfaalnsicud/SourcePackages/checkouts/ApplePie/Sources/ApplePie/Chart/Views/ChartView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "33"
+            endingLineNumber = "33"
+            landmarkName = "body"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "A27FC88B-CC82-419E-942C-DB7CA5C3855B - ef5e8b1a994942df"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (SwiftUI.GeometryProxy) -&gt; &lt;&lt;opaque return type of SwiftUI.View.scaleEffect(_: CoreGraphics.CGFloat, anchor: SwiftUI.UnitPoint) -&gt; some&gt;&gt;.0 in ApplePie.APChartView.body.getter : some"
+                  moduleName = "financecontrol"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/pinkxacid/Library/Developer/Xcode/DerivedData/financecontrol-cibdojutjizynwcegsfaalnsicud/SourcePackages/checkouts/ApplePie/Sources/ApplePie/Chart/Views/ChartView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "33"
+                  endingLineNumber = "33"
+                  offsetFromSymbolStart = "956">
+               </Location>
+               <Location
+                  uuid = "A27FC88B-CC82-419E-942C-DB7CA5C3855B - ef5e8b1a994942df"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (SwiftUI.GeometryProxy) -&gt; &lt;&lt;opaque return type of SwiftUI.View.scaleEffect(_: CoreGraphics.CGFloat, anchor: SwiftUI.UnitPoint) -&gt; some&gt;&gt;.0 in ApplePie.APChartView.body.getter : some"
+                  moduleName = "financecontrol"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/pinkxacid/Library/Developer/Xcode/DerivedData/financecontrol-cibdojutjizynwcegsfaalnsicud/SourcePackages/checkouts/ApplePie/Sources/ApplePie/Chart/Views/ChartView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "33"
+                  endingLineNumber = "33"
+                  offsetFromSymbolStart = "812">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "6C44AEA3-7A5A-4572-B79B-B33335EA2F13"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../Library/Developer/Xcode/DerivedData/financecontrol-cibdojutjizynwcegsfaalnsicud/SourcePackages/checkouts/ApplePie/Sources/ApplePie/Chart/Shapes/ClipShape.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "26"
+            endingLineNumber = "26"
+            landmarkName = "path(in:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "84641EDF-0FB7-4787-A50D-824A2C7CB55B"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../Library/Developer/Xcode/DerivedData/financecontrol-cibdojutjizynwcegsfaalnsicud/SourcePackages/checkouts/ApplePie/Sources/ApplePie/Chart/Shapes/ClipShape.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "33"
+            endingLineNumber = "33"
+            landmarkName = "path(in:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

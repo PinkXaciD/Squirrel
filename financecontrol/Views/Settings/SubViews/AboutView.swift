@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct AboutView: View {
-    
     @Environment(\.openURL) private var openURL
     let version: String? = Bundle.main.releaseVersionNumber
     
@@ -16,10 +15,7 @@ struct AboutView: View {
     
     var body: some View {
         Form {
-            
             aboutSection
-            
-            openSourceSection
             
             githubSection
                                                 
@@ -30,13 +26,10 @@ struct AboutView: View {
     }
     
     var aboutSection: some View {
-        
         Section(header: aboutHeader) {
             Text("An open-source spending tracker. \nDeveloped by PinkXaciD. Exchange rates API by nulledzero")
             
-            Button("App site") {
-                
-            }
+            Button("App site") {}
             
             Button("GitHub") {
                 openURL(URL(string: "https://github.com/PinkXaciD/Squirrel")!)
@@ -46,10 +39,9 @@ struct AboutView: View {
     
     var aboutHeader: some View {
         VStack(alignment: .center) {
-            
             if let image = Bundle.main.icon {
                 Image(uiImage: image)
-                    .cornerRadius(10)
+                    .cornerRadius(15)
             }
             
             Text("Squirrel, version \(version ?? "unknown")")
@@ -66,25 +58,13 @@ struct AboutView: View {
         .padding(.vertical, 15)
     }
     
-    var openSourceSection: some View {
-        
-        Section(header: Text("Open-source libraries")) {
-            Button("ApplePie, Swift framework for creating pie charts") {
-                openURL(URL(string: "https://github.com/PinkXaciD/ApplePie")!)
-            }
-        }
-    }
-    
     var githubSection: some View {
-        
         Section {
             Button("Create a new issue on GitHub") {
                 openURL(URL(string: "https://github.com/PinkXaciD/Squirrel/issues/new")!)
             }
             
-            Button("Buy me a coffee") {
-                
-            }
+            Button("Buy me some noodles") {}
         }
     }
     

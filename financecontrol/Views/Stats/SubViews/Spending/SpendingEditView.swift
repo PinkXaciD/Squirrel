@@ -8,26 +8,39 @@
 import SwiftUI
 
 struct SpendingEditView: View {
-    @EnvironmentObject private var vm: CoreDataViewModel
-    @EnvironmentObject private var rvm: RatesViewModel
+    @EnvironmentObject 
+    private var vm: CoreDataViewModel
+    @EnvironmentObject
+    private var rvm: RatesViewModel
     
-    @Binding var entity: SpendingEntity
-    @State var update: Bool
-    @Binding var edit: Bool
+    @Binding 
+    var entity: SpendingEntity
+    @State
+    var update: Bool
+    @Binding
+    var edit: Bool
     var categoryColor: Color
     
     let utils = InputUtils()
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss) 
+    private var dismiss
     
-    @State private var newAmount: String = ""
-    @State private var newCurrency: String = ""
-    @State private var newPlace: String = ""
-    @State private var newCategory: String = ""
-    @State private var newCategoryId: UUID = UUID()
-    @State private var newDate: Date = Date.now
-    @State private var newComment: String = ""
-    
-    @State private var alertIsPresented: Bool = false
+    @State 
+    private var newAmount: String = ""
+    @State
+    private var newCurrency: String = ""
+    @State
+    private var newPlace: String = ""
+    @State
+    private var newCategory: String = ""
+    @State
+    private var newCategoryId: UUID = UUID()
+    @State
+    private var newDate: Date = Date.now
+    @State
+    private var newComment: String = ""
+    @State 
+    private var alertIsPresented: Bool = false
     
     enum SpendingEditViewField {
         case amount
@@ -35,7 +48,8 @@ struct SpendingEditView: View {
         case place
     }
     
-    @FocusState var focusedField: SpendingEditViewField?
+    @FocusState 
+    var focusedField: SpendingEditViewField?
     
     var focus: String = "amount"
     
@@ -108,7 +122,6 @@ struct SpendingEditView: View {
     }
     
     var textFieldOverlay: some View {
-        
         RoundedRectangle(cornerRadius: 10)
             .stroke(Color(uiColor: UIColor.secondarySystemGroupedBackground), lineWidth: 1)
     }
@@ -174,7 +187,6 @@ extension SpendingEditView {
     }
     
     private func appearActions() {
-        
         if update {
             updateValues()
             update = false
@@ -195,50 +207,50 @@ extension SpendingEditView {
     }
     
     private func done(entity: SpendingEntity) {
+        guard let newAmount = Double(newAmount) else {
+            return
+        }
         
-        if let newAmount = Double(newAmount) {
-                        
-            var newSpending = SpendingEntityLocal(
-                amountUSD: 0,
-                amount: newAmount,
-                comment: newComment,
-                currency: newCurrency,
-                date: newDate,
-                place: newPlace,
-                categoryId: newCategoryId
-            )
+        var newSpending = SpendingEntityLocal(
+            amountUSD: 0,
+            amount: newAmount,
+            comment: newComment,
+            currency: newCurrency,
+            date: newDate,
+            place: newPlace,
+            categoryId: newCategoryId
+        )
+        
+        if Calendar.current.isDate(newDate, equalTo: Date.now, toGranularity: .day) { // If day == today
             
-            if Calendar.current.isDate(newDate, equalTo: Date.now, toGranularity: .day) { // If day == today
-                
-                newSpending.amountUSD = newAmount / (rvm.rates[newCurrency.isEmpty ? (entity.currency ?? "Error") : newCurrency] ?? 1)
-                
-                vm.editSpending(
-                    spending: entity,
-                    newSpending: newSpending
-                )
-            } else { // If day != today
-                Task {
-                    do {
-                        let oldRates = try await rvm.getHistoricalRates(newDate).rates
-                        newSpending.amountUSD = newAmount / (oldRates[newCurrency.isEmpty ? entity.wrappedCurrency : newCurrency] ?? 1)
-                        
-                        vm.editSpending(
-                            spending: entity,
-                            newSpending: newSpending
-                        )
-                    } catch {
-                        
-                        if let error = error as? InfoPlistError {
-                            ErrorType(infoPlistError: error).publish()
-                        }
-                        
-                        newSpending.amountUSD = newAmount / (rvm.rates[newCurrency.isEmpty ? (entity.currency ?? "Error") : newCurrency] ?? 1)
-                        
-                        vm.editSpending(
-                            spending: entity,
-                            newSpending: newSpending
-                        )
+            newSpending.amountUSD = newAmount / (rvm.rates[newCurrency.isEmpty ? (entity.currency ?? "Error") : newCurrency] ?? 1)
+            
+            vm.editSpending(
+                spending: entity,
+                newSpending: newSpending
+            )
+        } else { // If day != today
+            Task {
+                do {
+                    let oldRates = try await rvm.getRates(newDate).rates
+                    newSpending.amountUSD = newAmount / (oldRates[newCurrency.isEmpty ? entity.wrappedCurrency : newCurrency] ?? 1)
+                    
+                    vm.editSpending(
+                        spending: entity,
+                        newSpending: newSpending
+                    )
+                } catch {
+                    
+                    if let error = error as? InfoPlistError {
+                        ErrorType(infoPlistError: error).publish()
                     }
+                    
+                    newSpending.amountUSD = newAmount / (rvm.rates[newCurrency.isEmpty ? (entity.currency ?? "Error") : newCurrency] ?? 1)
+                    
+                    vm.editSpending(
+                        spending: entity,
+                        newSpending: newSpending
+                    )
                 }
             }
         }

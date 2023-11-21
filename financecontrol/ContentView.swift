@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @AppStorage("color") var tint: String = "Blue"
+    @AppStorage("color") var tint: String = "Orange"
     @AppStorage("theme") var theme: String = "None"
     @StateObject private var vm = CoreDataViewModel()
     @StateObject private var rvm = RatesViewModel()

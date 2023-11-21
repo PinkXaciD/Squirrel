@@ -5,8 +5,8 @@
       "kind" : "localSourceControl",
       "location" : "/Users/pinkxacid/CodeProjects/Xcode/Packages/ApplePie",
       "state" : {
-        "branch" : "main",
-        "revision" : "274ef0c34cbf9d790f810709747c41f11df8b7ed"
+        "revision" : "d731202ccc9e5a9d5859b810184ac2d454353567",
+        "version" : "1.0.2"
       }
     }
   ],

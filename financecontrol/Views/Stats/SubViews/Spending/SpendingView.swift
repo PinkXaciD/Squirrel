@@ -9,19 +9,24 @@ import SwiftUI
 
 struct SpendingView: View {
     
-    @EnvironmentObject private var vm: CoreDataViewModel
-    @EnvironmentObject private var rvm: RatesViewModel
+    @EnvironmentObject 
+    private var vm: CoreDataViewModel
+    @EnvironmentObject
+    private var rvm: RatesViewModel
     
-    @State var entity: SpendingEntity
-    @Binding var edit: Bool
-    @Binding var editFocus: String
+    @State 
+    var entity: SpendingEntity
+    @Binding 
+    var edit: Bool
+    @Binding
+    var editFocus: String
     var categoryColor: Color
     
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss) 
+    private var dismiss
     
-    @AppStorage("defaultCurrency") var defaultCurrency: String = "USD"
-    
-    @State private var tabbarIsHidden: Bool = false
+    @AppStorage("defaultCurrency") 
+    var defaultCurrency: String = "USD"
     
     var body: some View {
               

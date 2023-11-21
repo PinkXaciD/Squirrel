@@ -11,7 +11,7 @@ struct UiColorSelector: View {
     
     @Environment(\.dismiss) private var dismiss
     
-    @AppStorage("color") var defaultColor: String = "Blue"
+    @AppStorage("color") var defaultColor: String = "Orange"
     
     @State var colorSelected: String = (UserDefaults.standard.string(forKey: "color") ?? "Blue")
     @State private var toggleIsOn: Bool = true

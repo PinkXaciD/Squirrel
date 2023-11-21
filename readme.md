@@ -1,6 +1,6 @@
 # Squirrel
 
-**Simple iOS native app for spendings control, written using SwiftUi (in progress)**
+**Simple iOS native app for spendings control, written using SwiftUI (in progress)**
 
 ![Images](README/Screenshots/Header.png)
 
@@ -16,8 +16,11 @@
 - Track expenses in different currencies with exchange rates updated every hour.
 ![Spendings](README/Screenshots/Currencies.png)
 
-- Light and dark mode with different accent colors
+- Light and dark mode
 ![Themes](README/Screenshots/Themes.png)
+
+- Different accent colors
+![Colors](README/Screenshots/Colors.png)
 
 - Data export and import in JSON format
 ![Export](README/Screenshots/Export.png)

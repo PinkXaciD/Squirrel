@@ -10,7 +10,7 @@ import SwiftUI
 @main
 struct financecontrolApp: App {
     init() {
-        let _ = LaunchActions.init()
+        LaunchActions().launch()
     }
     
     var body: some Scene {

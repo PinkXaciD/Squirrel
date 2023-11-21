@@ -16,11 +16,21 @@ extension Date {
         return Calendar.current.date(byAdding: .day, value: -1, to: self)!
     }
     
-    var nextDay: Date {
-        return Calendar.current.date(byAdding: .day, value: 1, to: self)!
-    }
-    
-    var pastHour: Date {
-        return Calendar.current.date(byAdding: .hour, value: -1, to: self)!
+    func getFirstDayOfMonth(_ value: Int = 0) -> Date {
+        guard
+            let date = Calendar.current.date(byAdding: .month, value: value, to: self)
+        else {
+            return self
+        }
+        
+        var components: DateComponents = Calendar.current.dateComponents([.month, .year, .era], from: date)
+        components.calendar = Calendar.current
+        
+        guard
+            let newDate = components.date
+        else {
+            return self
+        }
+        return newDate
     }
 }

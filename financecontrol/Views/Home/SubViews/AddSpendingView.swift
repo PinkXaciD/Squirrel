@@ -8,13 +8,18 @@
 import SwiftUI
 
 struct AddSpendingView: View {
-    @EnvironmentObject private var vm: CoreDataViewModel
-    @EnvironmentObject private var rvm: RatesViewModel
+    @EnvironmentObject 
+    private var vm: CoreDataViewModel
+    @EnvironmentObject
+    private var rvm: RatesViewModel
     
-    @AppStorage("color") private var tint: String = "Blue"
-    @AppStorage("defaultCurrency") private var defaultCurrency: String = "USD"
+    @AppStorage("color") 
+    private var tint: String = "Orange"
+    @AppStorage("defaultCurrency") 
+    private var defaultCurrency: String = "USD"
     
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss) 
+    private var dismiss
     
     enum Field {
         case amount
@@ -22,19 +27,30 @@ struct AddSpendingView: View {
         case comment
     }
     
-    @FocusState private var focusedField: Field?
+    @FocusState 
+    private var focusedField: Field?
     
-    @State private var amount: String = ""
-    @State private var currency: String = (UserDefaults.standard.string(forKey: "defaultCurrency") ?? "USD")
-    @State private var date: Date = Date.now
-    @State private var category: String = "Select Category"
-    @State private var categoryId: UUID = UUID()
-    @State private var place: String = ""
-    @State private var comment: String = "Enter your comment here"
-    @State private var commentColor: Color = Color.secondary
+    @State 
+    private var amount: String = ""
+    @State
+    private var currency: String = (UserDefaults.standard.string(forKey: "defaultCurrency") ?? "USD")
+    @State
+    private var date: Date = Date.now
+    @State
+    private var category: String = "Select Category"
+    @State
+    private var categoryId: UUID = UUID()
+    @State
+    private var place: String = ""
+    @State
+    private var comment: String = "Enter your comment here"
+    @State
+    private var commentColor: Color = Color.secondary
     
-    @State private var amountIsFocused: Bool = true
-    @State private var buttonIsPressed: Bool = true
+    @State
+    private var amountIsFocused: Bool = true
+    @State
+    private var buttonIsPressed: Bool = true
 
     let utils = InputUtils() // For checking
     
@@ -191,13 +207,15 @@ extension AddSpendingView {
             if !Calendar.current.isDate(date, inSameDayAs: Date.now) {
                 Task {
                     do {
-                        let oldRates = try await rvm.getHistoricalRates(date).rates
+                        let oldRates = try await rvm.getRates(date).rates
                         await MainActor.run {
                             spending.amountUSD = doubleAmount / (oldRates[currency] ?? 1)
                             
                             vm.addSpending(spending: spending)
                             
                             dismiss()
+                            
+                            HapticManager.shared.notification(.success)
                         }
                     } catch {
                         if let error = error as? InfoPlistError {
@@ -211,6 +229,8 @@ extension AddSpendingView {
                         vm.addSpending(spending: spending)
                         
                         dismiss()
+                        
+                        HapticManager.shared.notification(.success)
                     }
                 }
             } else {
@@ -220,6 +240,8 @@ extension AddSpendingView {
                 vm.addSpending(spending: spending)
                 
                 dismiss()
+                
+                HapticManager.shared.notification(.success)
             }
         }
     }

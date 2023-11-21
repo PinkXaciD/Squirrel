@@ -5,7 +5,6 @@
 //  Created by PinkXaciD on R 5/09/07.
 //
 
-import Foundation
 import CoreData
 
 extension CoreDataViewModel {

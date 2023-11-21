@@ -45,10 +45,14 @@ final class CoreDataViewModel: ObservableObject {
         fetchCurrencies()
     }
     
-    @Published var savedSpendings: [SpendingEntity] = []
-    @Published var savedCategories: [CategoryEntity] = []
-    @Published var shadowedCategories: [CategoryEntity] = []
-    @Published var savedCurrencies: [CurrencyEntity] = []
+    @Published 
+    var savedSpendings: [SpendingEntity] = []
+    @Published
+    var savedCategories: [CategoryEntity] = []
+    @Published
+    var shadowedCategories: [CategoryEntity] = []
+    @Published
+    var savedCurrencies: [CurrencyEntity] = []
 }
 
 extension CoreDataViewModel {
