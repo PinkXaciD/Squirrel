@@ -66,7 +66,7 @@ struct StatsRow: View {
             Spacer()
             
             VStack(alignment: .trailing, spacing: 5) {
-                Text("\(dateFormat(date: entity.wrappedDate, time: false))")
+                Text(dateFormatter.string(from: entity.wrappedDate))
                     .font(.caption)
                     .foregroundColor(Color.secondary)
                 
@@ -74,6 +74,12 @@ struct StatsRow: View {
                     .foregroundColor(.primary)
             }
         }
+    }
+    
+    private var dateFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM d, HH:mm"
+        return formatter
     }
     
     var editButton: some View {

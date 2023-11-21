@@ -65,7 +65,7 @@ struct CategoryEditSubView: View {
                     vm.editCategory(category, name: name, color: colorSelectedDescription)
                     dismiss.toggle()
                 }
-                .bold()
+                .font(.body.bold())
                 .disabled(name.isEmpty || colorSelectedDescription.isEmpty)
             }
         }

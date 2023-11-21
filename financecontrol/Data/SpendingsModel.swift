@@ -5,13 +5,11 @@
 //  Created by PinkXaciD on R 5/09/07.
 //
 
-import Foundation
 import CoreData
 
 extension CoreDataViewModel {
     
     func fetchSpendings() {
-        
         let request = SpendingEntity.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
         
@@ -22,12 +20,24 @@ extension CoreDataViewModel {
         }
     }
     
+    func getSpendings(predicate: NSPredicate? = nil) throws -> [SpendingEntity] {
+        let request = SpendingEntity.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+        if let predicate = predicate {
+            request.predicate = predicate
+        }
+        
+        do {
+            return try context.fetch(request)
+        } catch {
+            throw error
+        }
+    }
+    
     func addSpending(spending: SpendingEntityLocal) {
         
-        if
-            let description = NSEntityDescription.entity(forEntityName: "SpendingEntity", in: context),
-            let category = findCategory(spending.categoryId)
-        {
+        if let description = NSEntityDescription.entity(forEntityName: "SpendingEntity", in: context),
+           let category = findCategory(spending.categoryId) {
             let newSpending = SpendingEntity(entity: description, insertInto: context)
             
             newSpending.id = UUID()
@@ -45,7 +55,7 @@ extension CoreDataViewModel {
         }
     }
     
-    func editSpending(spending: SpendingEntity,newSpending: SpendingEntityLocal) {
+    func editSpending(spending: SpendingEntity, newSpending: SpendingEntityLocal) {
         spending.amount = newSpending.amount
         spending.amountUSD = newSpending.amountUSD
         spending.currency = newSpending.currency
@@ -69,34 +79,250 @@ extension CoreDataViewModel {
     }
     
     func operationsSum() -> Double {
-        
-        return savedSpendings.compactMap { $0.amountUSD }.reduce(0, +)
+        do {
+            let spendings = try getSpendings()
+            return spendings.compactMap { $0.amountUSD }.reduce(0, +)
+        } catch {
+            return 0
+        }
     }
     
-    func operationsSortByMonth() -> [Dictionary<String, [SpendingEntity]>.Element] {
+    func operationsSumWeek(_ usdRate: Double = 1) -> Double {
+        let currentCalendar = Calendar.current
+        let defaultCurrency = UserDefaults.standard.string(forKey: "defaultCurrency")
+        var currentDateComponents = currentCalendar.dateComponents([.day, .month, .year, .era], from: .now)
+        currentDateComponents.calendar = currentCalendar
+        let currentDate = currentDateComponents.date ?? .now
+        let startDate = currentCalendar.date(byAdding: .day, value: -7, to: currentDate) ?? .now
+        let predicate = NSPredicate(format: "date > %@", startDate as CVarArg)
         
-        var operations: [String:[SpendingEntity]] = [:]
-        for entity in savedSpendings {
-            
-            if let date = entity.date {
-                
-                let key = dateFormatForSort(date: date)
-                var value: [SpendingEntity] = operations[key] ?? []
-                value.append(entity)
-                operations.updateValue(value, forKey: key)
+        var spendings: [SpendingEntity] = []
+        do {
+            spendings = try getSpendings(predicate: predicate)
+        } catch {
+            ErrorType(error: error).publish()
+        }
+        
+        return spendings.map { spending in
+            if spending.currency == defaultCurrency {
+                spending.amount
+            } else {
+                spending.amountUSD * usdRate
             }
         }
-        return operations.sorted { asDate($0.key) > asDate($1.key) }
+        .reduce(0, +)
     }
     
-    func operationsSumWeek() -> Double {
+    func operationsInMonth(_ date: Date) -> [CategoryEntityLocal] {
+        var firstDate: Date = .now
+        var secondDate: Date = .now
         
-        savedSpendings.filter {
-            $0.wrappedDate > Date.now.lastWeek
+        var firstDateComponents = Calendar.current.dateComponents([.month, .year, .era], from: date)
+        firstDateComponents.day = 1
+        firstDateComponents.calendar = Calendar.current
+        firstDate = firstDateComponents.date ?? .distantPast
+        
+        if let endDate = Calendar.current.date(byAdding: .month, value: 1, to: date) {
+            var secondDateComponents = Calendar.current.dateComponents([.month, .year, .era], from: endDate)
+            secondDateComponents.day = 1
+            secondDateComponents.calendar = Calendar.current
+            secondDate = secondDateComponents.date ?? .distantPast
         }
-        .compactMap {
-            $0.amountUSD
+        
+        let predicate = NSPredicate(format: "(date >= %@) AND (date < %@)", firstDate as CVarArg, secondDate as CVarArg)
+        var filteredSpendings: [SpendingEntity] = []
+        
+        do {
+            filteredSpendings = try getSpendings(predicate: predicate)
+        } catch {
+            ErrorType(error: error).publish()
         }
-        .reduce(0, +)
+        
+        var categories: [CategoryEntityLocal] {
+            var preResult: [UUID:CategoryEntityLocal] = [:]
+            for spending in filteredSpendings {
+                if let catId = spending.category?.id {
+                    var localCategory = preResult[catId] ?? CategoryEntityLocal(
+                        color: spending.category?.color ?? "",
+                        id: catId,
+                        name: spending.categoryName,
+                        spendings: []
+                    )
+                    
+                    localCategory.spendings.append(
+                        SpendingEntityLocal(
+                            amountUSD: spending.amountUSD,
+                            amount: spending.amount,
+                            comment: spending.comment ?? "",
+                            currency: spending.wrappedCurrency,
+                            date: spending.wrappedDate,
+                            place: spending.place ?? "",
+                            categoryId: catId
+                        )
+                    )
+                    preResult.updateValue(localCategory, forKey: catId)
+                }
+            }
+            var result: [CategoryEntityLocal] = []
+            
+            for category in preResult {
+                result.append(category.value)
+            }
+            
+            return result
+        }
+        
+        return categories
+    }
+    
+    func getChartData() -> [ChartData] {
+        let currentCalendar = Calendar.current
+        
+        var spendings: [SpendingEntity] = []
+        var dates: [Date] = []
+        var chartData: [ChartData] = []
+        do {
+            spendings = try getSpendings()
+        } catch {
+            ErrorType(error: error).publish()
+        }
+        
+        let firstSpendingDate: Date = spendings.last?.wrappedDate ?? .now
+        
+        for spending in spendings {
+            var components = currentCalendar.dateComponents([.month, .year, .era], from: spending.wrappedDate)
+            components.calendar = currentCalendar
+            if let date = components.date {
+                if !dates.contains(date) {
+                    dates.append(date)
+                }
+            }
+        }
+        
+        let interval = Calendar.current.dateComponents([.month], from: firstSpendingDate, to: .now).month ?? 1
+        
+        for index in 0...interval {
+            let date = currentCalendar.date(byAdding: .month, value: -index, to: .now) ?? .now
+            chartData.append(ChartData(date: date, id: -index, vm: self))
+        }
+        
+        return chartData.reversed()
+    }
+    
+    func operationsForList() -> [String:[SpendingEntity]]{
+        var listData: [SpendingListData] = []
+        var result: [String:[SpendingEntity]] = [:]
+        
+        do {
+            listData = try getSpendings()
+                .sorted { $0.wrappedDate > $1.wrappedDate }
+                .map { SpendingListData(entity: $0) }
+        } catch {
+            ErrorType(error: error).publish()
+        }
+        
+        for spending in listData {
+            if let existingData = result[spending.date] {
+                result.updateValue(existingData + [spending.entity], forKey: spending.date)
+            } else {
+                result.updateValue([spending.entity], forKey: spending.date)
+            }
+        }
+        
+        return result
+    }
+}
+
+struct ChartData: Identifiable {
+    let id: Int
+    let date: Date
+    let categories: [CategoryEntityLocal]
+    
+    init(date: Date, id: Int, vm: CoreDataViewModel) {
+        let currentCalendar = Calendar.current
+        var components = currentCalendar.dateComponents([.month, .year, .era], from: date)
+        components.calendar = currentCalendar
+        let firstDate = components.date ?? .distantPast
+        let secondDate = currentCalendar.date(byAdding: .month, value: 1, to: firstDate) ?? .distantPast
+        
+        self.date = firstDate
+        self.id = id
+        
+        var tempCategories: [UUID:CategoryEntityLocal] = [:]
+        let predicate = NSPredicate(format: "(date >= %@) AND (date < %@)", firstDate as CVarArg, secondDate as CVarArg)
+        
+        if let spendings = try? vm.getSpendings(predicate: predicate) {
+            for spending in spendings {
+                if let catId = spending.category?.id,
+                   let existing = tempCategories[catId] {
+                    
+                    let localSpending = SpendingEntityLocal(
+                        amountUSD: spending.amountUSD,
+                        amount: spending.amount,
+                        comment: spending.comment ?? "",
+                        currency: spending.wrappedCurrency,
+                        date: spending.wrappedDate,
+                        place: spending.place ?? "",
+                        categoryId: catId
+                    )
+                    
+                    var catSpendings: [SpendingEntityLocal] = existing.spendings
+                    catSpendings.append(localSpending)
+                    let updatedCategory = CategoryEntityLocal(
+                        color: existing.color,
+                        id: existing.id,
+                        name: existing.name,
+                        spendings: catSpendings
+                    )
+                    
+                    tempCategories.updateValue(updatedCategory, forKey: catId)
+                } else if let category = spending.category,
+                          let catId = category.id {
+                    
+                    let localSpending = SpendingEntityLocal(
+                        amountUSD: spending.amountUSD,
+                        amount: spending.amount,
+                        comment: spending.comment ?? "",
+                        currency: spending.wrappedCurrency,
+                        date: spending.wrappedDate,
+                        place: spending.place ?? "",
+                        categoryId: catId
+                    )
+                    
+                    let updatedCategory = CategoryEntityLocal(
+                        color: category.color ?? "",
+                        id: catId,
+                        name: category.name ?? "Error",
+                        spendings: [localSpending]
+                    )
+                    
+                    tempCategories.updateValue(updatedCategory, forKey: catId)
+                }
+            }
+        }
+        
+        self.categories = tempCategories.map { $0.value }
+    }
+}
+
+struct SpendingListData {
+    let entity: SpendingEntity
+    let date: String
+    
+    init(entity: SpendingEntity) {
+        var dateFormatter: DateFormatter {
+            let formatter = DateFormatter()
+            switch Calendar.current.identifier {
+            case .japanese, .buddhist:
+                formatter.dateFormat = "MMMM d, GGGG y"
+                
+            default:
+                formatter.dateFormat = "MMMM d, y"
+            }
+            return formatter
+        }
+        
+        self.entity = entity
+        self.date = dateFormatter.string(from: entity.wrappedDate)
     }
 }

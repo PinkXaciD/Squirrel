@@ -26,6 +26,9 @@ struct BarChartGenerator: View {
             
             legend
         }
+        .onDisappear {
+            itemSelected = -1
+        }
     }
     
     var legend: some View {
@@ -42,8 +45,8 @@ struct BarChartGenerator: View {
     
     private func legendGenerator(data: [(key: Date, value: Double)]?, index: Int) -> some View {
         var date: String = ""
-        if data?[index].key != nil {
-            date = dateFormat(date: data?[index].key ?? Date.distantPast, time: false)
+        if let key = data?[index].key {
+            date = dateFormat(date: key, time: false)
         } else {
             date = "Past 7 days"
         }
@@ -57,7 +60,7 @@ struct BarChartGenerator: View {
                 .formatted(.currency(code: defaultCurrency))
         } else {
 //            amount = lastWeekOperations(vm: vm, currency: defaultCurrency)
-            amount = String((vm.operationsSumWeek() * (rvm.rates[defaultCurrency] ?? 1)).formatted(.currency(code: defaultCurrency)))
+            amount = String(vm.operationsSumWeek(rvm.rates[defaultCurrency] ?? 1).formatted(.currency(code: defaultCurrency)))
         }
         
         return VStack {

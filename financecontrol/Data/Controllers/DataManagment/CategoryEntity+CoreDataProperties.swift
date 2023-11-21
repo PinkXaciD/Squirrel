@@ -45,3 +45,10 @@ extension CategoryEntity {
 extension CategoryEntity : Identifiable {
 
 }
+
+struct CategoryEntityLocal: Identifiable {
+    var color: String
+    var id: UUID
+    var name: String
+    var spendings: [SpendingEntityLocal]
+}

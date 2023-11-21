@@ -7,10 +7,10 @@
 
 import Foundation
 
-struct LaunchActions {
+class LaunchActions {
+    init() {}
     
-    init() {
-        
+    func launch() -> Void {
         let currentDate = dateConvertFromDate(Date.now)
         let updateTime = UserDefaults.standard.string(forKey: "updateTime") ?? dateConvertFromDate(Date.distantPast)
         

@@ -35,7 +35,7 @@ struct CategoryRow: View {
     
     private var navLinkLabel: some View {
         
-        let spendingsCount: Int = vm.savedSpendings.filter({ $0.category == category }).count
+        let spendingsCount: Int = category.spendings?.count ?? 0
         
         return HStack {
             Image(systemName: category.isFavorite ? "star.circle.fill" : "circle.fill")

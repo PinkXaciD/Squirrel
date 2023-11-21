@@ -57,23 +57,7 @@ final class RatesViewModel: ObservableObject {
 
 extension RatesViewModel {
     
-    private func getRates() async throws -> Rates {
-        
-        do {
-            return try await RatesModel().downloadRates()
-        } catch {
-            throw error
-        }
-    }
-    
-    /// Returning exchange rates for given date
-    /// - Parameter timeStamp: Date for which courses must be returned
-    /// - Returns: Rates for given date or fallback rates
-    /// - Throws: InfoPlistError.noInfoFound if can't find Info.plist file
-    /// - Throws: InfoPlistError.noURLFound if no API\_URL dict found in Info.plist
-    /// - Throws: InfoPlistError.noApiKeyFound if no API\_KEY string found in Info.plist
-    /// - Throws: InfoPlistError.failedToReadURLComponents if can't create an URL from API\_URL components
-    func getHistoricalRates(_ timeStamp: Date) async throws -> Rates {
+    func getRates(_ timeStamp: Date? = nil) async throws -> Rates {
         
         do {
             return try await RatesModel().downloadRates(timeStamp: timeStamp)

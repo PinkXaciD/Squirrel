@@ -10,7 +10,7 @@ import SwiftUI
 struct ExportImportView: View {
     @EnvironmentObject private var vm: CoreDataViewModel
     
-    @AppStorage("color") private var tint: String = "Blue"
+    @AppStorage("color") private var tint: String = "Orange"
     
     @State private var shareURL: URL = .init(string: "https://apple.com")!
     @State private var presentExportSheet: Bool = false

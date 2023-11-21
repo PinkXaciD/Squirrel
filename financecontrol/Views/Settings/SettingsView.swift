@@ -8,18 +8,27 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @AppStorage("color") var defaultColor: String = "Blue"
-    @AppStorage("defaultCurrency") var defaultCurrency: String = "USD"
-    @AppStorage("theme") var theme: String = "None"
+    @AppStorage("color") 
+    var defaultColor: String = "Orange"
+    @AppStorage("defaultCurrency")
+    var defaultCurrency: String = "USD"
+    @AppStorage("theme")
+    var theme: String = "None"
     
-    @State private var autoDarkMode: Bool = true
-    @State private var darkMode: Bool = false
+    @State 
+    private var autoDarkMode: Bool = true
+    @State
+    private var darkMode: Bool = false
     
-    @State private var presentCustomAlert: Bool = false
-    @State private var customAlertMessage: String = ""
-    @State private var customAlertType: CustomAlertType = .unknown
+    @State 
+    private var presentCustomAlert: Bool = false
+    @State
+    private var customAlertMessage: String = ""
+    @State
+    private var customAlertType: CustomAlertType = .unknown
     
     let version: String? = Bundle.main.releaseVersionNumber
+    let build: String? = Bundle.main.buildVersionNumber
     
     var body: some View {
         NavigationView {
@@ -77,10 +86,9 @@ struct SettingsView: View {
     }
     
     var themeSection: some View {
-        Section(header: Text("Accent color and dark mode")) {
+        Section(header: Text("Appearance")) {
             NavigationLink {
                 UiColorSelector()
-                
             } label: {
                 HStack {
                     Text("Color")
@@ -138,23 +146,14 @@ struct SettingsView: View {
     }
     
     var footer: some View {
-        HStack {
-            Spacer()
+        VStack(alignment: .center) {
+            Text("Squirrel")
+                .bold()
             
-            VStack {
-                Text("🐿️")
-                    .font(.largeTitle)
-                    .padding(.bottom, 5)
-                
-                Text("Squirrel")
-                    .bold()
-                
-                Text("Ver. \(version ?? "") α")
-            }
-            .padding()
-            
-            Spacer()
+            Text("Ver. \(version ?? "") (\(build ?? ""))")
         }
+        .padding()
+        .frame(maxWidth: .infinity)
     }
 }
 
