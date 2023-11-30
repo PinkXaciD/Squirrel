@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct BarChartGenerator: View {
-    @EnvironmentObject var vm: CoreDataViewModel
+    @EnvironmentObject var cdm: CoreDataModel
     @EnvironmentObject private var rvm: RatesViewModel
     @AppStorage("defaultCurrency") var defaultCurrency: String = "USD"
 
     @State private var itemSelected: Int = -1
     
     var body: some View {
-        let chartData = BarChartData(data: vm.savedSpendings)
+        let chartData = BarChartData(data: cdm.savedSpendings)
         let data = chartData.sortData(true)
         
         VStack(alignment: .center) {
@@ -32,7 +32,7 @@ struct BarChartGenerator: View {
     }
     
     var legend: some View {
-        let chartData = BarChartData(data: vm.savedSpendings)
+        let chartData = BarChartData(data: cdm.savedSpendings)
         let data = chartData.sortData(false)
         
         switch itemSelected {
@@ -59,12 +59,11 @@ struct BarChartGenerator: View {
             amount = (value * rate)
                 .formatted(.currency(code: defaultCurrency))
         } else {
-//            amount = lastWeekOperations(vm: vm, currency: defaultCurrency)
-            amount = String(vm.operationsSumWeek(rvm.rates[defaultCurrency] ?? 1).formatted(.currency(code: defaultCurrency)))
+            amount = String(cdm.operationsSumWeek(rvm.rates[defaultCurrency] ?? 1).formatted(.currency(code: defaultCurrency)))
         }
         
         return VStack {
-            Text(date)
+            Text(LocalizedStringKey(date))
             Text(amount)
                 .amountStyle()
                 .padding(-3)

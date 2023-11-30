@@ -79,7 +79,7 @@ extension RatesFetchError {
     var recoverySuggestion: String {
         switch self {
         case .emptyDatabase:
-            return NSLocalizedString("Please submit bugreport and try to reinstall the app", comment: "")
+            return NSLocalizedString("Please submit bug report and try to reinstall the app", comment: "")
         }
     }
 }

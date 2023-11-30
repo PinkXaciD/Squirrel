@@ -7,7 +7,7 @@
 
 import CoreData
 
-extension CoreDataViewModel {
+extension CoreDataModel {
     
     func fetchSpendings() {
         let request = SpendingEntity.fetchRequest()
@@ -203,7 +203,7 @@ extension CoreDataViewModel {
         
         for index in 0...interval {
             let date = currentCalendar.date(byAdding: .month, value: -index, to: .now) ?? .now
-            chartData.append(ChartData(date: date, id: -index, vm: self))
+            chartData.append(ChartData(date: date, id: -index, cdm: self))
         }
         
         return chartData.reversed()
@@ -238,7 +238,7 @@ struct ChartData: Identifiable {
     let date: Date
     let categories: [CategoryEntityLocal]
     
-    init(date: Date, id: Int, vm: CoreDataViewModel) {
+    init(date: Date, id: Int, cdm: CoreDataModel) {
         let currentCalendar = Calendar.current
         var components = currentCalendar.dateComponents([.month, .year, .era], from: date)
         components.calendar = currentCalendar
@@ -251,7 +251,7 @@ struct ChartData: Identifiable {
         var tempCategories: [UUID:CategoryEntityLocal] = [:]
         let predicate = NSPredicate(format: "(date >= %@) AND (date < %@)", firstDate as CVarArg, secondDate as CVarArg)
         
-        if let spendings = try? vm.getSpendings(predicate: predicate) {
+        if let spendings = try? cdm.getSpendings(predicate: predicate) {
             for spending in spendings {
                 if let catId = spending.category?.id,
                    let existing = tempCategories[catId] {
@@ -312,13 +312,15 @@ struct SpendingListData {
     init(entity: SpendingEntity) {
         var dateFormatter: DateFormatter {
             let formatter = DateFormatter()
-            switch Calendar.current.identifier {
-            case .japanese, .buddhist:
-                formatter.dateFormat = "MMMM d, GGGG y"
-                
-            default:
-                formatter.dateFormat = "MMMM d, y"
-            }
+//            switch Calendar.current.identifier {
+//            case .japanese, .buddhist:
+//                formatter.dateFormat = "MMMM d, GGGG y"
+//                
+//            default:
+//                formatter.dateFormat = "MMMM d, y"
+//            }
+            formatter.dateStyle = .long
+            formatter.timeStyle = .none
             return formatter
         }
         

@@ -10,41 +10,40 @@ import SwiftUI
 struct ContentView: View {
     @AppStorage("color") var tint: String = "Orange"
     @AppStorage("theme") var theme: String = "None"
-    @StateObject private var vm = CoreDataViewModel()
-    @StateObject private var rvm = RatesViewModel()
+    @StateObject private var cdm: CoreDataModel = .init()
+    @StateObject private var rvm: RatesViewModel = .init()
     
-    @ObservedObject private var errorHandler = ErrorHandler.instance
+    @ObservedObject private var errorHandler = ErrorHandler.shared
     @Environment(\.openURL) private var openURL
         
     var body: some View {
-        
         TabView {
             HomeView()
-                .environmentObject(vm)
-                .environmentObject(rvm)
                 .tabItem {
                     Image(systemName: "house.fill")
                     Text("Home")
                 }
             StatsView()
-                .environmentObject(vm)
-                .environmentObject(rvm)
                 .tabItem {
                     Image(systemName: "chart.pie.fill")
                     Text("Stats")
                 }
             SettingsView()
-                .environmentObject(vm)
-                .environmentObject(rvm)
                 .tabItem {
                     Image(systemName: "gearshape.fill")
                     Text("Settings")
                 }
         }
+        .environmentObject(cdm)
+        .environmentObject(rvm)
         .tint(colorIdentifier(color: tint))
+        .accentColor(colorIdentifier(color: tint))
         .preferredColorScheme(themeConvert(theme))
-        .alert("Something went wrong...", isPresented: .constant(errorHandler.showAlert), presenting: errorHandler.appError) { error in
-            
+        .alert(
+            "Something went wrong...",
+            isPresented: $errorHandler.showAlert,
+            presenting: errorHandler.appError
+        ) { error in
             if error.createIssue {
                 Button("Create an issue on GitHub") {
                     errorHandler.dropError()
@@ -55,7 +54,6 @@ struct ContentView: View {
             Button("OK", role: .cancel) {
                 errorHandler.dropError()
             }
-
         } message: { error in
             Text("\(error.errorDescription).\n\(error.recoverySuggestion)")
         }

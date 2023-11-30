@@ -9,14 +9,14 @@ import SwiftUI
 
 struct CategorySelector: View {
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var vm: CoreDataViewModel
+    @EnvironmentObject private var cdm: CoreDataModel
     @Binding var category: UUID
     
     @State var editCategories: Bool = false
     
     var body: some View {
         
-        let favorites = vm.savedCategories.filter { $0.isFavorite }
+        let favorites = cdm.savedCategories.filter { $0.isFavorite }
         
         Menu {
             if favorites.isEmpty {
@@ -24,7 +24,7 @@ struct CategorySelector: View {
                 
                 addNewButton
                 
-            } else if vm.savedCategories.isEmpty {
+            } else if cdm.savedCategories.isEmpty {
                 addNewButton
             } else {
                 CategoryPicker(selectedCategory: $category, onlyFavorites: true)
@@ -39,8 +39,7 @@ struct CategorySelector: View {
             }
         } label: {
             Spacer()
-            Text(vm.findCategory(category)?.name ?? "Select Category")
-//            Text(category.uuidString)
+            Text(LocalizedStringKey(cdm.findCategory(category)?.name ?? "Select Category"))
         }
         .background {
             NavigationLink(isActive: $editCategories) {
@@ -68,18 +67,19 @@ struct CategorySelector: View {
 
 struct CategoryPicker: View {
     
-    @EnvironmentObject private var vm: CoreDataViewModel
+    @EnvironmentObject private var cdm: CoreDataModel
     
     @Binding var selectedCategory: UUID
     let onlyFavorites: Bool
     
     var body: some View {
-        let categories = onlyFavorites ? vm.savedCategories.filter({ $0.isFavorite }) : vm.savedCategories
+        let categories = onlyFavorites ? cdm.savedCategories.filter({ $0.isFavorite }) : cdm.savedCategories
         
         Picker("All categories", selection: $selectedCategory) {
             ForEach(categories) { category in
                 if let name = category.name, let tag = category.id {
-                    Text(name).tag(tag)
+                    Text(name)
+                        .tag(tag)
                 }
             }
         }
@@ -92,6 +92,6 @@ struct CategorySelector_Previews: PreviewProvider {
     static var previews: some View {
         @State var category: UUID = UUID()
         CategorySelector(category: $category)
-            .environmentObject(CoreDataViewModel())
+            .environmentObject(CoreDataModel())
     }
 }

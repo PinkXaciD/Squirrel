@@ -18,7 +18,7 @@ func dateFormat(date: Date, time: Bool) -> String {
         } else {
             dateFormatter.timeStyle = .none
         }
-        dateFormatter.locale = Locale(languageCode: Locale.LanguageCode("en"), languageRegion: Locale.autoupdatingCurrent.region)
+//        dateFormatter.locale = Locale(languageCode: Locale.LanguageCode("en"), languageRegion: Locale.autoupdatingCurrent.region)
         dateFormatter.calendar = Calendar.autoupdatingCurrent
         return dateFormatter
     }()

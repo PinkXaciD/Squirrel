@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CurrencySelector: View {
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject var vm: CoreDataViewModel
+    @EnvironmentObject var cdm: CoreDataModel
     
     @Binding var currency: String
     var showFavorites: Bool
@@ -44,18 +44,19 @@ struct CurrencySelector: View {
 
 struct CurrencyPicker: View {
     
-    @EnvironmentObject private var vm: CoreDataViewModel
+    @EnvironmentObject private var cdm: CoreDataModel
     
     @Binding var selectedCurrency: String
     let onlyFavorites: Bool
     
     var body: some View {
-        let currencies = onlyFavorites ? vm.savedCurrencies.filter({ $0.isFavorite }) : vm.savedCurrencies
+        let currencies = onlyFavorites ? cdm.savedCurrencies.filter({ $0.isFavorite }) : cdm.savedCurrencies
         
         Picker("Select currency", selection: $selectedCurrency) {
             ForEach(currencies) { currency in
-                if let name = currency.name, let tag = currency.tag {
-                    Text(name).tag(tag)
+                if let tag = currency.tag {
+                    Text(Locale.current.localizedString(forCurrencyCode: tag)?.capitalized ?? "Error")
+                        .tag(tag)
                 }
             }
         }

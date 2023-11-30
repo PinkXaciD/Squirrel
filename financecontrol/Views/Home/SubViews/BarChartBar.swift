@@ -53,6 +53,6 @@ struct BarChartBar: View {
 struct BarChartBar_Previews: PreviewProvider {
     static var previews: some View {
         BarChartBar(index: 1, data: (key: Date.now, value: 1.0), isActive: true)
-            .environmentObject(CoreDataViewModel())
+            .environmentObject(CoreDataModel())
     }
 }

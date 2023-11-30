@@ -8,16 +8,18 @@
 import SwiftUI
 
 struct StatsRow: View {
-    @EnvironmentObject var vm: CoreDataViewModel
+    @EnvironmentObject var cdm: CoreDataModel
     
     let entity: SpendingEntity
     
-    @State var editSpending: Bool = false
+    @Binding var entityToEdit: SpendingEntity?
+    @Binding var edit: Bool
     @State private var showSheet: Bool = false
     
     var body: some View {
         
         Button {
+            entityToEdit = entity
             showSheet.toggle()
         } label: {
             buttonLabel
@@ -32,15 +34,6 @@ struct StatsRow: View {
             editButton
             
             deleteButton
-        }
-        .sheet(isPresented: $showSheet) {
-            if #available(iOS 16.0, *) {
-                SpendingCompleteView(edit: $editSpending, entity: entity)
-                    .presentationDetents([.medium, .large])
-                    .presentationDragIndicator(.hidden)
-            } else {
-                SpendingCompleteView(edit: $editSpending, entity: entity)
-            }
         }
     }
     
@@ -78,14 +71,15 @@ struct StatsRow: View {
     
     private var dateFormatter: DateFormatter {
         let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM d, HH:mm"
+        formatter.dateStyle = .none
+        formatter.timeStyle = .short
         return formatter
     }
     
     var editButton: some View {
         Button {
-            editSpending.toggle()
-            showSheet.toggle()
+            edit.toggle()
+            entityToEdit = entity
         } label: {
             Label {
                 Text("Edit")
@@ -112,13 +106,13 @@ struct StatsRow: View {
     // MARK: Functions
     
     func deleteSpending(_ entity: SpendingEntity) {
-        vm.deleteSpending(entity)
+        cdm.deleteSpending(entity)
     }
 }
 
-struct StatsRow_Previews: PreviewProvider {
-    static var previews: some View {
-        StatsRow(entity: SpendingEntity())
-            .environmentObject(CoreDataViewModel())
-    }
-}
+//struct StatsRow_Previews: PreviewProvider {
+//    static var previews: some View {
+//        StatsRow(entity: SpendingEntity(), entityToEdit: .constant(.init(context: DataManager.shared.context)), vm: .init(ratesViewModel: <#T##RatesViewModel#>, coreDataModel: <#T##CoreDataModel#>, entity: <#T##Binding<SpendingEntity?>#>))
+//            .environmentObject(CoreDataModel())
+//    }
+//}

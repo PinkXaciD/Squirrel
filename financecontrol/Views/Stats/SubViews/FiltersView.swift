@@ -9,9 +9,11 @@ import SwiftUI
 
 struct FiltersView: View {
     @EnvironmentObject
-    private var vm: CoreDataViewModel
+    private var cdm: CoreDataModel
     @Environment(\.dismiss)
     private var dismiss
+    @AppStorage("color")
+    private var tint: String = "Orange"
     
     @Binding
     var firstFilterDate: Date
@@ -40,6 +42,7 @@ struct FiltersView: View {
                 trailingToolbar
             }
         }
+        .accentColor(colorIdentifier(color: tint))
     }
     
     private var dateSection: some View {
@@ -91,7 +94,7 @@ struct FiltersView: View {
                 applyFilters = true
                 dismiss()
             }
-            .bold()
+            .font(.body.bold())
         }
     }
     

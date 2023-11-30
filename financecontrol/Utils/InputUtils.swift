@@ -7,24 +7,56 @@
 
 import SwiftUI
 
-class InputUtils {
+struct InputUtils {
     func checkAll(amount: String, place: String, category: String, comment: String) -> Bool {
-        return amountCheck(amount: amount) && categoryCheck(category: category) && comment.count <= 300
+        amountCheck(amount: amount)
+        &&
+        categoryCheck(category: category)
+        &&
+        placeCheck(place: place)
+        &&
+        comment.count <= 300
     }
     
     func amountCheck(amount: String) -> Bool {
-        if let doubleAmount = Double(amount) {
-            return doubleAmount < Double.greatestFiniteMagnitude
-        } else {
+        guard 
+            let doubleAmount = Double(amount),
+            doubleAmount < Double.greatestFiniteMagnitude,
+            doubleAmount > 0
+        else {
             return false
         }
+        
+        return true
     }
     
     func placeCheck(place: String) -> Bool {
-        return place != ""
+        guard
+            place.count <= 100
+        else {
+            return false
+        }
+        
+        return true
     }
     
     func categoryCheck(category: String) -> Bool {
-        return category != "Select Category"
+        guard
+            category != "Select Category"
+        else {
+            return false
+        }
+        
+        return true
+    }
+    
+    func commentCheck(comment: String) -> Bool {
+        guard
+            comment.count <= 300
+        else {
+            return false
+        }
+        
+        return true
     }
 }

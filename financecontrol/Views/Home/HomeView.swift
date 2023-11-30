@@ -8,21 +8,22 @@
 import SwiftUI
 
 struct HomeView: View {
-    
     @State private var showingSheet = false
+    @EnvironmentObject private var cdm: CoreDataModel
+    @EnvironmentObject private var rvm: RatesViewModel
     
     var body: some View {
         
         NavigationView {
-            List {
+            Form {
                 barChartSection
                 
                 addButton
-                    .sheet(isPresented: $showingSheet) {
-                        AddSpendingView()
-                    }
             }
             .navigationTitle("Home")
+            .sheet(isPresented: $showingSheet) {
+                AddSpendingView(ratesViewModel: rvm, codeDataModel: cdm)
+            }
         }
         .navigationViewStyle(.stack)
     }
@@ -48,13 +49,13 @@ struct HomeView: View {
 
 extension HomeView {
     func toggleSheet() {
-        showingSheet.toggle()
+        showingSheet = true
     }
 }
 
 struct SwiftUIView_Previews: PreviewProvider {
     static var previews: some View {
         HomeView()
-            .environmentObject(CoreDataViewModel())
+            .environmentObject(CoreDataModel())
     }
 }

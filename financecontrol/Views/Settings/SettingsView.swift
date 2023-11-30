@@ -8,19 +8,19 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @AppStorage("color") 
+    @AppStorage("color")
     var defaultColor: String = "Orange"
     @AppStorage("defaultCurrency")
     var defaultCurrency: String = "USD"
     @AppStorage("theme")
     var theme: String = "None"
     
-    @State 
+    @State
     private var autoDarkMode: Bool = true
     @State
     private var darkMode: Bool = false
     
-    @State 
+    @State
     private var presentCustomAlert: Bool = false
     @State
     private var customAlertMessage: String = ""
@@ -33,7 +33,6 @@ struct SettingsView: View {
     var body: some View {
         NavigationView {
             List {
-                
                 aboutSection
                 
                 themeSection
@@ -70,7 +69,7 @@ struct SettingsView: View {
             .listStyle(.insetGrouped)
             .animation(.linear, value: autoDarkMode)
             .navigationTitle("Settings")
-        } // End of Nav View
+        }
         .navigationViewStyle(.stack)
         .customAlert(customAlertType, presenting: $presentCustomAlert, message: customAlertMessage)
     }
@@ -93,7 +92,7 @@ struct SettingsView: View {
                 HStack {
                     Text("Color")
                     Spacer()
-                    Text("\(defaultColor)")
+                    Text(LocalizedStringKey(defaultColor))
                         .foregroundColor(Color.secondary)
                 }
             }
@@ -103,7 +102,6 @@ struct SettingsView: View {
             if !autoDarkMode {
                 Toggle("Dark Mode", isOn: $darkMode)
             }
-            
         }
     }
     
@@ -124,7 +122,6 @@ struct SettingsView: View {
             }
             
             NavigationLink("Rates", destination: RatesView())
-            
         }
     }
     
@@ -133,7 +130,6 @@ struct SettingsView: View {
             NavigationLink("Categories") {
                 CategoriesEditView()
             }
-            
         }
     }
     
@@ -174,6 +170,6 @@ extension SettingsView {
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         SettingsView()
-            .environmentObject(CoreDataViewModel())
+            .environmentObject(CoreDataModel())
     }
 }

@@ -8,7 +8,7 @@
 import Foundation
 import CoreData
 
-extension CoreDataViewModel {
+extension CoreDataModel {
     
     func fetchCurrencies() {
         
@@ -17,7 +17,7 @@ extension CoreDataViewModel {
         
         do {
             savedCurrencies = try context.fetch(request)
-            if savedCurrencies == [] {
+            if savedCurrencies.isEmpty {
                 addCurrency(name: "US Dollar", tag: "USD", isFavorite: true)
                 UserDefaults.standard.set("USD", forKey: "defaultCurrency")
             }

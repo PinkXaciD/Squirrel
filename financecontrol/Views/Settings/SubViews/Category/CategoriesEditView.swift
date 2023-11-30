@@ -8,14 +8,13 @@
 import SwiftUI
 
 struct CategoriesEditView: View {
-    @EnvironmentObject var vm: CoreDataViewModel
+    @EnvironmentObject var cdm: CoreDataModel
     
     @State private var id: UUID = .init()
     
     var body: some View {
         List {
-            ForEach(vm.savedCategories) { entity in
-                                
+            ForEach(cdm.savedCategories) { entity in
                 CategoryRow(category: entity)
             }
             
@@ -46,7 +45,7 @@ struct CategoriesEditView: View {
                 HStack {
                     Text("Archieved categories")
                     Spacer()
-                    Text("\(vm.shadowedCategories.count)")
+                    Text("\(cdm.shadowedCategories.count)")
                         .foregroundStyle(.secondary)
                 }
             }
@@ -73,6 +72,6 @@ struct CategoriesEditView: View {
 struct CategoriesEditView_Previews: PreviewProvider {
     static var previews: some View {
         CategoriesEditView()
-            .environmentObject(CoreDataViewModel())
+            .environmentObject(CoreDataModel())
     }
 }

@@ -1,5 +1,5 @@
 //
-//  AmountInput.swift
+//  AddSpendingView.swift
 //  financecontrol
 //
 //  Created by PinkXaciD on R 5/06/27.
@@ -8,10 +8,12 @@
 import SwiftUI
 
 struct AddSpendingView: View {
-    @EnvironmentObject 
-    private var vm: CoreDataViewModel
-    @EnvironmentObject
-    private var rvm: RatesViewModel
+    internal init(ratesViewModel rvm: RatesViewModel, codeDataModel cdm: CoreDataModel) {
+        self._vm = StateObject(wrappedValue: AddSpendingViewModel(ratesViewModel: rvm, coreDataModel: cdm))
+    }
+    
+    @StateObject
+    private var vm: AddSpendingViewModel
     
     @AppStorage("color") 
     private var tint: String = "Orange"
@@ -30,86 +32,82 @@ struct AddSpendingView: View {
     @FocusState 
     private var focusedField: Field?
     
-    @State 
-    private var amount: String = ""
-    @State
-    private var currency: String = (UserDefaults.standard.string(forKey: "defaultCurrency") ?? "USD")
-    @State
-    private var date: Date = Date.now
-    @State
-    private var category: String = "Select Category"
-    @State
-    private var categoryId: UUID = UUID()
-    @State
-    private var place: String = ""
-    @State
-    private var comment: String = "Enter your comment here"
-    @State
-    private var commentColor: Color = Color.secondary
-    
     @State
     private var amountIsFocused: Bool = true
     @State
-    private var buttonIsPressed: Bool = true
+    private var filterAmount: String = ""
 
-    let utils = InputUtils() // For checking
+    let utils = InputUtils() /// For input checking
     
     var body: some View {
-        
         NavigationView {
             Form {
-                infoSection
+                reqiredSection
                 
                 placeAndCommentSection
             }
-            .navigationTitle("Add Expense")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                keyboardToolbar
+                if UIDevice.current.userInterfaceIdiom == .phone {
+                    keyboardToolbar
+                }
                 
                 leadingToolbar
                 
                 trailingToolbar
             }
+            .navigationTitle("Add Expense")
+            .navigationBarTitleDisplayMode(.inline)
         }
         .tint(colorIdentifier(color: tint))
-        .interactiveDismissDisabled(category != "Select Category" || !amount.isEmpty)
+        .accentColor(colorIdentifier(color: tint))
+        .interactiveDismissDisabled(vm.categoryName != "Select Category" || !vm.amount.isEmpty)
     }
     
     // MARK: Variables
     
-    var infoSection: some View {
+    var reqiredSection: some View {
         Section {
-            TextField("0.00", text: $amount)
+            TextField("0.00", text: $vm.amount)
                 .multilineTextAlignment(.center)
-                .numbersOnly($amount)
+                .numbersOnly($filterAmount)
                 .amountStyle()
                 .focused($focusedField, equals: .amount)
                 .onAppear(perform: amountFocus)
+                /// iOS 16 bugfix
+                .onChange(of: vm.amount) { newValue in
+                    filterAmount = newValue
+                }
+                .onChange(of: filterAmount) { newValue in
+                    vm.amount = newValue
+                }
+                /// For iPad or external keyboard
+                .onSubmit {
+                    nextField()
+                }
             
             HStack {
                 Text("Currency")
-                CurrencySelector(currency: $currency, showFavorites: true)
+                CurrencySelector(currency: $vm.currency, showFavorites: true)
             }
             
             HStack {
                 Text("Category")
-                CategorySelector(category: $categoryId)
+                CategorySelector(category: $vm.categoryId)
             }
-            .onChange(of: categoryId) { newValue in
-                category = vm.findCategory(newValue)?.name ?? "Error"
+            .onChange(of: vm.categoryId) { newValue in
+                vm.categoryName = vm.cdm.findCategory(newValue)?.name ?? "Error"
             }
             
-            DatePicker("Date", selection: $date, in: Date.init(timeIntervalSinceReferenceDate: 0)...Date.now)
+            DatePicker("Date", selection: $vm.date, in: Date.init(timeIntervalSinceReferenceDate: 0)...Date.now)
                 .datePickerStyle(.compact)
             
         } header: {
             Text("Required")
-        } footer: {
             
-            if !Calendar.current.isDateInToday(date) && currency != defaultCurrency {
+        } footer: {
+            if !Calendar.current.isDateInToday(vm.date) && vm.currency != defaultCurrency {
                 Text("Historical exchange rates are presented as the stock exchange closed on the requested day")
-            } else if !Calendar.current.isDate(date, equalTo: Date.now, toGranularity: .hour) && currency != defaultCurrency {
+            } else if !Calendar.current.isDate(vm.date, equalTo: .now, toGranularity: .hour) && vm.currency != defaultCurrency {
                 Text("Exchange rates will be presented for the current hour")
             }
         }
@@ -117,28 +115,49 @@ struct AddSpendingView: View {
     
     var placeAndCommentSection: some View {
         Section(header: Text("Optional"), footer: placeAndCommentSectionFooter) {
-            TextField("Name", text: $place)
+            TextField("Name", text: $vm.place)
                 .focused($focusedField, equals: .place)
+                .onSubmit {
+                    nextField()
+                }
                 
             if #available(iOS 16.0, *) {
-                TextField("Comment", text: $comment, axis: .vertical)
-                    .onAppear(perform: clearComment)
+                TextField("Comment", text: $vm.comment, axis: .vertical)
                     .focused($focusedField, equals: .comment)
             } else {
-                TextEditor(text: $comment)
+                TextEditor(text: $vm.comment)
                     .focused($focusedField, equals: .comment)
-                    .foregroundColor(commentColor)
-                    .onTapGesture {
-                        clearComment()
-                        commentColor = Color.primary
-                    }
             }
         }
     }
     
     var placeAndCommentSectionFooter: some View {
-        Text("\(300 - comment.count) characters left")
-            .foregroundColor(comment.count <= 300 ? Color.secondary : Color.red)
+        VStack(alignment: .leading) {
+            switch focusedField {
+            case .place:
+                if vm.place.count >= 50{
+                    Text("\(100 - vm.place.count) characters left")
+                        .foregroundColor(vm.place.count <= 100 ? .secondary : .red)
+                }
+            case .comment:
+                if vm.comment.count >= 250 {
+                    Text("\(300 - vm.comment.count) characters left")
+                        .foregroundColor(vm.comment.count <= 300 ? .secondary : .red)
+                }
+            default:
+                EmptyView()
+            }
+            
+            if vm.place.count > 100 {
+                Text("Name is too long")
+                    .foregroundColor(.red)
+            }
+            
+            if vm.comment.count > 300 {
+                Text("Comment is too long")
+                    .foregroundColor(.red)
+            }
+        }
     }
     
     var keyboardToolbar: ToolbarItemGroup<some View> {
@@ -148,6 +167,7 @@ struct AddSpendingView: View {
             Button(action: clearFocus) {
                 Label("Hide keyboard", systemImage: "keyboard.chevron.compact.down")
             }
+            .padding(.horizontal)
         }
     }
     
@@ -158,94 +178,19 @@ struct AddSpendingView: View {
     }
     
     var trailingToolbar: ToolbarItem<(), some View> {
-        
         ToolbarItem(placement: .navigationBarTrailing) {
-            
             Button {
                 done()
             } label: {
-                if buttonIsPressed {
-                    Text("Done")
-                } else {
-                    ProgressView()
-                        .foregroundStyle(.secondary)
-                }
+                Text("Done")
             }
             .font(Font.body.weight(.semibold))
-            .disabled(!utils.checkAll(amount: amount, place: place, category: category, comment: comment) || !buttonIsPressed)
+            .disabled(!utils.checkAll(amount: vm.amount, place: vm.place, category: vm.categoryName, comment: vm.comment))
         }
     }
 }
 
 extension AddSpendingView {
-    
-    private func clearComment() {
-        if comment == "Enter your comment here" {
-            comment = ""
-        }
-    }
-    
-    private func done() {
-        if let doubleAmount = Double(amount) {
-            
-            buttonIsPressed = false
-            
-            if comment == "Enter your comment here" {
-                comment = ""
-            }
-            
-            var spending = SpendingEntityLocal(
-                amountUSD: 0,
-                amount: doubleAmount,
-                comment: comment,
-                currency: currency,
-                date: date,
-                place: place,
-                categoryId: categoryId
-            )
-            
-            if !Calendar.current.isDate(date, inSameDayAs: Date.now) {
-                Task {
-                    do {
-                        let oldRates = try await rvm.getRates(date).rates
-                        await MainActor.run {
-                            spending.amountUSD = doubleAmount / (oldRates[currency] ?? 1)
-                            
-                            vm.addSpending(spending: spending)
-                            
-                            dismiss()
-                            
-                            HapticManager.shared.notification(.success)
-                        }
-                    } catch {
-                        if let error = error as? InfoPlistError {
-                            ErrorType(infoPlistError: error).publish()
-                        } else {
-                            ErrorType(error: error).publish()
-                        }
-                        
-                        spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
-                        
-                        vm.addSpending(spending: spending)
-                        
-                        dismiss()
-                        
-                        HapticManager.shared.notification(.success)
-                    }
-                }
-            } else {
-                
-                spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
-                
-                vm.addSpending(spending: spending)
-                
-                dismiss()
-                
-                HapticManager.shared.notification(.success)
-            }
-        }
-    }
-    
     private func amountFocus() {
         if amountIsFocused {
             focusedField = .amount
@@ -260,12 +205,28 @@ extension AddSpendingView {
     private func dismissAction() {
         dismiss()
     }
+    
+    private func nextField() {
+        switch focusedField {
+        case .amount:
+            focusedField = .place
+        case .place, .comment:
+            focusedField = .comment
+        case .none:
+            focusedField = .none
+        }
+    }
+    
+    private func done() {
+        vm.done()
+        dismiss()
+    }
 }
 
 struct AmountInput_Previews: PreviewProvider {
     static var previews: some View {
         
-        AddSpendingView()
-            .environmentObject(CoreDataViewModel())
+        AddSpendingView(ratesViewModel: .init(), codeDataModel: .init())
+            .environmentObject(CoreDataModel())
     }
 }

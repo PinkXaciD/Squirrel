@@ -9,18 +9,17 @@ import SwiftUI
 
 struct CurrencyRow: View {
     
-    @EnvironmentObject private var vm: CoreDataViewModel
+    @EnvironmentObject private var cdm: CoreDataModel
     @EnvironmentObject private var rvm: RatesViewModel
     
     @AppStorage("defaultCurrency") var defaultCurrency: String = "USD"
     
-    let name: String
     let tag: String
     let currency: CurrencyEntity
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text(name)
+            Text(Locale.current.localizedString(forCurrencyCode: tag)?.capitalized ?? "Error")
             
             HStack {
                 Image(systemName: currency.isFavorite ? "star.fill" : "star")
@@ -40,6 +39,7 @@ struct CurrencyRow: View {
             .font(.caption)
             .foregroundColor(.secondary)
         }
+        .padding(.vertical, 1) /// Strange behavior without padding
         .swipeActions(edge: .leading) {
             favoriteButton
         }
@@ -56,7 +56,7 @@ struct CurrencyRow: View {
     private var favoriteButton: some View {
         Button {
             withAnimation {
-                vm.changeFavoriteStateOfCurrency(currency)
+                cdm.changeFavoriteStateOfCurrency(currency)
             }
         } label: {
             Label(
@@ -69,7 +69,7 @@ struct CurrencyRow: View {
     
     private var deleteButton: some View {
         Button(role: .destructive) {
-            vm.deleteCurrency(currency)
+            cdm.deleteCurrency(currency)
         } label: {
             Label("Delete", systemImage: "trash.fill")
         }

@@ -1,0 +1,443 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%@" : {
+
+    },
+    "%@.\n%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@.\n%2$@"
+          }
+        }
+      }
+    },
+    "%lld" : {
+
+    },
+    "%lld characters left" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld character left"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "new",
+                  "value" : "%lld characters left"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld expenses" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld expense"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "new",
+                  "value" : "%lld expenses"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "0.00" : {
+
+    },
+    "1 %@ = %@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "1 %1$@ = %2$@ %3$@"
+          }
+        }
+      }
+    },
+    "1 USD" : {
+
+    },
+    "About" : {
+
+    },
+    "Add Currency" : {
+
+    },
+    "Add Expense" : {
+
+    },
+    "Add new" : {
+
+    },
+    "Add new category" : {
+
+    },
+    "Add New currency" : {
+
+    },
+    "Add to favorites" : {
+
+    },
+    "All categories" : {
+
+    },
+    "Amount" : {
+
+    },
+    "An open-source spending tracker. \nDeveloped by PinkXaciD." : {
+
+    },
+    "App site" : {
+
+    },
+    "Appearance" : {
+
+    },
+    "Apply" : {
+
+    },
+    "Archieved categories" : {
+
+    },
+    "Archive" : {
+
+    },
+    "Archived categories" : {
+
+    },
+    "Automatic Dark Mode" : {
+
+    },
+    "Blue" : {
+
+    },
+    "Buy me some noodles" : {
+
+    },
+    "Cancel" : {
+
+    },
+    "Categories" : {
+
+    },
+    "Category" : {
+
+    },
+    "Clear" : {
+
+    },
+    "Close" : {
+
+    },
+    "Color" : {
+
+    },
+    "Colors" : {
+
+    },
+    "Comment" : {
+
+    },
+    "Comment (Optional)" : {
+
+    },
+    "Comment is too long" : {
+
+    },
+    "Create an issue on GitHub" : {
+
+    },
+    "Currencies" : {
+
+    },
+    "Currency" : {
+
+    },
+    "Currency name or ISO Code" : {
+
+    },
+    "Currency selection" : {
+
+    },
+    "Dark Mode" : {
+
+    },
+    "Date" : {
+
+    },
+    "Date selection" : {
+
+    },
+    "Debug" : {
+
+    },
+    "Default: %@" : {
+
+    },
+    "Delete" : {
+
+    },
+    "Delete this category?" : {
+
+    },
+    "Delete this expense?" : {
+
+    },
+    "Done" : {
+
+    },
+    "Edit" : {
+
+    },
+    "Enter name" : {
+
+    },
+    "Error" : {
+
+    },
+    "Exchange rates will be presented for the current hour" : {
+
+    },
+    "Expand" : {
+
+    },
+    "Expenses" : {
+
+    },
+    "Export all data as JSON" : {
+
+    },
+    "Export and Import" : {
+
+    },
+    "Export and import data" : {
+
+    },
+    "Failed to create URL from given components" : {
+
+    },
+    "Filter" : {
+
+    },
+    "Filter by date" : {
+
+    },
+    "From" : {
+
+    },
+    "Hide keyboard" : {
+
+    },
+    "Historical exchange rates are presented as the stock exchange closed on the requested day" : {
+
+    },
+    "Home" : {
+
+    },
+    "Import data as JSON" : {
+
+    },
+    "Indigo" : {
+
+    },
+    "It seems some system files are corrupted" : {
+
+    },
+    "It seems some system files are missing or corrupted" : {
+
+    },
+    "Minimize" : {
+
+    },
+    "Mint" : {
+
+    },
+    "Name" : {
+
+    },
+    "Name is too long" : {
+
+    },
+    "New Category" : {
+
+    },
+    "Next month" : {
+
+    },
+    "No API key was found" : {
+
+    },
+    "No archived categories" : {
+
+    },
+    "No comment provided" : {
+
+    },
+    "No expenses" : {
+
+    },
+    "No Info file was found" : {
+
+    },
+    "No results" : {
+
+    },
+    "No up to date exchange rate for %@ found" : {
+
+    },
+    "No up to date exchange rate found" : {
+
+    },
+    "No URL was found" : {
+
+    },
+    "OK" : {
+
+    },
+    "Optional" : {
+
+    },
+    "Orange" : {
+
+    },
+    "Other" : {
+
+    },
+    "Pink" : {
+
+    },
+    "Place (Optional)" : {
+
+    },
+    "Please submit bug report and try to reinstall the app" : {
+
+    },
+    "Please submit bug report and try to restart the app" : {
+
+    },
+    "Previous month" : {
+
+    },
+    "Purple" : {
+
+    },
+    "Rates" : {
+
+    },
+    "Rates fetch errors" : {
+
+    },
+    "Red" : {
+
+    },
+    "Remove from favorites" : {
+
+    },
+    "Required" : {
+
+    },
+    "Restore" : {
+
+    },
+    "Save" : {
+
+    },
+    "Search by place, category or comment" : {
+
+    },
+    "Select currency" : {
+
+    },
+    "Select Date" : {
+
+    },
+    "Selected as default" : {
+
+    },
+    "Settings" : {
+
+    },
+    "Something went wrong..." : {
+
+    },
+    "Squirrel" : {
+
+    },
+    "Squirrel, version %@" : {
+
+    },
+    "Stats" : {
+
+    },
+    "Swipe left to restore, swipe right to delete" : {
+
+    },
+    "Tap to add" : {
+
+    },
+    "Teal" : {
+
+    },
+    "Throw API key error" : {
+
+    },
+    "Throw bad URL error" : {
+
+    },
+    "Throw Empty database error" : {
+
+    },
+    "Throw Info.plist error" : {
+
+    },
+    "Throw URL bad response error" : {
+
+    },
+    "Throw URL components error" : {
+
+    },
+    "Throw URL error" : {
+
+    },
+    "To" : {
+
+    },
+    "URL errors" : {
+
+    },
+    "Ver. %@ (%@)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Ver. %1$@ (%2$@)"
+          }
+        }
+      }
+    },
+    "You will not be able to undo this action.\nAll expenses in this category will be permanently deleted" : {
+
+    }
+  },
+  "version" : "1.0"
+}

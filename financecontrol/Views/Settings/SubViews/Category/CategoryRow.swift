@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CategoryRow: View {
     
-    @EnvironmentObject private var vm: CoreDataViewModel
+    @EnvironmentObject private var cdm: CoreDataModel
     
     let category: CategoryEntity
     
@@ -34,7 +34,6 @@ struct CategoryRow: View {
     }
     
     private var navLinkLabel: some View {
-        
         let spendingsCount: Int = category.spendings?.count ?? 0
         
         return HStack {
@@ -46,7 +45,7 @@ struct CategoryRow: View {
                 Text(category.name ?? "Error")
                     .foregroundStyle(.primary)
                 
-                Text("\(spendingsCount) \(spendingsCount == 1 ? "expence" : "expences")")
+                Text("\(spendingsCount) expenses")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
@@ -57,12 +56,13 @@ struct CategoryRow: View {
                 .foregroundStyle(.secondary)
         }
         .foregroundStyle(Color.primary, Color.secondary, Color[category.color ?? "nil"])
+        .padding(.vertical, 1) /// Strange behavior without padding
     }
     
     private var favoriteButton: some View {
         Button {
             withAnimation {
-                vm.changeFavoriteStateOfCategory(category)
+                cdm.changeFavoriteStateOfCategory(category)
             }
         } label: {
             Label(
@@ -75,7 +75,7 @@ struct CategoryRow: View {
     
     private var deleteButton: some View {
         Button(role: .destructive) {
-            vm.changeShadowStateOfCategory(category)
+            cdm.changeShadowStateOfCategory(category)
         } label: {
             Label("Archive", systemImage: "archivebox.fill")
         }

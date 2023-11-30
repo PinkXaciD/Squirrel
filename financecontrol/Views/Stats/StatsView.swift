@@ -9,33 +9,37 @@ import SwiftUI
 
 struct StatsView: View {
     @EnvironmentObject
-    private var vm: CoreDataViewModel
+    private var cdm: CoreDataModel
+    @EnvironmentObject
+    private var rvm: RatesViewModel
+    @State
+    var selectedEntity: SpendingEntity? = nil
+    @State
+    private var edit: Bool = false
     
     @State
     private var selectedMonth: Int = 0
     @State
     private var showFilters: Bool = false
-    @State
-    private var seachIsActive: Bool = false
     
     @State
-    var firstFilterDate: Date = .now.getFirstDayOfMonth()
+    var startFilterDate: Date = .now.getFirstDayOfMonth()
     @State
-    var secondFilterDate: Date = .now
+    var endFilterDate: Date = .now
     @State
     var applyFilters: Bool = false
     @State
-    var filterText: String = ""
+    var search: String = ""
     
     var body: some View {
         let listData: [String: [SpendingEntity]] = getListData()
-        let operationsInMonth: [CategoryEntityLocal] = vm.operationsInMonth(.now.getFirstDayOfMonth(selectedMonth))
-        let newChartData: [ChartData] = vm.getChartData()
+        let operationsInMonth: [CategoryEntityLocal] = cdm.operationsInMonth(.now.getFirstDayOfMonth(selectedMonth))
+        let newChartData: [ChartData] = cdm.getChartData()
         
         NavigationView {
             List {
-                if filterText.isEmpty {
-                    PieChartView(selectedMonth: $selectedMonth, size: UIScreen.main.bounds.width / 1.7, operationsInMonth: operationsInMonth, chartData: newChartData)
+                if search.isEmpty {
+                    PieChartView(selectedMonth: $selectedMonth, search: $search, size: UIScreen.main.bounds.width / 1.7, operationsInMonth: operationsInMonth, chartData: newChartData)
                 }
                 
                 if !listData.isEmpty {
@@ -43,7 +47,7 @@ struct StatsView: View {
                         if let sectionData = listData[sectionKey] {
                             Section {
                                 ForEach(sectionData) { spending in
-                                    StatsRow(entity: spending)
+                                    StatsRow(entity: spending, entityToEdit: $selectedEntity, edit: $edit)
                                 }
                             } header: {
                                 Text(sectionKey)
@@ -63,24 +67,23 @@ struct StatsView: View {
                 }
             }
             .searchable(
-                text: $filterText,
+                text: $search,
                 placement: .navigationBarDrawer(displayMode: .automatic),
                 prompt: "Search by place, category or comment"
             )
-            .onChange(of: selectedMonth) { newValue in
-                onChangeFunc(newValue)
+            .onChange(of: selectedMonth) {
+                onChangeFunc($0)
             }
             .toolbar {
                 toolbar
             }
+            .sheet(item: $selectedEntity) { entity in
+                SpendingCompleteView(edit: $edit, entity: entity, coreDataModel: cdm, ratesViewModel: rvm)
+                    .smallSheet()
+            }
             .sheet(isPresented: $showFilters) {
-                if #available(iOS 16.0, *) {
-                    sheet
-                        .presentationDetents([.medium, .large])
-                        .presentationDragIndicator(.hidden)
-                } else {
-                    sheet
-                }
+                filters
+                    .smallSheet()
             }
             .navigationTitle("Stats")
         }
@@ -97,10 +100,10 @@ struct StatsView: View {
         }
     }
     
-    private var sheet: some View {
+    private var filters: some View {
         FiltersView(
-            firstFilterDate: $firstFilterDate,
-            secondFilterDate: $secondFilterDate,
+            firstFilterDate: $startFilterDate,
+            secondFilterDate: $endFilterDate,
             applyFilters: $applyFilters
         )
     }
@@ -109,52 +112,55 @@ struct StatsView: View {
 extension StatsView {
     private func getListData() -> [String: [SpendingEntity]] {
         var result: [String: [SpendingEntity]]
-        if filterText.isEmpty {
-            result = vm.operationsForList()
+        if search.isEmpty {
+            result = cdm.operationsForList()
         } else {
-            result = vm.operationsForList().mapValues { $0.filter { entity in
-                entity.place?.localizedCaseInsensitiveContains(filterText.trimmingCharacters(in: .whitespaces)) ?? false
-                ||
-                entity.categoryName.localizedCaseInsensitiveContains(filterText.trimmingCharacters(in: .whitespaces))
-                ||
-                entity.comment?.localizedCaseInsensitiveContains(filterText.trimmingCharacters(in: .whitespaces)) ?? false
-            } }.filter { !$0.value.isEmpty }
+            result = cdm.operationsForList().mapValues {
+                $0.filter { entity in
+                    entity.place?.localizedCaseInsensitiveContains(search.trimmingCharacters(in: .whitespaces)) ?? false
+                    ||
+                    entity.categoryName.localizedCaseInsensitiveContains(search.trimmingCharacters(in: .whitespaces))
+                    ||
+                    entity.comment?.localizedCaseInsensitiveContains(search.trimmingCharacters(in: .whitespaces)) ?? false
+                }
+            }
+            .filter { !$0.value.isEmpty }
         }
         
         if applyFilters {
-            result = result.mapValues { $0.filter { entity in
-                entity.wrappedDate > firstFilterDate && entity.wrappedDate < secondFilterDate
-            } }.filter { !$0.value.isEmpty }
+            result = result.mapValues {
+                $0.filter { entity in
+                    entity.wrappedDate > startFilterDate && entity.wrappedDate < endFilterDate
+                }
+            }
+            .filter { !$0.value.isEmpty }
         }
         return result
     }
     
     private func keySort(_ value1: String, _ value2: String) -> Bool {
         let formatter = DateFormatter()
-        switch Calendar.current.identifier {
-        case .japanese:
-            formatter.dateFormat = "MMMM dd, GGGG y"
-        default:
-            formatter.dateFormat = "MMMM dd, y"
-        }
+        formatter.dateStyle = .long
+        formatter.timeStyle = .none
         
-        if let date1 = formatter.date(from: value1),
-           let date2 = formatter.date(from: value2)
-        {
-            return date1 > date2
-        } else {
+        guard
+            let date1 = formatter.date(from: value1),
+            let date2 = formatter.date(from: value2)
+        else {
             return false
         }
+        
+        return date1 > date2
     }
     
     private func onChangeFunc(_ value: Int) {
         if value == 0 {
             applyFilters = false
-            firstFilterDate = .now.getFirstDayOfMonth()
-            secondFilterDate = .now
+            startFilterDate = .now.getFirstDayOfMonth()
+            endFilterDate = .now
         } else {
-            firstFilterDate = .now.getFirstDayOfMonth(value)
-            secondFilterDate = .now.getFirstDayOfMonth(value + 1)
+            startFilterDate = .now.getFirstDayOfMonth(value)
+            endFilterDate = .now.getFirstDayOfMonth(value + 1)
             applyFilters = true
         }
         
@@ -165,6 +171,6 @@ extension StatsView {
 struct StatsView_Previews: PreviewProvider {
     static var previews: some View {
         StatsView()
-            .environmentObject(CoreDataViewModel())
+            .environmentObject(CoreDataModel())
     }
 }

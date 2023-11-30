@@ -16,10 +16,12 @@ struct DebugView: View {
             
             urlErrorSection
         }
+        .navigationTitle("Debug")
+        .navigationBarTitleDisplayMode(.inline)
     }
     
     private var infoPlistSection: some View {
-        Section(header: Text("Info.plist error")) {
+        Section(header: Text(verbatim: "Info.plist error")) {
             
             Button("Throw Info.plist error") {
                 ErrorType(infoPlistError: .noInfoFound).publish()

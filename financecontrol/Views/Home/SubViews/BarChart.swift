@@ -57,6 +57,6 @@ struct BarChart_Previews: PreviewProvider {
         @State var itemSelected = -1
         
         BarChart(itemSelected: $itemSelected, data: [(key: Date.now, value: 1.0)])
-            .environmentObject(CoreDataViewModel())
+            .environmentObject(CoreDataModel())
     }
 }
