@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ShadowedCategoriesRow: View {
     
-    @EnvironmentObject private var vm: CoreDataViewModel
+    @EnvironmentObject private var cdm: CoreDataModel
     
     @State private var alertIsPresented: Bool = false
     
@@ -31,7 +31,7 @@ struct ShadowedCategoriesRow: View {
             .alert("Delete this category?", isPresented: $alertIsPresented) {
                 Button("Delete", role: .destructive) {
                     withAnimation {
-                        vm.deleteCategory(category)
+                        cdm.deleteCategory(category)
                     }
                 }
                 
@@ -57,6 +57,7 @@ struct ShadowedCategoriesRow: View {
                     .foregroundStyle(.secondary)
             }
         }
+        .padding(.vertical, 1) /// Strange behavior without padding
         .foregroundStyle(Color.primary, Color.secondary, Color[category.color ?? "nil"])
     }
     
@@ -72,7 +73,7 @@ struct ShadowedCategoriesRow: View {
     private var restoreButton: some View {
         Button {
             withAnimation {
-                vm.changeShadowStateOfCategory(category)
+                cdm.changeShadowStateOfCategory(category)
             }
         } label: {
             Label("Restore", systemImage: "arrow.uturn.backward")

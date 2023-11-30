@@ -11,7 +11,7 @@ import Foundation
 
 final class RatesModel {
     
-    let errorHandler = ErrorHandler.instance
+    let errorHandler = ErrorHandler.shared
     
     init() {
         print("RatesModel initialized")
@@ -80,7 +80,10 @@ extension RatesModel {
     
     private func handleResponse(data: Data, response: URLResponse) throws -> Rates {
         
-        guard let response = response as? HTTPURLResponse, response.statusCode >= 200 && response.statusCode < 300 else {
+        guard 
+            let response = response as? HTTPURLResponse,
+            response.statusCode >= 200 && response.statusCode < 300
+        else {
             throw URLError(.badServerResponse)
         }
         

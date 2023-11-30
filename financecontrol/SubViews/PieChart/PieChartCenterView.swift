@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CenterChartView: View {
     @EnvironmentObject
-    private var vm: CoreDataViewModel
+    private var cdm: CoreDataModel
     @EnvironmentObject
     private var rvm: RatesViewModel
     @AppStorage("defaultCurrency")
@@ -48,16 +48,11 @@ extension CenterChartView {
     private func dateText() -> String {
         var formatter: DateFormatter {
             let formatter = DateFormatter()
-            switch Calendar.current.identifier {
-            case .japanese, .buddhist:
-                formatter.dateFormat = "MMMM, GGGG y"
-            default:
-                formatter.dateFormat = "MMMM, y"
-            }
+            formatter.setLocalizedDateFormatFromTemplate("MMMMyyyy")
             return formatter
         }
         
-        return formatter.string(from: selectedMonth)
+        return formatter.string(from: selectedMonth).capitalized
     }
     
     private func operationsSum(operationsInMonth: [CategoryEntityLocal]) -> String {

@@ -40,7 +40,7 @@ struct RatesRowView: View {
     
     var body: some View {
         HStack {
-            Text(Locale.current.localizedString(forCurrencyCode: code) ?? "Error")
+            Text(Locale.current.localizedString(forCurrencyCode: code)?.capitalized ?? "Error")
             
             Spacer()
             

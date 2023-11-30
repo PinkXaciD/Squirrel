@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct NewCurrencyRow: View {
-    @EnvironmentObject private var vm: CoreDataViewModel
+    @EnvironmentObject private var cdm: CoreDataModel
     @EnvironmentObject private var rvm: RatesViewModel
     @Environment(\.dismiss) private var dismiss
     @AppStorage("defaultCurrency") private var defaultCurrency: String = "USD"
@@ -24,7 +24,7 @@ struct NewCurrencyRow: View {
     
     private var buttonLabel: some View {
         VStack(alignment: .leading) {
-            Text(name)
+            Text(name.capitalized)
                 .foregroundStyle(.primary)
             
             if let rate = rvm.rates[code], let defaultRate = rvm.rates[defaultCurrency] {
@@ -37,11 +37,12 @@ struct NewCurrencyRow: View {
                     .foregroundStyle(.secondary)
             }
         }
+        .padding(.vertical, 1) /// Strange behavior without padding
         .foregroundStyle(Color.primary, Color.secondary)
     }
     
     private func addCurrency() {
-        vm.addCurrency(name: name, tag: code)
+        cdm.addCurrency(name: Locale(identifier: "en_US").localizedString(forCurrencyCode: code) ?? "Error", tag: code)
         dismiss()
     }
 }

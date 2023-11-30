@@ -10,7 +10,7 @@ import SwiftUI
 struct SpendingView: View {
     
     @EnvironmentObject 
-    private var vm: CoreDataViewModel
+    private var cdm: CoreDataModel
     @EnvironmentObject
     private var rvm: RatesViewModel
     

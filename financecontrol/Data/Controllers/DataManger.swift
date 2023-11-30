@@ -1,5 +1,5 @@
 //
-//  DataController.swift
+//  DataManager.swift
 //  financecontrol
 //
 //  Created by PinkXaciD on R 5/07/05.
@@ -8,7 +8,7 @@
 import CoreData
 
 final class DataManager {
-    static let instance = DataManager()
+    static let shared = DataManager()
     
     let container: NSPersistentContainer
     let context: NSManagedObjectContext
@@ -32,10 +32,10 @@ final class DataManager {
     }
 }
 
-final class CoreDataViewModel: ObservableObject {
+final class CoreDataModel: ObservableObject {
     let container: NSPersistentContainer
     let context: NSManagedObjectContext
-    let manager = DataManager.instance
+    let manager = DataManager.shared
     
     init() {
         self.container = manager.container
@@ -55,7 +55,7 @@ final class CoreDataViewModel: ObservableObject {
     var savedCurrencies: [CurrencyEntity] = []
 }
 
-extension CoreDataViewModel {
+extension CoreDataModel {
     func exportJSON() throws -> URL? {
         do {
             let encoder = JSONEncoder()

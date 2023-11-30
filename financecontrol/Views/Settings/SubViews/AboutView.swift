@@ -27,12 +27,14 @@ struct AboutView: View {
     
     var aboutSection: some View {
         Section(header: aboutHeader) {
-            Text("An open-source spending tracker. \nDeveloped by PinkXaciD. Exchange rates API by nulledzero")
+            Text("An open-source spending tracker. \nDeveloped by PinkXaciD.")
             
             Button("App site") {}
             
-            Button("GitHub") {
+            Button {
                 openURL(URL(string: "https://github.com/PinkXaciD/Squirrel")!)
+            } label: {
+                Text(verbatim: "GitHub")
             }
         }
     }
@@ -53,14 +55,16 @@ struct AboutView: View {
         .frame(maxWidth: .infinity)
         .textCase(nil)
         .onTapGesture(count: 5) {
-            showDebug.toggle()
+            withAnimation {
+                showDebug.toggle()
+            }
         }
         .padding(.vertical, 15)
     }
     
     var githubSection: some View {
         Section {
-            Button("Create a new issue on GitHub") {
+            Button("Create an issue on GitHub") {
                 openURL(URL(string: "https://github.com/PinkXaciD/Squirrel/issues/new")!)
             }
             
@@ -72,8 +76,6 @@ struct AboutView: View {
         Section {
             NavigationLink("Debug") {
                 DebugView()
-                    .navigationTitle("Debug")
-                    .navigationBarTitleDisplayMode(.inline)
             }
         }
     }

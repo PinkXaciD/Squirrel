@@ -7,7 +7,7 @@
 
 import CoreData
 
-extension CoreDataViewModel {
+extension CoreDataModel {
     
     func fetchCategories() {
         

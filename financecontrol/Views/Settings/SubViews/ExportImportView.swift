@@ -1,5 +1,5 @@
 //
-//  ExportAndImportView.swift
+//  ExportImportView.swift
 //  financecontrol
 //
 //  Created by PinkXaciD on R 5/10/18.
@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ExportImportView: View {
-    @EnvironmentObject private var vm: CoreDataViewModel
+    @EnvironmentObject private var cdm: CoreDataModel
     
     @AppStorage("color") private var tint: String = "Orange"
     
@@ -24,9 +24,7 @@ struct ExportImportView: View {
         Form {
             jsonSection
         }
-        .sheet(isPresented: $presentExportSheet) {
-            deleteTempFile()
-        } content: {
+        .sheet(isPresented: $presentExportSheet, onDismiss: deleteTempFile) {
             CustomShareSheet(url: $shareURL)
         }
         .fileImporter(isPresented: $presentImportSheet, allowedContentTypes: [.json]) { result in
@@ -51,7 +49,7 @@ struct ExportImportView: View {
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 100)
             
-            Text("SquirrelExport.json")
+            Text(verbatim: "SquirrelExport.json")
                 .font(.body)
         }
         .foregroundColor(.secondary)
@@ -76,7 +74,7 @@ struct ExportImportView: View {
 extension ExportImportView {
     private func exportJSON() {
         do {
-            if let url = try vm.exportJSON() {
+            if let url = try cdm.exportJSON() {
                 shareURL = url
                 presentExportSheet.toggle()
             }
@@ -88,7 +86,7 @@ extension ExportImportView {
     private func importJSON(_ result: Result<URL, Error>) {
         switch result {
         case .success(let url):
-            if let imported = vm.importJSON(url) {
+            if let imported = cdm.importJSON(url) {
                 switch imported {
                 case 0:
                     self.alertMessage = "Nothing to import"
@@ -118,5 +116,5 @@ extension ExportImportView {
 
 //#Preview {
 //    ExportImportView()
-//        .environmentObject(CoreDataViewModel())
+//        .environmentObject(CoreDataModel())
 //}

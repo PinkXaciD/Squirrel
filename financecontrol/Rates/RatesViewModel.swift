@@ -17,11 +17,11 @@ struct Rates: Codable {
 
 //MARK: Rates View Model
 
-final class RatesViewModel: ObservableObject {
+final class RatesViewModel: ViewModel {
     
     @Published var rates: [String:Double] = [:]
     
-    let manager = DataManager.instance
+    let manager = DataManager.shared
     let container: NSPersistentContainer
     let context: NSManagedObjectContext
     

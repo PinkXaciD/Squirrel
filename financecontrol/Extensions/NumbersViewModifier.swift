@@ -21,7 +21,7 @@ struct NumbersViewModifier: ViewModifier {
                         let filtered = newValue
                         self.text = isValid(newValue: String(filtered.dropLast()), decimalSeparator: decimalSeparator)
                     } else {
-                        let filtered = newValue.filter { numbers.contains($0)}
+                        let filtered = newValue.filter { numbers.contains($0) }
                         if filtered != newValue {
                             self.text = isValid(newValue: filtered, decimalSeparator: decimalSeparator)
                         } else {

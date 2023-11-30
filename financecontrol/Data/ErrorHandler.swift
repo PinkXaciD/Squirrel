@@ -9,13 +9,12 @@ import Foundation
 
 final class ErrorHandler: ObservableObject {
     
-    static let instance = ErrorHandler()
+    static let shared = ErrorHandler()
     
     @Published var appError: ErrorType? = nil
     @Published var showAlert: Bool = false
     
     func dropError() {
-        
         appError = nil
         showAlert = false
     }
@@ -89,9 +88,7 @@ struct ErrorType: Identifiable, Equatable {
     }
     
     func publish() {
-        
-        let errorHandler = ErrorHandler.instance
-        errorHandler.appError = self
-        errorHandler.showAlert = true
+        ErrorHandler.shared.appError = self
+        ErrorHandler.shared.showAlert = true
     }
 }

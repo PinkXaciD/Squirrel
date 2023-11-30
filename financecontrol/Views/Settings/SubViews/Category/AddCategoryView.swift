@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AddCategoryView: View {
-    @EnvironmentObject private var vm: CoreDataViewModel
+    @EnvironmentObject private var cdm: CoreDataModel
     
     @Binding var id: UUID
     let insert: Bool
@@ -31,7 +31,7 @@ struct AddCategoryView: View {
                     .focused($isFocused)
                     .onAppear(perform: fieldFocus)
             } header: {
-                Text("name")
+                Text("Name")
             }
             
             Section {
@@ -40,15 +40,15 @@ struct AddCategoryView: View {
                 
             } header: {
                 
-                Text("color")
+                Text("Color")
                 
             }
             
             Button {
                 if insert {
-                    id = vm.addCategory(name: input, color: colorSelectedDescription)
+                    id = cdm.addCategory(name: input, color: colorSelectedDescription)
                 } else {
-                    _ = vm.addCategory(name: input, color: colorSelectedDescription)
+                    _ = cdm.addCategory(name: input, color: colorSelectedDescription)
                 }
                 
                 dismiss()
@@ -88,6 +88,6 @@ struct NewCategoryView_Previews: PreviewProvider {
         @State var id = UUID()
         
         AddCategoryView(id: $id, insert: false)
-            .environmentObject(CoreDataViewModel())
+            .environmentObject(CoreDataModel())
     }
 }

@@ -13,19 +13,24 @@ struct SpendingCompleteView: View {
     @State var entity: SpendingEntity
     @State var editFocus: String = "nil"
     
+    @StateObject
+    private var vm: EditSpendingViewModel
+    
     var body: some View {
         
         let categoryColor = CustomColor.nordAurora[entity.category?.color ?? ""] ?? .primary
         
-        if !edit {
+        if edit {
             NavigationView {
-                SpendingView(entity: entity, edit: $edit, editFocus: $editFocus, categoryColor: categoryColor)
+                SpendingEditView(vm: vm, entity: $entity, edit: $edit, categoryColor: categoryColor, focus: editFocus)
                     .tint(categoryColor)
+                    .accentColor(categoryColor)
             }
         } else {
             NavigationView {
-                SpendingEditView(entity: $entity, update: true, edit: $edit, categoryColor: categoryColor, focus: editFocus)
+                SpendingView(entity: entity, edit: $edit, editFocus: $editFocus, categoryColor: categoryColor)
                     .tint(categoryColor)
+                    .accentColor(categoryColor)
             }
         }
     }
@@ -34,6 +39,15 @@ struct SpendingCompleteView: View {
         withAnimation {
             edit.toggle()
         }
+    }
+}
+
+extension SpendingCompleteView {
+    internal init(edit: Binding<Bool>, entity: SpendingEntity, editFocus: String = "nil", coreDataModel cdm: CoreDataModel, ratesViewModel rvm: RatesViewModel) {
+        self._edit = edit
+        self.entity = entity
+        self.editFocus = editFocus
+        self._vm = StateObject(wrappedValue: .init(ratesViewModel: rvm, coreDataModel: cdm, entity: entity))
     }
 }
 

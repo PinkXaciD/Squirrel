@@ -1,5 +1,5 @@
 //
-//  PieChart.swift
+//  PieChartView.swift
 //  financecontrol
 //
 //  Created by PinkXaciD on R 5/08/26.
@@ -10,12 +10,14 @@ import ApplePie
 
 struct PieChartView: View {
     @EnvironmentObject 
-    private var vm: CoreDataViewModel
+    private var cdm: CoreDataModel
     @EnvironmentObject
     private var rvm: RatesViewModel
     
     @Binding
     var selectedMonth: Int
+    @Binding
+    var search: String
     
     let size: CGFloat
     let operationsInMonth: [CategoryEntityLocal]
@@ -43,7 +45,7 @@ struct PieChartView: View {
     
     private var chart: some View {
         HStack {
-            Text("")
+            Text(verbatim: "")
             
             previousButton
             
@@ -70,7 +72,7 @@ struct PieChartView: View {
             
             nextButton
             
-            Text("")
+            Text(verbatim: "")
         }
         .gesture(
             DragGesture().onEnded { value in
@@ -129,7 +131,7 @@ struct PieChartView: View {
                     
                     HStack {
                         Text(category.name)
-                            .font(.system(size: 15).bold())
+                            .font(.system(size: 14).bold())
                             .padding(.horizontal, 6)
                             .padding(.vertical, 3)
                             .foregroundColor(.white)
@@ -149,11 +151,16 @@ struct PieChartView: View {
                             .opacity(0.3)
                     }
                     .id(UUID())
+                    .onTapGesture {
+                        withAnimation {
+                            search.append("\(category.name) ")
+                        }
+                    }
                 }
             }
             Spacer()
         }
-        .font(.system(size: 15))
+        .font(.system(size: 14))
     }
     
     private var expandButton: some View {
@@ -174,8 +181,9 @@ struct PieChartView: View {
 }
 
 extension PieChartView {
-    internal init(selectedMonth: Binding<Int>, size: CGFloat, operationsInMonth: [CategoryEntityLocal], chartData: [ChartData]) {
+    internal init(selectedMonth: Binding<Int>, search: Binding<String>, size: CGFloat, operationsInMonth: [CategoryEntityLocal], chartData: [ChartData]) {
         self._selectedMonth = selectedMonth
+        self._search = search
         self.size = size
         self.operationsInMonth = operationsInMonth
         self.chartData = chartData
@@ -222,10 +230,10 @@ extension PieChartView {
 
 //struct PieChart_Previews: PreviewProvider {
 //    static var previews: some View {
-//        @StateObject var vm: CoreDataViewModel = CoreDataViewModel()
-//        let operationsInMonth = vm.operationsInMonth((Calendar.current.date(byAdding: .month, value: 0, to: .now) ?? .distantPast))
+//        @StateObject var cdm: CoreDataModel = CoreDataModel()
+//        let operationsInMonth = cdm.operationsInMonth((Calendar.current.date(byAdding: .month, value: 0, to: .now) ?? .distantPast))
 //
 //        PieChartView(selectedMonth: .constant(0), size: 200, operationsInMonth: operationsInMonth)
-//            .environmentObject(CoreDataViewModel())
+//            .environmentObject(CoreDataModel())
 //    }
 //}

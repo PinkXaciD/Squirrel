@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct ShadowedCategoriesView: View {
-    @EnvironmentObject var vm: CoreDataViewModel
+    @EnvironmentObject var cdm: CoreDataModel
     
     @State private var alertIsShowing: Bool = false
     
     var body: some View {
-        if !vm.shadowedCategories.isEmpty {
+        if !cdm.shadowedCategories.isEmpty {
             List {
-                ForEach(vm.shadowedCategories) { category in
+                ForEach(cdm.shadowedCategories) { category in
                     ShadowedCategoriesRow(category: category)
                 }
             }
@@ -33,6 +33,6 @@ struct ShadowedCategoriesView: View {
 struct ShadowedCategoriesView_Previews: PreviewProvider {
     static var previews: some View {
         ShadowedCategoriesView()
-            .environmentObject(CoreDataViewModel())
+            .environmentObject(CoreDataModel())
     }
 }

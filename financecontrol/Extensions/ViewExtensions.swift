@@ -5,7 +5,6 @@
 //  Created by PinkXaciD on R 5/08/24.
 //
 
-import Foundation
 import SwiftUI
 
 extension View {
@@ -54,6 +53,13 @@ extension View {
                         presenting.wrappedValue = false
                     }
                 }
+                .gesture(DragGesture(minimumDistance: 5).onChanged { value in
+                    if value.translation.height < 0 {
+                        withAnimation(.bouncy) {
+                            presenting.wrappedValue = false
+                        }
+                    }
+                })
                 .onChange(of: presenting.wrappedValue) { newValue in
                     if newValue {
                         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3) {
@@ -64,5 +70,15 @@ extension View {
                     }
                 }
             }
+    }
+    
+    func smallSheet() -> some View {
+        if #available(iOS 16.0, *) {
+            return self
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.hidden)
+        } else {
+            return self
+        }
     }
 }

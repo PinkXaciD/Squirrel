@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AddCurrencyView: View {
     
-    @EnvironmentObject private var vm: CoreDataViewModel
+    @EnvironmentObject private var cdm: CoreDataModel
     
     @State private var search: String = ""
     
@@ -41,7 +41,6 @@ struct AddCurrencyView: View {
                     let currency = searchResult[index]
                     
                     NewCurrencyRow(name: currency.value, code: currency.key)
-                        .padding(.vertical, 1)
                 }
             }
         }
@@ -55,7 +54,7 @@ struct AddCurrencyView: View {
     
     private func excludeAdded() -> [String] {
         var removeSet: Set<String> = Set()
-        for entity in vm.savedCurrencies {
+        for entity in cdm.savedCurrencies {
             if let tag = entity.tag {
                 removeSet.insert(tag)
             }
@@ -77,6 +76,6 @@ struct AddCurrencyView: View {
 struct AddCurrencyView_Previews {
     static var previews: some View {
         AddCurrencyView()
-            .environmentObject(CoreDataViewModel())
+            .environmentObject(CoreDataModel())
     }
 }
