@@ -11,14 +11,16 @@ class LaunchActions {
     init() {}
     
     func launch() -> Void {
-        let currentDate = dateConvertFromDate(Date.now)
-        let updateTime = UserDefaults.standard.string(forKey: "updateTime") ?? dateConvertFromDate(Date.distantPast)
+        let dateFormatter: ISO8601DateFormatter = .init()
         
-        if !Calendar.current.isDate(dateConvertFromString(updateTime), equalTo: Date.now, toGranularity: .hour) {
+        let currentDate = dateFormatter.string(from: .now)
+        let updateTime = UserDefaults.standard.string(forKey: "updateTime") ?? dateFormatter.string(from: .distantPast)
+        
+        if !Calendar.current.isDate(dateFormatter.date(from: updateTime) ?? .distantPast, equalTo: .now, toGranularity: .hour) {
             print("Rates are not up to date")
             print("Last updated at: \(updateTime)")
             UserDefaults.standard.set(true, forKey: "updateRates")
-            let newUpdateTime: String = dateConvertFromDate(Date.now)
+            let newUpdateTime: String = dateFormatter.string(from: .now)
             UserDefaults.standard.set(newUpdateTime, forKey: "updateTime")
             print("Updated to: \(newUpdateTime)")
             print("Rates updated")

@@ -13,7 +13,9 @@ struct StatsView: View {
     @EnvironmentObject
     private var rvm: RatesViewModel
     @State
-    var selectedEntity: SpendingEntity? = nil
+    var entityToEdit: SpendingEntity? = nil
+    @State
+    var entityToAddReturn: SpendingEntity? = nil
     @State
     private var edit: Bool = false
     
@@ -39,7 +41,13 @@ struct StatsView: View {
         NavigationView {
             List {
                 if search.isEmpty {
-                    PieChartView(selectedMonth: $selectedMonth, search: $search, size: UIScreen.main.bounds.width / 1.7, operationsInMonth: operationsInMonth, chartData: newChartData)
+                    PieChartView(
+                        selectedMonth: $selectedMonth,
+                        search: $search,
+                        size: UIScreen.main.bounds.width / 1.7,
+                        operationsInMonth: operationsInMonth,
+                        chartData: newChartData
+                    )
                 }
                 
                 if !listData.isEmpty {
@@ -47,7 +55,7 @@ struct StatsView: View {
                         if let sectionData = listData[sectionKey] {
                             Section {
                                 ForEach(sectionData) { spending in
-                                    StatsRow(entity: spending, entityToEdit: $selectedEntity, edit: $edit)
+                                    StatsRow(entity: spending, entityToEdit: $entityToEdit, entityToAddReturn: $entityToAddReturn, edit: $edit)
                                 }
                             } header: {
                                 Text(sectionKey)
@@ -57,13 +65,7 @@ struct StatsView: View {
                         }
                     }
                 } else {
-                    HStack {
-                        Spacer()
-                        Text("No results")
-                            .font(.body.bold())
-                            .padding()
-                        Spacer()
-                    }
+                    noResults
                 }
             }
             .searchable(
@@ -77,13 +79,16 @@ struct StatsView: View {
             .toolbar {
                 toolbar
             }
-            .sheet(item: $selectedEntity) { entity in
+            .sheet(item: $entityToEdit) { entity in
                 SpendingCompleteView(edit: $edit, entity: entity, coreDataModel: cdm, ratesViewModel: rvm)
                     .smallSheet()
             }
             .sheet(isPresented: $showFilters) {
                 filters
                     .smallSheet()
+            }
+            .sheet(item: $entityToAddReturn) { entity in
+                AddReturnView(spending: entity, cdm: cdm, rvm: rvm)
             }
             .navigationTitle("Stats")
         }
@@ -106,6 +111,16 @@ struct StatsView: View {
             secondFilterDate: $endFilterDate,
             applyFilters: $applyFilters
         )
+    }
+    
+    private var noResults: some View {
+        HStack {
+            Spacer()
+            Text("No results")
+                .font(.body.bold())
+                .padding()
+            Spacer()
+        }
     }
 }
 
@@ -166,6 +181,7 @@ extension StatsView {
         
         HapticManager.shared.impact(.soft)
     }
+    
 }
 
 struct StatsView_Previews: PreviewProvider {

@@ -42,7 +42,7 @@ struct NewCurrencyRow: View {
     }
     
     private func addCurrency() {
-        cdm.addCurrency(name: Locale(identifier: "en_US").localizedString(forCurrencyCode: code) ?? "Error", tag: code)
+        cdm.addCurrency(tag: code)
         dismiss()
     }
 }

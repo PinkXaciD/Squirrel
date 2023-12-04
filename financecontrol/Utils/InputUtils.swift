@@ -15,7 +15,7 @@ struct InputUtils {
         &&
         placeCheck(place: place)
         &&
-        comment.count <= 300
+        commentCheck(comment: comment)
     }
     
     func amountCheck(amount: String) -> Bool {

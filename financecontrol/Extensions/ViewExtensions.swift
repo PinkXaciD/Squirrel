@@ -81,4 +81,54 @@ extension View {
             return self
         }
     }
+    
+    func spendingAmountTextFieldStyle() -> some View {
+        return self
+            .modifier(SpendingAmountTextFieldStyleModifier())
+    }
+    
+    func spendingPlaceTextFieldStyle() -> some View {
+        return self
+            .modifier(SpendingPlaceTextFieldStyleModifier())
+    }
+}
+
+extension Text {
+    func amountFont() -> Text {
+        return self
+            .font(.system(.largeTitle, design: .rounded).bold())
+    }
+}
+
+struct SpendingPlaceTextFieldStyleModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .font(.title2.bold())
+            .multilineTextAlignment(.center)
+            .overlay(overlay)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .padding(.horizontal, -20)
+    }
+    
+    private var overlay: some View {
+        RoundedRectangle(cornerRadius: 10)
+            .stroke(Color(uiColor: UIColor.secondarySystemGroupedBackground), lineWidth: 1)
+    }
+}
+
+struct SpendingAmountTextFieldStyleModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .font(.system(.largeTitle, design: .rounded).bold())
+            .multilineTextAlignment(.center)
+            .overlay(overlay)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .padding(.horizontal, -20)
+            .keyboardType(.decimalPad)
+    }
+    
+    private var overlay: some View {
+        RoundedRectangle(cornerRadius: 10)
+            .stroke(Color(uiColor: UIColor.secondarySystemGroupedBackground), lineWidth: 1)
+    }
 }

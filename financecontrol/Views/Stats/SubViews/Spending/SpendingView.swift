@@ -22,11 +22,17 @@ struct SpendingView: View {
     var editFocus: String
     var categoryColor: Color
     
+    @Binding
+    var entityToAddReturn: SpendingEntity?
+    
     @Environment(\.dismiss) 
     private var dismiss
     
     @AppStorage("defaultCurrency") 
     var defaultCurrency: String = "USD"
+    
+    @State
+    private var alertIsPresented: Bool = false
     
     var body: some View {
               
@@ -34,6 +40,17 @@ struct SpendingView: View {
             infoSection
             
             commentSection
+            
+            if !(entity.returns?.allObjects.isEmpty ?? true) {
+                returnsSection
+            }
+        }
+        .alert("Delete this expense?", isPresented: $alertIsPresented) {
+            Button("Cancel", role: .cancel) {}
+            Button("Delete", role: .destructive) {
+                dismiss()
+                cdm.deleteSpending(entity)
+            }
         }
         .toolbar {
             closeToolbar
@@ -79,8 +96,8 @@ struct SpendingView: View {
                     }
             }
             
-            Text(entity.amount.formatted(.currency(code: entity.wrappedCurrency)))
-                .font(.system(.largeTitle, design: .rounded).bold())
+            Text(entity.amountWithReturns.formatted(.currency(code: entity.wrappedCurrency)))
+                .amountFont()
                 .onTapGesture {
                     editAction("amount")
                 }
@@ -100,7 +117,7 @@ struct SpendingView: View {
     }
     
     private var commentSection: some View {
-        Section(header: Text("Comment")) {
+        Section(header: Text("Comment"), footer: returnAndDeleteButtons) {
             if let comment = entity.comment, !comment.isEmpty {
                 Text(comment)
             } else {
@@ -111,6 +128,72 @@ struct SpendingView: View {
         .onTapGesture {
             editAction("comment")
         }
+    }
+    
+    var returnsSection: some View {
+        Section {
+            if let returns =  entity.returns?.allObjects as? [ReturnEntity] {
+                ForEach(returns) { returnEntity in
+                    VStack(alignment: .leading) {
+                        HStack {
+                            Text(returnEntity.amount.formatted(.currency(code: entity.wrappedCurrency)))
+                            
+                            Spacer()
+                            
+                            Text(returnEntity.date?.formatted(date: .abbreviated, time: .shortened) ?? "Date error")
+                        }
+                        
+                        if let name = returnEntity.name, !name.isEmpty {
+                            Text(name)
+                                .font(.callout)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.vertical, 1)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        Button(role: .destructive) {
+                            cdm.deleteReturn(spendingReturn: returnEntity)
+                        } label: {
+                            Label("Delete", systemImage: "trash.fill")
+                        }
+                        .tint(.red)
+                    }
+                }
+            }
+        } header: {
+            Text("\(entity.returns?.allObjects.count ?? 0) returns")
+        }
+    }
+    
+    var returnAndDeleteButtons: some View {
+        HStack(spacing: 15) {
+            Button(entity.amountWithReturns == 0 ? "Returned" : "Add return") {
+                entityToAddReturn = entity
+            }
+            .foregroundColor(entity.amountWithReturns == 0 ? .secondary : .green)
+            .buttonStyle(.borderless)
+            .disabled(entity.amountWithReturns == 0)
+            .frame(maxWidth: .infinity)
+            .padding(10)
+            .background {
+                RoundedRectangle(cornerRadius: 10)
+                    .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
+            }
+            .padding(.top, 10)
+            
+            Button("Delete", role: .destructive) {
+                alertIsPresented.toggle()
+            }
+            .buttonStyle(.borderless)
+            .frame(maxWidth: .infinity)
+            .padding(10)
+            .background {
+                RoundedRectangle(cornerRadius: 10)
+                    .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
+            }
+            .padding(.top, 10)
+        }
+        .padding(.horizontal, -20)
     }
     
     private var editToolbar: ToolbarItem<(), some View> {
@@ -133,7 +216,6 @@ struct SpendingView: View {
 }
 
 extension SpendingView {
-    
     private func editAction(_ field: String = "nil") {
         editFocus = field
         withAnimation {

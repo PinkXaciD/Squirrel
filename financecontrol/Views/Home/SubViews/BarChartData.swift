@@ -33,7 +33,7 @@ struct BarChartData {
         for entity in array {
             let formattedDate = dateFormatForBar(entity.wrappedDate)
             let previousValue = result[formattedDate] ?? 0
-            result.updateValue(previousValue + entity.amountUSD, forKey: formattedDate)
+            result.updateValue(previousValue + entity.amountUSDWithReturns, forKey: formattedDate)
         }
         return result
     }

@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "-%@" : {
+
+    },
     "%@" : {
 
     },
@@ -61,6 +64,28 @@
         }
       }
     },
+    "%lld returns" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld return"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "new",
+                  "value" : "%lld returns"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "0.00" : {
 
     },
@@ -80,6 +105,9 @@
     "About" : {
 
     },
+    "Add" : {
+
+    },
     "Add Currency" : {
 
     },
@@ -93,6 +121,9 @@
 
     },
     "Add New currency" : {
+
+    },
+    "Add return" : {
 
     },
     "Add to favorites" : {
@@ -357,6 +388,12 @@
 
     },
     "Restore" : {
+
+    },
+    "Return full amount" : {
+
+    },
+    "Returned" : {
 
     },
     "Save" : {

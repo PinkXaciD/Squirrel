@@ -40,7 +40,9 @@ final class AddSpendingViewModel: ViewModel {
         if let doubleAmount = Double(amount) {
             var spending: SpendingEntityLocal = .init(
                 amountUSD: 0,
-                amount: doubleAmount,
+                amount: doubleAmount, 
+                amountWithReturns: 0,
+                amountUSDWithReturns: 0,
                 comment: comment,
                 currency: currency,
                 date: date,

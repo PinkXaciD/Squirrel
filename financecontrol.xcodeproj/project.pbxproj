@@ -39,6 +39,11 @@
 		8D591EA82A93AAF700A9CD07 /* LaunchActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D591EA72A93AAF700A9CD07 /* LaunchActions.swift */; };
 		8D6059E22AB874FA0043A293 /* RatesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6059E12AB874FA0043A293 /* RatesViewModel.swift */; };
 		8D6059E42AB87AF60043A293 /* RatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6059E32AB87AF60043A293 /* RatesView.swift */; };
+		8D6E44102B18C53100FDFF9D /* ReturnEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6E440E2B18C53100FDFF9D /* ReturnEntity+CoreDataClass.swift */; };
+		8D6E44152B18C5AE00FDFF9D /* ReturnEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6E44132B18C5AE00FDFF9D /* ReturnEntity+CoreDataProperties.swift */; };
+		8D6E441B2B18C6E800FDFF9D /* ReturnsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6E441A2B18C6E800FDFF9D /* ReturnsModel.swift */; };
+		8D6E441D2B18D63600FDFF9D /* AddReturnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6E441C2B18D63600FDFF9D /* AddReturnView.swift */; };
+		8D6E441F2B18D6AE00FDFF9D /* AddReturnViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6E441E2B18D6AE00FDFF9D /* AddReturnViewModel.swift */; };
 		8D75E5B02A67FAF9009CA5C6 /* UiColorSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D75E5AF2A67FAF9009CA5C6 /* UiColorSelector.swift */; };
 		8D78BB8A2A9A1B570075DC70 /* PieChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D78BB892A9A1B570075DC70 /* PieChartView.swift */; };
 		8D7ECC7A2AACAF6F005A515D /* CustomColorSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D7ECC792AACAF6F005A515D /* CustomColorSelector.swift */; };
@@ -116,6 +121,11 @@
 		8D591EA72A93AAF700A9CD07 /* LaunchActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchActions.swift; sourceTree = "<group>"; };
 		8D6059E12AB874FA0043A293 /* RatesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatesViewModel.swift; sourceTree = "<group>"; };
 		8D6059E32AB87AF60043A293 /* RatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatesView.swift; sourceTree = "<group>"; };
+		8D6E440E2B18C53100FDFF9D /* ReturnEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReturnEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
+		8D6E44132B18C5AE00FDFF9D /* ReturnEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "ReturnEntity+CoreDataProperties.swift"; path = "DataManagment/ReturnEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		8D6E441A2B18C6E800FDFF9D /* ReturnsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReturnsModel.swift; sourceTree = "<group>"; };
+		8D6E441C2B18D63600FDFF9D /* AddReturnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddReturnView.swift; sourceTree = "<group>"; };
+		8D6E441E2B18D6AE00FDFF9D /* AddReturnViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddReturnViewModel.swift; sourceTree = "<group>"; };
 		8D75E5AF2A67FAF9009CA5C6 /* UiColorSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UiColorSelector.swift; sourceTree = "<group>"; };
 		8D78BB892A9A1B570075DC70 /* PieChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieChartView.swift; sourceTree = "<group>"; };
 		8D7ECC792AACAF6F005A515D /* CustomColorSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomColorSelector.swift; sourceTree = "<group>"; };
@@ -218,6 +228,8 @@
 				8DCB302C2A97314400DC9ABB /* StatsRow.swift */,
 				8D5894942A829D8C00A6DB65 /* Spending */,
 				8DF003762B0CC0A200133554 /* FiltersView.swift */,
+				8D6E441C2B18D63600FDFF9D /* AddReturnView.swift */,
+				8D6E441E2B18D6AE00FDFF9D /* AddReturnViewModel.swift */,
 			);
 			path = SubViews;
 			sourceTree = "<group>";
@@ -300,6 +312,8 @@
 		8D4B0ACD2A55F225008D32B1 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				8D6E44132B18C5AE00FDFF9D /* ReturnEntity+CoreDataProperties.swift */,
+				8D6E440E2B18C53100FDFF9D /* ReturnEntity+CoreDataClass.swift */,
 				8D88CDBC2AA0E37000668DEC /* CategoryEntity+CoreDataClass.swift */,
 				8D88CDBD2AA0E37000668DEC /* CategoryEntity+CoreDataProperties.swift */,
 				8D88CDBE2AA0E37000668DEC /* SpendingEntity+CoreDataClass.swift */,
@@ -336,6 +350,7 @@
 			children = (
 				8D4B0ACD2A55F225008D32B1 /* Controllers */,
 				8D4E08172AAA152A00B3544F /* SpendingsModel.swift */,
+				8D6E441A2B18C6E800FDFF9D /* ReturnsModel.swift */,
 				8D4E08192AAA15B900B3544F /* CategoriesModel.swift */,
 				8D4E081B2AAA163800B3544F /* CurrenciesModel.swift */,
 				8D2316F72AD3112F00CEE8C1 /* ErrorHandler.swift */,
@@ -541,6 +556,8 @@
 				8D88CDC12AA0E37000668DEC /* CategoryEntity+CoreDataProperties.swift in Sources */,
 				8DCB302F2A97578F00DC9ABB /* ViewExtensions.swift in Sources */,
 				8D88CDC32AA0E37000668DEC /* SpendingEntity+CoreDataProperties.swift in Sources */,
+				8D6E441B2B18C6E800FDFF9D /* ReturnsModel.swift in Sources */,
+				8D6E44152B18C5AE00FDFF9D /* ReturnEntity+CoreDataProperties.swift in Sources */,
 				8DC4279C2A570D9600525DC4 /* StatsView.swift in Sources */,
 				8D7ECC7A2AACAF6F005A515D /* CustomColorSelector.swift in Sources */,
 				8D2240BB2B0F949100D5572B /* SpendingViewModelProtocol.swift in Sources */,
@@ -549,6 +566,7 @@
 				8D0763A82A4B257F00D2C3FF /* CurrencySelector.swift in Sources */,
 				8DB294BA2A7C0FF800170BA2 /* NumbersViewModifier.swift in Sources */,
 				8DBFEBD02A49ED4800165414 /* ContentView.swift in Sources */,
+				8D6E441D2B18D63600FDFF9D /* AddReturnView.swift in Sources */,
 				8D9B50122AC1A5C800C7732B /* RatesModel.swift in Sources */,
 				8D0DF54F2AE80C2400C3CC1F /* CustomAlertType.swift in Sources */,
 				8D1E71E52AAF1C1A004A17B4 /* CategoryEditView.swift in Sources */,
@@ -561,9 +579,11 @@
 				8DBFEBCE2A49ED4800165414 /* financecontrolApp.swift in Sources */,
 				8D3876632A740F960005FFAF /* InputUtils.swift in Sources */,
 				8DD5C38F2A607F1C00FC862C /* CategorySelector.swift in Sources */,
+				8D6E44102B18C53100FDFF9D /* ReturnEntity+CoreDataClass.swift in Sources */,
 				8D88CDC22AA0E37000668DEC /* SpendingEntity+CoreDataClass.swift in Sources */,
 				8D4E081C2AAA163800B3544F /* CurrenciesModel.swift in Sources */,
 				8D591EA82A93AAF700A9CD07 /* LaunchActions.swift in Sources */,
+				8D6E441F2B18D6AE00FDFF9D /* AddReturnViewModel.swift in Sources */,
 				8DD5C38C2A603F4500FC862C /* Formatters.swift in Sources */,
 				8D2240BD2B0F94B500D5572B /* ViewModelProtocol.swift in Sources */,
 				8D35AC962B0E62DE0030F7DF /* AddSpendingViewModel.swift in Sources */,
@@ -728,7 +748,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "13-beta";
+				CURRENT_PROJECT_VERSION = "14-beta";
 				DEVELOPMENT_ASSET_PATHS = "\"financecontrol/Preview Content\"";
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				ENABLE_PREVIEWS = YES;
@@ -746,7 +766,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.2.6;
+				MARKETING_VERSION = 0.2.7;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pinkxacid.financecontrol;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -766,7 +786,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "13-beta";
+				CURRENT_PROJECT_VERSION = "14-beta";
 				DEVELOPMENT_ASSET_PATHS = "\"financecontrol/Preview Content\"";
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				ENABLE_PREVIEWS = YES;
@@ -784,7 +804,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.2.6;
+				MARKETING_VERSION = 0.2.7;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pinkxacid.financecontrol;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

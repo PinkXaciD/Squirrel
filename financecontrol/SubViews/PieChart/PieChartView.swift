@@ -76,7 +76,7 @@ struct PieChartView: View {
         }
         .gesture(
             DragGesture().onEnded { value in
-                if value.translation.width > 0 && selectedMonth > ((chartData.count - 1) * -1) {
+                if value.translation.width > 0 && selectedMonth > ((chartData.count) * -1) {
                     decreaseMonth()
                 } else if value.translation.width < 0 && selectedMonth < 0 {
                     increaseMonth()
@@ -95,7 +95,7 @@ struct PieChartView: View {
                 .font(.title)
         }
         .buttonStyle(.plain)
-        .disabled(selectedMonth <= ((chartData.count * -1) + 1))
+        .disabled(selectedMonth <= ((chartData.count * -1)))
     }
     
     private var nextButton: some View {
@@ -116,10 +116,10 @@ struct PieChartView: View {
             var firstSum: Double = 0
             var secondSum: Double = 0
             for spending in first.spendings {
-                firstSum += spending.amountUSD
+                firstSum += spending.amountUSDWithReturns
             }
             for spending in second.spendings {
-                secondSum += spending.amountUSD
+                secondSum += spending.amountUSDWithReturns
             }
             return firstSum > secondSum
         }
@@ -191,7 +191,7 @@ extension PieChartView {
     
     private func setData(_ operations: [CategoryEntityLocal]) -> [APChartSectorData] {
         let result = operations.map { element in
-            let value = element.spendings.map { $0.amountUSD }.reduce(0, +)
+            let value = element.spendings.map { $0.amountUSDWithReturns }.reduce(0, +)
             return APChartSectorData(
                 value,
                 Color[element.color],
@@ -199,7 +199,7 @@ extension PieChartView {
             )
         }
         
-        return result.compactMap { $0 }.sorted(by: >)
+        return result.compactMap { $0 }.filter { $0.value != 0 }.sorted(by: >)
     }
     
     private func countCategorySpendings(_ category: CategoryEntityLocal) -> Double {
@@ -207,9 +207,9 @@ extension PieChartView {
         var result: Double = 0
         for spending in category.spendings {
             if spending.currency == defaultCurrency {
-                result += spending.amount
+                result += spending.amountWithReturns
             } else {
-                result += (spending.amountUSD * defaultCurrencyValue)
+                result += (spending.amountUSDWithReturns * defaultCurrencyValue)
             }
         }
         return result
