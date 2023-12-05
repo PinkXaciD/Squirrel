@@ -18,31 +18,7 @@ func dateFormat(date: Date, time: Bool) -> String {
         } else {
             dateFormatter.timeStyle = .none
         }
-//        dateFormatter.locale = Locale(languageCode: Locale.LanguageCode("en"), languageRegion: Locale.autoupdatingCurrent.region)
         dateFormatter.calendar = Calendar.autoupdatingCurrent
-        return dateFormatter
-    }()
-    return dateFormatter.string(from: date)
-}
-
-func dateConvertFromString(_ date: String) -> Date {
-    let dateFormatter: DateFormatter = {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .short
-        dateFormatter.timeStyle = .short
-        dateFormatter.locale = Locale(languageCode: Locale.LanguageCode("en"), languageRegion: Locale.autoupdatingCurrent.region)
-        return dateFormatter
-    }()
-    return dateFormatter.date(from: date) ?? Date.distantPast
-}
-
-func dateConvertFromDate(_ date: Date) -> String {
-    let dateFormatter: DateFormatter = {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .short
-        dateFormatter.timeStyle = .short
-        dateFormatter.calendar = Calendar(identifier: .gregorian)
-        dateFormatter.locale = Locale(languageCode: Locale.LanguageCode("en"), languageRegion: Locale.autoupdatingCurrent.region)
         return dateFormatter
     }()
     return dateFormatter.string(from: date)

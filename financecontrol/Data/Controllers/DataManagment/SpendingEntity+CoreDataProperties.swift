@@ -24,6 +24,7 @@ extension SpendingEntity {
     @NSManaged public var id: UUID?
     @NSManaged public var place: String?
     @NSManaged public var category: CategoryEntity?
+    @NSManaged public var returns: NSSet?
     
     public var wrappedCurrency: String {
         currency ?? "Error"
@@ -40,16 +41,75 @@ extension SpendingEntity {
     public var categoryName: String {
         category?.name ?? "Error"
     }
-
+    
+    public var amountUSDWithReturns: Double {
+        guard
+            let returnsArr = returns?.allObjects as? [ReturnEntity],
+            !returnsArr.isEmpty
+        else {
+            return amountUSD
+        }
+        
+        let result = returnsArr.map{ $0.amountUSD }.reduce(amountUSD, -)
+        
+        if result < 0 {
+            return 0
+        } else {
+            return result
+        }
+    }
+    
+    public var returnsArr: [ReturnEntity] {
+        guard
+            let returns = returns?.allObjects as? [ReturnEntity]
+        else {
+            return []
+        }
+        
+        return returns
+    }
+    
+    public var returnsSum: Double {
+        guard
+            !returnsArr.isEmpty
+        else {
+            return 0
+        }
+        
+        return returnsArr.map({ $0.amount }).reduce(0, +)
+    }
+    
+    public var amountWithReturns: Double {
+        return amount - returnsSum
+    }
 }
 
 extension SpendingEntity : Identifiable {
 
 }
 
+// MARK: Generated accessors for returns
+extension SpendingEntity {
+
+    @objc(addReturnsObject:)
+    @NSManaged public func addToReturns(_ value: ReturnEntity)
+
+    @objc(removeReturnsObject:)
+    @NSManaged public func removeFromReturns(_ value: ReturnEntity)
+
+    @objc(addReturns:)
+    @NSManaged public func addToReturns(_ values: NSSet)
+
+    @objc(removeReturns:)
+    @NSManaged public func removeFromReturns(_ values: NSSet)
+
+}
+
 struct SpendingEntityLocal {
     var amountUSD: Double
     var amount: Double
+    var amountWithReturns: Double
+    var amountUSDWithReturns: Double
     var comment: String
     var currency: String
     var date: Date

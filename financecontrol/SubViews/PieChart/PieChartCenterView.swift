@@ -61,9 +61,9 @@ extension CenterChartView {
         for value in values {
             for spending in value {
                 if spending.currency == defaultCurrency {
-                    result += spending.amount
+                    result += spending.amountWithReturns
                 } else {
-                    result += spending.amountUSD * (rvm.rates[defaultCurrency] ?? 1)
+                    result += spending.amountUSDWithReturns * (rvm.rates[defaultCurrency] ?? 1)
                 }
             }
         }

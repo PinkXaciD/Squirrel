@@ -9,18 +9,22 @@ import SwiftUI
 
 struct StatsRow: View {
     @EnvironmentObject var cdm: CoreDataModel
+    @EnvironmentObject var rvm: RatesViewModel
     
     let entity: SpendingEntity
     
     @Binding var entityToEdit: SpendingEntity?
+    @Binding var entityToAddReturn: SpendingEntity?
     @Binding var edit: Bool
     @State private var showSheet: Bool = false
     
     var body: some View {
         
         Button {
-            entityToEdit = entity
-            showSheet.toggle()
+            if entityToEdit == nil {
+                entityToEdit = entity
+                showSheet.toggle()
+            }
         } label: {
             buttonLabel
         }
@@ -29,9 +33,13 @@ struct StatsRow: View {
         }
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             deleteButton
+            
+            returnButon
         }
         .contextMenu {
             editButton
+            
+            returnButon
             
             deleteButton
         }
@@ -63,7 +71,7 @@ struct StatsRow: View {
                     .font(.caption)
                     .foregroundColor(Color.secondary)
                 
-                Text("\((entity.amount * -1.0).formatted(.currency(code: entity.wrappedCurrency)))")
+                Text("-\((entity.amountWithReturns).formatted(.currency(code: entity.wrappedCurrency)))")
                     .foregroundColor(.primary)
             }
         }
@@ -87,7 +95,7 @@ struct StatsRow: View {
                 Image(systemName: "pencil")
             }
         }
-        .tint(Color.yellow)
+        .tint(.accentColor)
     }
     
     var deleteButton: some View {
@@ -100,7 +108,17 @@ struct StatsRow: View {
                 Image(systemName: "trash.fill")
             }
         }
-        .tint(Color.red)
+        .tint(.red)
+    }
+    
+    private var returnButon: some View {
+        Button {
+            entityToAddReturn = entity
+        } label: {
+            Label("Add return", systemImage: "arrow.uturn.backward")
+        }
+        .tint(.yellow)
+        .disabled(entity.amountWithReturns == 0)
     }
     
     // MARK: Functions

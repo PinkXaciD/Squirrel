@@ -93,7 +93,7 @@ struct CategoryEditSubView: View {
                                     .font(.caption)
                                     .foregroundColor(Color.secondary)
                                 
-                                Text("\((spending.amount * -1.0).formatted(.currency(code: spending.wrappedCurrency)))")
+                                Text("\((spending.amountWithReturns * -1.0).formatted(.currency(code: spending.wrappedCurrency)))")
                                     .foregroundColor(.primary)
                             }
                         }

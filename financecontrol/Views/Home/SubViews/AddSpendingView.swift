@@ -73,12 +73,11 @@ struct AddSpendingView: View {
                 .amountStyle()
                 .focused($focusedField, equals: .amount)
                 .onAppear(perform: amountFocus)
-                /// iOS 16 bugfix
-                .onChange(of: vm.amount) { newValue in
-                    filterAmount = newValue
-                }
-                .onChange(of: filterAmount) { newValue in
-                    vm.amount = newValue
+                .onChange(of: vm.amount) { newValue in      ///
+                    filterAmount = newValue                 ///
+                }                                           /// iOS 16 fix
+                .onChange(of: filterAmount) { newValue in   ///
+                    vm.amount = newValue                    ///
                 }
                 /// For iPad or external keyboard
                 .onSubmit {

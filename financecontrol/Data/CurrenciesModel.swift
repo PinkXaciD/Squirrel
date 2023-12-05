@@ -13,12 +13,11 @@ extension CoreDataModel {
     func fetchCurrencies() {
         
         let request = CurrencyEntity.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
         
         do {
             savedCurrencies = try context.fetch(request)
             if savedCurrencies.isEmpty {
-                addCurrency(name: "US Dollar", tag: "USD", isFavorite: true)
+                addCurrency(tag: "USD", isFavorite: true)
                 UserDefaults.standard.set("USD", forKey: "defaultCurrency")
             }
         } catch let error {
@@ -26,13 +25,12 @@ extension CoreDataModel {
         }
     }
     
-    func addCurrency(name: String, tag: String, isFavorite: Bool = false) {
+    func addCurrency(tag: String, isFavorite: Bool = false) {
         
         if let description = NSEntityDescription.entity(forEntityName: "CurrencyEntity", in: context) {
             
             let newCurrency = CurrencyEntity(entity: description, insertInto: context)
             
-            newCurrency.name = name
             newCurrency.tag = tag
             newCurrency.isFavorite = isFavorite
             

@@ -45,7 +45,9 @@ final class EditSpendingViewModel: SpendingViewModel {
         if let doubleAmount = Double(amount) {
             var spending: SpendingEntityLocal = .init(
                 amountUSD: 0,
-                amount: doubleAmount,
+                amount: doubleAmount, 
+                amountWithReturns: 0,
+                amountUSDWithReturns: 0,
                 comment: comment,
                 currency: currency,
                 date: date,
@@ -83,5 +85,10 @@ final class EditSpendingViewModel: SpendingViewModel {
             )
             .publish()
         }
+    }
+    
+    func removeReturn(_ returnEntity: ReturnEntity) {
+        entity.removeFromReturns(returnEntity)
+        cdm.manager.save()
     }
 }

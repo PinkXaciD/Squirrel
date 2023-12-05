@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "iOS_AppIcon_Default.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

@@ -72,7 +72,6 @@ extension CoreDataModel {
     }
     
     func deleteSpending(_ spending: SpendingEntity) {
-        
         context.delete(spending)
         manager.save()
         fetchSpendings()
@@ -105,9 +104,9 @@ extension CoreDataModel {
         
         return spendings.map { spending in
             if spending.currency == defaultCurrency {
-                spending.amount
+                spending.amountWithReturns
             } else {
-                spending.amountUSD * usdRate
+                spending.amountUSDWithReturns * usdRate
             }
         }
         .reduce(0, +)
@@ -152,7 +151,9 @@ extension CoreDataModel {
                     localCategory.spendings.append(
                         SpendingEntityLocal(
                             amountUSD: spending.amountUSD,
-                            amount: spending.amount,
+                            amount: spending.amount, 
+                            amountWithReturns: spending.amountWithReturns, 
+                            amountUSDWithReturns: spending.amountUSDWithReturns,
                             comment: spending.comment ?? "",
                             currency: spending.wrappedCurrency,
                             date: spending.wrappedDate,
@@ -259,6 +260,8 @@ struct ChartData: Identifiable {
                     let localSpending = SpendingEntityLocal(
                         amountUSD: spending.amountUSD,
                         amount: spending.amount,
+                        amountWithReturns: spending.amountWithReturns,
+                        amountUSDWithReturns: spending.amountUSDWithReturns,
                         comment: spending.comment ?? "",
                         currency: spending.wrappedCurrency,
                         date: spending.wrappedDate,
@@ -281,7 +284,9 @@ struct ChartData: Identifiable {
                     
                     let localSpending = SpendingEntityLocal(
                         amountUSD: spending.amountUSD,
-                        amount: spending.amount,
+                        amount: spending.amount, 
+                        amountWithReturns: spending.amountWithReturns, 
+                        amountUSDWithReturns: spending.amountUSDWithReturns,
                         comment: spending.comment ?? "",
                         currency: spending.wrappedCurrency,
                         date: spending.wrappedDate,
@@ -312,13 +317,6 @@ struct SpendingListData {
     init(entity: SpendingEntity) {
         var dateFormatter: DateFormatter {
             let formatter = DateFormatter()
-//            switch Calendar.current.identifier {
-//            case .japanese, .buddhist:
-//                formatter.dateFormat = "MMMM d, GGGG y"
-//                
-//            default:
-//                formatter.dateFormat = "MMMM d, y"
-//            }
             formatter.dateStyle = .long
             formatter.timeStyle = .none
             return formatter
