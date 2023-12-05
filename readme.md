@@ -2,7 +2,7 @@
 
 **Simple iOS native app for spendings control, written using SwiftUI (in progress)**
 
-![Images](README/Screenshots/Header.png)
+![Images](README/Screenshots/Cover.png)
 
 ## Why Squirrel is not another spending tracker app?
 - Simple and intuitive interface

@@ -33,6 +33,8 @@ struct StatsView: View {
     @State
     var search: String = ""
     
+    private var sheetFraction: CGFloat = 0.7
+    
     var body: some View {
         let listData: [String: [SpendingEntity]] = getListData()
         let operationsInMonth: [CategoryEntityLocal] = cdm.operationsInMonth(.now.getFirstDayOfMonth(selectedMonth))
@@ -80,8 +82,13 @@ struct StatsView: View {
                 toolbar
             }
             .sheet(item: $entityToEdit) { entity in
-                SpendingCompleteView(edit: $edit, entity: entity, coreDataModel: cdm, ratesViewModel: rvm)
-                    .smallSheet()
+                SpendingCompleteView(
+                    edit: $edit,
+                    entity: entity,
+                    coreDataModel: cdm,
+                    ratesViewModel: rvm
+                )
+                .smallSheet(sheetFraction)
             }
             .sheet(isPresented: $showFilters) {
                 filters

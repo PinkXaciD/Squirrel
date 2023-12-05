@@ -96,9 +96,7 @@ final class AddReturnViewModel: ViewModel {
     }
     
     func addFull() {
-        cdm.addFullReturn(to: spending)
-        
-        HapticManager.shared.notification(.success)
+        self.amount = String(spending.amountWithReturns)
     }
     
     private func countSum(_ newAmount: Double, returns: [ReturnEntity]) -> Bool {

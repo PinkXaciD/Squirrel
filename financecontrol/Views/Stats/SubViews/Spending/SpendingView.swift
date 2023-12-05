@@ -24,6 +24,8 @@ struct SpendingView: View {
     
     @Binding
     var entityToAddReturn: SpendingEntity?
+    @Binding
+    var returnToEdit: ReturnEntity? 
     
     @Environment(\.dismiss) 
     private var dismiss
@@ -35,7 +37,6 @@ struct SpendingView: View {
     private var alertIsPresented: Bool = false
     
     var body: some View {
-              
         Form {
             infoSection
             
@@ -110,7 +111,7 @@ struct SpendingView: View {
                 .font(.system(.body, design: .rounded))
             }
         }
-        .padding(.bottom, 20)
+        .padding(.bottom, 40)
         .textCase(nil)
         .foregroundColor(categoryColor)
         .frame(maxWidth: .infinity)
@@ -132,32 +133,39 @@ struct SpendingView: View {
     
     var returnsSection: some View {
         Section {
-            if let returns =  entity.returns?.allObjects as? [ReturnEntity] {
-                ForEach(returns) { returnEntity in
-                    VStack(alignment: .leading) {
-                        HStack {
-                            Text(returnEntity.amount.formatted(.currency(code: entity.wrappedCurrency)))
-                            
-                            Spacer()
-                            
-                            Text(returnEntity.date?.formatted(date: .abbreviated, time: .shortened) ?? "Date error")
-                        }
+            ForEach(entity.returnsArr) { returnEntity in
+                VStack(alignment: .leading) {
+                    HStack {
+                        Text(returnEntity.amount.formatted(.currency(code: entity.wrappedCurrency)))
                         
-                        if let name = returnEntity.name, !name.isEmpty {
-                            Text(name)
-                                .font(.callout)
-                                .foregroundColor(.secondary)
-                        }
+                        Spacer()
+                        
+                        Text(returnEntity.date?.formatted(date: .abbreviated, time: .shortened) ?? "Date error")
                     }
-                    .padding(.vertical, 1)
-                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                        Button(role: .destructive) {
-                            cdm.deleteReturn(spendingReturn: returnEntity)
-                        } label: {
-                            Label("Delete", systemImage: "trash.fill")
-                        }
-                        .tint(.red)
+                    
+                    if let name = returnEntity.name, !name.isEmpty {
+                        Text(name)
+                            .font(.callout)
+                            .foregroundColor(.secondary)
                     }
+                }
+                .padding(.vertical, 1)
+                .foregroundColor(.primary)
+                .swipeActions(edge: .leading) {
+                    Button {
+                        returnToEdit = returnEntity
+                    } label: {
+                        Label("Edit", systemImage: "pencil")
+                    }
+                    .tint(.yellow)
+                }
+                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    Button(role: .destructive) {
+                        cdm.deleteReturn(spendingReturn: returnEntity)
+                    } label: {
+                        Label("Delete", systemImage: "trash.fill")
+                    }
+                    .tint(.red)
                 }
             }
         } header: {
@@ -167,30 +175,34 @@ struct SpendingView: View {
     
     var returnAndDeleteButtons: some View {
         HStack(spacing: 15) {
-            Button(entity.amountWithReturns == 0 ? "Returned" : "Add return") {
+            Button {
                 entityToAddReturn = entity
+            } label: {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10)
+                        .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
+                    
+                    Text(entity.amountWithReturns == 0 ? "Returned" : "Add return")
+                        .padding(10)
+                }
             }
             .foregroundColor(entity.amountWithReturns == 0 ? .secondary : .green)
-            .buttonStyle(.borderless)
             .disabled(entity.amountWithReturns == 0)
             .frame(maxWidth: .infinity)
-            .padding(10)
-            .background {
-                RoundedRectangle(cornerRadius: 10)
-                    .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
-            }
             .padding(.top, 10)
             
-            Button("Delete", role: .destructive) {
+            Button(role: .destructive) {
                 alertIsPresented.toggle()
+            } label: {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10)
+                        .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
+                    
+                    Text("Delete")
+                        .padding(10)
+                }
             }
-            .buttonStyle(.borderless)
             .frame(maxWidth: .infinity)
-            .padding(10)
-            .background {
-                RoundedRectangle(cornerRadius: 10)
-                    .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
-            }
             .padding(.top, 10)
         }
         .padding(.horizontal, -20)

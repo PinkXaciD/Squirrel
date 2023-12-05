@@ -8,11 +8,15 @@
 import SwiftUI
 
 struct SpendingCompleteView: View {
+    @AppStorage("color")
+    private var tint: String = "Orange"
+    
     @Binding var edit: Bool
     
     @State var entity: SpendingEntity
     @State var editFocus: String = "nil"
     @State private var entityToAddReturn: SpendingEntity? = nil
+    @State private var returnToEdit: ReturnEntity? = nil
     @State private var toDismiss: Bool = false
     
     @StateObject
@@ -25,20 +29,29 @@ struct SpendingCompleteView: View {
         
         if edit {
             NavigationView {
-                SpendingEditView(
+                EditSpendingView(
                     vm: vm,
                     entity: $entity,
                     edit: $edit,
                     categoryColor: categoryColor,
                     focus: editFocus,
                     entityToAddReturn: $entityToAddReturn,
+                    returnToEdit: $returnToEdit,
                     toDismiss: $toDismiss
                 )
                 .tint(categoryColor)
                 .accentColor(categoryColor)
                 .sheet(item: $entityToAddReturn, onDismiss: dismissAction) { entity in
                     AddReturnView(spending: entity, cdm: cdm, rvm: rvm)
+                        .accentColor(colorIdentifier(color: tint))
                 }
+// MARK: Todo
+//                .sheet(item: $returnToEdit) { returnEntity in
+//                    EditReturnView(returnEntity: returnEntity, spending: entity, cdm: cdm, rvm: rvm)
+//                        .smallSheet(0.5)
+//                        .tint(colorIdentifier(color: tint))
+//                        .accentColor(colorIdentifier(color: tint))
+//                }
             }
         } else {
             NavigationView {
@@ -47,12 +60,20 @@ struct SpendingCompleteView: View {
                     edit: $edit,
                     editFocus: $editFocus,
                     categoryColor: categoryColor,
-                    entityToAddReturn: $entityToAddReturn
+                    entityToAddReturn: $entityToAddReturn,
+                    returnToEdit: $returnToEdit
                 )
                 .tint(categoryColor)
                 .accentColor(categoryColor)
                 .sheet(item: $entityToAddReturn, onDismiss: dismissAction) { entity in
                     AddReturnView(spending: entity, cdm: cdm, rvm: rvm)
+                        .accentColor(colorIdentifier(color: tint))
+                }
+                .sheet(item: $returnToEdit) { returnEntity in
+                    EditReturnView(returnEntity: returnEntity, spending: entity, cdm: cdm, rvm: rvm)
+                        .smallSheet(0.5)
+                        .tint(colorIdentifier(color: tint))
+                        .accentColor(colorIdentifier(color: tint))
                 }
             }
         }

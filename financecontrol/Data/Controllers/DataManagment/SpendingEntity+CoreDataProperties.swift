@@ -59,9 +59,18 @@ extension SpendingEntity {
         }
     }
     
+    public var returnsArr: [ReturnEntity] {
+        guard
+            let returns = returns?.allObjects as? [ReturnEntity]
+        else {
+            return []
+        }
+        
+        return returns
+    }
+    
     public var returnsSum: Double {
         guard
-            let returnsArr = returns?.allObjects as? [ReturnEntity],
             !returnsArr.isEmpty
         else {
             return 0

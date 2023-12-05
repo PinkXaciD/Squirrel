@@ -90,7 +90,7 @@ struct SettingsView: View {
                 UiColorSelector()
             } label: {
                 HStack {
-                    Text("Color")
+                    Text("Color and Icon")
                     Spacer()
                     Text(LocalizedStringKey(defaultColor))
                         .foregroundColor(Color.secondary)

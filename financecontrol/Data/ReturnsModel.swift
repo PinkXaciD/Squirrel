@@ -29,19 +29,55 @@ extension CoreDataModel {
         fetchSpendings()
     }
     
-    func addFullReturn(to spending: SpendingEntity) {
-        addReturn(
-            to: spending,
-            amount: spending.amountWithReturns,
-            amountUSD: spending.amountUSDWithReturns,
-            currency: spending.wrappedCurrency,
-            date: .now,
-            name: ""
-        )
-    }
-    
     func deleteReturn(spendingReturn: ReturnEntity) {
         context.delete(spendingReturn)
+        manager.save()
+        fetchSpendings()
+    }
+    
+    func editReturn(
+        entity returnEntity: ReturnEntity,
+        amount: Double,
+        amountUSD: Double,
+        currency: String,
+        date: Date,
+        name: String
+    ) {
+        returnEntity.amount = amount
+        returnEntity.amountUSD = amountUSD
+        returnEntity.currency = currency
+        returnEntity.date = date
+        returnEntity.name = name
+        manager.save()
+        fetchSpendings()
+    }
+    
+    func editRerturnFromSpending(
+        spending: SpendingEntity,
+        oldReturn: ReturnEntity,
+        amount: Double,
+        amountUSD: Double,
+        currency: String,
+        date: Date,
+        name: String
+    ) {
+        guard
+            let description = NSEntityDescription.entity(forEntityName: "ReturnEntity", in: context)
+        else {
+            return
+        }
+        
+        let newReturn = ReturnEntity(entity: description, insertInto: context)
+        
+        newReturn.amount = amount
+        newReturn.amountUSD = amountUSD
+        newReturn.currency = currency
+        newReturn.date = date
+        newReturn.name = name
+        
+        spending.removeFromReturns(oldReturn)
+        spending.addToReturns(newReturn)
+        
         manager.save()
         fetchSpendings()
     }

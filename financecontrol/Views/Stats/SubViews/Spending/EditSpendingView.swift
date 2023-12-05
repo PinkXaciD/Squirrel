@@ -1,5 +1,5 @@
 //
-//  SpendingEditView.swift
+//  EditSpendingView.swift
 //  financecontrol
 //
 //  Created by PinkXaciD on R 5/07/31.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SpendingEditView: View {
+struct EditSpendingView: View {
     @Environment(\.dismiss)
     private var dismiss
     
@@ -38,6 +38,8 @@ struct SpendingEditView: View {
     
     @Binding
     var entityToAddReturn: SpendingEntity?
+    @Binding
+    var returnToEdit: ReturnEntity?
     
     @Binding
     var toDismiss: Bool
@@ -55,9 +57,9 @@ struct SpendingEditView: View {
         .toolbar {
             keyboardToolbar
             
-            doneToolbar
+            trailingToolbar
             
-            closeToolbar
+            leadingToolbar
         }
         .alert("Delete this expense?", isPresented: $alertIsPresented) {
             Button("Cancel", role: .cancel) {}
@@ -76,7 +78,7 @@ struct SpendingEditView: View {
     
     // MARK: Variables
     
-    var infoSection: some View {
+    private var infoSection: some View {
         Section(header: infoHeader) {
             HStack {
                 Text("Category")
@@ -89,7 +91,7 @@ struct SpendingEditView: View {
         }
     }
     
-    var infoHeader: some View {
+    private var infoHeader: some View {
         VStack(alignment: .center, spacing: 8) {
             TextField("Place (Optional)", text: $vm.place)
                 .focused($focusedField, equals: .place)
@@ -98,28 +100,23 @@ struct SpendingEditView: View {
             TextField("Amount", text: $vm.amount)
                 .focused($focusedField, equals: .amount)
                 .numbersOnly($filterAmount)
-                .onChange(of: vm.amount) { newValue in /// iOS 16 fix
-                    filterAmount = newValue
-                }
-                .onChange(of: filterAmount) { newValue in
-                    vm.amount = newValue
+                .onChange(of: vm.amount) { newValue in      ///
+                    filterAmount = newValue                 ///
+                }                                           /// iOS 16 fix
+                .onChange(of: filterAmount) { newValue in   ///
+                    vm.amount = newValue                    ///
                 }
                 .spendingAmountTextFieldStyle()
             
             CurrencySelector(currency: $vm.currency, showFavorites: false, spacer: false)
         }
-        .padding(.bottom)
+        .padding(.bottom, 40)
         .textCase(nil)
         .foregroundColor(categoryColor)
         .frame(maxWidth: .infinity)
     }
     
-    var textFieldOverlay: some View {
-        RoundedRectangle(cornerRadius: 10)
-            .stroke(Color(uiColor: UIColor.secondarySystemGroupedBackground), lineWidth: 1)
-    }
-    
-    var commentSection: some View {
+    private var commentSection: some View {
         Section(header: Text("Comment"), footer: returnAndDeleteButtons) {
             if #available(iOS 16.0, *) {
                 TextField("Comment (Optional)", text: $vm.comment, axis: .vertical)
@@ -128,65 +125,77 @@ struct SpendingEditView: View {
         }
     }
     
-    var returnAndDeleteButtons: some View {
+    private var returnAndDeleteButtons: some View {
         HStack(spacing: 15) {
-            Button(entity.amountWithReturns == 0 ? "Returned" : "Add return") {
+            Button {
                 entityToAddReturn = entity
+            } label: {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10)
+                        .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
+                    
+                    Text(entity.amountWithReturns == 0 ? "Returned" : "Add return")
+                        .padding(10)
+                }
             }
             .foregroundColor(entity.amountWithReturns == 0 ? .secondary : .green)
-            .buttonStyle(.borderless)
             .disabled(entity.amountWithReturns == 0)
             .frame(maxWidth: .infinity)
-            .padding(10)
-            .background {
-                RoundedRectangle(cornerRadius: 10)
-                    .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
-            }
             .padding(.top, 10)
             
-            Button("Delete", role: .destructive) {
+            Button(role: .destructive) {
                 alertIsPresented.toggle()
+            } label: {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10)
+                        .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
+                    
+                    Text("Delete")
+                        .padding(10)
+                }
             }
-            .buttonStyle(.borderless)
             .frame(maxWidth: .infinity)
-            .padding(10)
-            .background {
-                RoundedRectangle(cornerRadius: 10)
-                    .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
-            }
             .padding(.top, 10)
         }
         .padding(.horizontal, -20)
     }
     
-    var returnsSection: some View {
+    private var returnsSection: some View {
         Section {
-            if let returns =  entity.returns?.allObjects as? [ReturnEntity] {
-                ForEach(returns) { returnEntity in
-                    VStack(alignment: .leading) {
-                        HStack {
-                            Text(returnEntity.amount.formatted(.currency(code: entity.wrappedCurrency)))
-                            
-                            Spacer()
-                            
-                            Text(returnEntity.date?.formatted(date: .abbreviated, time: .shortened) ?? "Date error")
-                        }
+            ForEach(entity.returnsArr) { returnEntity in
+                VStack(alignment: .leading) {
+                    HStack {
+                        Text(returnEntity.amount.formatted(.currency(code: entity.wrappedCurrency)))
                         
-                        if let name = returnEntity.name, !name.isEmpty {
-                            Text(name)
-                                .font(.callout)
-                                .foregroundColor(.secondary)
-                        }
+                        Spacer()
+                        
+                        Text(returnEntity.date?.formatted(date: .abbreviated, time: .shortened) ?? "Date error")
                     }
-                    .padding(.vertical, 1)
-                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                        Button(role: .destructive) {
-                            vm.cdm.deleteReturn(spendingReturn: returnEntity)
-                        } label: {
-                            Label("Delete", systemImage: "trash.fill")
-                        }
-                        .tint(.red)
+                    
+                    if let name = returnEntity.name, !name.isEmpty {
+                        Text(name)
+                            .font(.callout)
+                            .foregroundColor(.secondary)
                     }
+                }
+                .padding(.vertical, 1)
+                .foregroundColor(.primary)
+// MARK: Todo
+//                .swipeActions(edge: .leading) {
+//                    Button {
+//                        returnToEdit = returnEntity
+//                    } label: {
+//                        Label("Edit", systemImage: "pencil")
+//                    }
+//                    .tint(.yellow)
+//                }
+                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    Button(role: .destructive) {
+                        vm.removeReturn(returnEntity)
+                    } label: {
+                        Label("Delete", systemImage: "trash.fill")
+                    }
+                    .tint(.red)
                 }
             }
         } header: {
@@ -194,7 +203,7 @@ struct SpendingEditView: View {
         }
     }
     
-    var keyboardToolbar: ToolbarItemGroup<some View> {
+    private var keyboardToolbar: ToolbarItemGroup<some View> {
         ToolbarItemGroup(placement: .keyboard) {
             Spacer()
             
@@ -204,8 +213,8 @@ struct SpendingEditView: View {
         }
     }
     
-    var doneToolbar: ToolbarItem<Void, some View> {
-        ToolbarItem(placement: ToolbarItemPlacement.navigationBarTrailing) {
+    private var trailingToolbar: ToolbarItem<Void, some View> {
+        ToolbarItem(placement: .navigationBarTrailing) {
             Button(action: doneButtonAction) {
                 Text("Save")
                     .fontWeight(.semibold)
@@ -218,7 +227,7 @@ struct SpendingEditView: View {
         }
     }
     
-    var closeToolbar: ToolbarItem<Void, some View> {
+    private var leadingToolbar: ToolbarItem<Void, some View> {
         ToolbarItem(placement: .navigationBarLeading) {
             Button("Cancel", action: editButtonAction)
         }
@@ -227,7 +236,7 @@ struct SpendingEditView: View {
 
 // MARK: Functions
 
-extension SpendingEditView {
+extension EditSpendingView {
     private func doneButtonAction() {
         clearFocus()
         vm.done()

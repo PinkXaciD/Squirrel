@@ -1,17 +1,17 @@
 //
-//  AddReturnView.swift
+//  EditReturnView.swift
 //  financecontrol
 //
-//  Created by PinkXaciD on R 5/11/30.
+//  Created by PinkXaciD on R 5/12/05.
 //
 
 import SwiftUI
 
-struct AddReturnView: View {
+struct EditReturnView: View {
     @Environment(\.dismiss) private var dismiss
     
     var spending: SpendingEntity
-    @StateObject private var vm: AddReturnViewModel
+    @StateObject private var vm: EditReturnViewModel
     @State private var filterAmount: String = ""
     
     enum Field {
@@ -24,8 +24,6 @@ struct AddReturnView: View {
         NavigationView {
             Form {
                 mainSection
-                
-                addFullButton
             }
             .toolbar {
                 keyboardToolbar
@@ -71,25 +69,11 @@ struct AddReturnView: View {
         }
     }
     
-    private var addFullButton: some View {
-        Section {
-            Button("Return full amount") {
-                vm.addFull()
-            }
-            .disabled(spending.amountWithReturns == 0 || (Double(vm.amount) ?? 0) == spending.amountWithReturns)
-        }
-    }
-    
-    private var textFieldOverlay: some View {
-        RoundedRectangle(cornerRadius: 10)
-            .stroke(Color(uiColor: UIColor.secondarySystemGroupedBackground), lineWidth: 1)
-    }
-    
     private var trailingToolbar: ToolbarItem<Void, some View> {
         ToolbarItem(placement: .topBarTrailing) {
-            Button("Add") {
-                vm.done()
+            Button("Save") {
                 dismiss()
+                vm.editFromSpending(spending: spending)
             }
             .font(.body.bold())
             .disabled(vm.validate())
@@ -104,25 +88,25 @@ struct AddReturnView: View {
         }
     }
     
-    private var keyboardToolbar: ToolbarItemGroup<some View> {
+    var keyboardToolbar: ToolbarItemGroup<some View> {
         ToolbarItemGroup(placement: .keyboard) {
             Spacer()
             
             Button(action: clearFocus) {
-                Label("Hide keyboard", systemImage: "keyboard.chevron.compact.down")
-                    .labelStyle(.iconOnly)
+                Image(systemName: "keyboard.chevron.compact.down")
             }
         }
     }
 }
 
-extension AddReturnView {
-    internal init(spending: SpendingEntity, cdm: CoreDataModel, rvm: RatesViewModel) {
+extension EditReturnView {
+    internal init(returnEntity: ReturnEntity, spending: SpendingEntity, cdm: CoreDataModel, rvm: RatesViewModel) {
         self.spending = spending
-        self._vm = .init(wrappedValue: .init(spending: spending, cdm: cdm, rvm: rvm))
+        self._vm = .init(wrappedValue: .init(returnEntity: returnEntity, cdm: cdm, rvm: rvm))
     }
     
     private func clearFocus() {
         focusedField = .none
     }
 }
+

@@ -86,4 +86,9 @@ final class EditSpendingViewModel: SpendingViewModel {
             .publish()
         }
     }
+    
+    func removeReturn(_ returnEntity: ReturnEntity) {
+        entity.removeFromReturns(returnEntity)
+        cdm.manager.save()
+    }
 }

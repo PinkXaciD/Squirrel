@@ -12,7 +12,7 @@ import CoreData
 
 public class SpendingEntity: NSManagedObject, Codable {
     enum CodingKeys: CodingKey {
-        case id, amount, amountUSD, comment, currency, date, place
+        case id, amount, amountUSD, comment, currency, date, place, returns
     }
     
     required convenience public init(from decoder: Decoder) throws {
@@ -30,6 +30,7 @@ public class SpendingEntity: NSManagedObject, Codable {
         self.currency = try container.decode(String.self, forKey: .currency)
         self.date = try container.decode(Date.self, forKey: .date)
         self.place = try container.decode(String.self, forKey: .place)
+        self.returns = try container.decode(Set<ReturnEntity>.self, forKey: .returns) as NSSet
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -41,5 +42,8 @@ public class SpendingEntity: NSManagedObject, Codable {
         try container.encode(currency, forKey: .currency)
         try container.encode(date, forKey: .date)
         try container.encode(place, forKey: .place)
+        if let array = returns?.allObjects as? [ReturnEntity] {
+            try container.encode(array, forKey: .returns)
+        }
     }
 }

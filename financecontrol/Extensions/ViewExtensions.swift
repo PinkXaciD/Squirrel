@@ -72,10 +72,10 @@ extension View {
             }
     }
     
-    func smallSheet() -> some View {
+    func smallSheet(_ fraction: CGFloat? = nil) -> some View {
         if #available(iOS 16.0, *) {
             return self
-                .presentationDetents([.medium, .large])
+                .presentationDetents([.fraction(fraction ?? 0.5), .large])
                 .presentationDragIndicator(.hidden)
         } else {
             return self
