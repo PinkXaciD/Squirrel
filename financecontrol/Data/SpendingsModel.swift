@@ -90,9 +90,8 @@ extension CoreDataModel {
         let currentCalendar = Calendar.current
         let defaultCurrency = UserDefaults.standard.string(forKey: "defaultCurrency")
         var currentDateComponents = currentCalendar.dateComponents([.day, .month, .year, .era], from: .now)
-        currentDateComponents.calendar = currentCalendar
-        let currentDate = currentDateComponents.date ?? .now
-        let startDate = currentCalendar.date(byAdding: .day, value: -7, to: currentDate) ?? .now
+        let currentDate = currentCalendar.date(from: currentDateComponents) ?? .distantFuture
+        let startDate = currentCalendar.date(byAdding: .day, value: -6, to: currentDate) ?? .distantFuture
         let predicate = NSPredicate(format: "date > %@", startDate as CVarArg)
         
         var spendings: [SpendingEntity] = []

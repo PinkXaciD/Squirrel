@@ -20,10 +20,14 @@ struct BarChartData {
         let dateFormatter = DateFormatter()
         dateFormatter.calendar = Calendar(identifier: .gregorian)
         dateFormatter.dateFormat = "M, y"
-        dateFormatter.locale = Locale(identifier: "en") // Change to actual supported language locale
+        
+        var dateNow: Date {
+            let components: DateComponents = Calendar.current.dateComponents([.day, .month, .year, .era], from: .now)
+            return Calendar.current.date(from: components) ?? .now
+        }
         
         for entity in data {
-            if entity.wrappedDate > Date.now.lastWeek {
+            if entity.wrappedDate > (Calendar.current.date(byAdding: .day, value: -6, to: dateNow) ?? .distantFuture) {
                 array.append(entity)
             } else {
                 break

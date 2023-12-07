@@ -20,21 +20,26 @@ struct FiltersView: View {
     @Binding
     var secondFilterDate: Date
     @Binding
+    var categories: [CategoryEntity]
+    @Binding
+    var exludeCategories: Bool
+    @Binding
     var applyFilters: Bool
     
     @State
-    private var showFirstDate: Bool = false
-    @State
-    private var showSecondDate: Bool = false
+    private var showCategoriesPicker: Bool = false
     
     var body: some View {
         NavigationView {
             Form {
                 dateSection
+                    .datePickerStyle(.compact)
+                
+                categoriesSection
                 
                 clearButton
             }
-            .navigationTitle("Filter by date")
+            .navigationTitle("Filters")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 leadingToolbar
@@ -46,37 +51,80 @@ struct FiltersView: View {
     }
     
     private var dateSection: some View {
-        Section(header: Text("Date")) {
-            Button(action: showFirstDateFunc, label: firstDateButtonLabel)
+        Section(header: dateSectionHeader) {
+            firstDatePicker
             
-            if showFirstDate {
-                firstDatePicker
-            }
-            
-            Button(action: showSecondDateFunc, label: secondDateButtonLabel)
-            
-            if showSecondDate {
-                secondDatePicker
-            }
+            secondDatePicker
         }
     }
     
+    private var dateSectionHeader: some View {
+        Text("Date")
+    }
+    
     private var firstDatePicker: some View {
-        DatePicker("From", selection: $firstFilterDate, in: .init(timeIntervalSinceReferenceDate: 0)...secondFilterDate, displayedComponents: .date)
-            .datePickerStyle(.graphical)
+        let firstDate: Date = cdm.savedSpendings.last?.wrappedDate ?? .init(timeIntervalSinceReferenceDate: 0)
+        
+        return DatePicker("From", selection: $firstFilterDate, in: firstDate...secondFilterDate, displayedComponents: .date)
     }
     
     private var secondDatePicker: some View {
         DatePicker("To", selection: $secondFilterDate, in: firstFilterDate...Date.now, displayedComponents: .date)
-            .datePickerStyle(.graphical)
+    }
+    
+    private var categoriesSection: some View {
+        Group {
+            Section(header: categoriesSectionHeader) {
+                Button {
+                    toggleCategoriesPicker()
+                } label: {
+                    categoriesPickerLabel
+                }
+                
+                if showCategoriesPicker {
+                    Toggle("Exclude", isOn: $exludeCategories)
+                }
+            }
+            
+            if showCategoriesPicker {
+                Section {
+                    ForEach(cdm.savedCategories) { category in
+                        Button {
+                            categoryButtonAction(category)
+                        } label: {
+                            categoryRowLabel(category)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private var categoriesSectionHeader: some View {
+        Text("Categories")
+    }
+    
+    private var categoriesPickerLabel: some View {
+        HStack {
+            Text("Categories")
+            
+            Spacer()
+            
+            Text("\(categories.count) selected")
+                .foregroundColor(.secondary)
+        }
     }
     
     private var clearButton: some View {
         Button("Clear", role: .destructive) {
             applyFilters = false
             dismiss()
-            firstFilterDate = .now.getFirstDayOfMonth()
-            secondFilterDate = .now
+            DispatchQueue.main.async {
+                firstFilterDate = cdm.savedSpendings.last?.wrappedDate ?? .init(timeIntervalSinceReferenceDate: 0)
+                secondFilterDate = .now
+                categories = []
+                exludeCategories = false
+            }
         }
     }
     
@@ -97,43 +145,35 @@ struct FiltersView: View {
             .font(.body.bold())
         }
     }
+}
     
-    private var dateFormatter: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.timeStyle = .none
-        formatter.dateStyle = .long
-        return formatter
-    }
-    
-    private func firstDateButtonLabel() -> some View {
-        return HStack{
-            Text("From")
-                .foregroundColor(.primary)
-            Spacer()
-            Text(dateFormatter.string(from: firstFilterDate))
-                .foregroundColor(showFirstDate ? .primary : .accentColor)
+extension FiltersView {
+    private func toggleCategoriesPicker() {
+        withAnimation {
+            showCategoriesPicker.toggle()
         }
     }
     
-    private func secondDateButtonLabel() -> some View {
+    private func categoryButtonAction(_ category: CategoryEntity) {
+        if categories.contains(category) {
+            let index: Int = categories.firstIndex(of: category) ?? 0
+            categories.remove(at: index)
+        } else {
+            categories.append(category)
+        }
+    }
+    
+    private func categoryRowLabel(_ category: CategoryEntity) -> some View {
         return HStack {
-            Text("To")
+            Text(category.name ?? "Error")
                 .foregroundColor(.primary)
+            
             Spacer()
-            Text(dateFormatter.string(from: secondFilterDate))
-                .foregroundColor(showSecondDate ? .primary : .accentColor)
-        }
-    }
-    
-    private func showFirstDateFunc() -> Void {
-        withAnimation {
-            showFirstDate.toggle()
-        }
-    }
-    
-    private func showSecondDateFunc() -> Void {
-        withAnimation {
-            showSecondDate.toggle()
+            
+            if categories.contains(category) {
+                Image(systemName: "checkmark")
+                    .font(.body.bold())
+            }
         }
     }
 }

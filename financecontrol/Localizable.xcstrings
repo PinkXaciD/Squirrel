@@ -7,6 +7,9 @@
     "%@" : {
 
     },
+    "%@-R5127" : {
+
+    },
     "%@.\n%@" : {
       "localizations" : {
         "en" : {
@@ -85,6 +88,9 @@
           }
         }
       }
+    },
+    "%lld selected" : {
+
     },
     "0.00" : {
 
@@ -252,6 +258,9 @@
     "Exchange rates will be presented for the current hour" : {
 
     },
+    "Exclude" : {
+
+    },
     "Expand" : {
 
     },
@@ -273,7 +282,7 @@
     "Filter" : {
 
     },
-    "Filter by date" : {
+    "Filters" : {
 
     },
     "First Flight" : {
@@ -411,7 +420,7 @@
     "Save" : {
 
     },
-    "Search by place, category or comment" : {
+    "Search by name or comment" : {
 
     },
     "Select currency" : {

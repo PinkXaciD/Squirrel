@@ -16,14 +16,11 @@ struct StatsRow: View {
     @Binding var entityToEdit: SpendingEntity?
     @Binding var entityToAddReturn: SpendingEntity?
     @Binding var edit: Bool
-    @State private var showSheet: Bool = false
     
     var body: some View {
-        
         Button {
             if entityToEdit == nil {
                 entityToEdit = entity
-                showSheet.toggle()
             }
         } label: {
             buttonLabel
@@ -71,8 +68,16 @@ struct StatsRow: View {
                     .font(.caption)
                     .foregroundColor(Color.secondary)
                 
-                Text("-\((entity.amountWithReturns).formatted(.currency(code: entity.wrappedCurrency)))")
-                    .foregroundColor(.primary)
+                HStack {
+                    if !entity.returnsArr.isEmpty {
+                        Image(systemName: "arrow.uturn.backward")
+                            .foregroundColor(.secondary)
+                            .font(.caption.bold())
+                    }
+                    
+                    Text("-\((entity.amountWithReturns).formatted(.currency(code: entity.wrappedCurrency)))")
+                }
+                .foregroundColor(entity.amountWithReturns != 0 ? .primary : .secondary)
             }
         }
     }
