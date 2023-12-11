@@ -15,6 +15,6 @@ struct StatsSearchView: View {
     
     var body: some View {
         StatsView(search: $searchText, cdm: cdm)
-            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search by name or comment")
+            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search by place or comment")
     }
 }

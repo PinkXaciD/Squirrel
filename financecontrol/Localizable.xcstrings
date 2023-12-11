@@ -7,9 +7,6 @@
     "%@" : {
 
     },
-    "%@-R5127" : {
-
-    },
     "%@.\n%@" : {
       "localizations" : {
         "en" : {
@@ -168,6 +165,9 @@
     "Blue" : {
 
     },
+    "Build: %@" : {
+
+    },
     "Buy me some noodles" : {
 
     },
@@ -181,6 +181,9 @@
 
     },
     "Clear" : {
+
+    },
+    "Clear filters" : {
 
     },
     "Close" : {
@@ -235,6 +238,9 @@
 
     },
     "Delete" : {
+
+    },
+    "Delete all old rates" : {
 
     },
     "Delete this category?" : {
@@ -420,7 +426,7 @@
     "Save" : {
 
     },
-    "Search by name or comment" : {
+    "Search by place or comment" : {
 
     },
     "Select currency" : {

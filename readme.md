@@ -22,7 +22,7 @@
 - Different accent colors
 ![Colors](README/Screenshots/Colors.png)
 
-- Data export and import in JSON format
+- Data export and import in JSON
 ![Export](README/Screenshots/Export.png)
 
 ## How to install?

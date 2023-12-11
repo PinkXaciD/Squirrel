@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 extension View {
     /// Giving amount style to some text view
@@ -36,7 +37,8 @@ extension View {
         let offset = -(
             UIScreen.main.bounds.height / 2
         ) + (
-            UIApplication.shared.windows.first?.safeAreaInsets.top ?? 0
+//            UIApplication.shared.windows.first?.safeAreaInsets.top ?? 0
+            (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.safeAreaInsets.top ?? 0
         )
             
         return self

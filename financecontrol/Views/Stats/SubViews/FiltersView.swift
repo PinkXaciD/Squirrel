@@ -22,7 +22,7 @@ struct FiltersView: View {
     @Binding
     var categories: [CategoryEntity]
     @Binding
-    var exludeCategories: Bool
+    var excludeCategories: Bool
     @Binding
     var applyFilters: Bool
     
@@ -82,7 +82,7 @@ struct FiltersView: View {
                 }
                 
                 if showCategoriesPicker {
-                    Toggle("Exclude", isOn: $exludeCategories)
+                    Toggle("Exclude", isOn: $excludeCategories)
                 }
             }
             
@@ -123,7 +123,7 @@ struct FiltersView: View {
                 firstFilterDate = cdm.savedSpendings.last?.wrappedDate ?? .init(timeIntervalSinceReferenceDate: 0)
                 secondFilterDate = .now
                 categories = []
-                exludeCategories = false
+                excludeCategories = false
             }
         }
     }

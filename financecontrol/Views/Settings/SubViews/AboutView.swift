@@ -52,7 +52,7 @@ struct AboutView: View {
                 .font(.body.bold())
                 .foregroundColor(.primary)
             
-            Text("\(build ?? "")-R5127")
+            Text("Build: \(build ?? "")")
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
