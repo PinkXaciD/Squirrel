@@ -17,7 +17,9 @@ struct PieChartView: View {
     @Binding
     var selectedMonth: Int
     @Binding
-    var search: String
+    var filterCategories: [CategoryEntity]
+    @Binding
+    var applyFilters: Bool
     
     let size: CGFloat
     let operationsInMonth: [CategoryEntityLocal]
@@ -152,10 +154,13 @@ struct PieChartView: View {
                     }
                     .id(UUID())
                     .onTapGesture {
-                        withAnimation {
-                            search.append("\(category.name) ")
+                        if let category = cdm.findCategory(category.id) {
+                            withAnimation {
+                                addToFilter(category)
+                            }
                         }
                     }
+                    .grayscale((isFiltered(category) || filterCategories.isEmpty) ? 0 : 1)
                 }
             }
             Spacer()
@@ -181,9 +186,10 @@ struct PieChartView: View {
 }
 
 extension PieChartView {
-    internal init(selectedMonth: Binding<Int>, search: Binding<String>, size: CGFloat, operationsInMonth: [CategoryEntityLocal], chartData: [ChartData]) {
+    internal init(selectedMonth: Binding<Int>, filterCategories: Binding<[CategoryEntity]>, applyFilers: Binding<Bool>, size: CGFloat, operationsInMonth: [CategoryEntityLocal], chartData: [ChartData]) {
         self._selectedMonth = selectedMonth
-        self._search = search
+        self._filterCategories = filterCategories
+        self._applyFilters = applyFilers
         self.size = size
         self.operationsInMonth = operationsInMonth
         self.chartData = chartData
@@ -224,6 +230,24 @@ extension PieChartView {
     private func decreaseMonth() -> Void {
         withAnimation {
             selectedMonth -= 1
+        }
+    }
+    
+    private func addToFilter(_ category: CategoryEntity) {
+        if !filterCategories.contains(category) {
+            filterCategories.append(category)
+            applyFilters = true
+        } else {
+            let index: Int = filterCategories.firstIndex(of: category) ?? 0
+            filterCategories.remove(at: index)
+        }
+    }
+    
+    private func isFiltered(_ localCategory: CategoryEntityLocal) -> Bool {
+        if let category = cdm.findCategory(localCategory.id) {
+            return filterCategories.contains(category)
+        } else {
+            return false
         }
     }
 }

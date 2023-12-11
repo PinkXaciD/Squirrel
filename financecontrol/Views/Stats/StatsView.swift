@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct StatsView: View {
+    @Environment(\.isSearching)
+    private var isSearching
     @EnvironmentObject
     private var cdm: CoreDataModel
     @EnvironmentObject
@@ -19,21 +21,36 @@ struct StatsView: View {
     @State
     private var edit: Bool = false
     
+// MARK: Filters
+    
     @State
     private var selectedMonth: Int = 0
     @State
     private var showFilters: Bool = false
     
     @State
-    var startFilterDate: Date = .now.getFirstDayOfMonth()
+    private var startFilterDate: Date
     @State
-    var endFilterDate: Date = .now
+    private var endFilterDate: Date = .now
     @State
-    var applyFilters: Bool = false
+    fileprivate var filterCategories: [CategoryEntity] = []
     @State
-    var search: String = ""
+    fileprivate var excludeCategories: Bool = false
+    @State
+    private var applyFilters: Bool = false
+    @Binding
+    var search: String
+    
+    var oldestSpendingDate: Date
     
     private var sheetFraction: CGFloat = 0.7
+    
+    private var size: CGFloat {
+        let currentScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+        let width = currentScene?.windows.first(where: { $0.isKeyWindow })?.bounds.width ?? UIScreen.main.bounds.width
+        let height = currentScene?.windows.first(where: { $0.isKeyWindow })?.bounds.height ?? UIScreen.main.bounds.height
+        return width > height ? (height / 1.7) : (width / 1.7)
+    }
     
     var body: some View {
         let listData: [String: [SpendingEntity]] = getListData()
@@ -42,11 +59,12 @@ struct StatsView: View {
         
         NavigationView {
             List {
-                if search.isEmpty {
+                if search.isEmpty && !isSearching {
                     PieChartView(
                         selectedMonth: $selectedMonth,
-                        search: $search,
-                        size: UIScreen.main.bounds.width / 1.7,
+                        filterCategories: $filterCategories,
+                        applyFilers: $applyFilters,
+                        size: size,
                         operationsInMonth: operationsInMonth,
                         chartData: newChartData
                     )
@@ -70,11 +88,6 @@ struct StatsView: View {
                     noResults
                 }
             }
-            .searchable(
-                text: $search,
-                placement: .navigationBarDrawer(displayMode: .automatic),
-                prompt: "Search by place, category or comment"
-            )
             .onChange(of: selectedMonth) {
                 onChangeFunc($0)
             }
@@ -92,7 +105,6 @@ struct StatsView: View {
             }
             .sheet(isPresented: $showFilters) {
                 filters
-                    .smallSheet()
             }
             .sheet(item: $entityToAddReturn) { entity in
                 AddReturnView(spending: entity, cdm: cdm, rvm: rvm)
@@ -102,12 +114,22 @@ struct StatsView: View {
         .navigationViewStyle(.stack)
     }
     
-    private var toolbar: ToolbarItem<Void, some View> {
-        ToolbarItem(placement: .topBarTrailing) {
-            Button {
-                showFilters.toggle()
-            } label: {
-                Label("Filter", systemImage: applyFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
+    private var toolbar: ToolbarItemGroup<some View> {
+        ToolbarItemGroup(placement: .topBarTrailing) {
+            HStack {
+                Button {
+                    clearFilters()
+                } label: {
+                    Label("Clear filters", systemImage: "xmark.circle")
+                }
+                .disabled(!applyFilters)
+                .opacity(applyFilters ? 1.0 : 0.0)
+                
+                Button {
+                    showFilters.toggle()
+                } label: {
+                    Label("Filter", systemImage: applyFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
+                }
             }
         }
     }
@@ -116,6 +138,8 @@ struct StatsView: View {
         FiltersView(
             firstFilterDate: $startFilterDate,
             secondFilterDate: $endFilterDate,
+            categories: $filterCategories,
+            excludeCategories: $excludeCategories,
             applyFilters: $applyFilters
         )
     }
@@ -132,16 +156,21 @@ struct StatsView: View {
 }
 
 extension StatsView {
+    init(search: Binding<String>, cdm: CoreDataModel) {
+        self._search = search
+        let date = cdm.savedSpendings.last?.wrappedDate ?? .now.getFirstDayOfMonth()
+        self.oldestSpendingDate = date
+        self._startFilterDate = State(initialValue: date)
+    }
+    
     private func getListData() -> [String: [SpendingEntity]] {
         var result: [String: [SpendingEntity]]
         if search.isEmpty {
             result = cdm.operationsForList()
         } else {
-            result = cdm.operationsForList().mapValues {
-                $0.filter { entity in
+            result = cdm.operationsForList().mapValues { values in
+                values.filter { entity in
                     entity.place?.localizedCaseInsensitiveContains(search.trimmingCharacters(in: .whitespaces)) ?? false
-                    ||
-                    entity.categoryName.localizedCaseInsensitiveContains(search.trimmingCharacters(in: .whitespaces))
                     ||
                     entity.comment?.localizedCaseInsensitiveContains(search.trimmingCharacters(in: .whitespaces)) ?? false
                 }
@@ -150,9 +179,20 @@ extension StatsView {
         }
         
         if applyFilters {
-            result = result.mapValues {
-                $0.filter { entity in
-                    entity.wrappedDate > startFilterDate && entity.wrappedDate < endFilterDate
+            result = result.mapValues { values in
+                values.filter { entity in
+                    var categoryFilter: Bool = false
+                    var dateFilter: Bool = false
+                    
+                    if !filterCategories.isEmpty, let category = entity.category {
+                        categoryFilter = excludeCategories ? !filterCategories.contains(category) : filterCategories.contains(category)
+                    } else {
+                        categoryFilter = true
+                    }
+                    
+                    dateFilter = entity.wrappedDate >= startFilterDate && entity.wrappedDate <= endFilterDate
+                    
+                    return categoryFilter && dateFilter
                 }
             }
             .filter { !$0.value.isEmpty }
@@ -177,8 +217,10 @@ extension StatsView {
     
     private func onChangeFunc(_ value: Int) {
         if value == 0 {
-            applyFilters = false
-            startFilterDate = .now.getFirstDayOfMonth()
+            if filterCategories.isEmpty {
+                applyFilters = false
+            }
+            startFilterDate = oldestSpendingDate
             endFilterDate = .now
         } else {
             startFilterDate = .now.getFirstDayOfMonth(value)
@@ -189,11 +231,22 @@ extension StatsView {
         HapticManager.shared.impact(.soft)
     }
     
+    private func clearFilters() {
+        DispatchQueue.main.async {
+            withAnimation {
+                applyFilters = false
+                startFilterDate = cdm.savedSpendings.last?.wrappedDate ?? .init(timeIntervalSinceReferenceDate: 0)
+                endFilterDate = .now
+                filterCategories = []
+                excludeCategories = false
+            }
+        }
+    }
 }
 
 struct StatsView_Previews: PreviewProvider {
     static var previews: some View {
-        StatsView()
+        StatsView(search: .constant(""), cdm: .init())
             .environmentObject(CoreDataModel())
     }
 }

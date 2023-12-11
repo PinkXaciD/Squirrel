@@ -8,8 +8,11 @@
 import SwiftUI
 
 struct BarChartData {
+    @AppStorage("defaultCurrency")
+    var defaultCurrency: String = "USD"
     
     var data: [SpendingEntity]
+    var usdRates: [String:Double]
     
     /// Getting spendings for last 7 days
     /// - Returns: Array of SpendingEntity for last 7 days
@@ -17,24 +20,41 @@ struct BarChartData {
         var array: [SpendingEntity] = []
         var result: [Date:Double] = [:]
         
-        let dateFormatter = DateFormatter()
-        dateFormatter.calendar = Calendar(identifier: .gregorian)
-        dateFormatter.dateFormat = "M, y"
-        dateFormatter.locale = Locale(identifier: "en") // Change to actual supported language locale
+        var dateNow: Date {
+            let components: DateComponents = Calendar.current.dateComponents([.day, .month, .year, .era], from: .now)
+            return Calendar.current.date(from: components) ?? .now
+        }
         
         for entity in data {
-            if entity.wrappedDate > Date.now.lastWeek {
+            if entity.wrappedDate > (Calendar.current.date(byAdding: .day, value: -6, to: dateNow) ?? .distantFuture) {
                 array.append(entity)
             } else {
                 break
             }
         }
         
-        for entity in array {
-            let formattedDate = dateFormatForBar(entity.wrappedDate)
-            let previousValue = result[formattedDate] ?? 0
-            result.updateValue(previousValue + entity.amountUSDWithReturns, forKey: formattedDate)
+        var index: Int = 0
+        
+        while index < 7 {
+            let date: Date = Calendar.current.date(byAdding: .day, value: -index, to: dateNow) ?? .distantPast
+            
+            let valueArr: [Double] = array.filter { entity in
+                Calendar.current.isDate(entity.wrappedDate, equalTo: date, toGranularity: .day)
+            }
+            .map { entity in
+                if entity.wrappedCurrency == defaultCurrency {
+                    return entity.amountWithReturns
+                } else {
+                    return entity.amountUSDWithReturns / (usdRates[entity.wrappedCurrency] ?? 1)
+                }
+            }
+            
+            let value: Double = valueArr.reduce(0, +)
+            
+            result.updateValue(value, forKey: date)
+            index += 1
         }
+        
         return result
     }
     
@@ -44,11 +64,17 @@ struct BarChartData {
         let data = getData()
         var sortedData: [Date:Double] = [:]
         
-        var previousDay = dateFormatForBar(Date.now)
+        let components = Calendar.current.dateComponents([.era, .year, .month, .day], from: .now)
+        var previousDay = Calendar.current.date(from: components) ?? .distantPast
         
         var index = 0
         
-        let biggest = data.sorted(by: { $0.value > $1.value }).first?.value ?? 0.0
+        var biggest: Double = 0
+        let _ = data.mapValues { value in
+            if value > biggest {
+                biggest = value
+            }
+        }
         
         while index < 7 {
             sortedData.updateValue(data[previousDay] ?? 0, forKey: previousDay)
@@ -65,22 +91,5 @@ struct BarChartData {
         }
         
         return sortedData.sorted(by: { $0.key > $1.key })
-    }
-    
-    func dataCount(_ data: [Double]) {
-        var result: [(key: Int, value: Double)] = []
-        let dataEnum = data.enumerated()
-        var resultSum: Double = 0
-        
-        let biggest = dataEnum.sorted(by: { $0.element > $1.element }).first
-        
-        for number in dataEnum {
-            let value = number.element*100/biggest!.element
-            let key = number.offset
-            result.append((key: key, value: value))
-            resultSum += value
-        }
-        
-        print(result, resultSum, biggest ?? "Error")
     }
 }

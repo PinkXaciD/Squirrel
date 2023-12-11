@@ -15,7 +15,7 @@ struct BarChartGenerator: View {
     @State private var itemSelected: Int = -1
     
     var body: some View {
-        let chartData = BarChartData(data: cdm.savedSpendings)
+        let chartData = BarChartData(data: cdm.savedSpendings, usdRates: rvm.rates)
         let data = chartData.sortData(true)
         
         VStack(alignment: .center) {
@@ -32,7 +32,7 @@ struct BarChartGenerator: View {
     }
     
     var legend: some View {
-        let chartData = BarChartData(data: cdm.savedSpendings)
+        let chartData = BarChartData(data: cdm.savedSpendings, usdRates: rvm.rates)
         let data = chartData.sortData(false)
         
         switch itemSelected {
@@ -45,19 +45,24 @@ struct BarChartGenerator: View {
     
     private func legendGenerator(data: [(key: Date, value: Double)]?, index: Int) -> some View {
         var date: String = ""
+        var dateFormatter: DateFormatter {
+            let formatter: DateFormatter = .init()
+            formatter.timeStyle = .none
+            formatter.dateStyle = .long
+            return formatter
+        }
+        
         if let key = data?[index].key {
-            date = dateFormat(date: key, time: false)
+            date = dateFormatter.string(from: key)
         } else {
             date = "Past 7 days"
         }
         
         var amount: String = ""
         if 
-            let value = data?[index].value,
-            let rate = rvm.rates[defaultCurrency]
+            let value = data?[index].value
         {
-            amount = (value * rate)
-                .formatted(.currency(code: defaultCurrency))
+            amount = value.formatted(.currency(code: defaultCurrency))
         } else {
             amount = String(cdm.operationsSumWeek(rvm.rates[defaultCurrency] ?? 1).formatted(.currency(code: defaultCurrency)))
         }

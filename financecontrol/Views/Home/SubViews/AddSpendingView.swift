@@ -32,6 +32,13 @@ struct AddSpendingView: View {
     @FocusState 
     private var focusedField: Field?
     
+    private enum ViewState {
+        case active, processing, done
+    }
+    
+    @State
+    private var viewState: ViewState = .active
+    
     @State
     private var amountIsFocused: Bool = true
     @State
@@ -45,6 +52,11 @@ struct AddSpendingView: View {
                 reqiredSection
                 
                 placeAndCommentSection
+            }
+            .overlay {
+                if viewState == .processing {
+                    processingOverlay
+                }
             }
             .toolbar {
                 if UIDevice.current.userInterfaceIdiom == .phone {
@@ -187,6 +199,16 @@ struct AddSpendingView: View {
             .disabled(!utils.checkAll(amount: vm.amount, place: vm.place, category: vm.categoryName, comment: vm.comment))
         }
     }
+    
+    private var processingOverlay: some View {
+        ZStack {
+            Rectangle()
+                .fill(Material.regular)
+                .ignoresSafeArea()
+            
+            ProgressView()
+        }
+    }
 }
 
 extension AddSpendingView {
@@ -217,6 +239,10 @@ extension AddSpendingView {
     }
     
     private func done() {
+        clearFocus()
+        withAnimation {
+            viewState = .processing
+        }
         vm.done()
         dismiss()
     }
@@ -224,7 +250,6 @@ extension AddSpendingView {
 
 struct AmountInput_Previews: PreviewProvider {
     static var previews: some View {
-        
         AddSpendingView(ratesViewModel: .init(), codeDataModel: .init())
             .environmentObject(CoreDataModel())
     }

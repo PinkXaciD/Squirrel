@@ -42,8 +42,21 @@ final class RatesViewModel: ViewModel {
                         addRates(safeRates.rates)
                     }
                     
+                    var formatter: ISO8601DateFormatter {
+                        let formatter = ISO8601DateFormatter()
+                        formatter.timeZone = .gmt
+                        return formatter
+                    }
+                    
+                    if
+                        let date = formatter.date(from: safeRates.timestamp),
+                        Calendar.current.isDate(date, equalTo: .now, toGranularity: .hour)
+                    {
+                        UserDefaults.standard.set(safeRates.timestamp, forKey: "updateTime")
+                    }
+                    
                     UserDefaults.standard.set(false, forKey: "updateRates")
-//                    UserDefaults.standard.set(safeRates.date, forKey: "updateTime")
+                    
                     print("Rates fetched from web")
                 } catch {
                     print(error)
@@ -83,37 +96,19 @@ extension RatesViewModel {
     }
     
     private func fetchRates() throws -> [String:Double] {
-        
-        let request = RatesEntity.fetchRequest()
-        var newRates: [String:Double] = [:]
-        
-        do {
-            let fetchedRates = try context.fetch(request)
-            for element in fetchedRates {
-                newRates.updateValue(element.rate, forKey: element.name ?? "Error")
-            }
-            if newRates == [:] {
-                throw RatesFetchError.emptyDatabase
-            }
-            return newRates
-        } catch {
-            throw error
+        guard
+            let rates = UserDefaults.standard.value(forKey: "rates") as? [String:Double]
+        else {
+            return [:]
         }
+        
+        return rates
     }
     
     private func addRates(_ data: [String:Double]) {
-        
-        if let description = NSEntityDescription.entity(forEntityName: "RatesEntity", in: context) {
-            
-            for element in data {
-                
-                let newRate = RatesEntity(entity: description, insertInto: context)
-                
-                newRate.name = element.key
-                newRate.rate = element.value
-            }
-            
-            manager.save()
-        }
+        UserDefaults.standard.setValue(data, forKey: "rates")
+    }
+    
+    func deleteOldRates() {
     }
 }

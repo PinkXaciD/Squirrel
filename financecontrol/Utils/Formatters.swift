@@ -7,29 +7,6 @@
 
 import SwiftUI
 
-private let currentCalendar = Calendar.current.identifier
-
-func dateFormat(date: Date, time: Bool) -> String {
-    let dateFormatter: DateFormatter = {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .long
-        if time {
-            dateFormatter.timeStyle = .short
-        } else {
-            dateFormatter.timeStyle = .none
-        }
-        dateFormatter.calendar = Calendar.autoupdatingCurrent
-        return dateFormatter
-    }()
-    return dateFormatter.string(from: date)
-}
-
-func dateFormatForBar(_ date: Date) -> Date {
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "y-M-d"
-    return dateFormatter.date(from: dateFormatter.string(from: date)) ?? Date.distantFuture
-}
-
 func colorIdentifier(color: String) -> Color {
     switch color {
     case "Blue":

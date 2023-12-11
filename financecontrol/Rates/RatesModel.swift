@@ -54,9 +54,23 @@ extension RatesModel {
                 return request
             }
 
-            let (data, response) = try await URLSession.shared.data(for: request)
-            return try handleResponse(data: data, response: response)
-
+            for count in 0..<3 {
+                do {
+                    let (data, response) = try await URLSession.shared.data(for: request)
+                    return try handleResponse(data: data, response: response)
+                } catch URLError.timedOut {
+                    if count == 2 {
+                        throw URLError(.timedOut)
+                    } else {
+                        continue
+                    }
+                } catch {
+                    throw error
+                }
+            }
+            
+            throw URLError(.timedOut)
+            
         } catch {
             await MainActor.run {
                 if let error = error as? InfoPlistError {

@@ -1,8 +1,19 @@
 {
   "images" : [
     {
-      "filename" : "iOS_AppIcon_First_Flight.png",
-      "idiom" : "universal"
+      "filename" : "iOS_AppIcon_First_Flight_Image.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "iOS_AppIcon_First_Flight_Image@2x.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "iOS_AppIcon_First_Flight_Image@3x.png",
+      "idiom" : "universal",
+      "scale" : "3x"
     }
   ],
   "info" : {

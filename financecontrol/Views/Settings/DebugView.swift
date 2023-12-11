@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct DebugView: View {
+    @EnvironmentObject
+    private var rvm: RatesViewModel
+    
     var body: some View {
         Form {
             infoPlistSection
@@ -15,6 +18,8 @@ struct DebugView: View {
             ratesFetchErrorSection
             
             urlErrorSection
+            
+            deleteOldRatesSection
         }
         .navigationTitle("Debug")
         .navigationBarTitleDisplayMode(.inline)
@@ -59,6 +64,14 @@ struct DebugView: View {
             
             Button("Throw bad URL error") {
                 ErrorType(urlError: URLError(.badURL)).publish()
+            }
+        }
+    }
+    
+    private var deleteOldRatesSection: some View {
+        Section(header: Text(verbatim: "rates")) {
+            Button("Delete all old rates", role: .destructive) {
+                rvm.deleteOldRates()
             }
         }
     }

@@ -23,11 +23,13 @@ struct ContentView: View {
                     Image(systemName: "house.fill")
                     Text("Home")
                 }
-            StatsView()
+            
+            StatsSearchView()
                 .tabItem {
                     Image(systemName: "chart.pie.fill")
                     Text("Stats")
                 }
+            
             SettingsView()
                 .tabItem {
                     Image(systemName: "gearshape.fill")

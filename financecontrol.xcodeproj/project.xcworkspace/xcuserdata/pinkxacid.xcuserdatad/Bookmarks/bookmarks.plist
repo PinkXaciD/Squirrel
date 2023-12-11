@@ -12,13 +12,13 @@
 					<key>EndingColumnNumber</key>
 					<string>0</string>
 					<key>EndingLineNumber</key>
-					<string>46</string>
+					<string>55</string>
 					<key>StartingColumnNumber</key>
 					<string>0</string>
 					<key>StartingLineNumber</key>
-					<string>45</string>
+					<string>54</string>
 					<key>Timestamp</key>
-					<string>718644910.373477</string>
+					<string>723727253.557375</string>
 				</dict>
 				<key>rebasable-url</key>
 				<dict>
@@ -34,16 +34,16 @@
 			<key>text-context</key>
 			<dict>
 				<key>focused</key>
-				<string>//                    UserDefaults.standard.set(safeRates.date, forKey: "updateTime")
+				<string>                        UserDefaults.standard.set(safeRates.timestamp, forKey: "updateTime")
 </string>
 				<key>leading</key>
-				<string>                    
-                    UserDefaults.standard.set(false, forKey: "updateRates")
+				<string>                        Calendar.current.isDate(date, equalTo: .now, toGranularity: .hour)
+                    {
 </string>
 				<key>trailing</key>
-				<string>                    print("Rates fetched from web")
-                } catch {
-                    print(error)
+				<string>                    }
+                    
+                    UserDefaults.standard.set(false, forKey: "updateRates")
 </string>
 			</dict>
 			<key>title</key>

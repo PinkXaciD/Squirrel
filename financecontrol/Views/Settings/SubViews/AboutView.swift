@@ -10,6 +10,7 @@ import SwiftUI
 struct AboutView: View {
     @Environment(\.openURL) private var openURL
     let version: String? = Bundle.main.releaseVersionNumber
+    let build: String? = Bundle.main.buildVersionNumber
     
     @State private var showDebug: Bool = false
     
@@ -25,7 +26,7 @@ struct AboutView: View {
         }
     }
     
-    var aboutSection: some View {
+    private var aboutSection: some View {
         Section(header: aboutHeader) {
             Text("An open-source spending tracker. \nDeveloped by PinkXaciD.")
             
@@ -39,30 +40,28 @@ struct AboutView: View {
         }
     }
     
-    var aboutHeader: some View {
+    private var aboutHeader: some View {
         VStack(alignment: .center) {
             if let image = Bundle.main.icon {
                 Image(uiImage: image)
                     .cornerRadius(15)
+                    .onTapGesture(count: 5, perform: debugToggle)
             }
             
             Text("Squirrel, version \(version ?? "unknown")")
-                .font(.body)
-                .bold()
+                .font(.body.bold())
                 .foregroundColor(.primary)
-                .padding(.top)
+            
+            Text("Build: \(build ?? "")")
+                .font(.caption)
+                .foregroundColor(.secondary)
         }
         .frame(maxWidth: .infinity)
         .textCase(nil)
-        .onTapGesture(count: 5) {
-            withAnimation {
-                showDebug.toggle()
-            }
-        }
         .padding(.vertical, 15)
     }
     
-    var githubSection: some View {
+    private var githubSection: some View {
         Section {
             Button("Create an issue on GitHub") {
                 openURL(URL(string: "https://github.com/PinkXaciD/Squirrel/issues/new")!)
@@ -72,11 +71,17 @@ struct AboutView: View {
         }
     }
     
-    var debugSection: some View {
+    private var debugSection: some View {
         Section {
             NavigationLink("Debug") {
                 DebugView()
             }
+        }
+    }
+    
+    private func debugToggle() {
+        withAnimation {
+            showDebug.toggle()
         }
     }
 }

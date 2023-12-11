@@ -8,49 +8,32 @@
 import SwiftUI
 
 struct RatesView: View {
-    @StateObject private var rvm: RatesViewModel = .init()
+    @EnvironmentObject private var rvm: RatesViewModel
     
-    private var filteredRates: [(String, Double)] {
+    private var filteredRates: [RatesRowView] {
         let rates = rvm.rates
         
         return rates
             .filter { Locale.customCommonISOCurrencyCodes.contains($0.key.uppercased()) }
-            .sorted { $0.key < $1.key }
-            .map { ($0.key.uppercased(), $0.value) }
+            .map { RatesRowView(code: $0.key.uppercased(), rate: $0.value) }
+            .sorted { $0.name < $1.name }
     }
     
     var body: some View {
         List {
             Section {
-                ForEach(filteredRates, id: \.0) { key, value in
-                    RatesRowView(code: key, rate: value)
+                ForEach(filteredRates) {
+                    $0
                 }
             } header: {
-                RatesHeaderView()
+                ratesHeader
             }
         }
         .navigationTitle("Rates")
         .navigationBarTitleDisplayMode(.inline)
     }
-}
-
-struct RatesRowView: View {
-    let code: String
-    let rate: Double
     
-    var body: some View {
-        HStack {
-            Text(Locale.current.localizedString(forCurrencyCode: code)?.capitalized ?? "Error")
-            
-            Spacer()
-            
-            Text(String(rate).currencyFormat)
-        }
-    }
-}
-
-struct RatesHeaderView: View {
-    var body: some View {
+    private var ratesHeader: some View {
         HStack {
             Text("Name")
             
@@ -61,7 +44,34 @@ struct RatesHeaderView: View {
     }
 }
 
+struct RatesRowView: View, Identifiable {
+    internal init(code: String, rate: Double) {
+        self.name = Locale.current.localizedString(forCurrencyCode: code)?.capitalized ?? "Error with: \(code)"
+        self.code = code
+        self.rate = rate
+    }
+    
+    let name: String
+    let code: String
+    let rate: Double
+    var id: String {
+        name
+    }
+    
+    var body: some View {
+        HStack {
+            Text(name)
+            
+            Spacer()
+            
+            Text(rate.formatted(.currency(code: code)))
+        }
+    }
+}
+
 struct RatesView_Previews: PreviewProvider {
+    let test = Locale.current.numberingSystem
+    
     static var previews: some View {
         RatesView()
     }
