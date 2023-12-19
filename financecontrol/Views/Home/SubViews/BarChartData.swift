@@ -45,7 +45,7 @@ struct BarChartData {
                 if entity.wrappedCurrency == defaultCurrency {
                     return entity.amountWithReturns
                 } else {
-                    return entity.amountUSDWithReturns / (usdRates[entity.wrappedCurrency] ?? 1)
+                    return entity.amountUSDWithReturns * (usdRates[defaultCurrency] ?? 1)
                 }
             }
             
@@ -69,12 +69,7 @@ struct BarChartData {
         
         var index = 0
         
-        var biggest: Double = 0
-        let _ = data.mapValues { value in
-            if value > biggest {
-                biggest = value
-            }
-        }
+        var biggest: Double = data.values.max() ?? 1
         
         while index < 7 {
             sortedData.updateValue(data[previousDay] ?? 0, forKey: previousDay)

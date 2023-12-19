@@ -48,7 +48,6 @@ struct StatsRow: View {
         HStack {
             VStack(alignment: .leading, spacing: 5) {
                 if let place = entity.place, !place.isEmpty {
-                    
                     Text(entity.category?.name ?? "Error")
                         .font(.caption)
                         .foregroundColor(Color.secondary)

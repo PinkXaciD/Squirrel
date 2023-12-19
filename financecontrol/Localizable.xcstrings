@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
+
+    },
     "-%@" : {
 
     },
@@ -216,9 +219,6 @@
     "Currency name or ISO Code" : {
 
     },
-    "Currency selection" : {
-
-    },
     "Dark Mode" : {
 
     },
@@ -228,10 +228,10 @@
     "Date selection" : {
 
     },
-    "Debug" : {
+    "Dawn of Squipan" : {
 
     },
-    "Default" : {
+    "Debug" : {
 
     },
     "Default: %@" : {
@@ -259,6 +259,12 @@
 
     },
     "Error" : {
+
+    },
+    "Even a squirrel needs a hat in winter" : {
+
+    },
+    "Everything that lives is designed to end. We are perpetually trapped in a never-ending spiral..." : {
 
     },
     "Exchange rates will be presented for the current hour" : {
@@ -325,6 +331,9 @@
 
     },
     "Mint" : {
+
+    },
+    "N:A" : {
 
     },
     "Name" : {
@@ -450,6 +459,9 @@
     "Squirrel, version %@" : {
 
     },
+    "Sqwoorl" : {
+
+    },
     "Stats" : {
 
     },
@@ -486,6 +498,9 @@
     "To" : {
 
     },
+    "To the store!" : {
+
+    },
     "URL errors" : {
 
     },
@@ -498,6 +513,12 @@
           }
         }
       }
+    },
+    "Winterized" : {
+
+    },
+    "Yes, that's his real name" : {
+
     },
     "You will not be able to undo this action.\nAll expenses in this category will be permanently deleted" : {
 

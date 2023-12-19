@@ -23,7 +23,7 @@ struct AddSpendingView: View {
     @Environment(\.dismiss) 
     private var dismiss
     
-    enum Field {
+    private enum Field {
         case amount
         case place
         case comment
@@ -44,7 +44,7 @@ struct AddSpendingView: View {
     @State
     private var filterAmount: String = ""
 
-    let utils = InputUtils() /// For input checking
+    private let utils = InputUtils() /// For input checking
     
     var body: some View {
         NavigationView {
@@ -77,7 +77,7 @@ struct AddSpendingView: View {
     
     // MARK: Variables
     
-    var reqiredSection: some View {
+    private var reqiredSection: some View {
         Section {
             TextField("0.00", text: $vm.amount)
                 .multilineTextAlignment(.center)
@@ -124,7 +124,7 @@ struct AddSpendingView: View {
         }
     }
     
-    var placeAndCommentSection: some View {
+    private var placeAndCommentSection: some View {
         Section(header: Text("Optional"), footer: placeAndCommentSectionFooter) {
             TextField("Name", text: $vm.place)
                 .focused($focusedField, equals: .place)
@@ -142,7 +142,7 @@ struct AddSpendingView: View {
         }
     }
     
-    var placeAndCommentSectionFooter: some View {
+    private var placeAndCommentSectionFooter: some View {
         VStack(alignment: .leading) {
             switch focusedField {
             case .place:
@@ -171,7 +171,7 @@ struct AddSpendingView: View {
         }
     }
     
-    var keyboardToolbar: ToolbarItemGroup<some View> {
+    private var keyboardToolbar: ToolbarItemGroup<some View> {
         ToolbarItemGroup(placement: .keyboard) {
             Spacer()
             
@@ -182,13 +182,13 @@ struct AddSpendingView: View {
         }
     }
     
-    var leadingToolbar: ToolbarItem<(), some View> {
+    private var leadingToolbar: ToolbarItem<(), some View> {
         ToolbarItem(placement: .navigationBarLeading) {
             Button("Cancel", role: .cancel, action: dismissAction)
         }
     }
     
-    var trailingToolbar: ToolbarItem<(), some View> {
+    private var trailingToolbar: ToolbarItem<(), some View> {
         ToolbarItem(placement: .navigationBarTrailing) {
             Button {
                 done()

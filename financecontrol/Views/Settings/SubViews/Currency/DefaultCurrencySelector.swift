@@ -29,19 +29,33 @@ struct DefaultCurrencySelector: View {
         }
         
         List {
-            Picker("Currency selection", selection: $defaultCurrency) {
-                ForEach(currencies) { currency in
-                    if let tag = currency.tag {
-                        CurrencyRow(tag: tag, currency: currency)
-                            .tag(tag)
-                            .padding(.vertical, 1)
-                    } else {
-                        Text("Error")
-                    }
+//            Picker("Currency selection", selection: $defaultCurrency) {
+//                ForEach(currencies) { currency in
+//                    if let tag = currency.tag {
+//                        CurrencyRow(tag: tag, currency: currency)
+//                            .tag(tag)
+//                            .padding(.vertical, 1)
+//                    } else {
+//                        Text("Error")
+//                    }
+//                }
+//            }
+//            .pickerStyle(.inline)
+//            .labelsHidden()
+            
+            ForEach(currencies) { currency in
+                if let tag = currency.tag {
+                    CurrencyRow(tag: tag, currency: currency)
+                        .padding(.vertical, 1)
+                        .onTapGesture {
+                            withAnimation {
+                                defaultCurrency = tag
+                            }
+                        }
+                } else {
+                    Text("Error")
                 }
             }
-            .pickerStyle(.inline)
-            .labelsHidden()
             
             addNewSection
         }

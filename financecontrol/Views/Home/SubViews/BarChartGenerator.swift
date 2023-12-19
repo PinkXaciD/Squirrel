@@ -59,9 +59,7 @@ struct BarChartGenerator: View {
         }
         
         var amount: String = ""
-        if 
-            let value = data?[index].value
-        {
+        if let value = data?[index].value {
             amount = value.formatted(.currency(code: defaultCurrency))
         } else {
             amount = String(cdm.operationsSumWeek(rvm.rates[defaultCurrency] ?? 1).formatted(.currency(code: defaultCurrency)))

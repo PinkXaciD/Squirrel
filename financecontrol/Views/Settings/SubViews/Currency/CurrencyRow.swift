@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct CurrencyRow: View {
-    
     @EnvironmentObject private var cdm: CoreDataModel
     @EnvironmentObject private var rvm: RatesViewModel
     
@@ -18,26 +17,40 @@ struct CurrencyRow: View {
     let currency: CurrencyEntity
     
     var body: some View {
-        VStack(alignment: .leading) {
-            Text(Locale.current.localizedString(forCurrencyCode: tag)?.capitalized ?? "Error")
-            
-            HStack {
-                Image(systemName: currency.isFavorite ? "star.fill" : "star")
-                    .foregroundColor(currency.isFavorite ? Color.yellow : Color.secondary)
+        HStack {
+            VStack(alignment: .leading) {
+                Text(Locale.current.localizedString(forCurrencyCode: tag)?.capitalized ?? "Error")
                 
-                if let rate = rvm.rates[tag], let defaultRate = rvm.rates[defaultCurrency] {
-                    switch tag {
-                    case defaultCurrency:
-                        Text("Selected as default")
-                    default:
-                        Text("1 \(tag) = \(String((1 / rate) * defaultRate).currencyFormat) \(defaultCurrency)")
+                HStack {
+                    Image(systemName: currency.isFavorite ? "star.fill" : "star")
+                        .foregroundColor(currency.isFavorite ? Color.yellow : Color.secondary)
+                    
+                    if let rate = rvm.rates[tag], let defaultRate = rvm.rates[defaultCurrency] {
+                        if tag == defaultCurrency {
+                            Text("Selected as default")
+                        } else {
+                            Text("1 \(tag) = \(String((1 / rate) * defaultRate).currencyFormat) \(defaultCurrency)")
+                        }
+                    } else {
+                        Text("No up to date exchange rate found")
                     }
-                } else {
-                    Text("No up to date exchange rate found")
                 }
+                .font(.caption)
+                .foregroundColor(.secondary)
             }
-            .font(.caption)
-            .foregroundColor(.secondary)
+            
+            Spacer()
+            
+            if defaultCurrency == tag {
+                Image(systemName: "checkmark")
+                    .font(.body.bold())
+                    .foregroundColor(.accentColor)
+            }
+        }
+        .background {
+            Rectangle()
+                .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .padding(.vertical, 1) /// Strange behavior without padding
         .swipeActions(edge: .leading) {
@@ -69,7 +82,9 @@ struct CurrencyRow: View {
     
     private var deleteButton: some View {
         Button(role: .destructive) {
-            cdm.deleteCurrency(currency)
+            withAnimation {
+                cdm.deleteCurrency(currency)
+            }
         } label: {
             Label("Delete", systemImage: "trash.fill")
         }

@@ -49,75 +49,58 @@ struct UiColorSelector: View {
     
     private var iconSection: some View {
         Section {
-            iconButton()
+            iconButton(description: "Yes, that's his real name")
             
-            iconButton("FirstFlight", displayName: "First Flight")
+            iconButton("FirstFlight", displayName: "First Flight", description: "To the store!")
             
             iconButton("NeonNight", displayName: "Neon Night")
+            
+            iconButton("Winterized", displayName: "Winterized", description: "Even a squirrel needs a hat in winter")
+            
+            iconButton("DawnOfSquipan", displayName: "Dawn of Squipan")
+            
+            iconButton("NA", displayName: "N:A", description: "Everything that lives is designed to end. We are perpetually trapped in a never-ending spiral...")
         } header: {
             Text("Icon")
         }
     }
     
-    private func iconButton(_ name: String? = nil, displayName: LocalizedStringKey = "Default") -> some View {
+    private func iconButton(_ name: String? = nil, displayName: LocalizedStringKey = "Sqwoorl", description: LocalizedStringKey = "") -> some View {
         let iconSize: CGFloat = 60
         let cornerRadius: CGFloat = 13.5
         
-        if let name = name {
-            return Button {
-                UIApplication.shared.setAlternateIconName("AppIcon_\(name)")
-            } label: {
-                HStack {
-                    Image("AppIcon_\(name)_Image")
-                        .resizable()
-                        .frame(width: iconSize, height: iconSize)
-                        .cornerRadius(cornerRadius)
-                        .overlay {
-                            RoundedRectangle(cornerRadius: cornerRadius)
-                                .stroke(lineWidth: 1)
-                                .foregroundColor(.primary)
-                                .opacity(0.3)
-                        }
-                    
+        return Button {
+            UIApplication.shared.setAlternateIconName(name != nil ? "AppIcon_\(name ?? "")" : nil)
+        } label: {
+            HStack {
+                Image("AppIcon\(name != nil ? ("_" + (name ?? "")) : "")_Image")
+                    .resizable()
+                    .frame(width: iconSize, height: iconSize)
+                    .cornerRadius(cornerRadius)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                            .stroke(lineWidth: 1)
+                            .foregroundColor(.primary)
+                            .opacity(0.3)
+                    }
+                
+                VStack(alignment: .leading) {
                     Text(displayName)
-                        .padding(.leading)
                         .foregroundColor(.primary)
                     
-                    if UIApplication.shared.alternateIconName == "AppIcon_\(name)" {
-                        Spacer()
-                        
-                        Image(systemName: "checkmark")
-                            .font(.body.bold())
+                    if description != "" {
+                        Text(description)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
                 }
-            }
-        } else {
-            return Button {
-                UIApplication.shared.setAlternateIconName(nil)
-            } label: {
-                HStack {
-                    Image("AppIcon_Image")
-                        .resizable()
-                        .frame(width: iconSize, height: iconSize)
-                        .cornerRadius(cornerRadius)
-                        .overlay {
-                            RoundedRectangle(cornerRadius: cornerRadius)
-                                .stroke(lineWidth: 1)
-                                .foregroundColor(.primary)
-                                .opacity(0.3)
-                        }
-                    
-                    Text(displayName)
-                        .padding(.leading)
-                        .foregroundColor(.primary)
-                    
-                    if UIApplication.shared.alternateIconName == nil {
-                        Spacer()
-                        
-                        Image(systemName: "checkmark")
-                            .font(.body.bold())
-                    }
-                }
+                .padding(.leading)
+                
+                Spacer()
+                
+                Image(systemName: "checkmark")
+                    .font(.body.bold())
+                    .opacity(UIApplication.shared.alternateIconName == (name != nil ? "AppIcon_\(name ?? "")" : nil) ? 1 : 0)
             }
         }
     }

@@ -97,15 +97,18 @@ struct SpendingView: View {
                     }
             }
             
-            Text(entity.amountWithReturns.formatted(.currency(code: entity.wrappedCurrency)))
-                .amountFont()
-                .onTapGesture {
-                    editAction("amount")
-                }
+            if entity.returnsArr.isEmpty {
+                amountWithoutReturns
+                    .frame(width: UIScreen.main.bounds.width)
+            } else {
+                amountWithReturns
+                    .transition(.identity)
+                    .frame(width: UIScreen.main.bounds.width)
+            }
             
             if entity.wrappedCurrency != defaultCurrency {
                 Text(
-                    (entity.amountUSD * (rvm.rates[defaultCurrency] ?? 1))
+                    (entity.amountUSDWithReturns * (rvm.rates[defaultCurrency] ?? 1))
                         .formatted(.currency(code: defaultCurrency))
                 )
                 .font(.system(.body, design: .rounded))
@@ -115,6 +118,46 @@ struct SpendingView: View {
         .textCase(nil)
         .foregroundColor(categoryColor)
         .frame(maxWidth: .infinity)
+    }
+    
+    private var amountWithoutReturns: some View {
+        VStack {
+            Text(entity.amountWithReturns.formatted(.currency(code: entity.wrappedCurrency)))
+                .font(.system(.largeTitle, design: .rounded).bold())
+                .scaledToFit()
+                .minimumScaleFactor(0.01)
+                .onTapGesture {
+                    editAction("amount")
+                }
+        }
+    }
+    
+    private var amountWithReturns: some View {
+        VStack(alignment: .center) {
+            Text(entity.amount.formatted(.currency(code: entity.wrappedCurrency)))
+                .font(.system(.title, design: .rounded).bold())
+                .foregroundStyle(.secondary)
+                .roundedStrikeThrough(categoryColor)
+                .padding(.bottom, 3) /// Normalize spacing between arrow and amount
+                .onTapGesture {
+                    editAction("amount")
+                }
+            
+            Image(systemName: "arrow.down")
+                .font(.system(.caption, design: .rounded).bold())
+                .foregroundStyle(.secondary)
+                .onTapGesture {
+                    editAction("amount")
+                }
+            
+            Text(entity.amountWithReturns.formatted(.currency(code: entity.wrappedCurrency)))
+                .font(.system(.largeTitle, design: .rounded).bold())
+                .onTapGesture {
+                    editAction("amount")
+                }
+        }
+        .scaledToFit()
+        .minimumScaleFactor(0.01)
     }
     
     private var commentSection: some View {
@@ -131,49 +174,17 @@ struct SpendingView: View {
         }
     }
     
-    var returnsSection: some View {
+    private var returnsSection: some View {
         Section {
             ForEach(entity.returnsArr) { returnEntity in
-                VStack(alignment: .leading) {
-                    HStack {
-                        Text(returnEntity.amount.formatted(.currency(code: entity.wrappedCurrency)))
-                        
-                        Spacer()
-                        
-                        Text(returnEntity.date?.formatted(date: .abbreviated, time: .shortened) ?? "Date error")
-                    }
-                    
-                    if let name = returnEntity.name, !name.isEmpty {
-                        Text(name)
-                            .font(.callout)
-                            .foregroundColor(.secondary)
-                    }
-                }
-                .padding(.vertical, 1)
-                .foregroundColor(.primary)
-                .swipeActions(edge: .leading) {
-                    Button {
-                        returnToEdit = returnEntity
-                    } label: {
-                        Label("Edit", systemImage: "pencil")
-                    }
-                    .tint(.yellow)
-                }
-                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                    Button(role: .destructive) {
-                        cdm.deleteReturn(spendingReturn: returnEntity)
-                    } label: {
-                        Label("Delete", systemImage: "trash.fill")
-                    }
-                    .tint(.red)
-                }
+                returnRow(returnEntity)
             }
         } header: {
             Text("\(entity.returns?.allObjects.count ?? 0) returns")
         }
     }
     
-    var returnAndDeleteButtons: some View {
+    private var returnAndDeleteButtons: some View {
         HStack(spacing: 15) {
             Button {
                 entityToAddReturn = entity
@@ -232,6 +243,44 @@ extension SpendingView {
         editFocus = field
         withAnimation {
             edit.toggle()
+        }
+    }
+    
+    private func returnRow(_ returnEntity: ReturnEntity) -> some View {
+        VStack(alignment: .leading) {
+            HStack {
+                Text(returnEntity.amount.formatted(.currency(code: entity.wrappedCurrency)))
+                
+                Spacer()
+                
+                Text(returnEntity.date?.formatted(date: .abbreviated, time: .shortened) ?? "Date error")
+            }
+            
+            if let name = returnEntity.name, !name.isEmpty {
+                Text(name)
+                    .font(.callout)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(.vertical, 1)
+        .foregroundColor(.primary)
+        .swipeActions(edge: .leading) {
+            Button {
+                returnToEdit = returnEntity
+            } label: {
+                Label("Edit", systemImage: "pencil")
+            }
+            .tint(.yellow)
+        }
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+            Button(role: .destructive) {
+                withAnimation {
+                    cdm.deleteReturn(spendingReturn: returnEntity)
+                }
+            } label: {
+                Label("Delete", systemImage: "trash.fill")
+            }
+            .tint(.red)
         }
     }
 }

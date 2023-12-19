@@ -93,6 +93,11 @@ extension View {
         return self
             .modifier(SpendingPlaceTextFieldStyleModifier())
     }
+    
+    func roundedStrikeThrough(_ color: Color, thickness: CGFloat = 2) -> some View {
+        return self
+            .modifier(RoundedStrikeThroughModifier(color: color, thickness: thickness))
+    }
 }
 
 extension Text {
@@ -102,7 +107,21 @@ extension Text {
     }
 }
 
-struct SpendingPlaceTextFieldStyleModifier: ViewModifier {
+fileprivate struct RoundedStrikeThroughModifier: ViewModifier {
+    let color: Color
+    let thickness: CGFloat
+    
+    func body(content: Content) -> some View {
+        content
+            .overlay {
+                Capsule()
+                    .frame(maxWidth: .infinity, maxHeight: thickness)
+                    .foregroundColor(color)
+            }
+    }
+}
+
+fileprivate struct SpendingPlaceTextFieldStyleModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .font(.title2.bold())
@@ -118,7 +137,7 @@ struct SpendingPlaceTextFieldStyleModifier: ViewModifier {
     }
 }
 
-struct SpendingAmountTextFieldStyleModifier: ViewModifier {
+fileprivate struct SpendingAmountTextFieldStyleModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .font(.system(.largeTitle, design: .rounded).bold())
