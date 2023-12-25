@@ -1,37 +1,11 @@
 //
-//  DataManager.swift
+//  CoreDataModel.swift
 //  financecontrol
 //
-//  Created by PinkXaciD on R 5/07/05.
+//  Created by PinkXaciD on R 5/12/25.
 //
 
 import CoreData
-import SwiftUI
-
-final class DataManager {
-    static let shared = DataManager()
-    
-    let container: NSPersistentContainer
-    let context: NSManagedObjectContext
-
-    init() {
-        self.container = NSPersistentContainer(name: "DataContainer")
-        container.loadPersistentStores { _, error in
-            if let error = error {
-                ErrorType(error: error).publish()
-            }
-        }
-        self.context = container.viewContext
-    }
-    
-    func save() {
-        do {
-            try context.save()
-        } catch {
-            ErrorType(error: error).publish()
-        }
-    }
-}
 
 final class CoreDataModel: ObservableObject {
     let container: NSPersistentContainer
@@ -46,7 +20,7 @@ final class CoreDataModel: ObservableObject {
         fetchCurrencies()
     }
     
-    @Published 
+    @Published
     var savedSpendings: [SpendingEntity] = []
     @Published
     var savedCategories: [CategoryEntity] = []
