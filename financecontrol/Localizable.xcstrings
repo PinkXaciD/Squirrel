@@ -240,9 +240,6 @@
     "Delete" : {
 
     },
-    "Delete all old rates" : {
-
-    },
     "Delete this category?" : {
 
     },
@@ -289,6 +286,9 @@
 
     },
     "Failed to create URL from given components" : {
+
+    },
+    "Fallback rates timestamp:" : {
 
     },
     "Filter" : {
@@ -412,6 +412,9 @@
 
     },
     "Rates fetch errors" : {
+
+    },
+    "Rates updated at:" : {
 
     },
     "Red" : {

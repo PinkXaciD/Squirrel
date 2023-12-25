@@ -19,7 +19,7 @@ struct DebugView: View {
             
             urlErrorSection
             
-            deleteOldRatesSection
+            ratesSection
         }
         .navigationTitle("Debug")
         .navigationBarTitleDisplayMode(.inline)
@@ -68,11 +68,57 @@ struct DebugView: View {
         }
     }
     
-    private var deleteOldRatesSection: some View {
-        Section(header: Text(verbatim: "rates")) {
-            Button("Delete all old rates", role: .destructive) {
-                rvm.deleteOldRates()
+    private var ratesSection: some View {
+        return Section {
+            VStack(alignment: .leading) {
+                Text("Rates updated at:")
+                
+                Text(getDate(.update))
+                    .foregroundColor(.secondary)
             }
+            
+            VStack(alignment: .leading) {
+                Text("Fallback rates timestamp:")
+                
+                Text(getDate(.fallback))
+                    .foregroundColor(.secondary)
+            }
+        } header: {
+            Text("Rates")
+        }
+    }
+}
+
+extension DebugView {
+    private enum DateType {
+        case fallback, update
+    }
+    
+    private func getDate(_ type: DateType) -> String {
+        var dateFormatter: DateFormatter {
+            let f = DateFormatter()
+            f.dateStyle = .medium
+            f.timeStyle = .long
+            f.locale = Locale.current
+            f.timeZone = Calendar.current.timeZone
+            return f
+        }
+        
+        var isoDateFromatter: ISO8601DateFormatter {
+            let f = ISO8601DateFormatter()
+            f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            f.timeZone = .gmt
+            return f
+        }
+        
+        switch type {
+        case .fallback:
+            let date: Date = isoDateFromatter.date(from: Rates.fallback.timestamp) ?? .distantPast
+            return dateFormatter.string(from: date)
+        case .update:
+            let ratesUpdateTime: String = UserDefaults.standard.string(forKey: "updateTime") ?? "Error"
+            let date: Date = isoDateFromatter.date(from: ratesUpdateTime) ?? .distantPast
+            return dateFormatter.string(from: date)
         }
     }
 }

@@ -3,54 +3,6 @@
 <plist version="1.0">
 <dict>
 	<key>top-level-items</key>
-	<array>
-		<dict>
-			<key>destination</key>
-			<dict>
-				<key>location-parameters</key>
-				<dict>
-					<key>EndingColumnNumber</key>
-					<string>0</string>
-					<key>EndingLineNumber</key>
-					<string>55</string>
-					<key>StartingColumnNumber</key>
-					<string>0</string>
-					<key>StartingLineNumber</key>
-					<string>54</string>
-					<key>Timestamp</key>
-					<string>723727253.557375</string>
-				</dict>
-				<key>rebasable-url</key>
-				<dict>
-					<key>base</key>
-					<string>workspace</string>
-					<key>payload</key>
-					<dict>
-						<key>relative-path</key>
-						<string>financecontrol/Rates/RatesViewModel.swift</string>
-					</dict>
-				</dict>
-			</dict>
-			<key>text-context</key>
-			<dict>
-				<key>focused</key>
-				<string>                        UserDefaults.standard.set(safeRates.timestamp, forKey: "updateTime")
-</string>
-				<key>leading</key>
-				<string>                        Calendar.current.isDate(date, equalTo: .now, toGranularity: .hour)
-                    {
-</string>
-				<key>trailing</key>
-				<string>                    }
-                    
-                    UserDefaults.standard.set(false, forKey: "updateRates")
-</string>
-			</dict>
-			<key>title</key>
-			<string>Set update time from API</string>
-			<key>type</key>
-			<string>bookmark</string>
-		</dict>
-	</array>
+	<array/>
 </dict>
 </plist>

@@ -116,3 +116,47 @@ struct SpendingEntityLocal {
     var place: String
     var categoryId: UUID
 }
+
+extension SpendingEntityLocal {
+    init(
+        amount: Double = 0,
+        amountUSD: Double = 0,
+        currency: String = "USD",
+        date: Date = .init(),
+        place: String = "",
+        categoryId: UUID = .init(),
+        comment: String = ""
+    ) {
+        self.amount = amount
+        self.amountUSD = amountUSD
+        self.currency = currency
+        self.date = date
+        self.place = place
+        self.categoryId = categoryId
+        self.comment = comment
+        self.amountUSDWithReturns = amountUSD
+        self.amountWithReturns = amount
+    }
+    
+    init(
+        amount: Double = 0,
+        amountWithReturns: Double = 0,
+        amountUSD: Double = 0,
+        amountUSDWithReturns: Double = 0,
+        currency: String = "USD",
+        date: Date = .init(),
+        place: String = "",
+        categoryId: UUID = .init(),
+        comment: String = ""
+    ) {
+        self.amount = amount
+        self.amountUSD = amountUSD
+        self.currency = currency
+        self.date = date
+        self.place = place
+        self.categoryId = categoryId
+        self.comment = comment
+        self.amountUSDWithReturns = amountUSDWithReturns
+        self.amountWithReturns = amountWithReturns
+    }
+}

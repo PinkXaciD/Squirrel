@@ -11,7 +11,12 @@ class LaunchActions {
     init() {}
     
     func launch() -> Void {
-        let dateFormatter: ISO8601DateFormatter = .init()
+        var dateFormatter: ISO8601DateFormatter {
+            let f = ISO8601DateFormatter()
+            f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            f.timeZone = .gmt
+            return f
+        }
         
         let currentDate = dateFormatter.string(from: .now)
         let updateTime = UserDefaults.standard.string(forKey: "updateTime") ?? dateFormatter.string(from: .distantPast)
@@ -20,10 +25,7 @@ class LaunchActions {
             print("Rates are not up to date")
             print("Last updated at: \(updateTime)")
             UserDefaults.standard.set(true, forKey: "updateRates")
-            let newUpdateTime: String = dateFormatter.string(from: .now)
-            UserDefaults.standard.set(newUpdateTime, forKey: "updateTime")
-            print("Updated to: \(newUpdateTime)")
-            print("Rates updated")
+            print("Updating rates...")
         } else {
             print("Rates are up to date")
             print("Current date: \(currentDate)")

@@ -39,15 +39,12 @@ final class AddSpendingViewModel: ViewModel {
     func done() {
         if let doubleAmount = Double(amount) {
             var spending: SpendingEntityLocal = .init(
-                amountUSD: 0,
-                amount: doubleAmount, 
-                amountWithReturns: 0,
-                amountUSDWithReturns: 0,
-                comment: comment,
+                amount: doubleAmount,
                 currency: currency,
                 date: date,
                 place: place,
-                categoryId: categoryId
+                categoryId: categoryId,
+                comment: comment
             )
             
             if !Calendar.current.isDateInToday(date) {

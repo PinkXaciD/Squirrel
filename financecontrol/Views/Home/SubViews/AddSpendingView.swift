@@ -75,7 +75,7 @@ struct AddSpendingView: View {
         .interactiveDismissDisabled(vm.categoryName != "Select Category" || !vm.amount.isEmpty)
     }
     
-    // MARK: Variables
+// MARK: Sections
     
     private var reqiredSection: some View {
         Section {
@@ -114,7 +114,6 @@ struct AddSpendingView: View {
             
         } header: {
             Text("Required")
-            
         } footer: {
             if !Calendar.current.isDateInToday(vm.date) && vm.currency != defaultCurrency {
                 Text("Historical exchange rates are presented as the stock exchange closed on the requested day")
@@ -171,6 +170,8 @@ struct AddSpendingView: View {
         }
     }
     
+// MARK: Toolbars
+    
     private var keyboardToolbar: ToolbarItemGroup<some View> {
         ToolbarItemGroup(placement: .keyboard) {
             Spacer()
@@ -200,6 +201,8 @@ struct AddSpendingView: View {
         }
     }
     
+// MARK: Overlay
+    
     private var processingOverlay: some View {
         ZStack {
             Rectangle()
@@ -210,6 +213,8 @@ struct AddSpendingView: View {
         }
     }
 }
+
+// MARK: Functions
 
 extension AddSpendingView {
     private func amountFocus() {

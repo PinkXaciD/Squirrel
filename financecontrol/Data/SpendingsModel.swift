@@ -35,7 +35,6 @@ extension CoreDataModel {
     }
     
     func addSpending(spending: SpendingEntityLocal) {
-        
         if let description = NSEntityDescription.entity(forEntityName: "SpendingEntity", in: context),
            let category = findCategory(spending.categoryId) {
             let newSpending = SpendingEntity(entity: description, insertInto: context)

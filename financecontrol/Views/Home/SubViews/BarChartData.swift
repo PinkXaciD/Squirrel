@@ -69,7 +69,7 @@ struct BarChartData {
         
         var index = 0
         
-        var biggest: Double = data.values.max() ?? 1
+        let biggest: Double = data.values.max() ?? 1
         
         while index < 7 {
             sortedData.updateValue(data[previousDay] ?? 0, forKey: previousDay)
