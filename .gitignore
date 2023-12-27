@@ -3,18 +3,21 @@ Icon.png
 /.vscode/settings.json
 
 financecontrol/Assets.xcassets/AppIcon.appiconset/iOS_AppIcon_Default.png
-financecontrol/Assets.xcassets/AppIcon_Image.imageset/iOS_AppIcon_Default_Image.png
-financecontrol/Assets.xcassets/AppIcon_Image.imageset/iOS_AppIcon_Default_Image@2x.png
-financecontrol/Assets.xcassets/AppIcon_Image.imageset/iOS_AppIcon_Default_Image@3x.png
+financecontrol/Assets.xcassets/AppIcon_Image.imageset/*.png
 
 financecontrol/Assets.xcassets/AppIcon_FirstFlight.appiconset/iOS_AppIcon_First_Flight.png
-financecontrol/Assets.xcassets/AppIcon_FirstFlight_Image.imageset/iOS_AppIcon_First_Flight_Image.png
-financecontrol/Assets.xcassets/AppIcon_FirstFlight_Image.imageset/iOS_AppIcon_First_Flight_Image@2x.png
-financecontrol/Assets.xcassets/AppIcon_FirstFlight_Image.imageset/iOS_AppIcon_First_Flight_Image@3x.png
+financecontrol/Assets.xcassets/AppIcon_FirstFlight_Image.imageset/*.png
 
 financecontrol/Assets.xcassets/AppIcon_NeonNight.appiconset/iOS_AppIcon_Neon.png
-financecontrol/Assets.xcassets/AppIcon_NeonNight_Image.imageset/iOS_AppIcon_Neon_Image.png
-financecontrol/Assets.xcassets/AppIcon_NeonNight_Image.imageset/iOS_AppIcon_Neon_Image@2x.png
-financecontrol/Assets.xcassets/AppIcon_NeonNight_Image.imageset/iOS_AppIcon_Neon_Image@3x.png
+financecontrol/Assets.xcassets/AppIcon_NeonNight_Image.imageset/*.png
+
+financecontrol/Assets.xcassets/AppIcon_Winterized.appiconset/iOS_AppIcon_Winterized.png
+financecontrol/Assets.xcassets/AppIcon_Winterized_Image.imageset/*.png
+
+financecontrol/Assets.xcassets/AppIcon_DawnOfSquipan.appiconset/iOS_AppIcon_DawnOfSquipan.png
+financecontrol/Assets.xcassets/AppIcon_DawnOfSquipan_Image.imageset/*.png
+
+financecontrol/Assets.xcassets/AppIcon_NA.appiconset/iOS_AppIcon_NA.png
+financecontrol/Assets.xcassets/AppIcon_NA_Image.imageset/*.png
 
 CommitMessage.md

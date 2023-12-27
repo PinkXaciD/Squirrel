@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
+
+    },
     "-%@" : {
 
     },
@@ -216,9 +219,6 @@
     "Currency name or ISO Code" : {
 
     },
-    "Currency selection" : {
-
-    },
     "Dark Mode" : {
 
     },
@@ -228,19 +228,16 @@
     "Date selection" : {
 
     },
-    "Debug" : {
+    "Dawn of Squipan" : {
 
     },
-    "Default" : {
+    "Debug" : {
 
     },
     "Default: %@" : {
 
     },
     "Delete" : {
-
-    },
-    "Delete all old rates" : {
 
     },
     "Delete this category?" : {
@@ -255,16 +252,22 @@
     "Edit" : {
 
     },
+    "Empty database" : {
+
+    },
     "Enter name" : {
 
     },
     "Error" : {
 
     },
-    "Exchange rates will be presented for the current hour" : {
+    "Even a squirrel needs a hat in winter" : {
 
     },
-    "Exclude" : {
+    "Everything that lives is designed to end. We are perpetually trapped in a never-ending spiral..." : {
+
+    },
+    "Exchange rates will be presented for the current hour" : {
 
     },
     "Expand" : {
@@ -283,6 +286,9 @@
 
     },
     "Failed to create URL from given components" : {
+
+    },
+    "Fallback rates timestamp:" : {
 
     },
     "Filter" : {
@@ -325,6 +331,9 @@
 
     },
     "Mint" : {
+
+    },
+    "N:A" : {
 
     },
     "Name" : {
@@ -402,7 +411,7 @@
     "Rates" : {
 
     },
-    "Rates fetch errors" : {
+    "Rates updated at:" : {
 
     },
     "Red" : {
@@ -450,6 +459,9 @@
     "Squirrel, version %@" : {
 
     },
+    "Sqwoorl" : {
+
+    },
     "Stats" : {
 
     },
@@ -486,7 +498,10 @@
     "To" : {
 
     },
-    "URL errors" : {
+    "To the store!" : {
+
+    },
+    "Today" : {
 
     },
     "Ver. %@ (%@)" : {
@@ -498,6 +513,15 @@
           }
         }
       }
+    },
+    "Winterized" : {
+
+    },
+    "Yes, that's his real name" : {
+
+    },
+    "Yesterday" : {
+
     },
     "You will not be able to undo this action.\nAll expenses in this category will be permanently deleted" : {
 
