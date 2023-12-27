@@ -7,10 +7,9 @@
 
 import Foundation
 
-//MARK: Rates Model
+// MARK: Rates Model
 
 final class RatesModel {
-    
     let errorHandler = ErrorHandler.shared
     
     init() {
@@ -20,22 +19,18 @@ final class RatesModel {
     deinit {
         print("RatesModel deinitialized")
     }
-
 }
 
-//MARK: Rates Model networking
+// MARK: Rates Model networking
 
 extension RatesModel {
-    
     func downloadRates(timeStamp: Date? = nil) async throws -> Rates {
-        
         do {
             let apiURLComponents = try getURLComponents()
             let apiKey = try getApiKey()
             var timeStampString: String?
             
             if let timeStamp = timeStamp {
-                
                 let formatter = ISO8601DateFormatter()
                         
                 timeStampString = "\"" + formatter.string(from: timeStamp) + "\""
@@ -54,7 +49,7 @@ extension RatesModel {
                 return request
             }
 
-            for count in 0..<3 {
+            for count in 0 ..< 3 {
                 do {
                     let (data, response) = try await URLSession.shared.data(for: request)
                     return try handleResponse(data: data, response: response)
@@ -74,11 +69,11 @@ extension RatesModel {
         } catch {
             await MainActor.run {
                 if let error = error as? InfoPlistError {
-                    ErrorType(infoPlistError: error).publish()
+                    ErrorType(error).publish()
                 } else if let error = error as? URLError {
                     switch error {
                     case URLError.badServerResponse, URLError.badURL:
-                        ErrorType(urlError: error).publish()
+                        ErrorType(error).publish()
                     default:
                         ErrorType(
                             errorDescription: error.localizedDescription,
@@ -93,8 +88,7 @@ extension RatesModel {
     }
     
     private func handleResponse(data: Data, response: URLResponse) throws -> Rates {
-        
-        guard 
+        guard
             let response = response as? HTTPURLResponse,
             response.statusCode >= 200 && response.statusCode < 300
         else {
@@ -109,13 +103,11 @@ extension RatesModel {
     }
 }
 
-//MARK: Info.plist
+// MARK: Info.plist
 
 extension RatesModel {
-    
     private func getURLComponents() throws -> APIURLComponents {
-        
-        guard 
+        guard
             let filePath = Bundle.main.path(forResource: "Info", ofType: "plist")
         else {
             throw InfoPlistError.noInfoFound
@@ -123,8 +115,8 @@ extension RatesModel {
         
         let plist = NSDictionary(contentsOfFile: filePath)
         
-        guard 
-            let apiURLDict = plist?.object(forKey: "API_URL") as? Dictionary<String, String>
+        guard
+            let apiURLDict = plist?.object(forKey: "API_URL") as? [String: String]
         else {
             throw InfoPlistError.noURLFound
         }
@@ -137,19 +129,14 @@ extension RatesModel {
             throw InfoPlistError.failedToReadURLComponents
         }
         
-        var result: APIURLComponents {
-            var result = APIURLComponents()
-            result.scheme = scheme
-            result.host = host
-            result.path = path
-            return result
-        }
-        
+        var result = APIURLComponents()
+        result.scheme = scheme
+        result.host = host
+        result.path = path
         return result
     }
     
     private func getApiKey() throws -> String {
-        
         guard let filePath = Bundle.main.path(forResource: "Info", ofType: "plist") else {
             throw InfoPlistError.noInfoFound
         }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum InfoPlistError: Error, LocalizedError {
+public enum InfoPlistError: LocalizedError {
     case noInfoFound
     case noURLFound
     case noAPIKeyFound
@@ -53,13 +53,13 @@ extension InfoPlistError {
     func errorType() -> ErrorType {
         switch self {
         case .failedToReadURLComponents:
-            return ErrorType(infoPlistError: .failedToReadURLComponents)
+            return ErrorType(.failedToReadURLComponents)
         case .noAPIKeyFound:
-            return ErrorType(infoPlistError: .noAPIKeyFound)
+            return ErrorType(.noAPIKeyFound)
         case .noInfoFound:
-            return ErrorType(infoPlistError: .noInfoFound)
+            return ErrorType(.noInfoFound)
         case .noURLFound:
-            return ErrorType(infoPlistError: .noURLFound)
+            return ErrorType(.noURLFound)
         }
     }
 }
@@ -80,6 +80,13 @@ extension RatesFetchError {
         switch self {
         case .emptyDatabase:
             return NSLocalizedString("Please submit bug report and try to reinstall the app", comment: "")
+        }
+    }
+    
+    var failureReason: String {
+        switch self {
+        case .emptyDatabase:
+            return NSLocalizedString("Empty database", comment: "")
         }
     }
 }

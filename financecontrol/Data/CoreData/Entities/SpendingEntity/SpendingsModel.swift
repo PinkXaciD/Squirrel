@@ -8,7 +8,6 @@
 import CoreData
 
 extension CoreDataModel {
-    
     func fetchSpendings() {
         let request = SpendingEntity.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
@@ -208,29 +207,37 @@ extension CoreDataModel {
         return chartData.reversed()
     }
     
-    func operationsForList() -> [String:[SpendingEntity]]{
-        var listData: [SpendingListData] = []
-        var result: [String:[SpendingEntity]] = [:]
+    // MARK: Operations for list
+    func operationsForList() -> StatsListData {
+        var result: StatsListData = [:]
         
-        do {
-            listData = try getSpendings()
-                .sorted { $0.wrappedDate > $1.wrappedDate }
-                .map { SpendingListData(entity: $0) }
-        } catch {
-            ErrorType(error: error).publish()
+        func dateFormatForList(_ date: Date) -> String {
+            if Calendar.current.isDateInToday(date) {
+                return NSLocalizedString("Today", comment: "")
+            } else if Calendar.current.isDate(date, inSameDayAs: .now.previousDay) {
+                return NSLocalizedString("Yesterday", comment: "")
+            } else {
+                let dateFormatter: DateFormatter = .init()
+                dateFormatter.dateStyle = .long
+                dateFormatter.timeStyle = .none
+                
+                return dateFormatter.string(from: date)
+            }
         }
         
-        for spending in listData {
-            if let existingData = result[spending.date] {
-                result.updateValue(existingData + [spending.entity], forKey: spending.date)
-            } else {
-                result.updateValue([spending.entity], forKey: spending.date)
-            }
+        for spending in savedSpendings {
+            let dateString = dateFormatForList(spending.wrappedDate)
+            var existingData = result[dateString] ?? []
+            existingData.append(spending)
+            
+            result.updateValue(existingData, forKey: dateString)
         }
         
         return result
     }
 }
+
+typealias StatsListData = [String:[SpendingEntity]]
 
 struct ChartData: Identifiable {
     let id: Int
@@ -305,22 +312,5 @@ struct ChartData: Identifiable {
         }
         
         self.categories = tempCategories.map { $0.value }
-    }
-}
-
-struct SpendingListData {
-    let entity: SpendingEntity
-    let date: String
-    
-    init(entity: SpendingEntity) {
-        var dateFormatter: DateFormatter {
-            let formatter = DateFormatter()
-            formatter.dateStyle = .long
-            formatter.timeStyle = .none
-            return formatter
-        }
-        
-        self.entity = entity
-        self.date = dateFormatter.string(from: entity.wrappedDate)
     }
 }

@@ -252,6 +252,9 @@
     "Edit" : {
 
     },
+    "Empty database" : {
+
+    },
     "Enter name" : {
 
     },
@@ -265,9 +268,6 @@
 
     },
     "Exchange rates will be presented for the current hour" : {
-
-    },
-    "Exclude" : {
 
     },
     "Expand" : {
@@ -411,9 +411,6 @@
     "Rates" : {
 
     },
-    "Rates fetch errors" : {
-
-    },
     "Rates updated at:" : {
 
     },
@@ -504,7 +501,7 @@
     "To the store!" : {
 
     },
-    "URL errors" : {
+    "Today" : {
 
     },
     "Ver. %@ (%@)" : {
@@ -521,6 +518,9 @@
 
     },
     "Yes, that's his real name" : {
+
+    },
+    "Yesterday" : {
 
     },
     "You will not be able to undo this action.\nAll expenses in this category will be permanently deleted" : {

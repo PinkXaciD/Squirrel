@@ -14,6 +14,7 @@ struct StatsView: View {
     private var cdm: CoreDataModel
     @EnvironmentObject
     private var rvm: RatesViewModel
+    
     @State
     var entityToEdit: SpendingEntity? = nil
     @State
@@ -29,19 +30,17 @@ struct StatsView: View {
     private var showFilters: Bool = false
     
     @State
-    private var startFilterDate: Date
+    private var startFilterDate: Date = .now.getFirstDayOfMonth()
     @State
     private var endFilterDate: Date = .now
     @State
-    fileprivate var filterCategories: [CategoryEntity] = []
+    private var filterCategories: [CategoryEntity] = []
     @State
-    fileprivate var excludeCategories: Bool = false
+    private var excludeCategories: Bool = false
     @State
     private var applyFilters: Bool = false
     @Binding
     var search: String
-    
-    var oldestSpendingDate: Date
     
     private var sheetFraction: CGFloat = 0.7
     
@@ -53,7 +52,7 @@ struct StatsView: View {
     }
     
     var body: some View {
-        let listData: [String: [SpendingEntity]] = getListData()
+        let listData: StatsListData = getListData()
         let operationsInMonth: [CategoryEntityLocal] = cdm.operationsInMonth(.now.getFirstDayOfMonth(selectedMonth))
         let newChartData: [ChartData] = cdm.getChartData()
         
@@ -75,7 +74,12 @@ struct StatsView: View {
                         if let sectionData = listData[sectionKey] {
                             Section {
                                 ForEach(sectionData) { spending in
-                                    StatsRow(entity: spending, entityToEdit: $entityToEdit, entityToAddReturn: $entityToAddReturn, edit: $edit)
+                                    StatsRow(
+                                        entity: spending,
+                                        entityToEdit: $entityToEdit,
+                                        entityToAddReturn: $entityToAddReturn,
+                                        edit: $edit
+                                    )
                                 }
                             } header: {
                                 Text(sectionKey)
@@ -139,7 +143,6 @@ struct StatsView: View {
             firstFilterDate: $startFilterDate,
             secondFilterDate: $endFilterDate,
             categories: $filterCategories,
-            excludeCategories: $excludeCategories,
             applyFilters: $applyFilters
         )
     }
@@ -156,63 +159,79 @@ struct StatsView: View {
 }
 
 extension StatsView {
-    init(search: Binding<String>, cdm: CoreDataModel) {
+    init(search: Binding<String>) {
         self._search = search
-        let date = cdm.savedSpendings.last?.wrappedDate ?? .now.getFirstDayOfMonth()
-        self.oldestSpendingDate = date
-        self._startFilterDate = State(initialValue: date)
     }
     
-    private func getListData() -> [String: [SpendingEntity]] {
-        var result: [String: [SpendingEntity]]
-        if search.isEmpty {
-            result = cdm.operationsForList()
-        } else {
-            result = cdm.operationsForList().mapValues { values in
-                values.filter { entity in
-                    entity.place?.localizedCaseInsensitiveContains(search.trimmingCharacters(in: .whitespaces)) ?? false
-                    ||
-                    entity.comment?.localizedCaseInsensitiveContains(search.trimmingCharacters(in: .whitespaces)) ?? false
-                }
-            }
-            .filter { !$0.value.isEmpty }
-        }
+    private func getListData() -> StatsListData {
+        var result: StatsListData = cdm.operationsForList()
         
-        if applyFilters {
-            result = result.mapValues { values in
-                values.filter { entity in
-                    var categoryFilter: Bool = false
-                    var dateFilter: Bool = false
-                    
-                    if !filterCategories.isEmpty, let category = entity.category {
-                        categoryFilter = excludeCategories ? !filterCategories.contains(category) : filterCategories.contains(category)
-                    } else {
-                        categoryFilter = true
-                    }
-                    
-                    dateFilter = entity.wrappedDate >= startFilterDate && entity.wrappedDate <= endFilterDate
-                    
-                    return categoryFilter && dateFilter
-                }
-            }
-            .filter { !$0.value.isEmpty }
-        }
+        result = searchFunc(result)
+        
+        result = filterFunc(result)
+        
         return result
     }
     
+    private func searchFunc(_ data: StatsListData) -> StatsListData {
+        if !search.isEmpty {
+            let trimmedSearch = search.trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            let result = data.mapValues { entities in
+                entities.filter { entity in
+                    entity.place?.localizedCaseInsensitiveContains(trimmedSearch) ?? false
+                    ||
+                    entity.comment?.localizedCaseInsensitiveContains(trimmedSearch) ?? false
+                }
+            }
+            .filter { !$0.value.isEmpty }
+            
+            return result
+        } else {
+            return data
+        }
+    }
+    
+    private func filterFunc(_ data: StatsListData) -> StatsListData {
+        if applyFilters {
+            let result = data.mapValues { entities in
+                entities.filter { entity in
+                    var filter: Bool = true
+                    
+                    if !filterCategories.isEmpty, let category = entity.category {
+                        filter = filterCategories.contains(category)
+                    }
+                    
+                    if filter {
+                        filter = entity.wrappedDate >= startFilterDate && entity.wrappedDate <= endFilterDate
+                    }
+                    
+                    return filter
+                }
+            }
+            .filter { !$0.value.isEmpty }
+            
+            return result
+        } else {
+            return data
+        }
+    }
+    
     private func keySort(_ value1: String, _ value2: String) -> Bool {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .long
-        formatter.timeStyle = .none
-        
-        guard
-            let date1 = formatter.date(from: value1),
-            let date2 = formatter.date(from: value2)
-        else {
-            return false
+        func dateFormatter(_ value: String) -> Date {
+            if value == NSLocalizedString("Today", comment: "") {
+                return .now
+            } else if value == NSLocalizedString("Yesterday", comment: "") {
+                return .now.previousDay
+            } else {
+                let formatter = DateFormatter()
+                formatter.dateStyle = .long
+                formatter.timeStyle = .none
+                return formatter.date(from: value) ?? .distantPast
+            }
         }
         
-        return date1 > date2
+        return dateFormatter(value1) > dateFormatter(value2)
     }
     
     private func onChangeFunc(_ value: Int) {
@@ -220,7 +239,7 @@ extension StatsView {
             if filterCategories.isEmpty {
                 applyFilters = false
             }
-            startFilterDate = oldestSpendingDate
+            startFilterDate = .now.getFirstDayOfMonth()
             endFilterDate = .now
         } else {
             startFilterDate = .now.getFirstDayOfMonth(value)
@@ -232,21 +251,18 @@ extension StatsView {
     }
     
     private func clearFilters() {
-        DispatchQueue.main.async {
-            withAnimation {
-                applyFilters = false
-                startFilterDate = cdm.savedSpendings.last?.wrappedDate ?? .init(timeIntervalSinceReferenceDate: 0)
-                endFilterDate = .now
-                filterCategories = []
-                excludeCategories = false
-            }
+        withAnimation {
+            applyFilters = false
+            startFilterDate = .now.previousDay
+            endFilterDate = .now
+            filterCategories = []
         }
     }
 }
 
 struct StatsView_Previews: PreviewProvider {
     static var previews: some View {
-        StatsView(search: .constant(""), cdm: .init())
+        StatsView(search: .constant(""))
             .environmentObject(CoreDataModel())
     }
 }

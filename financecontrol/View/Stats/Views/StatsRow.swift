@@ -8,14 +8,19 @@
 import SwiftUI
 
 struct StatsRow: View {
-    @EnvironmentObject var cdm: CoreDataModel
-    @EnvironmentObject var rvm: RatesViewModel
+    @EnvironmentObject 
+    private var cdm: CoreDataModel
+    @EnvironmentObject
+    private var rvm: RatesViewModel
     
     let entity: SpendingEntity
     
-    @Binding var entityToEdit: SpendingEntity?
-    @Binding var entityToAddReturn: SpendingEntity?
-    @Binding var edit: Bool
+    @Binding 
+    var entityToEdit: SpendingEntity?
+    @Binding
+    var entityToAddReturn: SpendingEntity?
+    @Binding
+    var edit: Bool
     
     var body: some View {
         Button {
@@ -88,7 +93,7 @@ struct StatsRow: View {
         return formatter
     }
     
-    var editButton: some View {
+    private var editButton: some View {
         Button {
             edit.toggle()
             entityToEdit = entity
@@ -102,7 +107,7 @@ struct StatsRow: View {
         .tint(.accentColor)
     }
     
-    var deleteButton: some View {
+    private var deleteButton: some View {
         Button(role: .destructive) {
             deleteSpending(entity)
         } label: {
@@ -127,7 +132,7 @@ struct StatsRow: View {
     
     // MARK: Functions
     
-    func deleteSpending(_ entity: SpendingEntity) {
+    private func deleteSpending(_ entity: SpendingEntity) {
         cdm.deleteSpending(entity)
     }
 }

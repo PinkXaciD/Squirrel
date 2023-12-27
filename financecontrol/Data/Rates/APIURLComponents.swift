@@ -8,13 +8,11 @@
 import Foundation
 
 struct APIURLComponents {
-    
     var scheme: String = ""
     var host: String = ""
     var path: String = ""
     
     func createComponents(timestamp: String?) -> URLComponents {
-        
         var result = URLComponents()
         
         result.scheme = scheme

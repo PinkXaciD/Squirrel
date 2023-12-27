@@ -6,10 +6,10 @@
 //
 
 import Foundation
+import OSLog
 
 final class ErrorHandler: ObservableObject {
-    
-    static let shared = ErrorHandler()
+    static let shared: ErrorHandler = .init()
     
     @Published var appError: ErrorType? = nil
     @Published var showAlert: Bool = false
@@ -21,8 +21,7 @@ final class ErrorHandler: ObservableObject {
 }
 
 struct ErrorType: Identifiable, Equatable {
-    
-    let id: UUID = UUID()
+    let id: UUID = .init()
     let errorDescription: String
     let failureReason: String
     let recoverySuggestion: String
@@ -43,14 +42,21 @@ struct ErrorType: Identifiable, Equatable {
         self.helpAnchor = localizedError.helpAnchor ?? ""
     }
     
-    init(infoPlistError: InfoPlistError) {
+    init(_ infoPlistError: InfoPlistError) {
         self.errorDescription = infoPlistError.errorDescription
         self.failureReason = infoPlistError.failureReason
         self.recoverySuggestion = infoPlistError.recoverySuggestion
-        self.helpAnchor = infoPlistError.helpAnchor ?? ""
+        self.helpAnchor = ""
     }
     
-    init(urlError: URLError) {
+    init(_ ratesFetchError: RatesFetchError) {
+        self.errorDescription = ratesFetchError.errorDescription
+        self.failureReason = ratesFetchError.failureReason
+        self.recoverySuggestion = ratesFetchError.recoverySuggestion
+        self.helpAnchor = ""
+    }
+    
+    init(_ urlError: URLError) {
         switch urlError {
         case URLError(.badURL):
             self.errorDescription = "Can't reach requested URL"
@@ -59,7 +65,7 @@ struct ErrorType: Identifiable, Equatable {
             self.helpAnchor = ""
             
         case URLError(.badServerResponse):
-            self.errorDescription = "Requested URL responsed with code \(urlError.errorCode)"
+            self.errorDescription = "Squirrel servers did not response correctly"
             self.failureReason = urlError.localizedDescription
             self.recoverySuggestion = "Try to restart the app"
             self.helpAnchor = ""
@@ -88,6 +94,9 @@ struct ErrorType: Identifiable, Equatable {
     }
     
     func publish() {
+        let logger = Logger(subsystem: "com.pinkxacid.financecontrol", category: "errors")
+        logger.error("Failure reason: \(self.failureReason), occured at \(Date.now.formatted(date: .numeric, time: .standard))")
+        
         ErrorHandler.shared.appError = self
         ErrorHandler.shared.showAlert = true
     }

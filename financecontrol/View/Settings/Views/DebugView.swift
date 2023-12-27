@@ -26,50 +26,53 @@ struct DebugView: View {
     }
     
     private var infoPlistSection: some View {
-        Section(header: Text(verbatim: "Info.plist error")) {
-            
+        Section {
             Button("Throw Info.plist error") {
-                ErrorType(infoPlistError: .noInfoFound).publish()
+                ErrorType(.noInfoFound).publish()
             }
             
             Button("Throw URL error") {
-                ErrorType(infoPlistError: .noURLFound).publish()
+                ErrorType(.noURLFound).publish()
             }
             
             Button("Throw URL components error") {
-                ErrorType(infoPlistError: .failedToReadURLComponents).publish()
+                ErrorType(.failedToReadURLComponents).publish()
             }
             
             Button("Throw API key error") {
-                ErrorType(infoPlistError: .noAPIKeyFound).publish()
+                ErrorType(.noAPIKeyFound).publish()
             }
+        } header: {
+            Text(verbatim: "Info.plist error")
         }
     }
     
     private var ratesFetchErrorSection: some View {
-        Section(header: Text("Rates fetch errors")) {
-            
+        Section {
             Button("Throw Empty database error") {
-                ErrorType(localizedError: RatesFetchError.emptyDatabase).publish()
+                ErrorType(RatesFetchError.emptyDatabase).publish()
             }
+        } header: {
+            Text(verbatim: "Rates fetch errors")
         }
     }
     
     private var urlErrorSection: some View {
-        Section(header: Text("URL errors")) {
-            
+        Section {
             Button("Throw URL bad response error") {
-                ErrorType(urlError: URLError(.badServerResponse)).publish()
+                ErrorType(URLError(.badServerResponse)).publish()
             }
             
             Button("Throw bad URL error") {
-                ErrorType(urlError: URLError(.badURL)).publish()
+                ErrorType(URLError(.badURL)).publish()
             }
+        } header: {
+            Text(verbatim: "URL errors")
         }
     }
     
     private var ratesSection: some View {
-        return Section {
+        Section {
             VStack(alignment: .leading) {
                 Text("Rates updated at:")
                 

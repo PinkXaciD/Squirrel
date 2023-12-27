@@ -22,8 +22,6 @@ struct FiltersView: View {
     @Binding
     var categories: [CategoryEntity]
     @Binding
-    var excludeCategories: Bool
-    @Binding
     var applyFilters: Bool
     
     @State
@@ -73,39 +71,33 @@ struct FiltersView: View {
     }
     
     private var categoriesSection: some View {
-        Group {
-            Section(header: categoriesSectionHeader) {
-                Button {
-                    toggleCategoriesPicker()
-                } label: {
-                    categoriesPickerLabel
-                }
-                
-                if showCategoriesPicker {
-                    Toggle("Exclude", isOn: $excludeCategories)
-                }
+        Section {
+            Button {
+                toggleCategoriesPicker()
+            } label: {
+                categoriesPickerLabel
             }
             
             if showCategoriesPicker {
-                Section {
-                    ForEach(cdm.savedCategories) { category in
-                        Button {
-                            categoryButtonAction(category)
-                        } label: {
-                            categoryRowLabel(category)
-                        }
+                ForEach(cdm.savedCategories + cdm.shadowedCategories) { category in
+                    Button {
+                        categoryButtonAction(category)
+                    } label: {
+                        categoryRowLabel(category)
                     }
                 }
             }
+        } header: {
+            Text("Categories")
         }
     }
     
-    private var categoriesSectionHeader: some View {
-        Text("Categories")
-    }
-    
     private var categoriesPickerLabel: some View {
-        HStack {
+        HStack(spacing: 5) {
+            Image(systemName: "chevron.down")
+                .rotationEffect(showCategoriesPicker ? .degrees(180) : .degrees(0))
+                .font(.body.bold())
+            
             Text("Categories")
             
             Spacer()
@@ -117,14 +109,7 @@ struct FiltersView: View {
     
     private var clearButton: some View {
         Button("Clear", role: .destructive) {
-            applyFilters = false
-            dismiss()
-            DispatchQueue.main.async {
-                firstFilterDate = cdm.savedSpendings.last?.wrappedDate ?? .init(timeIntervalSinceReferenceDate: 0)
-                secondFilterDate = .now
-                categories = []
-                excludeCategories = false
-            }
+            clearFilters()
         }
     }
     
@@ -175,5 +160,14 @@ extension FiltersView {
                     .font(.body.bold())
             }
         }
+    }
+    
+    private func clearFilters() {
+        withAnimation(.linear(duration: 0.1)) {
+            applyFilters = false
+            categories = []
+        }
+        firstFilterDate = cdm.savedSpendings.last?.wrappedDate ?? .init(timeIntervalSinceReferenceDate: 0)
+        secondFilterDate = .now
     }
 }

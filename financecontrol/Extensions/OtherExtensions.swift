@@ -7,12 +7,6 @@
 
 import SwiftUI
 
-extension Binding {
-     func toUnwrapped<T>(defaultValue: T) -> Binding<T> where Value == Optional<T>  {
-        Binding<T>(get: { self.wrappedValue ?? defaultValue }, set: { self.wrappedValue = $0 })
-    }
-}
-
 extension Bundle {
     var releaseVersionNumber: String? {
         return infoDictionary?["CFBundleShortVersionString"] as? String
@@ -23,13 +17,16 @@ extension Bundle {
     }
     
     public var icon: UIImage? {
-        if let icons = infoDictionary?["CFBundleIcons"] as? [String: Any],
-           let primaryIcon = icons["CFBundlePrimaryIcon"] as? [String: Any],
-           let iconFiles = primaryIcon["CFBundleIconFiles"] as? [String],
-           let lastIcon = iconFiles.last {
-            return UIImage(named: lastIcon)
+        guard
+            let icons = infoDictionary?["CFBundleIcons"] as? [String:Any],
+            let primaryIcon = icons["CFBundlePrimaryIcon"] as? [String:Any],
+            let iconFiles = primaryIcon["CFBundleIconFiles"] as? [String],
+            let lastIcon = iconFiles.last
+        else {
+            return nil
         }
-        return nil
+        
+        return UIImage(named: lastIcon)
     }
 }
 
