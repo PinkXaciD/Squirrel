@@ -11,7 +11,8 @@ import Foundation
 // MARK: Rates View Model
 
 final class RatesViewModel: ViewModel {
-    @Published var rates: [String:Double] = [:]
+    @Published 
+    var rates: [String:Double] = [:]
     
     let manager = DataManager.shared
     let container: NSPersistentContainer
@@ -33,19 +34,18 @@ final class RatesViewModel: ViewModel {
                         addRates(safeRates.rates)
                     }
                     
-                    var formatter: ISO8601DateFormatter {
-                        let formatter = ISO8601DateFormatter()
-                        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-                        return formatter
-                    }
+                    let formatter = ISO8601DateFormatter()
+                    formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
                     
-                    if
+                    guard
                         let date = formatter.date(from: safeRates.timestamp),
                         Calendar.current.isDate(date, equalTo: .now, toGranularity: .hour)
-                    {
-                        UserDefaults.standard.set(safeRates.timestamp, forKey: "updateTime")
-                        UserDefaults.standard.set(false, forKey: "updateRates")
+                    else {
+                        return
                     }
+                    
+                    UserDefaults.standard.set(safeRates.timestamp, forKey: "updateTime")
+                    UserDefaults.standard.set(false, forKey: "updateRates")
                     
                     print("Rates fetched from web")
                 } catch {
