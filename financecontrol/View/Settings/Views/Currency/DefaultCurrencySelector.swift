@@ -51,6 +51,10 @@ struct DefaultCurrencySelector: View {
                             withAnimation {
                                 defaultCurrency = tag
                             }
+                            
+                            if let defaults = UserDefaults(suiteName: "group.financecontrol") {
+                                defaults.set(tag, forKey: "defaultCurrency")
+                            }
                         }
                 } else {
                     Text("Error")

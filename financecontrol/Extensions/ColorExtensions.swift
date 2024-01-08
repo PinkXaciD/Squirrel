@@ -10,26 +10,28 @@ import SwiftUI
 extension Color {
     static subscript(name: String) -> Color {
         switch name {
-            case "red":
-                return Color.red
-            case "orange":
-                return Color.orange
-            case "yellow":
-                return Color.yellow
-            case "green":
-                return Color.green
-            case "teal":
-                return Color.teal
-            case "blue":
-                return Color.blue
-            case "purple":
-                return Color.purple
-            case "pink":
-                return Color.pink
-            case "nord1", "nord2", "nord3", "nord4", "nord5", "nord6", "nord7", "nord8", "nord9", "nord91", "nord92", "nord93", "nord94", "nord95":
-                return CustomColor.nordAurora[name] ?? Color.black
-            default:
-                return Color.clear
+        case "red":
+            return .red
+        case "orange":
+            return .orange
+        case "yellow":
+            return .yellow
+        case "green":
+            return .green
+        case "teal":
+            return .teal
+        case "blue":
+            return .blue
+        case "purple":
+            return .purple
+        case "pink":
+            return .pink
+        case "nord1", "nord2", "nord3", "nord4", "nord5", "nord6", "nord7", "nord8", "nord9", "nord91", "nord92", "nord93", "nord94", "nord95":
+            return CustomColor.nordAurora[name] ?? .black
+        case "secondary":
+            return .secondary
+        default:
+            return .clear
         }
     }
 }

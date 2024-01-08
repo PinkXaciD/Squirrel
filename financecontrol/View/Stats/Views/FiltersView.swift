@@ -167,7 +167,7 @@ extension FiltersView {
             applyFilters = false
             categories = []
         }
-        firstFilterDate = cdm.savedSpendings.last?.wrappedDate ?? .init(timeIntervalSinceReferenceDate: 0)
+        firstFilterDate = .now.getFirstDayOfMonth()
         secondFilterDate = .now
     }
 }
