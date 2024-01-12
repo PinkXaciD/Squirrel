@@ -14,34 +14,37 @@ struct IconRow: View {
     private let cornerRadius: CGFloat = 13.5
     
     var body: some View {
-        Button {
-            vm.setIcon()
-        } label: {
-            HStack {
-                Image(vm.icon.imageName)
+        Button(action: vm.setIcon, label: label)
+    }
+    
+    private func label() -> some View {
+        HStack {
+            icon
+            
+            text
+            
+            Spacer()
+            
+            checkmark
+        }
+    }
+    
+    private var icon: some View {
+        ZStack {
+            if selectedIcon == vm.icon.fileName {
+                vm.getIconImage()
                     .resizable()
                     .frame(width: iconSize, height: iconSize)
                     .cornerRadius(cornerRadius)
-                    .overlay { iconOverlay }
-                
-                VStack(alignment: .leading) {
-                    Text(vm.icon.displayName)
-                        .foregroundColor(.primary)
-                    
-                    if vm.icon.description != "" {
-                        Text(vm.icon.description)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                }
-                .padding(.leading)
-                
-                Spacer()
-                
-                Image(systemName: "checkmark")
-                    .font(.body.bold())
-                    .opacity(selectedIcon == vm.icon.fileName ? 1 : 0)
+                    .blur(radius: 5)
+                    .opacity(0.7)
             }
+            
+            vm.getIconImage()
+                .resizable()
+                .frame(width: iconSize, height: iconSize)
+                .cornerRadius(cornerRadius)
+                .overlay(iconOverlay)
         }
     }
     
@@ -50,6 +53,26 @@ struct IconRow: View {
             .stroke(lineWidth: 1)
             .foregroundColor(.primary)
             .opacity(0.3)
+    }
+    
+    private var text: some View {
+        VStack(alignment: .leading) {
+            Text(vm.icon.displayName)
+                .foregroundColor(.primary)
+            
+            if vm.icon.description != "" {
+                Text(vm.icon.description)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(.leading)
+    }
+    
+    private var checkmark: some View {
+        Image(systemName: "checkmark")
+            .font(.body.bold())
+            .opacity(selectedIcon == vm.icon.fileName ? 1 : 0)
     }
 }
 

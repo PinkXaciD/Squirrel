@@ -108,7 +108,7 @@ struct SettingsView: View {
     var currencySection: some View {
         Section(header: Text("Currencies")) {
             NavigationLink {
-                DefaultCurrencySelector()
+                DefaultCurrencySelectorView()
                 
             } label: {
                 HStack {

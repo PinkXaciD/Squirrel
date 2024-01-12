@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct DefaultCurrencySelector: View {
+struct DefaultCurrencySelectorView: View {
     @Environment(\.dismiss) private var dismiss
     
     @EnvironmentObject var cdm: CoreDataModel
@@ -29,32 +29,13 @@ struct DefaultCurrencySelector: View {
         }
         
         List {
-//            Picker("Currency selection", selection: $defaultCurrency) {
-//                ForEach(currencies) { currency in
-//                    if let tag = currency.tag {
-//                        CurrencyRow(tag: tag, currency: currency)
-//                            .tag(tag)
-//                            .padding(.vertical, 1)
-//                    } else {
-//                        Text("Error")
-//                    }
-//                }
-//            }
-//            .pickerStyle(.inline)
-//            .labelsHidden()
-            
+            // Picker replaced with this cause of some iOS bug
             ForEach(currencies) { currency in
                 if let tag = currency.tag {
                     CurrencyRow(tag: tag, currency: currency)
                         .padding(.vertical, 1)
                         .onTapGesture {
-                            withAnimation {
-                                defaultCurrency = tag
-                            }
-                            
-                            if let defaults = UserDefaults(suiteName: "group.financecontrol") {
-                                defaults.set(tag, forKey: "defaultCurrency")
-                            }
+                            setCurrency(tag)
                         }
                 } else {
                     Text("Error")
@@ -85,15 +66,26 @@ struct DefaultCurrencySelector: View {
             NavigationLink {
                 AddCurrencyView()
             } label: {
-                Label("Add New currency", systemImage: "plus")
+                Label("Add new currency", systemImage: "plus")
             }
+        }
+    }
+    
+    private func setCurrency(_ tag: String) {
+        withAnimation {
+            defaultCurrency = tag
+        }
+        
+        if let defaults = UserDefaults(suiteName: "group.financecontrol") {
+            defaults.set(tag, forKey: "defaultCurrency")
+            cdm.passSpendingsToSumWidget()
         }
     }
 }
 
 struct DefaultCurrencySelector_Previews: PreviewProvider {
     static var previews: some View {
-        DefaultCurrencySelector()
+        DefaultCurrencySelectorView()
             .environmentObject(CoreDataModel())
     }
 }

@@ -33,20 +33,28 @@ extension CoreDataModel {
         }
     }
     
-    func passSpendingsToWidget() {
+    func passSpendingsToSumWidget() {
         let firstDate = Calendar.current.startOfDay(for: .now)
         let secondDate = Calendar.current.date(byAdding: .day, value: 1, to: firstDate)!
         let predicate = NSPredicate(format: "(date >= %@) AND (date < %@)", firstDate as CVarArg, secondDate as CVarArg)
         
         guard 
             let spendings = try? getSpendings(predicate: predicate),
-            let defaults = UserDefaults(suiteName: "group.financecontrol")
+            let rates = UserDefaults.standard.value(forKey: "rates") as? [String: Double],
+            let defaultCurrency = UserDefaults.standard.string(forKey: "defaultCurrency")
         else {
             return
         }
         
-        let sum = spendings.map { $0.amountUSD }.reduce(0, +)
-        defaults.setValue(sum, forKey: "sum")
+        let sum = spendings.map { spending in
+            if spending.wrappedCurrency == defaultCurrency {
+                return spending.amountWithReturns
+            } else {
+                return spending.amountUSDWithReturns * (rates[defaultCurrency] ?? 1)
+            }
+        }
+        
+        WidgetsManager.shared.passAmountToSumWidgets(sum.reduce(0, +))
     }
     
     func addSpending(spending: SpendingEntityLocal) {
@@ -66,6 +74,10 @@ extension CoreDataModel {
             
             manager.save()
             fetchSpendings()
+            
+            if Calendar.current.isDateInToday(spending.date) {
+                passSpendingsToSumWidget()
+            }
         }
     }
     
@@ -83,12 +95,21 @@ extension CoreDataModel {
         
         manager.save()
         fetchSpendings()
+        
+        if Calendar.current.isDateInToday(newSpending.date) {
+            passSpendingsToSumWidget()
+        }
     }
     
     func deleteSpending(_ spending: SpendingEntity) {
+        let date = spending.date ?? .distantPast
         context.delete(spending)
         manager.save()
         fetchSpendings()
+        
+        if Calendar.current.isDateInToday(date) {
+            passSpendingsToSumWidget()
+        }
     }
     
     func operationsSum() -> Double {

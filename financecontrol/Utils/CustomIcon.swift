@@ -36,7 +36,7 @@ extension CustomIcon {
         case .firstFlight:
             "To the store!"
         case .neonNight:
-            ""
+            "Like neon glow at night"
         case .winterized:
             "Even a squirrel needs a hat in winter"
         case .dawnOfSquipan:
@@ -64,11 +64,6 @@ extension CustomIcon {
     }
     
     var imageName: String {
-        switch self {
-        case .sqwoorl:
-            "AppIcon_Image"
-        default:
-            "\(fileName ?? "")_Image"
-        }
+        "\(fileName ?? "AppIcon")_Image"
     }
 }

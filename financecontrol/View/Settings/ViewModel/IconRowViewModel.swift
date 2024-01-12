@@ -23,10 +23,15 @@ final class IconRowViewModel: ViewModel {
     private func completionHandler(_ error: Error?) {
         if let error = error {
             ErrorType(error: error).publish()
+            return
         }
         
         withAnimation {
             selectedIcon = icon.fileName
         }
+    }
+    
+    func getIconImage() -> Image {
+        return Image(icon.imageName, bundle: .main)
     }
 }

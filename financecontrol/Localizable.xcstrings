@@ -92,6 +92,9 @@
     "%lld selected" : {
 
     },
+    "© %@ PinkXaciD" : {
+
+    },
     "0.00" : {
 
     },
@@ -129,7 +132,7 @@
     "Add new category" : {
 
     },
-    "Add New currency" : {
+    "Add new currency" : {
 
     },
     "Add return" : {
@@ -144,7 +147,7 @@
     "Amount" : {
 
     },
-    "An open-source spending tracker. \nDeveloped by PinkXaciD." : {
+    "An open-source spending tracker. \nDeveloped by PinkXaciD. \nExchange rates API by nulledzero." : {
 
     },
     "App of the rising sun" : {
@@ -193,6 +196,15 @@
 
     },
     "Clear filters" : {
+
+    },
+    "Clear shared UserDefaults" : {
+
+    },
+    "Clear standart UserDefaults" : {
+
+    },
+    "Clear UserDefaults" : {
 
     },
     "Close" : {
@@ -331,6 +343,9 @@
 
     },
     "It seems some system files are missing or corrupted" : {
+
+    },
+    "Like neon glow at night" : {
 
     },
     "Minimize" : {
@@ -478,6 +493,9 @@
 
     },
     "Teal" : {
+
+    },
+    "This will clear all settings of app. \nYou can't undo this action." : {
 
     },
     "Throw API key error" : {

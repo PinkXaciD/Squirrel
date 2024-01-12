@@ -20,6 +20,7 @@ extension CoreDataModel {
             if savedCurrencies.isEmpty {
                 addCurrency(tag: localeDefaultCurrency, isFavorite: true)
                 UserDefaults.standard.set(localeDefaultCurrency, forKey: "defaultCurrency")
+                UserDefaults(suiteName: "group.financecontrol")?.set(localeDefaultCurrency, forKey: "defaultCurrency")
             }
         } catch let error {
             print("Error fetching currencies: \(error)")

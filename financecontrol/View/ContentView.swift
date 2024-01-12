@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.scenePhase) var scenePhase
     @AppStorage("color") var tint: String = "Orange"
     @AppStorage("theme") var theme: String = "None"
     @StateObject private var cdm: CoreDataModel = .init()
@@ -35,6 +36,11 @@ struct ContentView: View {
                     Image(systemName: "gearshape.fill")
                     Text("Settings")
                 }
+        }
+        .onChange(of: scenePhase) { value in
+            if value == .background {
+                WidgetsManager.shared.reloadSumWidgets()
+            }
         }
         .environmentObject(cdm)
         .environmentObject(rvm)
