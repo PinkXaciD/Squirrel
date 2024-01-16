@@ -87,7 +87,7 @@ struct SettingsView: View {
     var themeSection: some View {
         Section(header: Text("Appearance")) {
             NavigationLink {
-                UiColorSelector()
+                ColorAndIconView()
             } label: {
                 HStack {
                     Text("Color and Icon")
@@ -108,7 +108,7 @@ struct SettingsView: View {
     var currencySection: some View {
         Section(header: Text("Currencies")) {
             NavigationLink {
-                DefaultCurrencySelector()
+                DefaultCurrencySelectorView()
                 
             } label: {
                 HStack {

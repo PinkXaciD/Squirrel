@@ -33,6 +33,30 @@ extension CoreDataModel {
         }
     }
     
+    func passSpendingsToSumWidget() {
+        let firstDate = Calendar.current.startOfDay(for: .now)
+        let secondDate = Calendar.current.date(byAdding: .day, value: 1, to: firstDate)!
+        let predicate = NSPredicate(format: "(date >= %@) AND (date < %@)", firstDate as CVarArg, secondDate as CVarArg)
+        
+        guard 
+            let spendings = try? getSpendings(predicate: predicate),
+            let rates = UserDefaults.standard.value(forKey: "rates") as? [String: Double],
+            let defaultCurrency = UserDefaults.standard.string(forKey: "defaultCurrency")
+        else {
+            return
+        }
+        
+        let sum = spendings.map { spending in
+            if spending.wrappedCurrency == defaultCurrency {
+                return spending.amountWithReturns
+            } else {
+                return spending.amountUSDWithReturns * (rates[defaultCurrency] ?? 1)
+            }
+        }
+        
+        WidgetsManager.shared.passAmountToSumWidgets(sum.reduce(0, +))
+    }
+    
     func addSpending(spending: SpendingEntityLocal) {
         if let description = NSEntityDescription.entity(forEntityName: "SpendingEntity", in: context),
            let category = findCategory(spending.categoryId) {
@@ -50,6 +74,10 @@ extension CoreDataModel {
             
             manager.save()
             fetchSpendings()
+            
+            if Calendar.current.isDateInToday(spending.date) {
+                passSpendingsToSumWidget()
+            }
         }
     }
     
@@ -67,12 +95,21 @@ extension CoreDataModel {
         
         manager.save()
         fetchSpendings()
+        
+        if Calendar.current.isDateInToday(newSpending.date) {
+            passSpendingsToSumWidget()
+        }
     }
     
     func deleteSpending(_ spending: SpendingEntity) {
+        let date = spending.date ?? .distantPast
         context.delete(spending)
         manager.save()
         fetchSpendings()
+        
+        if Calendar.current.isDateInToday(date) {
+            passSpendingsToSumWidget()
+        }
     }
     
     func operationsSum() -> Double {
@@ -173,11 +210,11 @@ extension CoreDataModel {
         return categories
     }
     
-    func getChartData() -> [ChartData] {
+    // MARK: Operations for chart
+    func getChartData(isMinimized: Bool = true) -> [ChartData] {
         let currentCalendar = Calendar.current
         
         var spendings: [SpendingEntity] = []
-        var dates: [Date] = []
         var chartData: [ChartData] = []
         do {
             spendings = try getSpendings()
@@ -185,23 +222,13 @@ extension CoreDataModel {
             ErrorType(error: error).publish()
         }
         
-        let firstSpendingDate: Date = spendings.last?.wrappedDate ?? .now
-        
-        for spending in spendings {
-            var components = currentCalendar.dateComponents([.month, .year, .era], from: spending.wrappedDate)
-            components.calendar = currentCalendar
-            if let date = components.date {
-                if !dates.contains(date) {
-                    dates.append(date)
-                }
-            }
-        }
+        let firstSpendingDate: Date = spendings.last?.date ?? .now
         
         let interval = Calendar.current.dateComponents([.month], from: firstSpendingDate, to: .now).month ?? 1
         
         for index in 0...interval {
             let date = currentCalendar.date(byAdding: .month, value: -index, to: .now) ?? .now
-            chartData.append(ChartData(date: date, id: -index, cdm: self))
+            chartData.append(ChartData(date: date, id: -index, withOther: isMinimized, cdm: self))
         }
         
         return chartData.reversed()
@@ -244,7 +271,7 @@ struct ChartData: Identifiable {
     let date: Date
     let categories: [CategoryEntityLocal]
     
-    init(date: Date, id: Int, cdm: CoreDataModel) {
+    init(date: Date, id: Int, withOther: Bool, cdm: CoreDataModel) {
         let currentCalendar = Calendar.current
         var components = currentCalendar.dateComponents([.month, .year, .era], from: date)
         components.calendar = currentCalendar
@@ -259,9 +286,16 @@ struct ChartData: Identifiable {
         
         if let spendings = try? cdm.getSpendings(predicate: predicate) {
             for spending in spendings {
-                if let catId = spending.category?.id,
-                   let existing = tempCategories[catId] {
-                    
+                guard
+                    let category = spending.category,
+                    let catId = category.id,
+                    let categoryName = category.color,
+                    let categoryColor = category.color
+                else {
+                    continue
+                }
+                        
+                if let existing = tempCategories[catId] {
                     let localSpending = SpendingEntityLocal(
                         amountUSD: spending.amountUSD,
                         amount: spending.amount,
@@ -284,9 +318,8 @@ struct ChartData: Identifiable {
                     )
                     
                     tempCategories.updateValue(updatedCategory, forKey: catId)
-                } else if let category = spending.category,
-                          let catId = category.id {
                     
+                } else {
                     let localSpending = SpendingEntityLocal(
                         amountUSD: spending.amountUSD,
                         amount: spending.amount, 
@@ -300,9 +333,9 @@ struct ChartData: Identifiable {
                     )
                     
                     let updatedCategory = CategoryEntityLocal(
-                        color: category.color ?? "",
+                        color: categoryColor,
                         id: catId,
-                        name: category.name ?? "Error",
+                        name: categoryName,
                         spendings: [localSpending]
                     )
                     
@@ -311,6 +344,48 @@ struct ChartData: Identifiable {
             }
         }
         
-        self.categories = tempCategories.map { $0.value }
+//        if withOther {
+//            let arr = Array(tempCategories.values).sorted { category1, category2 in
+//                let firstSum = category1.spendings.map { $0.amountUSD }.reduce(0, +)
+//                let secondSum = category2.spendings.map { $0.amountUSD }.reduce(0, +)
+//                
+//                return firstSum > secondSum
+//            }
+//            
+//            let id: UUID = .init()
+//            var otherSum: Double = 0
+//            var arr2: [CategoryEntityLocal] = []
+//            
+//            for index in 0..<arr.count {
+//                if index < 4 {
+//                    arr2.append(arr[index])
+//                } else {
+//                    otherSum += arr[index].spendings.map { $0.amountUSD }.reduce(0, +)
+//                }
+//            }
+//            
+//            if otherSum > 0 {
+//                arr2.append(
+//                    .init(
+//                        color: "secondary",
+//                        id: id,
+//                        name: "Other",
+//                        spendings: [.init(
+//                            amount: otherSum,
+//                            amountUSD: otherSum,
+//                            currency: UserDefaults.standard.string(forKey: "defaultCurrency") ?? "USD",
+//                            date: .now,
+//                            place: "",
+//                            categoryId: id,
+//                            comment: ""
+//                        )]
+//                    )
+//                )
+//            }
+//            
+//            self.categories = arr2
+//        } else {
+            self.categories = Array(tempCategories.values)
+//        }
     }
 }

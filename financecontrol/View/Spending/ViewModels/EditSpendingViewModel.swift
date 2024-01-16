@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import OSLog
 
 final class EditSpendingViewModel: SpendingViewModel {
     @ObservedObject
@@ -14,13 +15,22 @@ final class EditSpendingViewModel: SpendingViewModel {
     var rvm: RatesViewModel
     var entity: SpendingEntity
     
-    @Published var amount: String
-    @Published var currency: String
-    @Published var date: Date
-    @Published var categoryName: String
-    @Published var categoryId: UUID
-    @Published var place: String
-    @Published var comment: String
+    @Published 
+    var amount: String
+    @Published
+    var currency: String
+    @Published
+    var date: Date
+    @Published
+    var categoryName: String
+    @Published
+    var categoryId: UUID
+    @Published
+    var place: String
+    @Published
+    var comment: String
+    
+    let vmStateLogger: Logger
     
     init(ratesViewModel rvm: RatesViewModel, coreDataModel cdm: CoreDataModel, entity: SpendingEntity) {
         self.cdm = cdm
@@ -33,12 +43,13 @@ final class EditSpendingViewModel: SpendingViewModel {
         self.categoryId = entity.category?.id ?? .init()
         self.place = entity.place ?? ""
         self.comment = entity.comment ?? ""
+        self.vmStateLogger = Logger(subsystem: Bundle.mainIdentifier, category: "ViewModel state")
         
-        print("EditSpendingViewModel init")
+        vmStateLogger.notice("EditSpendingViewModel init called")
     }
     
     deinit {
-        print("EditSpendingViewModel deinit")
+        vmStateLogger.notice("EditSpendingViewModel deinit called")
     }
     
     func done() {

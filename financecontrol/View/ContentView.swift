@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.scenePhase) var scenePhase
     @AppStorage("color") var tint: String = "Orange"
     @AppStorage("theme") var theme: String = "None"
     @StateObject private var cdm: CoreDataModel = .init()
@@ -15,10 +16,11 @@ struct ContentView: View {
     
     @ObservedObject private var errorHandler = ErrorHandler.shared
     @Environment(\.openURL) private var openURL
+    @Binding var addExpenseAction: Bool
         
     var body: some View {
         TabView {
-            HomeView()
+            HomeView(showingSheet: $addExpenseAction)
                 .tabItem {
                     Image(systemName: "house.fill")
                     Text("Home")
@@ -35,6 +37,11 @@ struct ContentView: View {
                     Image(systemName: "gearshape.fill")
                     Text("Settings")
                 }
+        }
+        .onChange(of: scenePhase) { value in
+            if value == .inactive {
+                WidgetsManager.shared.reloadSumWidgets()
+            }
         }
         .environmentObject(cdm)
         .environmentObject(rvm)
@@ -64,6 +71,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView(addExpenseAction: .constant(false))
     }
 }

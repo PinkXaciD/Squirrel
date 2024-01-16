@@ -10,15 +10,6 @@ import SwiftUI
 struct RatesView: View {
     @EnvironmentObject private var rvm: RatesViewModel
     
-    private var filteredRates: [RatesRowView] {
-        let rates = rvm.rates
-        
-        return rates
-            .filter { Locale.customCommonISOCurrencyCodes.contains($0.key.uppercased()) }
-            .map { RatesRowView(code: $0.key.uppercased(), rate: $0.value) }
-            .sorted { $0.name < $1.name }
-    }
-    
     var body: some View {
         List {
             Section {
@@ -31,6 +22,15 @@ struct RatesView: View {
         }
         .navigationTitle("Rates")
         .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    private var filteredRates: [RatesRowView] {
+        let rates = rvm.rates
+        
+        return rates
+            .filter { Locale.customCommonISOCurrencyCodes.contains($0.key.uppercased()) }
+            .map { RatesRowView(code: $0.key.uppercased(), rate: $0.value) }
+            .sorted { $0.name < $1.name }
     }
     
     private var ratesHeader: some View {
@@ -70,8 +70,6 @@ struct RatesRowView: View, Identifiable {
 }
 
 struct RatesView_Previews: PreviewProvider {
-    let test = Locale.current.numberingSystem
-    
     static var previews: some View {
         RatesView()
     }

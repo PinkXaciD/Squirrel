@@ -9,13 +9,24 @@ import SwiftUI
 
 @main
 struct financecontrolApp: App {
+    @State private var addExpenseAction: Bool = false
+    
     init() {
-        LaunchActions().launch()
+        launch()
     }
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(addExpenseAction: $addExpenseAction)
+                .onOpenURL { url in
+                    guard 
+                        url.scheme == "financecontrol"
+                    else {
+                        return
+                    }
+                    
+                    addExpenseAction = true
+                }
         }
     }
 }

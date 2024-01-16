@@ -238,8 +238,13 @@ extension PieChartView {
             filterCategories.append(category)
             applyFilters = true
         } else {
-            let index: Int = filterCategories.firstIndex(of: category) ?? 0
+            guard let index: Int = filterCategories.firstIndex(of: category) else {
+                return
+            }
             filterCategories.remove(at: index)
+            if filterCategories.isEmpty && selectedMonth == 0 {
+                applyFilters = false
+            }
         }
     }
     

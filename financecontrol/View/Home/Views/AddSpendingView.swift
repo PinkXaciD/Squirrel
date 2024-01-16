@@ -22,6 +22,8 @@ struct AddSpendingView: View {
     
     @Environment(\.dismiss) 
     private var dismiss
+    @Environment(\.colorScheme)
+    private var colorScheme
     
     private enum Field {
         case amount
@@ -70,6 +72,7 @@ struct AddSpendingView: View {
             .navigationTitle("Add Expense")
             .navigationBarTitleDisplayMode(.inline)
         }
+        .colorScheme(getColorScheme())
         .tint(colorIdentifier(color: tint))
         .accentColor(colorIdentifier(color: tint))
         .interactiveDismissDisabled(vm.categoryName != "Select Category" || !vm.amount.isEmpty)
@@ -250,6 +253,11 @@ extension AddSpendingView {
         }
         vm.done()
         dismiss()
+    }
+    
+    private func getColorScheme() -> ColorScheme {
+        let saved = UserDefaults.standard.string(forKey: "theme") ?? ""
+        return themeConvert(saved) ?? colorScheme
     }
 }
 

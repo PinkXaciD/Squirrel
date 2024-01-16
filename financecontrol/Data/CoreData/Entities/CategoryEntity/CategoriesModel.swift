@@ -16,7 +16,7 @@ extension CoreDataModel {
         request.predicate = NSPredicate(format: "isShadowed == false")
         
         let requestForShadowed = CategoryEntity.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        requestForShadowed.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
         requestForShadowed.predicate = NSPredicate(format: "isShadowed == true")
         
         do {
@@ -34,7 +34,7 @@ extension CoreDataModel {
         
         do {
             return try context.fetch(request).first
-        } catch let error {
+        } catch {
             print("Error finding category: \(error)")
             return nil
         }

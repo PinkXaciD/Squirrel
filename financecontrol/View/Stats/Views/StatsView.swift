@@ -253,7 +253,7 @@ extension StatsView {
     private func clearFilters() {
         withAnimation {
             applyFilters = false
-            startFilterDate = .now.previousDay
+            startFilterDate = .now.getFirstDayOfMonth()
             endFilterDate = .now
             filterCategories = []
         }

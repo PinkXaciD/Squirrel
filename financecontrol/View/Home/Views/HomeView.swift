@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct HomeView: View {
-    @State private var showingSheet = false
+    @AppStorage("addExpenseAction") private var addExpenseAction: Bool = false
+    @Binding var showingSheet: Bool
     @EnvironmentObject private var cdm: CoreDataModel
     @EnvironmentObject private var rvm: RatesViewModel
     
@@ -60,7 +61,7 @@ extension HomeView {
 
 struct SwiftUIView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView()
+        HomeView(showingSheet: .constant(false))
             .environmentObject(CoreDataModel())
     }
 }

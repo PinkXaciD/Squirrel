@@ -11,6 +11,9 @@ struct DebugView: View {
     @EnvironmentObject
     private var rvm: RatesViewModel
     
+    @State
+    private var confinationIsShowing: Bool = false
+    
     var body: some View {
         Form {
             infoPlistSection
@@ -20,6 +23,15 @@ struct DebugView: View {
             urlErrorSection
             
             ratesSection
+            
+            defaultsSection
+            
+            reloadWidgetsSection
+        }
+        .confirmationDialog("This will clear all settings of app. \nYou can't undo this action.", isPresented: $confinationIsShowing, titleVisibility: .visible) {
+            clearSharedDefaultsButton
+            
+            clearStandartDefaultsButton
         }
         .navigationTitle("Debug")
         .navigationBarTitleDisplayMode(.inline)
@@ -88,6 +100,55 @@ struct DebugView: View {
             }
         } header: {
             Text("Rates")
+        }
+    }
+    
+    private var defaultsSection: some View {
+        Section {
+            Button(role: .destructive) {
+                confinationIsShowing.toggle()
+            } label: {
+                Text("Clear UserDefaults")
+            }
+        }
+    }
+    
+    private var clearStandartDefaultsButton: some View {
+        Button(role: .destructive) {
+            clearStandartUserDefaults()
+        } label: {
+            Text("Clear standart UserDefaults")
+        }
+    }
+    
+    private var clearSharedDefaultsButton: some View {
+        Button("Clear shared UserDefaults", role: .destructive) {
+            clearSharedUserDefaults()
+        }
+    }
+    
+    private var reloadWidgetsSection: some View {
+        Button(role: .destructive) {
+            WidgetsManager.shared.reloadAll()
+        } label: {
+            Text("Reload all widget timelines")
+        }
+    }
+    
+    private func clearStandartUserDefaults() {
+        let keys: [String] = ["defaultCurrency", "rates", "updateTime", "updateRates", "updateTime", "color", "theme"]
+        
+        for key in keys {
+            UserDefaults.standard.removeObject(forKey: key)
+        }
+    }
+    
+    private func clearSharedUserDefaults() {
+        let keys: [String] = ["amount", "date"]
+        let defaults: UserDefaults? = .init(suiteName: "group.financecontrol")
+        
+        for key in keys {
+            defaults?.removeObject(forKey: key)
         }
     }
 }

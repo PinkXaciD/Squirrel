@@ -9,8 +9,8 @@ import SwiftUI
 
 struct AboutView: View {
     @Environment(\.openURL) private var openURL
-    let version: String? = Bundle.main.releaseVersionNumber
-    let build: String? = Bundle.main.buildVersionNumber
+    let version: String = Bundle.main.releaseVersionNumber ?? "unknown"
+    let build: String = Bundle.main.buildVersionNumber ?? "unknown"
     
     @State private var showDebug: Bool = false
     
@@ -28,7 +28,7 @@ struct AboutView: View {
     
     private var aboutSection: some View {
         Section(header: aboutHeader) {
-            Text("An open-source spending tracker. \nDeveloped by PinkXaciD.")
+            Text("An open-source spending tracker. \nDeveloped by PinkXaciD. \nExchange rates API by nulledzero.")
             
             Button("App site") {}
             
@@ -48,13 +48,15 @@ struct AboutView: View {
                     .onTapGesture(count: 5, perform: debugToggle)
             }
             
-            Text("Squirrel, version \(version ?? "unknown")")
+            Text("Squirrel, version \(version)")
                 .font(.body.bold())
                 .foregroundColor(.primary)
             
-            Text("Build: \(build ?? "")")
+            Text("Build: \(build)")
                 .font(.caption)
                 .foregroundColor(.secondary)
+            
+            copyrightText
         }
         .frame(maxWidth: .infinity)
         .textCase(nil)
@@ -77,6 +79,12 @@ struct AboutView: View {
                 DebugView()
             }
         }
+    }
+    
+    private var copyrightText: Text {
+        Text("© \(Calendar.current.currentYearTextualRepresentation()) PinkXaciD")
+            .font(.caption)
+            .foregroundColor(.secondary)
     }
     
     private func debugToggle() {
