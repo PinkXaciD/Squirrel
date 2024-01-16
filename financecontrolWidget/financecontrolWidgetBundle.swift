@@ -10,7 +10,23 @@ import SwiftUI
 
 @main
 struct financecontrolWidgetBundle: WidgetBundle {
+    
+    @WidgetBundleBuilder
     var body: some Widget {
-        financecontrolSmallSumWidget()
+        getWidgets()
+    }
+    
+    private func getWidgets() -> some Widget {
+        if #available(iOS 16.0, *) {
+            return WidgetBundleBuilder.buildBlock(
+                SmallSumWidget(),
+                AccessoryRectangularSumWidget(),
+                AccessoryCircularAddExpenseWidget()
+            )
+        } else {
+            return WidgetBundleBuilder.buildBlock(
+                SmallSumWidget()
+            )
+        }
     }
 }

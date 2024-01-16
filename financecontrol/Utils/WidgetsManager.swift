@@ -10,7 +10,8 @@ import OSLog
 
 final class WidgetsManager {
     static let shared: WidgetsManager = .init()
-    let logger = Logger(subsystem: "com.pinkxacid.financecontrol", category: "WidgetsManager logger")
+    let sumWidgets: [Widgets] = [.smallSum, .accessoryRectangularSum]
+    let logger = Logger(subsystem: "com.pinkxacid.financecontrol", category: "WidgetsManager")
     
     var sumWidgetsNeedsToReload: Bool = false
     
@@ -25,8 +26,9 @@ final class WidgetsManager {
 extension WidgetsManager {
     func reloadSumWidgets() {
         if sumWidgetsNeedsToReload {
-            let widget = Widgets.smallSum
-            WidgetCenter.shared.reloadTimelines(ofKind: widget.kind)
+            for widget in sumWidgets {
+                WidgetCenter.shared.reloadTimelines(ofKind: widget.kind)
+            }
             sumWidgetsNeedsToReload = false
             logger.debug("Reload executed")
         } else {
@@ -48,14 +50,18 @@ extension WidgetsManager {
 }
 
 enum Widgets {
-    case smallSum
+    case smallSum, accessoryRectangularSum, accessoryCircularAddExpense
 }
 
 extension Widgets {
     var kind: String {
         switch self {
         case .smallSum:
-            "financecontrolSumWidget"
+            "SmallSumWidget"
+        case .accessoryRectangularSum:
+            "AccessoryRectangularSumWidget"
+        case .accessoryCircularAddExpense:
+            "AccessoryCircularAddExpense"
         }
     }
 }

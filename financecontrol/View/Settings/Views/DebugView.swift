@@ -25,6 +25,8 @@ struct DebugView: View {
             ratesSection
             
             defaultsSection
+            
+            reloadWidgetsSection
         }
         .confirmationDialog("This will clear all settings of app. \nYou can't undo this action.", isPresented: $confinationIsShowing, titleVisibility: .visible) {
             clearSharedDefaultsButton
@@ -120,10 +122,16 @@ struct DebugView: View {
     }
     
     private var clearSharedDefaultsButton: some View {
-        Button(role: .destructive) {
+        Button("Clear shared UserDefaults", role: .destructive) {
             clearSharedUserDefaults()
+        }
+    }
+    
+    private var reloadWidgetsSection: some View {
+        Button(role: .destructive) {
+            WidgetsManager.shared.reloadAll()
         } label: {
-            Text("Clear shared UserDefaults")
+            Text("Reload all widget timelines")
         }
     }
     

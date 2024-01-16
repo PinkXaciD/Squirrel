@@ -1,6 +1,6 @@
 //
 //  TotalSpendingsSmallView.swift
-//  financecontrol
+//  financecontrolWidget
 //
 //  Created by PinkXaciD on R 6/01/11.
 //
@@ -11,7 +11,7 @@ import SwiftUI
 import WidgetKit
 #endif
 
-struct TotalSpendingsSmallView: View {
+struct SmallSumWidgetView: View {
     @Environment(\.colorScheme) private var colorScheme
     
     let entry: SumEntry
@@ -25,7 +25,7 @@ struct TotalSpendingsSmallView: View {
     }
     
     private var gradient: LinearGradient {
-        let lightColors: [Color] = [.white, .init(uiColor: .systemGray5)]
+        let lightColors: [Color] = [.white, .white, .init(uiColor: .systemGray4)]
         let darkColors: [Color] = [.init(uiColor: .systemGray4), .init(uiColor: .systemGray6)]
         let colors = colorScheme == .light ? lightColors : darkColors
         
@@ -36,16 +36,20 @@ struct TotalSpendingsSmallView: View {
         )
     }
     
-    @available(iOS, introduced: 17)
+    private let upperTextOpacity: CGFloat = 0.7
+    
+    private let bottomTextFont: Font = .system(.largeTitle, design: .rounded).bold()
+    
+    @available(iOS, introduced: 17, message: "On older systems use getOldWidget()")
     private func getNewWidget() -> some View {
         HStack {
             VStack(alignment: .leading, spacing: 10) {
                 Text("Today's expenses")
                     .font(.body)
-                    .opacity(0.9)
+                    .opacity(upperTextOpacity)
                 
                 Text(entry.expenses.formatted(.currency(code: entry.currency)))
-                    .font(.system(.largeTitle, design: .rounded).bold())
+                    .font(bottomTextFont)
                     .minimumScaleFactor(0.5)
                     .privacySensitive()
                 
@@ -58,7 +62,7 @@ struct TotalSpendingsSmallView: View {
         .containerBackground(gradient, for: .widget)
     }
     
-    @available(iOS, introduced: 14.0, deprecated: 17.0)
+    @available(iOS, introduced: 14.0, deprecated: 17.0, message: "On newer systems use getNewWidget()")
     private func getOldWidget() -> some View {
         ZStack {
             gradient
@@ -66,11 +70,11 @@ struct TotalSpendingsSmallView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Today's expenses")
-                        .font(.body)
-                        .opacity(0.9)
+                        .font(.subheadline)
+                        .opacity(upperTextOpacity)
                     
                     Text(entry.expenses.formatted(.currency(code: entry.currency)))
-                        .font(.system(.largeTitle, design: .rounded).bold())
+                        .font(bottomTextFont)
                         .minimumScaleFactor(0.5)
                         .privacySensitive()
                     
@@ -88,7 +92,7 @@ struct TotalSpendingsSmallView: View {
 #if DEBUG
 struct WidgetPreview: PreviewProvider {
     static var previews: some View {
-        TotalSpendingsSmallView(entry: .init(date: .now, expenses: 100, currency: "JPY"))
+        SmallSumWidgetView(entry: .init(date: .now, expenses: 1200, currency: "JPY"))
             .previewContext(WidgetPreviewContext(family: .systemSmall))
     }
 }

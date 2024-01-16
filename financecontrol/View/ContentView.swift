@@ -16,10 +16,11 @@ struct ContentView: View {
     
     @ObservedObject private var errorHandler = ErrorHandler.shared
     @Environment(\.openURL) private var openURL
+    @Binding var addExpenseAction: Bool
         
     var body: some View {
         TabView {
-            HomeView()
+            HomeView(showingSheet: $addExpenseAction)
                 .tabItem {
                     Image(systemName: "house.fill")
                     Text("Home")
@@ -38,7 +39,7 @@ struct ContentView: View {
                 }
         }
         .onChange(of: scenePhase) { value in
-            if value == .background {
+            if value == .inactive {
                 WidgetsManager.shared.reloadSumWidgets()
             }
         }
@@ -70,6 +71,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView(addExpenseAction: .constant(false))
     }
 }

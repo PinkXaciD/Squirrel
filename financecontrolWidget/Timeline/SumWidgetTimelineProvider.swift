@@ -1,15 +1,14 @@
 //
-//  financecontrolWidget.swift
-//  financecontrolWidget
+//  SumWidgetTimelineProvider.swift
+//  financecontrol
 //
-//  Created by PinkXaciD on R 6/01/05.
+//  Created by PinkXaciD on R 6/01/12.
 //
 
 import WidgetKit
-import SwiftUI
 import OSLog
 
-struct Provider: TimelineProvider {
+struct SumWidgetTimelineProvider: TimelineProvider {
     func placeholder(in context: Context) -> SumEntry {
         SumEntry(date: Date(), expenses: 100, currency: "USD")
     }
@@ -26,13 +25,13 @@ struct Provider: TimelineProvider {
         completion(entry)
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
+    func getTimeline(in context: Context, completion: @escaping (Timeline<SumEntry>) -> Void) {
         var entries: [SumEntry] = []
         let defaults: UserDefaults? = .init(suiteName: "group.financecontrol")
-        let logger: Logger = .init(subsystem: "com.pinkxacid.financecontrol.financecontrolWidget", category: "getTimeline")
+        let logger: Logger = .init(subsystem: "com.pinkxacid.financecontrol.financecontrolWidget", category: "Sum widget timelines")
 
         let currentDate = Calendar.current.startOfDay(for: .now)
-        for dayOffset in 0 ..< 5 {
+        for dayOffset in 0..<2 {
             let amountDate = defaults?.object(forKey: "date") as? Date
             
             let entryDate = Calendar.current.date(byAdding: .day, value: dayOffset, to: currentDate)!
@@ -54,18 +53,4 @@ struct SumEntry: TimelineEntry {
     let date: Date
     let expenses: Double
     let currency: String
-}
-
-struct financecontrolSmallSumWidget: Widget {
-    let kind: String = "financecontrolSumWidget"
-    let currency: String = UserDefaults.standard.string(forKey: "defaultCurrency") ?? "JPY"
-
-    var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: Provider()) { entry in
-            TotalSpendingsSmallView(entry: entry)
-        }
-        .configurationDisplayName("Today's expenses")
-        .description("Your expenses for today.")
-        .supportedFamilies([.systemSmall])
-    }
 }
