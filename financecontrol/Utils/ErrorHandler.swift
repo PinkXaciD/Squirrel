@@ -6,7 +6,9 @@
 //
 
 import Foundation
+#if DEBUG
 import OSLog
+#endif
 
 final class ErrorHandler: ObservableObject {
     static let shared: ErrorHandler = .init()
@@ -94,8 +96,10 @@ struct ErrorType: Identifiable, Equatable {
     }
     
     func publish() {
+        #if DEBUG
         let logger = Logger(subsystem: "com.pinkxacid.financecontrol", category: "errors")
         logger.error("Failure reason: \(self.failureReason), occured at \(Date.now.formatted(date: .numeric, time: .standard))")
+        #endif
         
         ErrorHandler.shared.appError = self
         ErrorHandler.shared.showAlert = true

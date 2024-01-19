@@ -25,7 +25,9 @@ struct financecontrolApp: App {
                         return
                     }
                     
-                    addExpenseAction = true
+                    if url == URLS.addExpenseAction {
+                        addExpenseAction = true
+                    }
                 }
         }
     }

@@ -37,7 +37,7 @@ struct SpendingView: View {
     private var alertIsPresented: Bool = false
     
     var body: some View {
-        Form {
+        List {
             infoSection
             
             commentSection
@@ -114,10 +114,10 @@ struct SpendingView: View {
                 .font(.system(.body, design: .rounded))
             }
         }
-        .padding(.bottom, 40)
         .textCase(nil)
         .foregroundColor(categoryColor)
         .frame(maxWidth: .infinity)
+        .listRowInsets(.init(top: 10, leading: 20, bottom: 40, trailing: 20))
     }
     
     private var amountWithoutReturns: some View {
@@ -195,6 +195,7 @@ struct SpendingView: View {
                     
                     Text(entity.amountWithReturns == 0 ? "Returned" : "Add return")
                         .padding(10)
+                        .font(.body)
                 }
             }
             .foregroundColor(entity.amountWithReturns == 0 ? .secondary : .green)
@@ -211,12 +212,14 @@ struct SpendingView: View {
                     
                     Text("Delete")
                         .padding(10)
+                        .font(.body)
                 }
             }
             .frame(maxWidth: .infinity)
             .padding(.top, 10)
         }
-        .padding(.horizontal, -20)
+        .listRowInsets(.init(top: 15, leading: 0, bottom: 15, trailing: 0))
+        .frame(height: 30)
     }
     
     private var editToolbar: ToolbarItem<(), some View> {

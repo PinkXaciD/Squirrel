@@ -6,6 +6,9 @@
 //
 
 import Foundation
+#if DEBUG
+import OSLog
+#endif
 
 // MARK: Rates Model
 
@@ -13,12 +16,18 @@ final class RatesModel {
     let errorHandler = ErrorHandler.shared
     
     init() {
-        print("RatesModel initialized")
+        #if DEBUG
+        let logger = Logger(subsystem: Vars.appIdentifier, category: "RatesModel state")
+        logger.debug("RatesModel initialized")
+        #endif
     }
     
+    #if DEBUG
     deinit {
-        print("RatesModel deinitialized")
+        let logger = Logger(subsystem: Vars.appIdentifier, category: "RatesModel state")
+        logger.debug("RatesModel deinitialized")
     }
+    #endif
 }
 
 // MARK: Rates Model networking

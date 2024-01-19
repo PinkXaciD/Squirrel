@@ -6,16 +6,21 @@
 //
 
 import WidgetKit
+#if DEBUG
 import OSLog
+#endif
 
 final class WidgetsManager {
     static let shared: WidgetsManager = .init()
     let sumWidgets: [Widgets] = [.smallSum, .accessoryRectangularSum]
-    let logger = Logger(subsystem: "com.pinkxacid.financecontrol", category: "WidgetsManager")
+    
+    #if DEBUG
+    let logger = Logger(subsystem: Vars.appIdentifier, category: "WidgetsManager")
+    #endif
     
     var sumWidgetsNeedsToReload: Bool = false
     
-    private let sharedDefaults = UserDefaults(suiteName: "group.financecontrol")
+    private let sharedDefaults = UserDefaults(suiteName: Vars.groupName)
     
     func reloadAll() {
         WidgetCenter.shared.reloadAllTimelines()
@@ -30,16 +35,26 @@ extension WidgetsManager {
                 WidgetCenter.shared.reloadTimelines(ofKind: widget.kind)
             }
             sumWidgetsNeedsToReload = false
+            
+            #if DEBUG
             logger.debug("Reload executed")
+            #endif
         } else {
+            #if DEBUG
             logger.debug("Reload called, but not executed")
+            #endif
         }
     }
     
     func passAmountToSumWidgets(_ amount: Double) {
+        #if DEBUG
         logger.debug("passAmountToSumWidget(_: Double) called")
+        #endif
+        
         guard let sharedDefaults = sharedDefaults else {
+            #if DEBUG
             logger.error("Failed to initialize UserDefaults")
+            #endif
             return
         }
         let currentDate = Calendar.current.startOfDay(for: .now)

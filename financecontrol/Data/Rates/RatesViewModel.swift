@@ -7,6 +7,9 @@
 
 import CoreData
 import Foundation
+#if DEBUG
+import OSLog
+#endif
 
 // MARK: Rates View Model
 
@@ -47,9 +50,12 @@ final class RatesViewModel: ViewModel {
                     UserDefaults.standard.set(safeRates.timestamp, forKey: "updateTime")
                     UserDefaults.standard.set(false, forKey: "updateRates")
                     
-                    print("Rates fetched from web")
+                    #if DEBUG
+                    let logger = Logger(subsystem: Vars.appIdentifier, category: "RatesViewModel info")
+                    logger.debug("Rates fetched from web")
+                    #endif
                 } catch {
-                    print(error)
+                    ErrorType(error: error).publish()
                 }
             }
         }

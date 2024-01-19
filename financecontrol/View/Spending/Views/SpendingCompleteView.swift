@@ -44,8 +44,9 @@ struct SpendingCompleteView: View {
                 .sheet(item: $entityToAddReturn, onDismiss: dismissAction) { entity in
                     AddReturnView(spending: entity, cdm: cdm, rvm: rvm)
                         .accentColor(colorIdentifier(color: tint))
+                        .tint(colorIdentifier(color: tint))
                 }
-// MARK: Todo
+// TODO: EditReturnView
 //                .sheet(item: $returnToEdit) { returnEntity in
 //                    EditReturnView(returnEntity: returnEntity, spending: entity, cdm: cdm, rvm: rvm)
 //                        .smallSheet(0.5)
@@ -53,6 +54,8 @@ struct SpendingCompleteView: View {
 //                        .accentColor(colorIdentifier(color: tint))
 //                }
             }
+            .navigationViewStyle(.stack)
+            .id(UUID())
         } else {
             NavigationView {
                 SpendingView(
@@ -68,6 +71,7 @@ struct SpendingCompleteView: View {
                 .sheet(item: $entityToAddReturn, onDismiss: dismissAction) { entity in
                     AddReturnView(spending: entity, cdm: cdm, rvm: rvm)
                         .accentColor(colorIdentifier(color: tint))
+                        .tint(colorIdentifier(color: tint))
                 }
                 .sheet(item: $returnToEdit) { returnEntity in
                     EditReturnView(returnEntity: returnEntity, spending: entity, cdm: cdm, rvm: rvm)
@@ -76,6 +80,8 @@ struct SpendingCompleteView: View {
                         .accentColor(colorIdentifier(color: tint))
                 }
             }
+            .navigationViewStyle(.stack)
+            .id(UUID())
         }
     }
     

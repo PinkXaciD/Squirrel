@@ -98,12 +98,27 @@ extension View {
         return self
             .modifier(RoundedStrikeThroughModifier(color: color, thickness: thickness))
     }
+    
+    func normalizePadding() -> some View {
+        return self
+            .modifier(IOS15Padding())
+    }
 }
 
 extension Text {
     func amountFont() -> Text {
         return self
             .font(.system(.largeTitle, design: .rounded).bold())
+    }
+}
+
+fileprivate struct IOS15Padding: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 16.0, *) {
+            return content
+        } else {
+            return content.padding(.vertical, 5)
+        }
     }
 }
 

@@ -61,9 +61,7 @@ struct AddSpendingView: View {
                 }
             }
             .toolbar {
-                if UIDevice.current.userInterfaceIdiom == .phone {
-                    keyboardToolbar
-                }
+                keyboardToolbar
                 
                 leadingToolbar
                 
@@ -72,6 +70,7 @@ struct AddSpendingView: View {
             .navigationTitle("Add Expense")
             .navigationBarTitleDisplayMode(.inline)
         }
+        .navigationViewStyle(.stack)
         .colorScheme(getColorScheme())
         .tint(colorIdentifier(color: tint))
         .accentColor(colorIdentifier(color: tint))
@@ -98,6 +97,7 @@ struct AddSpendingView: View {
                 .onSubmit {
                     nextField()
                 }
+                .normalizePadding()
             
             HStack {
                 Text("Currency")

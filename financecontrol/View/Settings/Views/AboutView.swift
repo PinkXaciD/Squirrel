@@ -29,6 +29,7 @@ struct AboutView: View {
     private var aboutSection: some View {
         Section(header: aboutHeader) {
             Text("An open-source spending tracker. \nDeveloped by PinkXaciD. \nExchange rates API by nulledzero.")
+                .normalizePadding()
             
             Button("App site") {}
             
@@ -60,7 +61,7 @@ struct AboutView: View {
         }
         .frame(maxWidth: .infinity)
         .textCase(nil)
-        .padding(.vertical, 15)
+        .listRowInsets(.init(top: 15, leading: 20, bottom: 15, trailing: 20))
     }
     
     private var githubSection: some View {

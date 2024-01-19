@@ -31,6 +31,7 @@ struct CategoryRow: View {
             
             deleteButton
         }
+        .normalizePadding()
     }
     
     private var navLinkLabel: some View {

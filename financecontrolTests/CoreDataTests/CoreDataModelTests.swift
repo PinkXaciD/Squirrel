@@ -25,7 +25,7 @@ final class CoreDataModelTests: XCTestCase {
 
     func testInitSettingUpProperties() {
         if let currencies = cdm?.savedCurrencies, let currency = currencies.first {
-            XCTAssertEqual(currency.tag, Locale.current.currency?.identifier)
+            XCTAssertEqual(currency.tag, Locale.current.currencyCode)
         } else {
             XCTFail("Currency not setted up")
         }
