@@ -64,6 +64,7 @@ struct CurrencyRow: View {
             
             deleteButton
         }
+        .normalizePadding()
     }
     
     private var favoriteButton: some View {

@@ -105,7 +105,6 @@ struct CategoryEditSubView: View {
                 Text("Expenses")
             }
         }
-        .scrollDismissesKeyboard(.immediately)
     }
     
     private var keyboardToolbar: ToolbarItem<Void, some View> {

@@ -15,7 +15,7 @@ extension CoreDataModel {
         do {
             savedSpendings = try context.fetch(request)
         } catch let error {
-            print("Error fetching CoreData: \(error)")
+            ErrorType(error: error).publish()
         }
     }
     

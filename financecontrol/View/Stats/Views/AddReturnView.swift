@@ -53,7 +53,7 @@ struct AddReturnView: View {
                     vm.amount = newValue                    ///
                 }
         }
-        .padding(.vertical)
+        .listRowInsets(.init(top: 25, leading: 20, bottom: 25, trailing: 20))
         .textCase(nil)
     }
     

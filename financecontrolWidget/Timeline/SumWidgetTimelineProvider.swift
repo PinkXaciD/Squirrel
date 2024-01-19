@@ -14,7 +14,7 @@ struct SumWidgetTimelineProvider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (SumEntry) -> Void) {
-        let sharedDefaults: UserDefaults? = UserDefaults(suiteName: "group.financecontrol")
+        let sharedDefaults: UserDefaults? = UserDefaults(suiteName: Vars.groupName)
         let localeCurrency: String? = Locale.current.currencySymbol
         
         let entry = SumEntry(
@@ -27,8 +27,8 @@ struct SumWidgetTimelineProvider: TimelineProvider {
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<SumEntry>) -> Void) {
         var entries: [SumEntry] = []
-        let defaults: UserDefaults? = .init(suiteName: "group.financecontrol")
-        let logger: Logger = .init(subsystem: "com.pinkxacid.financecontrol.financecontrolWidget", category: "Sum widget timelines")
+        let defaults: UserDefaults? = .init(suiteName: Vars.groupName)
+        let logger: Logger = .init(subsystem: Vars.widgetIdentifier, category: "Sum widget timelines")
 
         let currentDate = Calendar.current.startOfDay(for: .now)
         for dayOffset in 0..<2 {

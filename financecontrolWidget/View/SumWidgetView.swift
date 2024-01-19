@@ -25,12 +25,8 @@ struct SmallSumWidgetView: View {
     }
     
     private var gradient: LinearGradient {
-        let lightColors: [Color] = [.white, .white, .init(uiColor: .systemGray4)]
-        let darkColors: [Color] = [.init(uiColor: .systemGray4), .init(uiColor: .systemGray6)]
-        let colors = colorScheme == .light ? lightColors : darkColors
-        
-        return LinearGradient(
-            colors: colors,
+        LinearGradient(
+            colors: [.upperWidget, .bottomWidget],
             startPoint: .top,
             endPoint: .bottom
         )

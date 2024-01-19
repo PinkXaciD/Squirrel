@@ -45,7 +45,7 @@ struct EditSpendingView: View {
     var toDismiss: Bool
     
     var body: some View {
-        Form {
+        List {
             infoSection
             
             commentSection
@@ -109,17 +109,21 @@ struct EditSpendingView: View {
                 .spendingAmountTextFieldStyle()
             
             CurrencySelector(currency: $vm.currency, showFavorites: false, spacer: false)
+                .font(.body)
         }
-        .padding(.bottom, 40)
         .textCase(nil)
         .foregroundColor(categoryColor)
         .frame(maxWidth: .infinity)
+        .listRowInsets(.init(top: 10, leading: 20, bottom: 40, trailing: 20))
     }
     
     private var commentSection: some View {
         Section(header: Text("Comment"), footer: returnAndDeleteButtons) {
             if #available(iOS 16.0, *) {
                 TextField("Comment (Optional)", text: $vm.comment, axis: .vertical)
+                    .focused($focusedField, equals: .comment)
+            } else {
+                TextEditor(text: $vm.comment)
                     .focused($focusedField, equals: .comment)
             }
         }
@@ -136,6 +140,7 @@ struct EditSpendingView: View {
                     
                     Text(entity.amountWithReturns == 0 ? "Returned" : "Add return")
                         .padding(10)
+                        .font(.body)
                 }
             }
             .foregroundColor(entity.amountWithReturns == 0 ? .secondary : .green)
@@ -152,12 +157,14 @@ struct EditSpendingView: View {
                     
                     Text("Delete")
                         .padding(10)
+                        .font(.body)
                 }
             }
             .frame(maxWidth: .infinity)
             .padding(.top, 10)
         }
-        .padding(.horizontal, -20)
+        .listRowInsets(.init(top: 15, leading: 0, bottom: 15, trailing: 0))
+        .frame(height: 30)
     }
     
     private var returnsSection: some View {

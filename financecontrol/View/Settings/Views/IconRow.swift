@@ -27,25 +27,15 @@ struct IconRow: View {
             
             checkmark
         }
+        .normalizePadding()
     }
     
     private var icon: some View {
-        ZStack {
-            if selectedIcon == vm.icon.fileName {
-                vm.getIconImage()
-                    .resizable()
-                    .frame(width: iconSize, height: iconSize)
-                    .cornerRadius(cornerRadius)
-                    .blur(radius: 5)
-                    .opacity(0.7)
-            }
-            
-            vm.getIconImage()
-                .resizable()
-                .frame(width: iconSize, height: iconSize)
-                .cornerRadius(cornerRadius)
-                .overlay(iconOverlay)
-        }
+        vm.getIconImage()
+            .resizable()
+            .frame(width: iconSize, height: iconSize)
+            .cornerRadius(cornerRadius)
+            .overlay(iconOverlay)
     }
     
     private var iconOverlay: some View {

@@ -12,7 +12,9 @@ struct DebugView: View {
     private var rvm: RatesViewModel
     
     @State
-    private var confinationIsShowing: Bool = false
+    private var defaultsConfinationIsShowing: Bool = false
+    @State
+    private var timelineConfinationIsShowing: Bool = false
     
     var body: some View {
         Form {
@@ -28,10 +30,13 @@ struct DebugView: View {
             
             reloadWidgetsSection
         }
-        .confirmationDialog("This will clear all settings of app. \nYou can't undo this action.", isPresented: $confinationIsShowing, titleVisibility: .visible) {
+        .confirmationDialog("This will clear all settings of app. \nYou can't undo this action.", isPresented: $defaultsConfinationIsShowing, titleVisibility: .visible) {
             clearSharedDefaultsButton
             
             clearStandartDefaultsButton
+        }
+        .confirmationDialog("", isPresented: $timelineConfinationIsShowing) {
+            Button("Reload all widget timelines", role: .destructive, action: WidgetsManager.shared.reloadAll)
         }
         .navigationTitle("Debug")
         .navigationBarTitleDisplayMode(.inline)
@@ -91,6 +96,7 @@ struct DebugView: View {
                 Text(getDate(.update))
                     .foregroundColor(.secondary)
             }
+            .normalizePadding()
             
             VStack(alignment: .leading) {
                 Text("Fallback rates timestamp:")
@@ -98,6 +104,7 @@ struct DebugView: View {
                 Text(getDate(.fallback))
                     .foregroundColor(.secondary)
             }
+            .normalizePadding()
         } header: {
             Text("Rates")
         }
@@ -106,7 +113,7 @@ struct DebugView: View {
     private var defaultsSection: some View {
         Section {
             Button(role: .destructive) {
-                confinationIsShowing.toggle()
+                defaultsConfinationIsShowing.toggle()
             } label: {
                 Text("Clear UserDefaults")
             }
@@ -129,7 +136,7 @@ struct DebugView: View {
     
     private var reloadWidgetsSection: some View {
         Button(role: .destructive) {
-            WidgetsManager.shared.reloadAll()
+            timelineConfinationIsShowing.toggle()
         } label: {
             Text("Reload all widget timelines")
         }
@@ -145,7 +152,7 @@ struct DebugView: View {
     
     private func clearSharedUserDefaults() {
         let keys: [String] = ["amount", "date"]
-        let defaults: UserDefaults? = .init(suiteName: "group.financecontrol")
+        let defaults: UserDefaults? = .init(suiteName: Vars.groupName)
         
         for key in keys {
             defaults?.removeObject(forKey: key)
@@ -171,7 +178,7 @@ extension DebugView {
         var isoDateFromatter: ISO8601DateFormatter {
             let f = ISO8601DateFormatter()
             f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-            f.timeZone = .gmt
+            f.timeZone = .init(secondsFromGMT: 0)
             return f
         }
         

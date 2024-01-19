@@ -56,6 +56,7 @@ struct ExportImportView: View {
         .textCase(nil)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(30)
+        .listRowInsets(.init(top: 15, leading: 20, bottom: 15, trailing: 20))
     }
     
     private var exportJSONButton: some View {

@@ -6,13 +6,15 @@
 //
 
 import Foundation
+#if DEBUG
 import OSLog
+#endif
 
 func launch() -> Void {
-    let logger = Logger(subsystem: "com.pinkxacid.financecontrol", category: "Launch Actions")
+    let logger = Logger(subsystem: Vars.appIdentifier, category: "Launch Actions")
     let dateFormatter = ISO8601DateFormatter()
     dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-    dateFormatter.timeZone = .gmt
+    dateFormatter.timeZone = .init(identifier: "GMT")
     
     let currentDate = dateFormatter.string(from: .now)
     let updateTime = UserDefaults.standard.string(forKey: "updateTime") ?? dateFormatter.string(from: .distantPast)

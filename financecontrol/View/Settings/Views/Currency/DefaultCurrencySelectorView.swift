@@ -76,7 +76,7 @@ struct DefaultCurrencySelectorView: View {
             defaultCurrency = tag
         }
         
-        if let defaults = UserDefaults(suiteName: "group.financecontrol") {
+        if let defaults = UserDefaults(suiteName: Vars.groupName) {
             defaults.set(tag, forKey: "defaultCurrency")
             cdm.passSpendingsToSumWidget()
         }

@@ -18,6 +18,7 @@ struct HomeView: View {
         NavigationView {
             Form {
                 barChartSection
+                    .padding(.horizontal, -10)
                 
                 SheetPresenter("Add Expense", image: .init(systemName: "plus"), style: .sheet) {
                     AddSpendingView(ratesViewModel: rvm, codeDataModel: cdm)

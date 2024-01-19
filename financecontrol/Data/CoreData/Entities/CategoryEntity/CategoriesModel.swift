@@ -6,6 +6,9 @@
 //
 
 import CoreData
+#if DEBUG
+import OSLog
+#endif
 
 extension CoreDataModel {
     
@@ -22,8 +25,8 @@ extension CoreDataModel {
         do {
             savedCategories = try context.fetch(request)
             shadowedCategories = try context.fetch(requestForShadowed)
-        } catch let error {
-            print("Error fetching categories: \(error)")
+        } catch {
+            ErrorType(error: error).publish()
         }
     }
     
@@ -35,7 +38,10 @@ extension CoreDataModel {
         do {
             return try context.fetch(request).first
         } catch {
-            print("Error finding category: \(error)")
+            #if DEBUG
+            let logger = Logger(subsystem: Vars.appIdentifier, category: "CoreDataModel")
+            logger.error("Error finding category: \(error)")
+            #endif
             return nil
         }
     }

@@ -80,6 +80,7 @@ struct StatsView: View {
                                         entityToAddReturn: $entityToAddReturn,
                                         edit: $edit
                                     )
+                                    .normalizePadding()
                                 }
                             } header: {
                                 Text(sectionKey)

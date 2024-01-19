@@ -47,7 +47,10 @@ struct PieChartView: View {
     
     private var chart: some View {
         HStack {
-            Text(verbatim: "")
+            /// Divider fix
+            if #available(iOS 16.0, *) {
+                Text(verbatim: "")
+            }
             
             previousButton
             
@@ -74,10 +77,17 @@ struct PieChartView: View {
             
             nextButton
             
-            Text(verbatim: "")
+            /// Divider fix
+            if #available(iOS 16.0, *) {
+                Text(verbatim: "")
+            }
         }
         .gesture(
             DragGesture().onEnded { value in
+                guard abs(value.translation.width) > abs(value.translation.height) else {
+                    return
+                }
+                
                 if value.translation.width > 0 && selectedMonth > ((chartData.count) * -1) {
                     decreaseMonth()
                 } else if value.translation.width < 0 && selectedMonth < 0 {
@@ -182,6 +192,7 @@ struct PieChartView: View {
                 }
             }
         }
+        .font(.body)
     }
 }
 

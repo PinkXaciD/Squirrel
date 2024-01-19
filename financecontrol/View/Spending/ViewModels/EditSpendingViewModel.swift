@@ -6,7 +6,9 @@
 //
 
 import SwiftUI
+#if DEBUG
 import OSLog
+#endif
 
 final class EditSpendingViewModel: SpendingViewModel {
     @ObservedObject
@@ -30,7 +32,9 @@ final class EditSpendingViewModel: SpendingViewModel {
     @Published
     var comment: String
     
+    #if DEBUG
     let vmStateLogger: Logger
+    #endif
     
     init(ratesViewModel rvm: RatesViewModel, coreDataModel cdm: CoreDataModel, entity: SpendingEntity) {
         self.cdm = cdm
@@ -43,14 +47,18 @@ final class EditSpendingViewModel: SpendingViewModel {
         self.categoryId = entity.category?.id ?? .init()
         self.place = entity.place ?? ""
         self.comment = entity.comment ?? ""
-        self.vmStateLogger = Logger(subsystem: Bundle.mainIdentifier, category: "ViewModel state")
         
+        #if DEBUG
+        self.vmStateLogger = Logger(subsystem: Bundle.mainIdentifier, category: "ViewModel state")
         vmStateLogger.notice("EditSpendingViewModel init called")
+        #endif
     }
     
+    #if DEBUG
     deinit {
         vmStateLogger.notice("EditSpendingViewModel deinit called")
     }
+    #endif
     
     func done() {
         if let doubleAmount = Double(amount) {

@@ -20,6 +20,7 @@ struct NewCurrencyRow: View {
         Button(action: addCurrency) {
             buttonLabel
         }
+        .normalizePadding()
     }
     
     private var buttonLabel: some View {

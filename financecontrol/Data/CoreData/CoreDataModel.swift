@@ -53,7 +53,7 @@ extension CoreDataModel {
                     return dateFormatter
                 }
                 
-                let pathURL = tempURL.appending(component: "SquirrelExport_\(dateFormatter.string(from: Date.now)).json")
+                let pathURL = tempURL.appendingPathComponent("SquirrelExport_\(dateFormatter.string(from: Date.now))", conformingTo: .json)
                 try jsonString.write(to: pathURL, atomically: true, encoding: .utf8)
                 
                 return pathURL

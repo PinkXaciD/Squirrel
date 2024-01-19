@@ -39,7 +39,7 @@ struct ShadowedCategoriesRow: View {
             } message: {
                 Text("You will not be able to undo this action.\nAll expenses in this category will be permanently deleted")
             }
-
+            .normalizePadding()
     }
     
     private var categoryInfo: some View {
