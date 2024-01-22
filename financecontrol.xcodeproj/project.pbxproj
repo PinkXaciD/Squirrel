@@ -108,6 +108,7 @@
 		8DCB302F2A97578F00DC9ABB /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCB302E2A97578F00DC9ABB /* ViewExtensions.swift */; };
 		8DD5C38C2A603F4500FC862C /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD5C38B2A603F4500FC862C /* Formatters.swift */; };
 		8DD5C38F2A607F1C00FC862C /* CategorySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD5C38E2A607F1C00FC862C /* CategorySelector.swift */; };
+		8DDC9C422B5E834000D38709 /* ApplePie in Frameworks */ = {isa = PBXBuildFile; productRef = 8DDC9C412B5E834000D38709 /* ApplePie */; };
 		8DDFD4742A68249100493753 /* DefaultCurrencySelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DDFD4732A68249100493753 /* DefaultCurrencySelectorView.swift */; };
 		8DE29BA82A683F01002F5C42 /* AddCategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DE29BA72A683F01002F5C42 /* AddCategoryView.swift */; };
 		8DE48D122A72DA88008A2DD4 /* CategoriesEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DE48D112A72DA88008A2DD4 /* CategoriesEditView.swift */; };
@@ -119,7 +120,6 @@
 		8DFA1EDE2B4C163100B97113 /* CustomIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DFA1EDD2B4C163100B97113 /* CustomIcon.swift */; };
 		8DFA1EE02B4C16DE00B97113 /* IconRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DFA1EDF2B4C16DE00B97113 /* IconRow.swift */; };
 		8DFA1EE32B4C1F7A00B97113 /* IconRowViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DFA1EE22B4C1F7A00B97113 /* IconRowViewModel.swift */; };
-		8DFA950D2AA739A900CA2C68 /* ApplePie in Frameworks */ = {isa = PBXBuildFile; productRef = 8DFA950C2AA739A900CA2C68 /* ApplePie */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -294,7 +294,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8DFA950D2AA739A900CA2C68 /* ApplePie in Frameworks */,
+				8DDC9C422B5E834000D38709 /* ApplePie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -790,7 +790,7 @@
 			);
 			name = financecontrol;
 			packageProductDependencies = (
-				8DFA950C2AA739A900CA2C68 /* ApplePie */,
+				8DDC9C412B5E834000D38709 /* ApplePie */,
 			);
 			productName = financecontrol;
 			productReference = 8DBFEBCA2A49ED4800165414 /* financecontrol.app */;
@@ -1083,7 +1083,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 0.2.11;
+				MARKETING_VERSION = 0.2.12;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pinkxacid.financecontrol.financecontrolWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1121,7 +1121,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 0.2.11;
+				MARKETING_VERSION = 0.2.12;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pinkxacid.financecontrol.financecontrolWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1286,7 +1286,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.2.11;
+				MARKETING_VERSION = 0.2.12;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pinkxacid.financecontrol;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1330,7 +1330,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.2.11;
+				MARKETING_VERSION = 0.2.12;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pinkxacid.financecontrol;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1388,7 +1388,7 @@
 /* Begin XCRemoteSwiftPackageReference section */
 		8DFA950B2AA739A900CA2C68 /* XCRemoteSwiftPackageReference "ApplePie" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = /Users/pinkxacid/CodeProjects/Xcode/Packages/ApplePie;
+			repositoryURL = https://github.com/PinkXaciD/ApplePie;
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.0.2;
@@ -1397,9 +1397,8 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		8DFA950C2AA739A900CA2C68 /* ApplePie */ = {
+		8DDC9C412B5E834000D38709 /* ApplePie */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 8DFA950B2AA739A900CA2C68 /* XCRemoteSwiftPackageReference "ApplePie" */;
 			productName = ApplePie;
 		};
 /* End XCSwiftPackageProductDependency section */
