@@ -24,7 +24,7 @@ struct AccessoryCircularAddExpenseView: View {
     private func getNewWidget() -> some View {
         ZStack(alignment: .center) {
             Circle()
-                .opacity(0.25)
+                .fill(Material.regular)
             
             entry.image()
                 .resizable()
@@ -40,7 +40,7 @@ struct AccessoryCircularAddExpenseView: View {
     private func getOldWidget() -> some View {
         ZStack {
             Circle()
-                .opacity(0.25)
+                .fill(Material.regular)
             
             entry.image()
                 .resizable()

@@ -55,7 +55,6 @@ struct SpendingCompleteView: View {
 //                }
             }
             .navigationViewStyle(.stack)
-            .id(UUID())
         } else {
             NavigationView {
                 SpendingView(
@@ -81,7 +80,6 @@ struct SpendingCompleteView: View {
                 }
             }
             .navigationViewStyle(.stack)
-            .id(UUID())
         }
     }
     

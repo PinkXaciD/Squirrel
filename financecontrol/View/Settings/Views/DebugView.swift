@@ -12,9 +12,9 @@ struct DebugView: View {
     private var rvm: RatesViewModel
     
     @State
-    private var defaultsConfinationIsShowing: Bool = false
+    private var defaultsConfirmationIsShowing: Bool = false
     @State
-    private var timelineConfinationIsShowing: Bool = false
+    private var timelineConfirmationIsShowing: Bool = false
     
     var body: some View {
         Form {
@@ -26,16 +26,18 @@ struct DebugView: View {
             
             ratesSection
             
+            bundleSection
+            
             defaultsSection
             
             reloadWidgetsSection
         }
-        .confirmationDialog("This will clear all settings of app. \nYou can't undo this action.", isPresented: $defaultsConfinationIsShowing, titleVisibility: .visible) {
+        .confirmationDialog("This will clear all settings of app. \nYou can't undo this action.", isPresented: $defaultsConfirmationIsShowing, titleVisibility: .visible) {
             clearSharedDefaultsButton
             
             clearStandartDefaultsButton
         }
-        .confirmationDialog("", isPresented: $timelineConfinationIsShowing) {
+        .confirmationDialog("", isPresented: $timelineConfirmationIsShowing) {
             Button("Reload all widget timelines", role: .destructive, action: WidgetsManager.shared.reloadAll)
         }
         .navigationTitle("Debug")
@@ -110,10 +112,23 @@ struct DebugView: View {
         }
     }
     
+    private var bundleSection: some View {
+        Section {
+            VStack(alignment: .leading) {
+                Text("Identifier:")
+                
+                Text(Bundle.main.bundleIdentifier ?? "Error")
+                    .foregroundColor(.secondary)
+            }
+        } header: {
+            Text("Bundle")
+        }
+    }
+    
     private var defaultsSection: some View {
         Section {
             Button(role: .destructive) {
-                defaultsConfinationIsShowing.toggle()
+                defaultsConfirmationIsShowing.toggle()
             } label: {
                 Text("Clear UserDefaults")
             }
@@ -136,7 +151,7 @@ struct DebugView: View {
     
     private var reloadWidgetsSection: some View {
         Button(role: .destructive) {
-            timelineConfinationIsShowing.toggle()
+            timelineConfirmationIsShowing.toggle()
         } label: {
             Text("Reload all widget timelines")
         }

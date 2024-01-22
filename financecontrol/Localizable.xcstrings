@@ -180,6 +180,9 @@
     "Build: %@" : {
 
     },
+    "Bundle" : {
+
+    },
     "Buy me some noodles" : {
 
     },
@@ -331,6 +334,9 @@
 
     },
     "Icon" : {
+
+    },
+    "Identifier:" : {
 
     },
     "Import data as JSON" : {

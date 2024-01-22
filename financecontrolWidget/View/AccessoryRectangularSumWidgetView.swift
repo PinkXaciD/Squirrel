@@ -25,6 +25,7 @@ struct AccessoryRectangularSumWidgetView: View {
         HStack {
             VStack(alignment: .leading) {
                 Text("Today's expenses")
+                    .privacySensitive(false)
                 
                 Text(entry.expenses.formatted(.currency(code: entry.currency)))
                     .font(.system(size: 30, design: .rounded).bold())

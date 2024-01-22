@@ -2,8 +2,8 @@
   "pins" : [
     {
       "identity" : "applepie",
-      "kind" : "localSourceControl",
-      "location" : "/Users/pinkxacid/CodeProjects/Xcode/Packages/ApplePie",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/PinkXaciD/ApplePie",
       "state" : {
         "revision" : "d731202ccc9e5a9d5859b810184ac2d454353567",
         "version" : "1.0.2"
