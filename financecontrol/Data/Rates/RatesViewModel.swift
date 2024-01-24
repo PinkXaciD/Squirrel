@@ -65,10 +65,10 @@ final class RatesViewModel: ViewModel {
 // MARK: Rates View Model networking
 
 extension RatesViewModel {
-    func getRates(_ timeStamp: Date? = nil) async throws -> Rates {
+    func getRates(_ timestamp: Date? = nil) async throws -> Rates {
         do {
             let rm: RatesModel = .init()
-            return try await rm.downloadRates(timeStamp: timeStamp)
+            return try await rm.downloadRates(timestamp: timestamp)
         } catch {
             throw error
         }

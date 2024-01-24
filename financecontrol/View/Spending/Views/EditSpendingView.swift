@@ -114,7 +114,7 @@ struct EditSpendingView: View {
         .textCase(nil)
         .foregroundColor(categoryColor)
         .frame(maxWidth: .infinity)
-        .listRowInsets(.init(top: 10, leading: 20, bottom: 40, trailing: 20))
+        .listRowInsets(.init(top: 10, leading: 0, bottom: 40, trailing: 0))
     }
     
     private var commentSection: some View {
@@ -169,41 +169,8 @@ struct EditSpendingView: View {
     
     private var returnsSection: some View {
         Section {
-            ForEach(entity.returnsArr) { returnEntity in
-                VStack(alignment: .leading) {
-                    HStack {
-                        Text(returnEntity.amount.formatted(.currency(code: entity.wrappedCurrency)))
-                        
-                        Spacer()
-                        
-                        Text(returnEntity.date?.formatted(date: .abbreviated, time: .shortened) ?? "Date error")
-                    }
-                    
-                    if let name = returnEntity.name, !name.isEmpty {
-                        Text(name)
-                            .font(.callout)
-                            .foregroundColor(.secondary)
-                    }
-                }
-                .padding(.vertical, 1)
-                .foregroundColor(.primary)
-// MARK: Todo
-//                .swipeActions(edge: .leading) {
-//                    Button {
-//                        returnToEdit = returnEntity
-//                    } label: {
-//                        Label("Edit", systemImage: "pencil")
-//                    }
-//                    .tint(.yellow)
-//                }
-                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                    Button(role: .destructive) {
-                        vm.removeReturn(returnEntity)
-                    } label: {
-                        Label("Delete", systemImage: "trash.fill")
-                    }
-                    .tint(.red)
-                }
+            ForEach(entity.returnsArr.sorted { $0.date ?? .distantPast > $1.date ?? .distantPast }) { returnEntity in
+                returnRow(returnEntity)
             }
         } header: {
             Text("\(entity.returns?.allObjects.count ?? 0) returns")
@@ -211,12 +178,8 @@ struct EditSpendingView: View {
     }
     
     private var keyboardToolbar: ToolbarItemGroup<some View> {
-        ToolbarItemGroup(placement: .keyboard) {
-            Spacer()
-            
-            Button(action: clearFocus) {
-                Image(systemName: "keyboard.chevron.compact.down")
-            }
+        hideKeyboardToolbar {
+            clearFocus()
         }
     }
     
@@ -244,6 +207,43 @@ struct EditSpendingView: View {
 // MARK: Functions
 
 extension EditSpendingView {
+    private func returnRow(_ returnEntity: ReturnEntity) -> some View {
+        VStack(alignment: .leading) {
+            HStack {
+                Text(returnEntity.amount.formatted(.currency(code: returnEntity.currency ?? entity.wrappedCurrency)))
+                
+                Spacer()
+                
+                Text(returnEntity.date?.formatted(date: .abbreviated, time: .shortened) ?? "Date error")
+            }
+            
+            if let name = returnEntity.name, !name.isEmpty {
+                Text(name)
+                    .font(.callout)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(.vertical, 1)
+        .foregroundColor(.primary)
+// MARK: Todo
+//                .swipeActions(edge: .leading) {
+//                    Button {
+//                        returnToEdit = returnEntity
+//                    } label: {
+//                        Label("Edit", systemImage: "pencil")
+//                    }
+//                    .tint(.yellow)
+//                }
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+            Button(role: .destructive) {
+                vm.removeReturn(returnEntity)
+            } label: {
+                Label("Delete", systemImage: "trash.fill")
+            }
+            .tint(.red)
+        }
+    }
+    
     private func doneButtonAction() {
         clearFocus()
         vm.done()

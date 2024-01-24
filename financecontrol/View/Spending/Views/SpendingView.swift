@@ -163,10 +163,20 @@ struct SpendingView: View {
     private var commentSection: some View {
         Section(header: Text("Comment"), footer: returnAndDeleteButtons) {
             if let comment = entity.comment, !comment.isEmpty {
-                Text(comment)
+                ZStack(alignment: .leading) {
+                    Rectangle()
+                        .foregroundColor(.init(uiColor: .secondarySystemGroupedBackground))
+                    
+                    Text(comment)
+                }
             } else {
-                Text("No comment provided")
-                    .foregroundColor(.secondary)
+                ZStack(alignment: .leading) {
+                    Rectangle()
+                        .foregroundColor(.init(uiColor: .secondarySystemGroupedBackground))
+                    
+                    Text("No comment provided")
+                        .foregroundColor(.secondary)
+                }
             }
         }
         .onTapGesture {
@@ -176,7 +186,7 @@ struct SpendingView: View {
     
     private var returnsSection: some View {
         Section {
-            ForEach(entity.returnsArr) { returnEntity in
+            ForEach(entity.returnsArr.sorted { $0.date ?? .distantPast > $1.date ?? .distantPast }) { returnEntity in
                 returnRow(returnEntity)
             }
         } header: {
@@ -252,7 +262,7 @@ extension SpendingView {
     private func returnRow(_ returnEntity: ReturnEntity) -> some View {
         VStack(alignment: .leading) {
             HStack {
-                Text(returnEntity.amount.formatted(.currency(code: entity.wrappedCurrency)))
+                Text(returnEntity.amount.formatted(.currency(code: returnEntity.currency ?? entity.wrappedCurrency)))
                 
                 Spacer()
                 

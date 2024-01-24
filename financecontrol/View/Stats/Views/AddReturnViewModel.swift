@@ -27,9 +27,18 @@ final class AddReturnViewModel: ViewModel {
         self._rvm = ObservedObject(wrappedValue: rvm)
     }
     
+    var doubleAmount: Double {
+        if currency == spending.wrappedCurrency {
+            return Double(amount) ?? 0
+        } else {
+            let doubleAmount = Double(amount) ?? 0
+            
+            return round(doubleAmount / (rvm.rates[currency] ?? 1) * (rvm.rates[spending.wrappedCurrency] ?? 1) * 100) / 100
+        }
+    }
+    
     func done() {
         guard
-            let doubleAmount = Double(amount),
             let returns = spending.returns?.allObjects as? [ReturnEntity]
         else {
             HapticManager.shared.notification(.error)
@@ -47,9 +56,10 @@ final class AddReturnViewModel: ViewModel {
         if !Calendar.current.isDateInToday(date) {
             Task {
                 let oldRates = try? await rvm.getRates(date).rates
+                
                 await MainActor.run {
                     if let oldRates = oldRates {
-                        if countSum(doubleAmount / (oldRates[currency] ?? 1), returns: returns) {
+                        if countSum(doubleAmount, returns: returns) {
                             return
                         }
                         
@@ -57,12 +67,12 @@ final class AddReturnViewModel: ViewModel {
                             to: spending,
                             amount: doubleAmount,
                             amountUSD: doubleAmount / (oldRates[currency] ?? 1),
-                            currency: currency,
+                            currency: spending.wrappedCurrency,
                             date: date,
                             name: name
                         )
                     } else {
-                        if countSum(doubleAmount / (rvm.rates[currency] ?? 1), returns: returns) {
+                        if countSum(doubleAmount, returns: returns) {
                             return
                         }
                         
@@ -70,7 +80,7 @@ final class AddReturnViewModel: ViewModel {
                             to: spending,
                             amount: doubleAmount,
                             amountUSD: doubleAmount / (rvm.rates[currency] ?? 1),
-                            currency: currency,
+                            currency: spending.wrappedCurrency,
                             date: date,
                             name: name
                         )
@@ -78,7 +88,7 @@ final class AddReturnViewModel: ViewModel {
                 }
             }
         } else {
-            if countSum(doubleAmount / (rvm.rates[currency] ?? 1), returns: returns) {
+            if countSum(doubleAmount, returns: returns) {
                 return
             }
             
@@ -86,7 +96,7 @@ final class AddReturnViewModel: ViewModel {
                 to: spending,
                 amount: doubleAmount,
                 amountUSD: doubleAmount / (rvm.rates[currency] ?? 1),
-                currency: currency,
+                currency: spending.wrappedCurrency,
                 date: date,
                 name: name
             )
@@ -96,20 +106,20 @@ final class AddReturnViewModel: ViewModel {
     }
     
     func addFull() {
+        self.currency = spending.wrappedCurrency
         self.amount = String(spending.amountWithReturns)
     }
     
     private func countSum(_ newAmount: Double, returns: [ReturnEntity]) -> Bool {
-        var existingReturnsSum = returns.map { $0.amountUSD }.reduce(0, +)
+        var existingReturnsSum = returns.map { $0.amount }.reduce(0, +)
         existingReturnsSum += newAmount
         
-        return !returns.isEmpty && existingReturnsSum > spending.amountUSD
+        return !returns.isEmpty && existingReturnsSum > spending.amount
     }
     
     func validate() -> Bool {
         guard
             !amount.isEmpty,
-            let doubleAmount = Double(amount),
             doubleAmount != 0,
             doubleAmount <= spending.amountWithReturns
         else {

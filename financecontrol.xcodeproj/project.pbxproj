@@ -39,7 +39,7 @@
 		8D406EAC2A9A386E002D3ED1 /* BarChartData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D406EAB2A9A386E002D3ED1 /* BarChartData.swift */; };
 		8D4927672AB2128F008E6347 /* readme.md in Resources */ = {isa = PBXBuildFile; fileRef = 8D4927662AB2128F008E6347 /* readme.md */; };
 		8D4A539C2A78055200081E5F /* EditSpendingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4A539B2A78055200081E5F /* EditSpendingView.swift */; };
-		8D4B0ACF2A55F245008D32B1 /* DataManger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4B0ACE2A55F245008D32B1 /* DataManger.swift */; };
+		8D4B0ACF2A55F245008D32B1 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4B0ACE2A55F245008D32B1 /* DataManager.swift */; };
 		8D4E08182AAA152A00B3544F /* SpendingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4E08172AAA152A00B3544F /* SpendingsModel.swift */; };
 		8D4E081A2AAA15B900B3544F /* CategoriesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4E08192AAA15B900B3544F /* CategoriesModel.swift */; };
 		8D4E081C2AAA163800B3544F /* CurrenciesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4E081B2AAA163800B3544F /* CurrenciesModel.swift */; };
@@ -57,6 +57,7 @@
 		8D6E441D2B18D63600FDFF9D /* AddReturnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6E441C2B18D63600FDFF9D /* AddReturnView.swift */; };
 		8D6E441F2B18D6AE00FDFF9D /* AddReturnViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6E441E2B18D6AE00FDFF9D /* AddReturnViewModel.swift */; };
 		8D75E5B02A67FAF9009CA5C6 /* ColorAndIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D75E5AF2A67FAF9009CA5C6 /* ColorAndIconView.swift */; };
+		8D7710A72B60615D00D3ECF5 /* UniversalViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D7710A62B60615D00D3ECF5 /* UniversalViews.swift */; };
 		8D78BB8A2A9A1B570075DC70 /* PieChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D78BB892A9A1B570075DC70 /* PieChartView.swift */; };
 		8D7ECC7A2AACAF6F005A515D /* CustomColorSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D7ECC792AACAF6F005A515D /* CustomColorSelector.swift */; };
 		8D7EFB0B2A85096B009797E8 /* DateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D7EFB0A2A85096B009797E8 /* DateExtensions.swift */; };
@@ -186,7 +187,7 @@
 		8D406EAB2A9A386E002D3ED1 /* BarChartData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarChartData.swift; sourceTree = "<group>"; };
 		8D4927662AB2128F008E6347 /* readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = readme.md; sourceTree = "<group>"; };
 		8D4A539B2A78055200081E5F /* EditSpendingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditSpendingView.swift; sourceTree = "<group>"; };
-		8D4B0ACE2A55F245008D32B1 /* DataManger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManger.swift; sourceTree = "<group>"; };
+		8D4B0ACE2A55F245008D32B1 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		8D4E08172AAA152A00B3544F /* SpendingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpendingsModel.swift; sourceTree = "<group>"; };
 		8D4E08192AAA15B900B3544F /* CategoriesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoriesModel.swift; sourceTree = "<group>"; };
 		8D4E081B2AAA163800B3544F /* CurrenciesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrenciesModel.swift; sourceTree = "<group>"; };
@@ -204,6 +205,7 @@
 		8D6E441C2B18D63600FDFF9D /* AddReturnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddReturnView.swift; sourceTree = "<group>"; };
 		8D6E441E2B18D6AE00FDFF9D /* AddReturnViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddReturnViewModel.swift; sourceTree = "<group>"; };
 		8D75E5AF2A67FAF9009CA5C6 /* ColorAndIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorAndIconView.swift; sourceTree = "<group>"; };
+		8D7710A62B60615D00D3ECF5 /* UniversalViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniversalViews.swift; sourceTree = "<group>"; };
 		8D78BB892A9A1B570075DC70 /* PieChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieChartView.swift; sourceTree = "<group>"; };
 		8D7ECC792AACAF6F005A515D /* CustomColorSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomColorSelector.swift; sourceTree = "<group>"; };
 		8D7EFB0A2A85096B009797E8 /* DateExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtensions.swift; sourceTree = "<group>"; };
@@ -332,6 +334,7 @@
 				8D1F51372AE927610037A4A8 /* HapticManager.swift */,
 				8DFA1EDD2B4C163100B97113 /* CustomIcon.swift */,
 				8D9F30E82B4D7C3E00A0B8C3 /* WidgetsManager.swift */,
+				8D7710A62B60615D00D3ECF5 /* UniversalViews.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -531,7 +534,7 @@
 				8D08C5D42A55A69200E79476 /* DataContainer.xcdatamodeld */,
 				8DAFF8A72B39CF3D001D5A9D /* Entities */,
 				8DAFF8A52B39CEDD001D5A9D /* CoreDataModel.swift */,
-				8D4B0ACE2A55F245008D32B1 /* DataManger.swift */,
+				8D4B0ACE2A55F245008D32B1 /* DataManager.swift */,
 			);
 			path = CoreData;
 			sourceTree = "<group>";
@@ -927,6 +930,7 @@
 				8D0763A32A4B07ED00D2C3FF /* AddSpendingView.swift in Sources */,
 				8D31CE5E2AD029EC00E8B74B /* APIURLComponents.swift in Sources */,
 				8D0763A82A4B257F00D2C3FF /* CurrencySelector.swift in Sources */,
+				8D7710A72B60615D00D3ECF5 /* UniversalViews.swift in Sources */,
 				8DAFF8A62B39CEDD001D5A9D /* CoreDataModel.swift in Sources */,
 				8DFA1EDE2B4C163100B97113 /* CustomIcon.swift in Sources */,
 				8DB294BA2A7C0FF800170BA2 /* NumbersViewModifier.swift in Sources */,
@@ -974,7 +978,7 @@
 				8D4E08182AAA152A00B3544F /* SpendingsModel.swift in Sources */,
 				8DCB302D2A97314400DC9ABB /* StatsRow.swift in Sources */,
 				8DF003752B0CB07900133554 /* PieChartCenterView.swift in Sources */,
-				8D4B0ACF2A55F245008D32B1 /* DataManger.swift in Sources */,
+				8D4B0ACF2A55F245008D32B1 /* DataManager.swift in Sources */,
 				8D1F51382AE927610037A4A8 /* HapticManager.swift in Sources */,
 				8D08C5D62A55A69200E79476 /* DataContainer.xcdatamodeld in Sources */,
 				8D5587202A95FE7600FEF2B5 /* StringExtensions.swift in Sources */,
@@ -1083,7 +1087,8 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 0.2.12;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.2.13;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pinkxacid.financecontrol.financecontrolWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1121,7 +1126,8 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 0.2.12;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.2.13;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pinkxacid.financecontrol.financecontrolWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1279,6 +1285,8 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = NO;
+				INFOPLIST_KEY_UIStatusBarHidden = NO;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -1286,7 +1294,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.2.12;
+				MARKETING_VERSION = 0.2.13;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pinkxacid.financecontrol;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1323,6 +1331,8 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = NO;
+				INFOPLIST_KEY_UIStatusBarHidden = NO;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -1330,7 +1340,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.2.12;
+				MARKETING_VERSION = 0.2.13;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pinkxacid.financecontrol;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1388,7 +1398,7 @@
 /* Begin XCRemoteSwiftPackageReference section */
 		8DFA950B2AA739A900CA2C68 /* XCRemoteSwiftPackageReference "ApplePie" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = https://github.com/PinkXaciD/ApplePie;
+			repositoryURL = "https://github.com/PinkXaciD/ApplePie";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.0.2;

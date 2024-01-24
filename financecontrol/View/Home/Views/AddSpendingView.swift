@@ -176,13 +176,8 @@ struct AddSpendingView: View {
 // MARK: Toolbars
     
     private var keyboardToolbar: ToolbarItemGroup<some View> {
-        ToolbarItemGroup(placement: .keyboard) {
-            Spacer()
-            
-            Button(action: clearFocus) {
-                Label("Hide keyboard", systemImage: "keyboard.chevron.compact.down")
-            }
-            .padding(.horizontal)
+        hideKeyboardToolbar {
+            clearFocus()
         }
     }
     

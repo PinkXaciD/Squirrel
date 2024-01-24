@@ -10,7 +10,7 @@ import Foundation
 import CoreData
 
 @objc(CategoryEntity)
-public class CategoryEntity: NSManagedObject, Codable {
+public final class CategoryEntity: NSManagedObject, Codable {
     enum CodingKeys: CodingKey {
         case id, color, isShadowed, isFavorite, name, spendings
     }

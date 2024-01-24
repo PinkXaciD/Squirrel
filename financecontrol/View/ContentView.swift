@@ -8,15 +8,26 @@
 import SwiftUI
 
 struct ContentView: View {
-    @Environment(\.scenePhase) var scenePhase
-    @AppStorage("color") var tint: String = "Orange"
-    @AppStorage("theme") var theme: String = "None"
-    @StateObject private var cdm: CoreDataModel = .init()
-    @StateObject private var rvm: RatesViewModel = .init()
+    @Environment(\.scenePhase) 
+    private var scenePhase
+    @Environment(\.openURL)
+    private var openURL
     
-    @ObservedObject private var errorHandler = ErrorHandler.shared
-    @Environment(\.openURL) private var openURL
-    @Binding var addExpenseAction: Bool
+    @AppStorage("color")
+    private var tint: String = "Orange"
+    @AppStorage("theme")
+    private var theme: String = "None"
+    
+    @StateObject
+    private var cdm: CoreDataModel = .init()
+    @StateObject
+    private var rvm: RatesViewModel = .init()
+    
+    @ObservedObject 
+    private var errorHandler = ErrorHandler.shared
+    
+    @Binding
+    var addExpenseAction: Bool
         
     var body: some View {
         TabView {

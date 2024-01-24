@@ -57,6 +57,7 @@ extension WidgetsManager {
             #endif
             return
         }
+        
         let currentDate = Calendar.current.startOfDay(for: .now)
         sharedDefaults.set(amount, forKey: "amount")
         sharedDefaults.set(currentDate, forKey: "date")

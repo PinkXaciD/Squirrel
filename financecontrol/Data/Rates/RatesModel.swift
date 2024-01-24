@@ -33,19 +33,19 @@ final class RatesModel {
 // MARK: Rates Model networking
 
 extension RatesModel {
-    func downloadRates(timeStamp: Date? = nil) async throws -> Rates {
+    func downloadRates(timestamp: Date? = nil) async throws -> Rates {
         do {
             let apiURLComponents = try getURLComponents()
             let apiKey = try getApiKey()
-            var timeStampString: String?
+            var timestampString: String?
             
-            if let timeStamp = timeStamp {
+            if let timestamp = timestamp {
                 let formatter = ISO8601DateFormatter()
                         
-                timeStampString = "\"" + formatter.string(from: timeStamp) + "\""
+                timestampString = "\"" + formatter.string(from: timestamp) + "\""
             }
             
-            let urlComponents = apiURLComponents.createComponents(timestamp: timeStampString)
+            let urlComponents = apiURLComponents.createComponents(timestamp: timestampString)
             
             guard let url: URL = urlComponents.url else {
                 throw URLError(.badURL)
