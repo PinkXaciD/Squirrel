@@ -12,8 +12,8 @@
 		8D0429D92A9B8B2D00A09BB4 /* BarChartBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0429D82A9B8B2D00A09BB4 /* BarChartBar.swift */; };
 		8D0429DB2A9B8D2400A09BB4 /* BarChartGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0429DA2A9B8D2400A09BB4 /* BarChartGenerator.swift */; };
 		8D043F682B51A89B00F2F560 /* SumWidgetTimelineProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D043F662B51A84C00F2F560 /* SumWidgetTimelineProvider.swift */; };
-		8D043F6E2B51A9F000F2F560 /* AccessoryRectangularSumWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D043F6D2B51A9F000F2F560 /* AccessoryRectangularSumWidget.swift */; };
-		8D043F702B51AA4500F2F560 /* AccessoryRectangularSumWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D043F6F2B51AA4500F2F560 /* AccessoryRectangularSumWidgetView.swift */; };
+		8D043F6E2B51A9F000F2F560 /* AccessorySumWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D043F6D2B51A9F000F2F560 /* AccessorySumWidget.swift */; };
+		8D043F702B51AA4500F2F560 /* AccessorySumWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D043F6F2B51AA4500F2F560 /* AccessorySumWidgetView.swift */; };
 		8D05C6D82AE0479E0097078A /* ExportImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D05C6D72AE0479E0097078A /* ExportImportView.swift */; };
 		8D0763A32A4B07ED00D2C3FF /* AddSpendingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0763A22A4B07ED00D2C3FF /* AddSpendingView.swift */; };
 		8D0763A82A4B257F00D2C3FF /* CurrencySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0763A72A4B257F00D2C3FF /* CurrencySelector.swift */; };
@@ -47,6 +47,8 @@
 		8D5860332A5F3898001D97AC /* SpendingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5860322A5F3898001D97AC /* SpendingView.swift */; };
 		8D5894982A829E3D00A6DB65 /* BarChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5894972A829E3D00A6DB65 /* BarChart.swift */; };
 		8D591EA82A93AAF700A9CD07 /* LaunchActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D591EA72A93AAF700A9CD07 /* LaunchActions.swift */; };
+		8D5B961A2B62944700715C3F /* AccessoryCircularSumWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5B96192B62944700715C3F /* AccessoryCircularSumWidgetView.swift */; };
+		8D5B961C2B6294A300715C3F /* AccessoryRectangularSumWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5B961B2B6294A300715C3F /* AccessoryRectangularSumWidgetView.swift */; };
 		8D6059E22AB874FA0043A293 /* RatesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6059E12AB874FA0043A293 /* RatesViewModel.swift */; };
 		8D6059E42AB87AF60043A293 /* RatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6059E32AB87AF60043A293 /* RatesView.swift */; };
 		8D64ABEB2B21D3EF008C025C /* StatsSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D64ABEA2B21D3EF008C025C /* StatsSearchView.swift */; };
@@ -159,8 +161,8 @@
 		8D0429D82A9B8B2D00A09BB4 /* BarChartBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BarChartBar.swift; path = financecontrol/View/Home/Views/BarChartBar.swift; sourceTree = SOURCE_ROOT; };
 		8D0429DA2A9B8D2400A09BB4 /* BarChartGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarChartGenerator.swift; sourceTree = "<group>"; };
 		8D043F662B51A84C00F2F560 /* SumWidgetTimelineProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SumWidgetTimelineProvider.swift; sourceTree = "<group>"; };
-		8D043F6D2B51A9F000F2F560 /* AccessoryRectangularSumWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessoryRectangularSumWidget.swift; sourceTree = "<group>"; };
-		8D043F6F2B51AA4500F2F560 /* AccessoryRectangularSumWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessoryRectangularSumWidgetView.swift; sourceTree = "<group>"; };
+		8D043F6D2B51A9F000F2F560 /* AccessorySumWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessorySumWidget.swift; sourceTree = "<group>"; };
+		8D043F6F2B51AA4500F2F560 /* AccessorySumWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessorySumWidgetView.swift; sourceTree = "<group>"; };
 		8D05C6D72AE0479E0097078A /* ExportImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportImportView.swift; sourceTree = "<group>"; };
 		8D0763A22A4B07ED00D2C3FF /* AddSpendingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddSpendingView.swift; sourceTree = "<group>"; };
 		8D0763A72A4B257F00D2C3FF /* CurrencySelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencySelector.swift; sourceTree = "<group>"; };
@@ -195,6 +197,8 @@
 		8D5860322A5F3898001D97AC /* SpendingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpendingView.swift; sourceTree = "<group>"; };
 		8D5894972A829E3D00A6DB65 /* BarChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarChart.swift; sourceTree = "<group>"; };
 		8D591EA72A93AAF700A9CD07 /* LaunchActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchActions.swift; sourceTree = "<group>"; };
+		8D5B96192B62944700715C3F /* AccessoryCircularSumWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessoryCircularSumWidgetView.swift; sourceTree = "<group>"; };
+		8D5B961B2B6294A300715C3F /* AccessoryRectangularSumWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessoryRectangularSumWidgetView.swift; sourceTree = "<group>"; };
 		8D6059E12AB874FA0043A293 /* RatesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatesViewModel.swift; sourceTree = "<group>"; };
 		8D6059E32AB87AF60043A293 /* RatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatesView.swift; sourceTree = "<group>"; };
 		8D64ABEA2B21D3EF008C025C /* StatsSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsSearchView.swift; sourceTree = "<group>"; };
@@ -307,7 +311,7 @@
 			isa = PBXGroup;
 			children = (
 				8DAA0E252B48367D0076B81E /* SmallSumWidget.swift */,
-				8D043F6D2B51A9F000F2F560 /* AccessoryRectangularSumWidget.swift */,
+				8D043F6D2B51A9F000F2F560 /* AccessorySumWidget.swift */,
 				8DCB1BD82B53102B000FFE2B /* AccessoryCircularAddExpenseWidget.swift */,
 			);
 			path = Widget;
@@ -343,8 +347,10 @@
 			isa = PBXGroup;
 			children = (
 				8D10D7852B504D000038C8AD /* SumWidgetView.swift */,
-				8D043F6F2B51AA4500F2F560 /* AccessoryRectangularSumWidgetView.swift */,
+				8D043F6F2B51AA4500F2F560 /* AccessorySumWidgetView.swift */,
 				8DCB1BD62B53074A000FFE2B /* AccessoryCircularAddExpenseView.swift */,
+				8D5B96192B62944700715C3F /* AccessoryCircularSumWidgetView.swift */,
+				8D5B961B2B6294A300715C3F /* AccessoryRectangularSumWidgetView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -897,13 +903,15 @@
 			files = (
 				8DCB1BD92B53102B000FFE2B /* AccessoryCircularAddExpenseWidget.swift in Sources */,
 				8D043F682B51A89B00F2F560 /* SumWidgetTimelineProvider.swift in Sources */,
+				8D5B961C2B6294A300715C3F /* AccessoryRectangularSumWidgetView.swift in Sources */,
 				8D10D7872B504D2C0038C8AD /* SumWidgetView.swift in Sources */,
-				8D043F702B51AA4500F2F560 /* AccessoryRectangularSumWidgetView.swift in Sources */,
+				8D043F702B51AA4500F2F560 /* AccessorySumWidgetView.swift in Sources */,
 				8DAA0E262B48367D0076B81E /* SmallSumWidget.swift in Sources */,
 				8DAA0E242B48367D0076B81E /* financecontrolWidgetBundle.swift in Sources */,
+				8D5B961A2B62944700715C3F /* AccessoryCircularSumWidgetView.swift in Sources */,
 				8DCB1BD72B53074A000FFE2B /* AccessoryCircularAddExpenseView.swift in Sources */,
 				8D00D75D2B5801C900E8C70D /* Vars.swift in Sources */,
-				8D043F6E2B51A9F000F2F560 /* AccessoryRectangularSumWidget.swift in Sources */,
+				8D043F6E2B51A9F000F2F560 /* AccessorySumWidget.swift in Sources */,
 				8DCB1BDB2B53122E000FFE2B /* AddExpenseWidgetProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1073,7 +1081,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "1-beta";
+				CURRENT_PROJECT_VERSION = "2-beta";
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1112,7 +1120,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "1-beta";
+				CURRENT_PROJECT_VERSION = "2-beta";
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1273,7 +1281,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "1-beta";
+				CURRENT_PROJECT_VERSION = "2-beta";
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				ENABLE_PREVIEWS = YES;
@@ -1319,7 +1327,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "1-beta";
+				CURRENT_PROJECT_VERSION = "2-beta";
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				ENABLE_PREVIEWS = YES;

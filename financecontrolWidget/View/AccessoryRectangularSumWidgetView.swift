@@ -2,25 +2,25 @@
 //  AccessoryRectangularSumWidgetView.swift
 //  financecontrolWidgetExtension
 //
-//  Created by PinkXaciD on R 6/01/12.
+//  Created by PinkXaciD on R 6/01/25.
 //
 
-import WidgetKit
 import SwiftUI
+import WidgetKit
 
 @available(iOS 16.0, *)
 struct AccessoryRectangularSumWidgetView: View {
     let entry: SumEntry
     
     var body: some View {
-        if #available(iOS 17, *) {
+        if #available(iOS 17.0, *) {
             getNewWidget()
         } else {
             getOldWidget()
         }
     }
     
-    @available(iOS, introduced: 17)
+    @available(iOS 17.0, *)
     private func getNewWidget() -> some View {
         HStack {
             VStack(alignment: .leading) {
@@ -38,7 +38,7 @@ struct AccessoryRectangularSumWidgetView: View {
         .containerBackground(.clear, for: .widget)
     }
     
-    @available(iOS, introduced: 16, deprecated: 17)
+    @available(iOS, introduced: 16, deprecated: 17, message: "On newer platforms use getNewWidget()")
     private func getOldWidget() -> some View {
         HStack {
             VStack(alignment: .leading) {
@@ -56,12 +56,18 @@ struct AccessoryRectangularSumWidgetView: View {
 }
 
 #if DEBUG
-struct AccessoryRectangularSumWidgetPreview: PreviewProvider {
+@available(iOS 16.0, *)
+struct AccessoryRectangularSumWidgetViewPreviews: PreviewProvider {
     static var previews: some View {
-        if #available(iOS 16.0, *) {
-            AccessoryRectangularSumWidgetView(entry: .init(date: .now, expenses: 1200, currency: "JPY"))
-                .previewContext(WidgetPreviewContext(family: .accessoryRectangular))
-        }
+        AccessoryRectangularSumWidgetView(
+            entry: .init(
+                date: .now,
+                expenses: 1200,
+                currency: "JPY"
+            )
+        )
+        .previewContext(WidgetPreviewContext(family: .accessoryRectangular))
+        .previewDisplayName("Accessory Rectangular Sum Widget")
     }
 }
 #endif

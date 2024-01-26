@@ -9,15 +9,15 @@ import WidgetKit
 import SwiftUI
 
 @available(iOS 16.0, *)
-struct AccessoryRectangularSumWidget: Widget {
-    let kind: String = "AccessoryRectangularSumWidget"
+struct AccessorySumWidget: Widget {
+    let kind: String = "AccessorySumWidget"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: SumWidgetTimelineProvider()) { entry in
-            AccessoryRectangularSumWidgetView(entry: entry)
+            AccessorySumWidgetView(entry: entry)
         }
         .configurationDisplayName("Today's expenses")
         .description("Your expenses for today.")
-        .supportedFamilies([.accessoryRectangular])
+        .supportedFamilies([.accessoryRectangular, .accessoryCircular])
     }
 }
