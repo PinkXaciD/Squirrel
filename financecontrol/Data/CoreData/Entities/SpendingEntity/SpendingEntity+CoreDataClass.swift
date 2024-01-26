@@ -10,7 +10,7 @@ import Foundation
 import CoreData
 
 
-public class SpendingEntity: NSManagedObject, Codable {
+public final class SpendingEntity: NSManagedObject, Codable {
     enum CodingKeys: CodingKey {
         case id, amount, amountUSD, comment, currency, date, place, returns
     }

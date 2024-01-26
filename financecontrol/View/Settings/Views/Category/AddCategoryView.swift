@@ -65,12 +65,8 @@ struct AddCategoryView: View {
     }
     
     var keyboardToolbar: ToolbarItemGroup<some View> {
-        ToolbarItemGroup(placement: .keyboard) {
-            Spacer()
-            
-            Button(action: clearFocus) {
-                Label("Hide keyboard", systemImage: "keyboard.chevron.compact.down")
-            }
+        hideKeyboardToolbar {
+            clearFocus()
         }
     }
     

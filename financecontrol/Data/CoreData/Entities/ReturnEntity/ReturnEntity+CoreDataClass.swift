@@ -10,7 +10,7 @@ import Foundation
 import CoreData
 
 @objc(ReturnEntity)
-public class ReturnEntity: NSManagedObject, Codable {
+public final class ReturnEntity: NSManagedObject, Codable {
     public enum CodingKeys: CodingKey {
         case id, amount, amountUSD, name, currency, date
     }

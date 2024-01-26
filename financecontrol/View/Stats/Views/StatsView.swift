@@ -14,6 +14,8 @@ struct StatsView: View {
     private var cdm: CoreDataModel
     @EnvironmentObject
     private var rvm: RatesViewModel
+    @AppStorage("color")
+    private var tint: String = "Orange"
     
     @State
     var entityToEdit: SpendingEntity? = nil
@@ -113,6 +115,7 @@ struct StatsView: View {
             }
             .sheet(item: $entityToAddReturn) { entity in
                 AddReturnView(spending: entity, cdm: cdm, rvm: rvm)
+                    .accentColor(colorIdentifier(color: tint))
             }
             .navigationTitle("Stats")
         }

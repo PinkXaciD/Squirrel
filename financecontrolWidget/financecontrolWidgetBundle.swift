@@ -20,7 +20,7 @@ struct financecontrolWidgetBundle: WidgetBundle {
         if #available(iOS 16.0, *) {
             return WidgetBundleBuilder.buildBlock(
                 SmallSumWidget(),
-                AccessoryRectangularSumWidget(),
+                AccessorySumWidget(),
                 AccessoryCircularAddExpenseWidget()
             )
         } else {

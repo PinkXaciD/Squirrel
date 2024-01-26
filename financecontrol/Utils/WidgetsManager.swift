@@ -12,7 +12,7 @@ import OSLog
 
 final class WidgetsManager {
     static let shared: WidgetsManager = .init()
-    let sumWidgets: [Widgets] = [.smallSum, .accessoryRectangularSum]
+    let sumWidgets: [Widgets] = [.smallSum, .accessorySum]
     
     #if DEBUG
     let logger = Logger(subsystem: Vars.appIdentifier, category: "WidgetsManager")
@@ -57,6 +57,7 @@ extension WidgetsManager {
             #endif
             return
         }
+        
         let currentDate = Calendar.current.startOfDay(for: .now)
         sharedDefaults.set(amount, forKey: "amount")
         sharedDefaults.set(currentDate, forKey: "date")
@@ -65,7 +66,7 @@ extension WidgetsManager {
 }
 
 enum Widgets {
-    case smallSum, accessoryRectangularSum, accessoryCircularAddExpense
+    case smallSum, accessorySum, accessoryCircularAddExpense
 }
 
 extension Widgets {
@@ -73,8 +74,8 @@ extension Widgets {
         switch self {
         case .smallSum:
             "SmallSumWidget"
-        case .accessoryRectangularSum:
-            "AccessoryRectangularSumWidget"
+        case .accessorySum:
+            "AccessorySumWidget"
         case .accessoryCircularAddExpense:
             "AccessoryCircularAddExpense"
         }

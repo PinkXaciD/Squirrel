@@ -46,78 +46,64 @@ struct CategoryEditSubView: View {
     
     var body: some View {
         Form {
-            Section {
-                TextField("Enter name", text: $name)
-                    .focused($nameIsFocused)
-                    .onAppear(perform: nameFocus)
-            }
-            .toolbar {
-                keyboardToolbar
-            }
+            nameSection
             
-            Section {
-                CustomColorSelector(colorSelected: $colorSelected, colorSelectedDescription: $colorSelectedDescription)
-            }
+            colorSection
             
-            Section {
-                Button("Save") {
-                    cdm.editCategory(category, name: name, color: colorSelectedDescription)
-                    dismiss.toggle()
-                }
-                .font(.body.bold())
-                .disabled(name.isEmpty || colorSelectedDescription.isEmpty)
-            }
+            saveSection
             
-            Section {
-                if let spendings = category.spendings?.allObjects as? [SpendingEntity], !spendings.isEmpty {
-                    ForEach(spendings.sorted { $0.wrappedDate > $1.wrappedDate }) { spending in
-                        HStack {
-                            VStack(alignment: .leading, spacing: 5) {
-                                if let place = spending.place, !place.isEmpty {
-                                    Text(spending.categoryName)
-                                        .font(.caption)
-                                        .foregroundColor(Color.secondary)
-                                    
-                                    Text(place)
-                                        .foregroundColor(.primary)
-                                } else {
-                                    Text(spending.categoryName)
-                                        .foregroundColor(.primary)
-                                }
-                            }
-                            
-                            Spacer()
-                            
-                            VStack(alignment: .trailing, spacing: 5) {
-                                Text(dateFormatter.string(from: spending.wrappedDate))
-                                    .font(.caption)
-                                    .foregroundColor(Color.secondary)
-                                
-                                Text("\((spending.amountWithReturns * -1.0).formatted(.currency(code: spending.wrappedCurrency)))")
-                                    .foregroundColor(.primary)
-                            }
-                        }
-                    }
-                } else {
-                    Text("No expenses")
-                }
-            } header: {
-                Text("Expenses")
-            }
+            spendingsSection
+        }
+        .toolbar {
+            keyboardToolbar
         }
     }
     
-    private var keyboardToolbar: ToolbarItem<Void, some View> {
-        ToolbarItem(placement: .keyboard) {
-            HStack {
-                Spacer()
-                
-                Button {
-                    nameIsFocused = false
-                } label: {
-                    Label("Hide keyboard", systemImage: "keyboard.chevron.compact.down")
-                }
+    private var nameSection: some View {
+        Section {
+            TextField("Enter name", text: $name)
+                .focused($nameIsFocused)
+        }
+    }
+    
+    private var colorSection: some View {
+        Section {
+            CustomColorSelector(colorSelected: $colorSelected, colorSelectedDescription: $colorSelectedDescription)
+        }
+    }
+    
+    private var saveSection: some View {
+        Section {
+            Button("Save") {
+                cdm.editCategory(category, name: name, color: colorSelectedDescription)
+                dismiss.toggle()
             }
+            .font(.body.bold())
+            .disabled(name.isEmpty || colorSelectedDescription.isEmpty)
+        }
+    }
+    
+    private var spendingsSection: some View {
+        Section {
+            if let spendings = category.spendings?.allObjects as? [SpendingEntity], !spendings.isEmpty {
+                let sortedSpendings: [SpendingEntity] = spendings.sorted { first, second in
+                    return first.wrappedDate > second.wrappedDate
+                }
+                
+                ForEach(sortedSpendings) { spending in
+                    spendingRow(spending)
+                }
+            } else {
+                Text("No expenses")
+            }
+        } header: {
+            Text("Expenses")
+        }
+    }
+    
+    private var keyboardToolbar: ToolbarItemGroup<some View> {
+        hideKeyboardToolbar {
+            clearFocus()
         }
     }
     
@@ -128,7 +114,37 @@ struct CategoryEditSubView: View {
         return formatter
     }
     
-    private func nameFocus() {
-        nameIsFocused = true
+    private func clearFocus() {
+        nameIsFocused = false
+    }
+    
+    private func spendingRow(_ spending: SpendingEntity) -> some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 5) {
+                if let place = spending.place, !place.isEmpty {
+                    Text(spending.categoryName)
+                        .font(.caption)
+                        .foregroundColor(Color.secondary)
+                    
+                    Text(place)
+                        .foregroundColor(.primary)
+                } else {
+                    Text(spending.categoryName)
+                        .foregroundColor(.primary)
+                }
+            }
+            
+            Spacer()
+            
+            VStack(alignment: .trailing, spacing: 5) {
+                Text(dateFormatter.string(from: spending.wrappedDate))
+                    .font(.caption)
+                    .foregroundColor(Color.secondary)
+                
+                Text("\((spending.amountWithReturns * -1.0).formatted(.currency(code: spending.wrappedCurrency)))")
+                    .foregroundColor(.primary)
+            }
+        }
+        .normalizePadding()
     }
 }

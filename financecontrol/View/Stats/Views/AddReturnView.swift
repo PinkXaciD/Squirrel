@@ -22,7 +22,7 @@ struct AddReturnView: View {
     
     var body: some View {
         NavigationView {
-            Form {
+            List {
                 mainSection
                 
                 addFullButton
@@ -34,11 +34,20 @@ struct AddReturnView: View {
                 
                 trailingToolbar
             }
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
     
     private var header: some View {
         VStack(alignment: .center, spacing: 8) {
+            if vm.currency != spending.wrappedCurrency {
+                Text(vm.doubleAmount.formatted(.currency(code: spending.wrappedCurrency)))
+                    .font(.system(.title, design: .rounded).bold())
+                    .opacity(0.8)
+                    .transition(.opacity)
+                    .padding(.bottom, 20)
+            }
+            
             TextField("Amount", text: $vm.amount)
                 .focused($focusedField, equals: .amount)
                 .numbersOnly($filterAmount)
@@ -52,9 +61,14 @@ struct AddReturnView: View {
                 .onChange(of: filterAmount) { newValue in   ///
                     vm.amount = newValue                    ///
                 }
+            
+            CurrencySelector(currency: $vm.currency, showFavorites: false, spacer: false)
+                .font(.body)
         }
-        .listRowInsets(.init(top: 25, leading: 20, bottom: 25, trailing: 20))
         .textCase(nil)
+        .foregroundColor(.accentColor)
+        .frame(maxWidth: .infinity)
+        .listRowInsets(.init(top: 10, leading: 0, bottom: 40, trailing: 0))
     }
     
     private var mainSection: some View {
@@ -105,13 +119,8 @@ struct AddReturnView: View {
     }
     
     private var keyboardToolbar: ToolbarItemGroup<some View> {
-        ToolbarItemGroup(placement: .keyboard) {
-            Spacer()
-            
-            Button(action: clearFocus) {
-                Label("Hide keyboard", systemImage: "keyboard.chevron.compact.down")
-                    .labelStyle(.iconOnly)
-            }
+        hideKeyboardToolbar {
+            clearFocus()
         }
     }
 }

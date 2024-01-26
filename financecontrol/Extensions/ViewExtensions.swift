@@ -143,7 +143,6 @@ fileprivate struct SpendingPlaceTextFieldStyleModifier: ViewModifier {
             .multilineTextAlignment(.center)
             .overlay(overlay)
             .clipShape(RoundedRectangle(cornerRadius: 10))
-            .padding(.horizontal, -20)
     }
     
     private var overlay: some View {
@@ -159,7 +158,6 @@ fileprivate struct SpendingAmountTextFieldStyleModifier: ViewModifier {
             .multilineTextAlignment(.center)
             .overlay(overlay)
             .clipShape(RoundedRectangle(cornerRadius: 10))
-            .padding(.horizontal, -20)
             .keyboardType(.decimalPad)
     }
     
