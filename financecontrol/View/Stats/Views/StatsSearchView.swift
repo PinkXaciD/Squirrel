@@ -14,7 +14,7 @@ struct StatsSearchView: View {
     private var cdm: CoreDataModel
     
     var body: some View {
-        StatsView(search: $searchText)
+        StatsView(search: $searchText, cdm: cdm)
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search by place or comment")
     }
 }

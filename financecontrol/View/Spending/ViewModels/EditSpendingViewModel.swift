@@ -61,7 +61,7 @@ final class EditSpendingViewModel: SpendingViewModel {
     #endif
     
     func done() {
-        if let doubleAmount = Double(amount) {
+        if let doubleAmount = Double(amount.replacingOccurrences(of: ",", with: ".")) {
             var spending: SpendingEntityLocal = .init(
                 amountUSD: 0,
                 amount: doubleAmount, 

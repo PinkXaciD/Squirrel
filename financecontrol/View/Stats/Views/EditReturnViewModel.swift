@@ -32,9 +32,9 @@ final class EditReturnViewModel: ViewModel {
     
     var doubleAmount: Double {
         if currency == spending?.wrappedCurrency {
-            return Double(amount) ?? 0
+            return Double(amount.replacingOccurrences(of: ",", with: ".")) ?? 0
         } else {
-            let doubleAmount = Double(amount) ?? 0
+            let doubleAmount = Double(amount.replacingOccurrences(of: ",", with: ".")) ?? 0
             
             return round(doubleAmount / (rvm.rates[currency] ?? 1) * (rvm.rates[spending?.wrappedCurrency ?? "USD"] ?? 1) * 100) / 100
         }
@@ -68,7 +68,7 @@ final class EditReturnViewModel: ViewModel {
     func validate() -> Bool {
         guard
             !amount.isEmpty,
-            let doubleAmount = Double(amount),
+            let doubleAmount = Double(amount.replacingOccurrences(of: ",", with: ".")),
             doubleAmount != 0,
             let spending = self.spending,
             doubleAmount <= (spending.amountWithReturns + oldAmount)

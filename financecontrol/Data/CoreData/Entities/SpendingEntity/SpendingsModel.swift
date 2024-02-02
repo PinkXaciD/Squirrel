@@ -6,6 +6,9 @@
 //
 
 import CoreData
+#if DEBUG
+import OSLog
+#endif
 
 extension CoreDataModel {
     func fetchSpendings() {
@@ -75,6 +78,8 @@ extension CoreDataModel {
             manager.save()
             fetchSpendings()
             
+            updateCharts = true
+            
             if Calendar.current.isDateInToday(spending.date) {
                 passSpendingsToSumWidget()
             }
@@ -96,6 +101,8 @@ extension CoreDataModel {
         manager.save()
         fetchSpendings()
         
+        updateCharts = true
+        
         if Calendar.current.isDateInToday(newSpending.date) {
             passSpendingsToSumWidget()
         }
@@ -106,6 +113,8 @@ extension CoreDataModel {
         context.delete(spending)
         manager.save()
         fetchSpendings()
+        
+        updateCharts = true
         
         if Calendar.current.isDateInToday(date) {
             passSpendingsToSumWidget()
@@ -214,57 +223,47 @@ extension CoreDataModel {
     func getChartData(isMinimized: Bool = true) -> [ChartData] {
         let currentCalendar = Calendar.current
         
-        var spendings: [SpendingEntity] = []
         var chartData: [ChartData] = []
-        do {
-            spendings = try getSpendings()
-        } catch {
-            ErrorType(error: error).publish()
-        }
         
-        let firstSpendingDate: Date = spendings.last?.date ?? .now
+        let firstSpendingDate: Date = savedSpendings.last?.date?.getFirstDayOfMonth() ?? .now
         
-        let interval = Calendar.current.dateComponents([.month], from: firstSpendingDate, to: .now).month ?? 1
+        let interval = 0...(Calendar.current.dateComponents([.month], from: firstSpendingDate, to: .now).month ?? 1)
         
-        for index in 0...interval {
+        for index in interval {
             let date = currentCalendar.date(byAdding: .month, value: -index, to: .now) ?? .now
             chartData.append(ChartData(date: date, id: -index, withOther: isMinimized, cdm: self))
         }
         
-        return chartData.reversed()
+        #if DEBUG
+        let fileName = #fileID
+        let function = #function
+        let logger = Logger(subsystem: Vars.appIdentifier, category: fileName)
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .full
+        logger.log("\(function) called \nAt \(formatter.string(from: Date()))")
+        #endif
+        
+        return chartData
     }
     
     // MARK: Operations for list
     func operationsForList() -> StatsListData {
         var result: StatsListData = [:]
         
-        func dateFormatForList(_ date: Date) -> String {
-            if Calendar.current.isDateInToday(date) {
-                return NSLocalizedString("Today", comment: "")
-            } else if Calendar.current.isDate(date, inSameDayAs: .now.previousDay) {
-                return NSLocalizedString("Yesterday", comment: "")
-            } else {
-                let dateFormatter: DateFormatter = .init()
-                dateFormatter.dateStyle = .long
-                dateFormatter.timeStyle = .none
-                
-                return dateFormatter.string(from: date)
-            }
-        }
-        
         for spending in savedSpendings {
-            let dateString = dateFormatForList(spending.wrappedDate)
-            var existingData = result[dateString] ?? []
+            let day = Calendar.current.startOfDay(for: spending.wrappedDate)
+            var existingData = result[day] ?? []
             existingData.append(spending)
             
-            result.updateValue(existingData, forKey: dateString)
+            result.updateValue(existingData, forKey: day)
         }
         
         return result
     }
 }
 
-typealias StatsListData = [String:[SpendingEntity]]
+typealias StatsListData = [Date:[SpendingEntity]]
 
 struct ChartData: Identifiable {
     let id: Int
@@ -282,65 +281,66 @@ struct ChartData: Identifiable {
         self.id = id
         
         var tempCategories: [UUID:CategoryEntityLocal] = [:]
-        let predicate = NSPredicate(format: "(date >= %@) AND (date < %@)", firstDate as CVarArg, secondDate as CVarArg)
+//        let predicate = NSPredicate(format: "(date >= %@) AND (date < %@)", firstDate as CVarArg, secondDate as CVarArg)
+        let dateRange = firstDate..<secondDate
         
-        if let spendings = try? cdm.getSpendings(predicate: predicate) {
-            for spending in spendings {
-                guard
-                    let category = spending.category,
-                    let catId = category.id,
-                    let categoryName = category.color,
-                    let categoryColor = category.color
-                else {
-                    continue
-                }
-                        
-                if let existing = tempCategories[catId] {
-                    let localSpending = SpendingEntityLocal(
-                        amountUSD: spending.amountUSD,
-                        amount: spending.amount,
-                        amountWithReturns: spending.amountWithReturns,
-                        amountUSDWithReturns: spending.amountUSDWithReturns,
-                        comment: spending.comment ?? "",
-                        currency: spending.wrappedCurrency,
-                        date: spending.wrappedDate,
-                        place: spending.place ?? "",
-                        categoryId: catId
-                    )
+        let spendings = cdm.savedSpendings.filter { dateRange.contains($0.wrappedDate) }
+        
+        for spending in spendings {
+            guard
+                let category = spending.category,
+                let catId = category.id,
+                let categoryName = category.color,
+                let categoryColor = category.color
+            else {
+                continue
+            }
                     
-                    var catSpendings: [SpendingEntityLocal] = existing.spendings
-                    catSpendings.append(localSpending)
-                    let updatedCategory = CategoryEntityLocal(
-                        color: existing.color,
-                        id: existing.id,
-                        name: existing.name,
-                        spendings: catSpendings
-                    )
-                    
-                    tempCategories.updateValue(updatedCategory, forKey: catId)
-                    
-                } else {
-                    let localSpending = SpendingEntityLocal(
-                        amountUSD: spending.amountUSD,
-                        amount: spending.amount, 
-                        amountWithReturns: spending.amountWithReturns, 
-                        amountUSDWithReturns: spending.amountUSDWithReturns,
-                        comment: spending.comment ?? "",
-                        currency: spending.wrappedCurrency,
-                        date: spending.wrappedDate,
-                        place: spending.place ?? "",
-                        categoryId: catId
-                    )
-                    
-                    let updatedCategory = CategoryEntityLocal(
-                        color: categoryColor,
-                        id: catId,
-                        name: categoryName,
-                        spendings: [localSpending]
-                    )
-                    
-                    tempCategories.updateValue(updatedCategory, forKey: catId)
-                }
+            if let existing = tempCategories[catId] {
+                let localSpending = SpendingEntityLocal(
+                    amountUSD: spending.amountUSD,
+                    amount: spending.amount,
+                    amountWithReturns: spending.amountWithReturns,
+                    amountUSDWithReturns: spending.amountUSDWithReturns,
+                    comment: spending.comment ?? "",
+                    currency: spending.wrappedCurrency,
+                    date: spending.wrappedDate,
+                    place: spending.place ?? "",
+                    categoryId: catId
+                )
+                
+                var catSpendings: [SpendingEntityLocal] = existing.spendings
+                catSpendings.append(localSpending)
+                let updatedCategory = CategoryEntityLocal(
+                    color: existing.color,
+                    id: existing.id,
+                    name: existing.name,
+                    spendings: catSpendings
+                )
+                
+                tempCategories.updateValue(updatedCategory, forKey: catId)
+                
+            } else {
+                let localSpending = SpendingEntityLocal(
+                    amountUSD: spending.amountUSD,
+                    amount: spending.amount,
+                    amountWithReturns: spending.amountWithReturns,
+                    amountUSDWithReturns: spending.amountUSDWithReturns,
+                    comment: spending.comment ?? "",
+                    currency: spending.wrappedCurrency,
+                    date: spending.wrappedDate,
+                    place: spending.place ?? "",
+                    categoryId: catId
+                )
+                
+                let updatedCategory = CategoryEntityLocal(
+                    color: categoryColor,
+                    id: catId,
+                    name: categoryName,
+                    spendings: [localSpending]
+                )
+                
+                tempCategories.updateValue(updatedCategory, forKey: catId)
             }
         }
         

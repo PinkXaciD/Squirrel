@@ -11,7 +11,9 @@ import OSLog
 #endif
 
 func launch() -> Void {
+    #if DEBUG
     let logger = Logger(subsystem: Vars.appIdentifier, category: "Launch Actions")
+    #endif
     let dateFormatter = ISO8601DateFormatter()
     dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
     dateFormatter.timeZone = .init(identifier: "GMT")

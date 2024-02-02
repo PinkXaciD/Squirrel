@@ -19,8 +19,8 @@ struct InputUtils {
     }
     
     func amountCheck(amount: String) -> Bool {
-        guard 
-            let doubleAmount = Double(amount),
+        guard
+            let doubleAmount = Double(amount.replacingOccurrences(of: ",", with: ".")),
             doubleAmount < Double.greatestFiniteMagnitude,
             doubleAmount > 0
         else {

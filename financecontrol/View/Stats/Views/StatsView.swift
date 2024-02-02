@@ -6,6 +6,9 @@
 //
 
 import SwiftUI
+#if DEBUG
+import OSLog
+#endif
 
 struct StatsView: View {
     @Environment(\.isSearching)
@@ -16,6 +19,8 @@ struct StatsView: View {
     private var rvm: RatesViewModel
     @AppStorage("color")
     private var tint: String = "Orange"
+    @StateObject
+    var lpvvm: PieChartLazyPageViewViewModel
     
     @State
     var entityToEdit: SpendingEntity? = nil
@@ -26,8 +31,6 @@ struct StatsView: View {
     
 // MARK: Filters
     
-    @State
-    private var selectedMonth: Int = 0
     @State
     private var showFilters: Bool = false
     
@@ -46,57 +49,45 @@ struct StatsView: View {
     
     private var sheetFraction: CGFloat = 0.7
     
-    private var size: CGFloat {
-        let currentScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
-        let width = currentScene?.windows.first(where: { $0.isKeyWindow })?.bounds.width ?? UIScreen.main.bounds.width
-        let height = currentScene?.windows.first(where: { $0.isKeyWindow })?.bounds.height ?? UIScreen.main.bounds.height
-        return width > height ? (height / 1.7) : (width / 1.7)
-    }
+    private var size: CGFloat
+    
+    #if DEBUG
+    let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
+    #endif
     
     var body: some View {
-        let listData: StatsListData = getListData()
-        let operationsInMonth: [CategoryEntityLocal] = cdm.operationsInMonth(.now.getFirstDayOfMonth(selectedMonth))
-        let newChartData: [ChartData] = cdm.getChartData()
-        
         NavigationView {
             List {
                 if search.isEmpty && !isSearching {
                     PieChartView(
-                        selectedMonth: $selectedMonth,
                         filterCategories: $filterCategories,
                         applyFilers: $applyFilters,
-                        size: size,
-                        operationsInMonth: operationsInMonth,
-                        chartData: newChartData
+                        size: size
                     )
+                    .environmentObject(lpvvm)
                 }
                 
-                if !listData.isEmpty {
-                    ForEach(Array(listData.keys).sorted { keySort($0, $1) }, id: \.self) { sectionKey in
-                        if let sectionData = listData[sectionKey] {
-                            Section {
-                                ForEach(sectionData) { spending in
-                                    StatsRow(
-                                        entity: spending,
-                                        entityToEdit: $entityToEdit,
-                                        entityToAddReturn: $entityToAddReturn,
-                                        edit: $edit
-                                    )
-                                    .normalizePadding()
-                                }
-                            } header: {
-                                Text(sectionKey)
-                                    .textCase(nil)
-                                    .font(.subheadline.bold())
-                            }
-                        }
-                    }
-                } else {
-                    noResults
-                }
+                StatsListView(
+                    entityToEdit: $entityToEdit,
+                    entityToAddReturn: $entityToAddReturn,
+                    edit: $edit,
+                    search: $search,
+                    applyFilters: $applyFilters,
+                    startFilterDate: $startFilterDate,
+                    endFilterDate: $endFilterDate,
+                    filterCategories: $filterCategories
+                )
             }
-            .onChange(of: selectedMonth) {
-                onChangeFunc($0)
+            .onChange(of: lpvvm.selection) { newValue in
+                #if DEBUG
+                logger.log("\(#fileID) \(#function) updated with \(newValue) value")
+                let startDate: Date = Date()
+                
+                defer {
+                    logger.log("\(#fileID) \(#function) updated within \(Date().timeIntervalSince(startDate)) seconds")
+                }
+                #endif
+                onChangeFunc(-newValue)
             }
             .toolbar {
                 toolbar
@@ -151,20 +142,192 @@ struct StatsView: View {
         )
     }
     
-    private var noResults: some View {
-        HStack {
-            Spacer()
-            Text("No results")
-                .font(.body.bold())
-                .padding()
-            Spacer()
+    
+}
+
+extension StatsView {
+    init(search: Binding<String>, cdm: CoreDataModel) {
+        self._search = search
+        
+        var size: CGFloat {
+            let currentScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+            let width = currentScene?.windows.first(where: { $0.isKeyWindow })?.bounds.width ?? UIScreen.main.bounds.width
+            let height = currentScene?.windows.first(where: { $0.isKeyWindow })?.bounds.height ?? UIScreen.main.bounds.height
+            return width > height ? (height / 1.7) : (width / 1.7)
+        }
+        
+        self.size = size
+        self._lpvvm = .init(wrappedValue: .init(contentSize: size, cdm: cdm))
+    }
+    
+    private func searchFunc(_ data: StatsListData) -> StatsListData {
+        if !search.isEmpty {
+            let trimmedSearch = search.trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            let result = data.mapValues { entities in
+                entities.filter { entity in
+                    entity.place?.localizedCaseInsensitiveContains(trimmedSearch) ?? false
+                    ||
+                    entity.comment?.localizedCaseInsensitiveContains(trimmedSearch) ?? false
+                }
+            }
+            .filter { !$0.value.isEmpty }
+            
+            return result
+        } else {
+            return data
+        }
+    }
+    
+    private func filterFunc(_ data: StatsListData) -> StatsListData {
+        if applyFilters {
+            let result = data.mapValues { entities in
+                entities.filter { entity in
+                    var filter: Bool = true
+                    
+                    if !filterCategories.isEmpty, let category = entity.category {
+                        filter = filterCategories.contains(category)
+                    }
+                    
+                    if filter {
+                        filter = entity.wrappedDate >= startFilterDate && entity.wrappedDate <= endFilterDate
+                    }
+                    
+                    return filter
+                }
+            }
+            .filter { !$0.value.isEmpty }
+            
+            return result
+        } else {
+            return data
+        }
+    }
+    
+    private func onChangeFunc(_ value: Int) {
+        #if DEBUG
+        let startDate: Date = Date()
+        
+        defer {
+            logger.log("\(#fileID) \(#function) completed within \(Date().timeIntervalSince(startDate)) seconds")
+        }
+        #endif
+        
+        if value == 0 {
+            if filterCategories.isEmpty {
+                applyFilters = false
+            }
+            startFilterDate = .now.getFirstDayOfMonth()
+            endFilterDate = .now
+        } else {
+            startFilterDate = .now.getFirstDayOfMonth(value)
+            endFilterDate = .now.getFirstDayOfMonth(value + 1)
+            applyFilters = true
+        }
+        
+        HapticManager.shared.impact(.soft)
+    }
+    
+    private func clearFilters() {
+        #if DEBUG
+        let startDate: Date = Date()
+        
+        defer {
+            logger.log("\(#fileID) \(#function) completed within \(Date().timeIntervalSince(startDate)) seconds")
+        }
+        #endif
+        
+        withAnimation {
+            applyFilters = false
+            startFilterDate = .now.getFirstDayOfMonth()
+            endFilterDate = .now
+            filterCategories = []
         }
     }
 }
 
-extension StatsView {
-    init(search: Binding<String>) {
-        self._search = search
+struct StatsListView: View {
+    @EnvironmentObject private var cdm: CoreDataModel
+    
+    @Binding var entityToEdit: SpendingEntity?
+    @Binding var entityToAddReturn: SpendingEntity?
+    @Binding var edit: Bool
+    
+    @Binding var search: String
+    @Binding var applyFilters: Bool
+    @Binding var startFilterDate: Date
+    @Binding var endFilterDate: Date
+    @Binding var filterCategories: [CategoryEntity]
+    
+    var body: some View {
+        let listData: StatsListData = getListData()
+        
+        if !listData.isEmpty {
+            ForEach(Array(listData.keys).sorted(by: >), id: \.self) { sectionKey in
+                if let sectionData = listData[sectionKey] {
+                    Section {
+                        ForEach(sectionData) { spending in
+                            StatsRow(
+                                entity: spending,
+                                entityToEdit: $entityToEdit,
+                                entityToAddReturn: $entityToAddReturn,
+                                edit: $edit
+                            )
+                            .normalizePadding()
+                        }
+                    } header: {
+                        Text(dateFormatForList(sectionKey))
+                            .textCase(nil)
+                            .font(.subheadline.bold())
+                    }
+                }
+            }
+        } else {
+            noResults
+        }
+    }
+    
+    private var noResults: some View {
+        Section {
+            HStack {
+                Spacer()
+                Text("No results")
+                    .font(.body.bold())
+                    .padding()
+                Spacer()
+            }
+        }
+    }
+    
+    private func dateFormatForList(_ date: Date) -> String {
+        if Calendar.current.isDateInToday(date) {
+            return NSLocalizedString("Today", comment: "")
+        } else if Calendar.current.isDate(date, inSameDayAs: .now.previousDay) {
+            return NSLocalizedString("Yesterday", comment: "")
+        } else {
+            let dateFormatter: DateFormatter = .init()
+            dateFormatter.dateStyle = .long
+            dateFormatter.timeStyle = .none
+            
+            return dateFormatter.string(from: date)
+        }
+    }
+    
+    private func keySort(_ value1: String, _ value2: String) -> Bool {
+        func dateFormatter(_ value: String) -> Date {
+            if value == NSLocalizedString("Today", comment: "") {
+                return .now
+            } else if value == NSLocalizedString("Yesterday", comment: "") {
+                return .now.previousDay
+            } else {
+                let formatter = DateFormatter()
+                formatter.dateStyle = .long
+                formatter.timeStyle = .none
+                return formatter.date(from: value) ?? .distantPast
+            }
+        }
+        
+        return dateFormatter(value1) > dateFormatter(value2)
     }
     
     private func getListData() -> StatsListData {
@@ -220,53 +383,11 @@ extension StatsView {
             return data
         }
     }
-    
-    private func keySort(_ value1: String, _ value2: String) -> Bool {
-        func dateFormatter(_ value: String) -> Date {
-            if value == NSLocalizedString("Today", comment: "") {
-                return .now
-            } else if value == NSLocalizedString("Yesterday", comment: "") {
-                return .now.previousDay
-            } else {
-                let formatter = DateFormatter()
-                formatter.dateStyle = .long
-                formatter.timeStyle = .none
-                return formatter.date(from: value) ?? .distantPast
-            }
-        }
-        
-        return dateFormatter(value1) > dateFormatter(value2)
-    }
-    
-    private func onChangeFunc(_ value: Int) {
-        if value == 0 {
-            if filterCategories.isEmpty {
-                applyFilters = false
-            }
-            startFilterDate = .now.getFirstDayOfMonth()
-            endFilterDate = .now
-        } else {
-            startFilterDate = .now.getFirstDayOfMonth(value)
-            endFilterDate = .now.getFirstDayOfMonth(value + 1)
-            applyFilters = true
-        }
-        
-        HapticManager.shared.impact(.soft)
-    }
-    
-    private func clearFilters() {
-        withAnimation {
-            applyFilters = false
-            startFilterDate = .now.getFirstDayOfMonth()
-            endFilterDate = .now
-            filterCategories = []
-        }
-    }
 }
 
 struct StatsView_Previews: PreviewProvider {
     static var previews: some View {
-        StatsView(search: .constant(""))
+        StatsView(search: .constant(""), cdm: .init())
             .environmentObject(CoreDataModel())
     }
 }
