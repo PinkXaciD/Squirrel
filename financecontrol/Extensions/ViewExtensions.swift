@@ -103,6 +103,11 @@ extension View {
         return self
             .modifier(IOS15Padding())
     }
+    
+    func invertLayoutDirection() -> some View {
+        return self
+            .modifier(InvertLayoutDirectionModifier())
+    }
 }
 
 extension Text {
@@ -164,5 +169,17 @@ fileprivate struct SpendingAmountTextFieldStyleModifier: ViewModifier {
     private var overlay: some View {
         RoundedRectangle(cornerRadius: 10)
             .stroke(Color(uiColor: UIColor.secondarySystemGroupedBackground), lineWidth: 1)
+    }
+}
+
+fileprivate struct InvertLayoutDirectionModifier: ViewModifier {
+    @Environment(\.layoutDirection) private var layoutDirection
+    
+    func body(content: Content) -> some View {
+        if layoutDirection == .leftToRight {
+            return content.environment(\.layoutDirection, .rightToLeft)
+        } else {
+            return content.environment(\.layoutDirection, .leftToRight)
+        }
     }
 }

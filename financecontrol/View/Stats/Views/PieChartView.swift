@@ -6,24 +6,21 @@
 //
 
 import SwiftUI
-import ApplePie
 
 struct PieChartView: View {
     @EnvironmentObject 
     private var cdm: CoreDataModel
     @EnvironmentObject
     private var rvm: RatesViewModel
+    @EnvironmentObject
+    private var lpvvm: PieChartLazyPageViewViewModel
     
-    @Binding
-    var selectedMonth: Int
     @Binding
     var filterCategories: [CategoryEntity]
     @Binding
     var applyFilters: Bool
     
     let size: CGFloat
-    let operationsInMonth: [CategoryEntityLocal]
-    var chartData: [ChartData]
     
     @AppStorage("defaultCurrency")
     var defaultCurrency: String = "USD"
@@ -35,147 +32,36 @@ struct PieChartView: View {
         Section {
             chart
             
-            if !operationsInMonth.isEmpty && showLegend {
+            if showLegend {
                 legend
             }
         } footer: {
-            if !operationsInMonth.isEmpty {
-                expandButton
-            }
+            expandButton
         }
     }
     
     private var chart: some View {
-        HStack {
-            /// Divider fix
-            if #available(iOS 16.0, *) {
-                Text(verbatim: "")
-            }
-            
-            previousButton
-            
-            Spacer()
-
-            ZStack {
-                APChart(
-                    size: .init(width: size, height: size),
-                    separators: 0.3,
-                    innerRadius: 0.73,
-                    data: setData(operationsInMonth)
-                )
-                .padding(.horizontal)
-                
-                CenterChartView(
-                    selectedMonth: Calendar.current.date(byAdding: .month, value: selectedMonth, to: .now) ?? .now,
-                    width: size,
-                    operationsInMonth: operationsInMonth
-                )
-            }
+        
+        PieChartLazyPageView<PieChartCompleteView<CenterChartView>>(viewSize: size)
             .frame(height: size * 1.1)
-            
-            Spacer()
-            
-            nextButton
-            
-            /// Divider fix
-            if #available(iOS 16.0, *) {
-                Text(verbatim: "")
-            }
-        }
-        .gesture(
-            DragGesture().onEnded { value in
-                guard abs(value.translation.width) > abs(value.translation.height) else {
-                    return
-                }
-                
-                if value.translation.width > 0 && selectedMonth > ((chartData.count) * -1) {
-                    decreaseMonth()
-                } else if value.translation.width < 0 && selectedMonth < 0 {
-                    increaseMonth()
+            .invertLayoutDirection()
+            .listRowInsets(.init(top: 20, leading: 0, bottom: 20, trailing: 0))
+            .onAppear {
+                if cdm.updateCharts {
+                    lpvvm.updateData()
+                    cdm.updateCharts = false
                 }
             }
-        )
-    }
-    
-    private var previousButton: some View {
-        Button {
-            decreaseMonth()
-        } label: {
-            Label("Previous month", systemImage: "chevron.backward")
-                .foregroundColor(.accentColor)
-                .labelStyle(.iconOnly)
-                .font(.title)
-        }
-        .buttonStyle(.plain)
-        .disabled(selectedMonth <= ((chartData.count * -1)))
-    }
-    
-    private var nextButton: some View {
-        Button {
-            increaseMonth()
-        } label: {
-            Label("Next month", systemImage: "chevron.forward")
-                .foregroundColor(.accentColor)
-                .labelStyle(.iconOnly)
-                .font(.title)
-        }
-        .buttonStyle(.plain)
-        .disabled(selectedMonth >= 0)
+            .onChange(of: cdm.updateCharts) { newValue in
+                if newValue {
+                    lpvvm.updateData()
+                    cdm.updateCharts = false
+                }
+            }
     }
     
     private var legend: some View {
-        let operationsInMonthSorted = operationsInMonth.sorted { first, second in
-            var firstSum: Double = 0
-            var secondSum: Double = 0
-            for spending in first.spendings {
-                firstSum += spending.amountUSDWithReturns
-            }
-            for spending in second.spendings {
-                secondSum += spending.amountUSDWithReturns
-            }
-            return firstSum > secondSum
-        }
-        
-        return HStack {
-            LazyVStack (alignment: .leading, spacing: 10) {
-                ForEach(operationsInMonthSorted) { category in
-                    let amount: Double = countCategorySpendings(category)
-                    
-                    HStack {
-                        Text(category.name)
-                            .font(.system(size: 14).bold())
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 3)
-                            .foregroundColor(.white)
-                            .background {
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(Color[category.color])
-                            }
-                        
-                        Text(amount.formatted(.currency(code: defaultCurrency)))
-                    }
-                    .padding(.vertical, 3)
-                    .padding(.trailing, 6)
-                    .padding(.leading, 3)
-                    .background {
-                        RoundedRectangle(cornerRadius: 7)
-                            .fill(Color[category.color])
-                            .opacity(0.3)
-                    }
-                    .id(UUID())
-                    .onTapGesture {
-                        if let category = cdm.findCategory(category.id) {
-                            withAnimation {
-                                addToFilter(category)
-                            }
-                        }
-                    }
-                    .grayscale((isFiltered(category) || filterCategories.isEmpty) ? 0 : 1)
-                }
-            }
-            Spacer()
-        }
-        .font(.system(size: 14))
+        PieChartLegendView(filterCategories: $filterCategories, applyFilters: $applyFilters)
     }
     
     private var expandButton: some View {
@@ -197,74 +83,14 @@ struct PieChartView: View {
 }
 
 extension PieChartView {
-    internal init(selectedMonth: Binding<Int>, filterCategories: Binding<[CategoryEntity]>, applyFilers: Binding<Bool>, size: CGFloat, operationsInMonth: [CategoryEntityLocal], chartData: [ChartData]) {
-        self._selectedMonth = selectedMonth
+    internal init(
+        filterCategories: Binding<[CategoryEntity]>,
+        applyFilers: Binding<Bool>,
+        size: CGFloat
+    ) {
         self._filterCategories = filterCategories
         self._applyFilters = applyFilers
         self.size = size
-        self.operationsInMonth = operationsInMonth
-        self.chartData = chartData
-    }
-    
-    private func setData(_ operations: [CategoryEntityLocal]) -> [APChartSectorData] {
-        let result = operations.map { element in
-            let value = element.spendings.map { $0.amountUSDWithReturns }.reduce(0, +)
-            return APChartSectorData(
-                value,
-                Color[element.color],
-                id: element.id
-            )
-        }
-        
-        return result.compactMap { $0 }.filter { $0.value != 0 }.sorted(by: >)
-    }
-    
-    private func countCategorySpendings(_ category: CategoryEntityLocal) -> Double {
-        let defaultCurrencyValue = rvm.rates[defaultCurrency] ?? 1
-        var result: Double = 0
-        for spending in category.spendings {
-            if spending.currency == defaultCurrency {
-                result += spending.amountWithReturns
-            } else {
-                result += (spending.amountUSDWithReturns * defaultCurrencyValue)
-            }
-        }
-        return result
-    }
-    
-    private func increaseMonth() -> Void {
-        withAnimation {
-            selectedMonth += 1
-        }
-    }
-    
-    private func decreaseMonth() -> Void {
-        withAnimation {
-            selectedMonth -= 1
-        }
-    }
-    
-    private func addToFilter(_ category: CategoryEntity) {
-        if !filterCategories.contains(category) {
-            filterCategories.append(category)
-            applyFilters = true
-        } else {
-            guard let index: Int = filterCategories.firstIndex(of: category) else {
-                return
-            }
-            filterCategories.remove(at: index)
-            if filterCategories.isEmpty && selectedMonth == 0 {
-                applyFilters = false
-            }
-        }
-    }
-    
-    private func isFiltered(_ localCategory: CategoryEntityLocal) -> Bool {
-        if let category = cdm.findCategory(localCategory.id) {
-            return filterCategories.contains(category)
-        } else {
-            return false
-        }
     }
 }
 

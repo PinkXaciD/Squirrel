@@ -29,9 +29,9 @@ final class AddReturnViewModel: ViewModel {
     
     var doubleAmount: Double {
         if currency == spending.wrappedCurrency {
-            return Double(amount) ?? 0
+            return Double(amount.replacingOccurrences(of: ",", with: ".")) ?? 0
         } else {
-            let doubleAmount = Double(amount) ?? 0
+            let doubleAmount = Double(amount.replacingOccurrences(of: ",", with: ".")) ?? 0
             
             return round(doubleAmount / (rvm.rates[currency] ?? 1) * (rvm.rates[spending.wrappedCurrency] ?? 1) * 100) / 100
         }

@@ -28,6 +28,8 @@ final class CoreDataModel: ObservableObject {
     var shadowedCategories: [CategoryEntity] = []
     @Published
     var savedCurrencies: [CurrencyEntity] = []
+    @Published
+    var updateCharts: Bool = false
 }
 
 extension CoreDataModel {
