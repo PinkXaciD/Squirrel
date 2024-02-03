@@ -19,12 +19,6 @@ struct financecontrolApp: App {
         WindowGroup {
             ContentView(addExpenseAction: $addExpenseAction)
                 .onOpenURL { url in
-                    guard 
-                        url.scheme == "financecontrol"
-                    else {
-                        return
-                    }
-                    
                     if url == URLS.addExpenseAction {
                         addExpenseAction = true
                     }

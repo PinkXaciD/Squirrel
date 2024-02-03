@@ -8,13 +8,13 @@
 import Foundation
 
 struct Vars {
-    static let groupName: String = "group.financecontrol"
+    static let groupName: String = "group.dev.squirrelapp.squirrel"
     
-    static let appIdentifier: String = "com.pinkxacid.financecontrol"
+    static let appIdentifier: String = "dev.squirrelapp.squirrel"
     
-    static let widgetIdentifier: String = "com.pinkxacid.financecontrol.financecontrolWidget"
+    static let widgetIdentifier: String = "dev.squirrelapp.squirrel.squirrelWidget"
 }
 
 struct URLS {
-    static let addExpenseAction: URL! = .init(string: "financecontrol://addExpense")
+    static let addExpenseAction: URL! = .init(string: "squirrel://addExpense")
 }

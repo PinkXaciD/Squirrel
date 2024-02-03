@@ -84,7 +84,7 @@
 		8DAA0E242B48367D0076B81E /* financecontrolWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DAA0E232B48367D0076B81E /* financecontrolWidgetBundle.swift */; };
 		8DAA0E262B48367D0076B81E /* SmallSumWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DAA0E252B48367D0076B81E /* SmallSumWidget.swift */; };
 		8DAA0E282B48367E0076B81E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8DAA0E272B48367E0076B81E /* Assets.xcassets */; };
-		8DAA0E2C2B48367E0076B81E /* financecontrolWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8DAA0E1C2B48367D0076B81E /* financecontrolWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8DAA0E2C2B48367E0076B81E /* SquirrelWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8DAA0E1C2B48367D0076B81E /* SquirrelWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8DAFF8A62B39CEDD001D5A9D /* CoreDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DAFF8A52B39CEDD001D5A9D /* CoreDataModel.swift */; };
 		8DAFF8B82B39D274001D5A9D /* Colors.png in Resources */ = {isa = PBXBuildFile; fileRef = 8DAFF8B22B39D274001D5A9D /* Colors.png */; };
 		8DAFF8B92B39D274001D5A9D /* Currencies.png in Resources */ = {isa = PBXBuildFile; fileRef = 8DAFF8B32B39D274001D5A9D /* Currencies.png */; };
@@ -113,9 +113,9 @@
 		8DCB302B2A971C2F00DC9ABB /* OtherExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCB302A2A971C2F00DC9ABB /* OtherExtensions.swift */; };
 		8DCB302D2A97314400DC9ABB /* StatsRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCB302C2A97314400DC9ABB /* StatsRow.swift */; };
 		8DCB302F2A97578F00DC9ABB /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCB302E2A97578F00DC9ABB /* ViewExtensions.swift */; };
+		8DCB60772B6E6FAA00B94872 /* ApplePie in Frameworks */ = {isa = PBXBuildFile; productRef = 8DCB60762B6E6FAA00B94872 /* ApplePie */; };
 		8DD5C38C2A603F4500FC862C /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD5C38B2A603F4500FC862C /* Formatters.swift */; };
 		8DD5C38F2A607F1C00FC862C /* CategorySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD5C38E2A607F1C00FC862C /* CategorySelector.swift */; };
-		8DDC9C422B5E834000D38709 /* ApplePie in Frameworks */ = {isa = PBXBuildFile; productRef = 8DDC9C412B5E834000D38709 /* ApplePie */; };
 		8DDFD4742A68249100493753 /* DefaultCurrencySelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DDFD4732A68249100493753 /* DefaultCurrencySelectorView.swift */; };
 		8DE29BA82A683F01002F5C42 /* AddCategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DE29BA72A683F01002F5C42 /* AddCategoryView.swift */; };
 		8DE48D122A72DA88008A2DD4 /* CategoriesEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DE48D112A72DA88008A2DD4 /* CategoriesEditView.swift */; };
@@ -153,7 +153,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				8DAA0E2C2B48367E0076B81E /* financecontrolWidgetExtension.appex in Embed Foundation Extensions */,
+				8DAA0E2C2B48367E0076B81E /* SquirrelWidgetExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -185,7 +185,7 @@
 		8D2240BC2B0F94B500D5572B /* ViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelProtocol.swift; sourceTree = "<group>"; };
 		8D2316F72AD3112F00CEE8C1 /* ErrorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorHandler.swift; sourceTree = "<group>"; };
 		8D28C7EF2A73DF7000F27CD4 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Colors.swift; path = financecontrol/Utils/Colors.swift; sourceTree = SOURCE_ROOT; };
-		8D292EF32B3D75DC00E69BA7 /* financecontrolTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = financecontrolTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D292EF32B3D75DC00E69BA7 /* SquirrelTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SquirrelTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D292EFC2B3D7E7F00E69BA7 /* FallbackRatesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FallbackRatesTests.swift; sourceTree = "<group>"; };
 		8D31CE5D2AD029EC00E8B74B /* APIURLComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIURLComponents.swift; sourceTree = "<group>"; };
 		8D35AC952B0E62DE0030F7DF /* AddSpendingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddSpendingViewModel.swift; sourceTree = "<group>"; };
@@ -234,7 +234,7 @@
 		8D9B50152AC2FCCD00C7732B /* RatesErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatesErrors.swift; sourceTree = "<group>"; };
 		8D9E22D72AE6A1BD00801932 /* CustomShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomShareSheet.swift; sourceTree = "<group>"; };
 		8D9F30E82B4D7C3E00A0B8C3 /* WidgetsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetsManager.swift; sourceTree = "<group>"; };
-		8DAA0E1C2B48367D0076B81E /* financecontrolWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = financecontrolWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		8DAA0E1C2B48367D0076B81E /* SquirrelWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SquirrelWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DAA0E1E2B48367D0076B81E /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		8DAA0E202B48367D0076B81E /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		8DAA0E232B48367D0076B81E /* financecontrolWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = financecontrolWidgetBundle.swift; sourceTree = "<group>"; };
@@ -258,7 +258,7 @@
 		8DBED4D22ADC37660031DBA8 /* CurrencyRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyRow.swift; sourceTree = "<group>"; };
 		8DBEF1322ADD5BB8005D683D /* NewCurrencyRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCurrencyRow.swift; sourceTree = "<group>"; };
 		8DBEF1342ADD6D4F005D683D /* CategoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryRow.swift; sourceTree = "<group>"; };
-		8DBFEBCA2A49ED4800165414 /* financecontrol.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = financecontrol.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8DBFEBCA2A49ED4800165414 /* Squirrel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Squirrel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DBFEBCD2A49ED4800165414 /* financecontrolApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = financecontrolApp.swift; sourceTree = "<group>"; };
 		8DBFEBCF2A49ED4800165414 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		8DBFEBD12A49ED4900165414 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -308,7 +308,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8DDC9C422B5E834000D38709 /* ApplePie in Frameworks */,
+				8DCB60772B6E6FAA00B94872 /* ApplePie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -711,9 +711,9 @@
 		8DBFEBCB2A49ED4800165414 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8DBFEBCA2A49ED4800165414 /* financecontrol.app */,
-				8D292EF32B3D75DC00E69BA7 /* financecontrolTests.xctest */,
-				8DAA0E1C2B48367D0076B81E /* financecontrolWidgetExtension.appex */,
+				8DBFEBCA2A49ED4800165414 /* Squirrel.app */,
+				8D292EF32B3D75DC00E69BA7 /* SquirrelTests.xctest */,
+				8DAA0E1C2B48367D0076B81E /* SquirrelWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -760,9 +760,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8D292EF22B3D75DC00E69BA7 /* financecontrolTests */ = {
+		8D292EF22B3D75DC00E69BA7 /* SquirrelTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8D292EF92B3D75DC00E69BA7 /* Build configuration list for PBXNativeTarget "financecontrolTests" */;
+			buildConfigurationList = 8D292EF92B3D75DC00E69BA7 /* Build configuration list for PBXNativeTarget "SquirrelTests" */;
 			buildPhases = (
 				8D292EEF2B3D75DC00E69BA7 /* Sources */,
 				8D292EF02B3D75DC00E69BA7 /* Frameworks */,
@@ -773,14 +773,14 @@
 			dependencies = (
 				8D292EF82B3D75DC00E69BA7 /* PBXTargetDependency */,
 			);
-			name = financecontrolTests;
+			name = SquirrelTests;
 			productName = financecontrolTests;
-			productReference = 8D292EF32B3D75DC00E69BA7 /* financecontrolTests.xctest */;
+			productReference = 8D292EF32B3D75DC00E69BA7 /* SquirrelTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		8DAA0E1B2B48367D0076B81E /* financecontrolWidgetExtension */ = {
+		8DAA0E1B2B48367D0076B81E /* SquirrelWidgetExtension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8DAA0E302B48367E0076B81E /* Build configuration list for PBXNativeTarget "financecontrolWidgetExtension" */;
+			buildConfigurationList = 8DAA0E302B48367E0076B81E /* Build configuration list for PBXNativeTarget "SquirrelWidgetExtension" */;
 			buildPhases = (
 				8DAA0E182B48367D0076B81E /* Sources */,
 				8DAA0E192B48367D0076B81E /* Frameworks */,
@@ -790,14 +790,14 @@
 			);
 			dependencies = (
 			);
-			name = financecontrolWidgetExtension;
+			name = SquirrelWidgetExtension;
 			productName = financecontrolWidgetExtension;
-			productReference = 8DAA0E1C2B48367D0076B81E /* financecontrolWidgetExtension.appex */;
+			productReference = 8DAA0E1C2B48367D0076B81E /* SquirrelWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		8DBFEBC92A49ED4800165414 /* financecontrol */ = {
+		8DBFEBC92A49ED4800165414 /* Squirrel */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8DBFEBEE2A49ED4900165414 /* Build configuration list for PBXNativeTarget "financecontrol" */;
+			buildConfigurationList = 8DBFEBEE2A49ED4900165414 /* Build configuration list for PBXNativeTarget "Squirrel" */;
 			buildPhases = (
 				8DBFEBC62A49ED4800165414 /* Sources */,
 				8DBFEBC72A49ED4800165414 /* Frameworks */,
@@ -809,12 +809,12 @@
 			dependencies = (
 				8DAA0E2B2B48367E0076B81E /* PBXTargetDependency */,
 			);
-			name = financecontrol;
+			name = Squirrel;
 			packageProductDependencies = (
-				8DDC9C412B5E834000D38709 /* ApplePie */,
+				8DCB60762B6E6FAA00B94872 /* ApplePie */,
 			);
 			productName = financecontrol;
-			productReference = 8DBFEBCA2A49ED4800165414 /* financecontrol.app */;
+			productReference = 8DBFEBCA2A49ED4800165414 /* Squirrel.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -839,7 +839,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 8DBFEBC52A49ED4800165414 /* Build configuration list for PBXProject "financecontrol" */;
+			buildConfigurationList = 8DBFEBC52A49ED4800165414 /* Build configuration list for PBXProject "Squirrel" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -849,15 +849,15 @@
 			);
 			mainGroup = 8DBFEBC12A49ED4800165414;
 			packageReferences = (
-				8DFA950B2AA739A900CA2C68 /* XCRemoteSwiftPackageReference "ApplePie" */,
+				8DE080192B6E6752003B5607 /* XCRemoteSwiftPackageReference "ApplePie" */,
 			);
 			productRefGroup = 8DBFEBCB2A49ED4800165414 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8DBFEBC92A49ED4800165414 /* financecontrol */,
-				8D292EF22B3D75DC00E69BA7 /* financecontrolTests */,
-				8DAA0E1B2B48367D0076B81E /* financecontrolWidgetExtension */,
+				8DBFEBC92A49ED4800165414 /* Squirrel */,
+				8D292EF22B3D75DC00E69BA7 /* SquirrelTests */,
+				8DAA0E1B2B48367D0076B81E /* SquirrelWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -1029,12 +1029,12 @@
 /* Begin PBXTargetDependency section */
 		8D292EF82B3D75DC00E69BA7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 8DBFEBC92A49ED4800165414 /* financecontrol */;
+			target = 8DBFEBC92A49ED4800165414 /* Squirrel */;
 			targetProxy = 8D292EF72B3D75DC00E69BA7 /* PBXContainerItemProxy */;
 		};
 		8DAA0E2B2B48367E0076B81E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 8DAA0E1B2B48367D0076B81E /* financecontrolWidgetExtension */;
+			target = 8DAA0E1B2B48367D0076B81E /* SquirrelWidgetExtension */;
 			targetProxy = 8DAA0E2A2B48367E0076B81E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -1049,10 +1049,11 @@
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2024, PinkXaciD";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.pinkxacid.financecontrolTests;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirrelTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -1061,7 +1062,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/financecontrol.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/financecontrol";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Squirrel.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Squirrel";
 			};
 			name = Debug;
 		};
@@ -1074,10 +1075,11 @@
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2024, PinkXaciD";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.pinkxacid.financecontrolTests;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirrelTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -1085,7 +1087,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/financecontrol.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/financecontrol";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Squirrel.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Squirrel";
 			};
 			name = Release;
 		};
@@ -1097,7 +1099,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "1-beta";
+				CURRENT_PROJECT_VERSION = "1-rc";
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1112,8 +1114,8 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 0.2.14;
-				PRODUCT_BUNDLE_IDENTIFIER = com.pinkxacid.financecontrol.financecontrolWidget;
+				MARKETING_VERSION = 0.3.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirrel.squirrelWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -1136,7 +1138,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "1-beta";
+				CURRENT_PROJECT_VERSION = "1-rc";
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1151,8 +1153,8 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 0.2.14;
-				PRODUCT_BUNDLE_IDENTIFIER = com.pinkxacid.financecontrol.financecontrolWidget;
+				MARKETING_VERSION = 0.3.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirrel.squirrelWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -1297,7 +1299,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "1-beta";
+				CURRENT_PROJECT_VERSION = "1-rc";
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				ENABLE_PREVIEWS = YES;
@@ -1318,8 +1320,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.2.14;
-				PRODUCT_BUNDLE_IDENTIFIER = com.pinkxacid.financecontrol;
+				MARKETING_VERSION = 0.3.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirrel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1343,7 +1345,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "1-beta";
+				CURRENT_PROJECT_VERSION = "1-rc";
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				ENABLE_PREVIEWS = YES;
@@ -1364,8 +1366,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.2.14;
-				PRODUCT_BUNDLE_IDENTIFIER = com.pinkxacid.financecontrol;
+				MARKETING_VERSION = 0.3.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirrel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1381,7 +1383,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		8D292EF92B3D75DC00E69BA7 /* Build configuration list for PBXNativeTarget "financecontrolTests" */ = {
+		8D292EF92B3D75DC00E69BA7 /* Build configuration list for PBXNativeTarget "SquirrelTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8D292EFA2B3D75DC00E69BA7 /* Debug */,
@@ -1390,7 +1392,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		8DAA0E302B48367E0076B81E /* Build configuration list for PBXNativeTarget "financecontrolWidgetExtension" */ = {
+		8DAA0E302B48367E0076B81E /* Build configuration list for PBXNativeTarget "SquirrelWidgetExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8DAA0E2E2B48367E0076B81E /* Debug */,
@@ -1399,7 +1401,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		8DBFEBC52A49ED4800165414 /* Build configuration list for PBXProject "financecontrol" */ = {
+		8DBFEBC52A49ED4800165414 /* Build configuration list for PBXProject "Squirrel" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8DBFEBEC2A49ED4900165414 /* Debug */,
@@ -1408,7 +1410,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		8DBFEBEE2A49ED4900165414 /* Build configuration list for PBXNativeTarget "financecontrol" */ = {
+		8DBFEBEE2A49ED4900165414 /* Build configuration list for PBXNativeTarget "Squirrel" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8DBFEBEF2A49ED4900165414 /* Debug */,
@@ -1420,7 +1422,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		8DFA950B2AA739A900CA2C68 /* XCRemoteSwiftPackageReference "ApplePie" */ = {
+		8DE080192B6E6752003B5607 /* XCRemoteSwiftPackageReference "ApplePie" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/PinkXaciD/ApplePie";
 			requirement = {
@@ -1431,8 +1433,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		8DDC9C412B5E834000D38709 /* ApplePie */ = {
+		8DCB60762B6E6FAA00B94872 /* ApplePie */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 8DE080192B6E6752003B5607 /* XCRemoteSwiftPackageReference "ApplePie" */;
 			productName = ApplePie;
 		};
 /* End XCSwiftPackageProductDependency section */

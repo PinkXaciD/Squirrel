@@ -5,29 +5,6 @@
    version = "2.0">
    <Breakpoints>
       <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.SymbolicBreakpoint">
-         <BreakpointContent
-            uuid = "849A68A5-65B3-46ED-B2AE-0160B502F051"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            symbolName = "CGPostError"
-            moduleName = "">
-            <Locations>
-               <Location
-                  uuid = "849A68A5-65B3-46ED-B2AE-0160B502F051 - 6b2a6ff60c6dfa83"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "CGPostError"
-                  moduleName = "CoreGraphics"
-                  usesParentBreakpointCondition = "Yes"
-                  offsetFromSymbolStart = "0">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "A27FC88B-CC82-419E-942C-DB7CA5C3855B"
