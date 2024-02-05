@@ -17,6 +17,7 @@ extension CoreDataModel {
         
         do {
             savedSpendings = try context.fetch(request)
+            updateCharts = true
         } catch let error {
             ErrorType(error: error).publish()
         }
@@ -78,8 +79,6 @@ extension CoreDataModel {
             manager.save()
             fetchSpendings()
             
-            updateCharts = true
-            
             if Calendar.current.isDateInToday(spending.date) {
                 passSpendingsToSumWidget()
             }
@@ -101,8 +100,6 @@ extension CoreDataModel {
         manager.save()
         fetchSpendings()
         
-        updateCharts = true
-        
         if Calendar.current.isDateInToday(newSpending.date) {
             passSpendingsToSumWidget()
         }
@@ -119,6 +116,33 @@ extension CoreDataModel {
         if Calendar.current.isDateInToday(date) {
             passSpendingsToSumWidget()
         }
+    }
+    
+    func validateReturns() {
+        var count: Int = 0
+        
+        for spending in self.savedSpendings {
+            if !spending.returnsArr.isEmpty {
+                for entity in spending.returnsArr {
+                    editRerturnFromSpending(
+                        spending: spending,
+                        oldReturn: entity,
+                        amount: entity.amount,
+                        amountUSD: entity.amountUSD,
+                        currency: entity.currency ?? "USD",
+                        date: entity.date ?? Date(),
+                        name: entity.name ?? ""
+                    )
+                    
+                    count += 1
+                }
+            }
+        }
+        
+        #if DEBUG
+        let logger = Logger(subsystem: Vars.appIdentifier, category: "CoreDataModel")
+        logger.log("Validated \(count) returns")
+        #endif
     }
     
     func operationsSum() -> Double {

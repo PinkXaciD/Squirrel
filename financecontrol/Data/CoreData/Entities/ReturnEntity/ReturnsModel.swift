@@ -82,6 +82,7 @@ extension CoreDataModel {
         
         let newReturn = ReturnEntity(entity: description, insertInto: context)
         
+        newReturn.id = UUID()
         newReturn.amount = amount
         newReturn.amountUSD = amountUSD
         newReturn.currency = currency
