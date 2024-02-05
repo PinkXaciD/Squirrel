@@ -55,7 +55,7 @@ extension CoreDataModel {
                     return dateFormatter
                 }
                 
-                let pathURL = tempURL.appendingPathComponent("SquirrelExport_\(dateFormatter.string(from: Date.now))", conformingTo: .json)
+                let pathURL = tempURL.appendingPathComponent("SquirrelExport_\(dateFormatter.string(from: Date()))", conformingTo: .json)
                 try jsonString.write(to: pathURL, atomically: true, encoding: .utf8)
                 
                 return pathURL
@@ -77,9 +77,9 @@ extension CoreDataModel {
                 decoder.dateDecodingStrategy = .iso8601
                 decoder.userInfo[.moc] = manager.context
                 
-                let tempData = try decoder.decode([CategoryEntity].self, from: jsonData)
-                
                 url.stopAccessingSecurityScopedResource()
+                
+                let tempData = try decoder.decode([CategoryEntity].self, from: jsonData)
                 
                 importedCount = tempData.count
                 

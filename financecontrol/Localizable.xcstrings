@@ -92,9 +92,6 @@
     "%lld selected" : {
 
     },
-    "© %@ PinkXaciD" : {
-
-    },
     "0.00" : {
 
     },
@@ -529,6 +526,9 @@
 
     },
     "Today" : {
+
+    },
+    "Validate returns" : {
 
     },
     "Ver. %@ (%@)" : {

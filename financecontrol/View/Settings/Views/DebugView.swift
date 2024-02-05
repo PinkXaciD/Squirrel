@@ -10,6 +10,8 @@ import SwiftUI
 struct DebugView: View {
     @EnvironmentObject
     private var rvm: RatesViewModel
+    @EnvironmentObject
+    private var cdm: CoreDataModel
     
     @State
     private var defaultsConfirmationIsShowing: Bool = false
@@ -31,6 +33,8 @@ struct DebugView: View {
             defaultsSection
             
             reloadWidgetsSection
+            
+            validateSection
         }
         .confirmationDialog("This will clear all settings of app. \nYou can't undo this action.", isPresented: $defaultsConfirmationIsShowing, titleVisibility: .visible) {
             clearSharedDefaultsButton
@@ -132,6 +136,17 @@ struct DebugView: View {
             } label: {
                 Text("Clear UserDefaults")
             }
+        }
+    }
+    
+    private var validateSection: some View {
+        Section {
+            Button(role: .destructive) {
+                cdm.validateReturns()
+            } label: {
+                Text("Validate returns")
+            }
+
         }
     }
     

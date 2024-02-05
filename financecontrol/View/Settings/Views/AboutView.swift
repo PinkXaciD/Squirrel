@@ -83,7 +83,7 @@ struct AboutView: View {
     }
     
     private var copyrightText: Text {
-        Text("© \(Calendar.current.currentYearTextualRepresentation()) PinkXaciD")
+        Text(verbatim: "© \(Calendar.current.currentYearTextualRepresentation()) PinkXaciD")
             .font(.caption)
             .foregroundColor(.secondary)
     }
