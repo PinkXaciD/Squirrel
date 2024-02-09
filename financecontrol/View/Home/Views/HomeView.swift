@@ -20,12 +20,13 @@ struct HomeView: View {
                 barChartSection
                     .padding(.horizontal, -10)
                 
-                SheetPresenter("Add Expense", image: .init(systemName: "plus"), style: .sheet) {
-                    AddSpendingView(ratesViewModel: rvm, codeDataModel: cdm)
-                        .environmentObject(rvm)
-                        .environmentObject(cdm)
-                }
-                .padding(.horizontal, -5)
+//                SheetPresenter("Add Expense", image: .init(systemName: "plus"), style: .sheet) {
+//                    AddSpendingView(ratesViewModel: rvm, codeDataModel: cdm)
+//                        .environmentObject(rvm)
+//                        .environmentObject(cdm)
+//                }
+//                .padding(.horizontal, -5)
+                addButton
             }
             .navigationTitle("Home")
             .sheet(isPresented: $showingSheet) {
@@ -35,16 +36,16 @@ struct HomeView: View {
         .navigationViewStyle(.stack)
     }
     
-//    var addButton: some View {
-//        Button(action: toggleSheet) {
-//            HStack(spacing: 15) {
-//                Image(systemName: "plus")
-//                    .imageScale(.large)
-//                Text("Add Expense")
-//            }
-//        }
-//        .padding()
-//    }
+    var addButton: some View {
+        Button(action: toggleSheet) {
+            HStack(spacing: 15) {
+                Image(systemName: "plus")
+                    .imageScale(.large)
+                Text("Add Expense")
+            }
+        }
+        .padding()
+    }
     
     var barChartSection: some View {
         Section {

@@ -41,9 +41,9 @@ extension InfoPlistError {
     public var recoverySuggestion: String {
         switch self {
         case .noInfoFound, .failedToReadURLComponents:
-            return NSLocalizedString("Please submit bug report and try to reinstall the app", comment: "")
+            return NSLocalizedString("Please submit a bug report and try to reinstall the app", comment: "")
         case .noURLFound, .noAPIKeyFound:
-            return NSLocalizedString("Please submit bug report and try to restart the app", comment: "")
+            return NSLocalizedString("Please submit a bug report and try to restart the app", comment: "")
         }
     }
 }
@@ -79,7 +79,7 @@ extension RatesFetchError {
     var recoverySuggestion: String {
         switch self {
         case .emptyDatabase:
-            return NSLocalizedString("Please submit bug report and try to reinstall the app", comment: "")
+            return NSLocalizedString("Please submit a bug report and try to reinstall the app", comment: "")
         }
     }
     

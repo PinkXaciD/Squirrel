@@ -8,6 +8,8 @@
 import Foundation
 
 struct Vars {
+    private init() {}
+    
     static let groupName: String = "group.dev.squirrelapp.squirrel"
     
     static let appIdentifier: String = "dev.squirrelapp.squirrel"
@@ -15,6 +17,12 @@ struct Vars {
     static let widgetIdentifier: String = "dev.squirrelapp.squirrel.squirrelWidget"
 }
 
-struct URLS {
-    static let addExpenseAction: URL! = .init(string: "squirrel://addExpense")
+struct URLs {
+    private init() {}
+    
+    static let addExpenseAction: URL! = URL(string: "squirrel://addExpense")
+    
+    static let github: URL! = URL(string: "https://github.com/PinkXaciD/Squirrel")
+    
+    static let newGithubIssue: URL! = URL(string: "https://github.com/PinkXaciD/Squirrel/issues/new")
 }

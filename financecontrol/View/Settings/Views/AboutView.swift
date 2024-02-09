@@ -34,7 +34,7 @@ struct AboutView: View {
             Button("App site") {}
             
             Button {
-                openURL(URL(string: "https://github.com/PinkXaciD/Squirrel")!)
+                openURL(URLs.github)
             } label: {
                 Text(verbatim: "GitHub")
             }
@@ -67,7 +67,7 @@ struct AboutView: View {
     private var githubSection: some View {
         Section {
             Button("Create an issue on GitHub") {
-                openURL(URL(string: "https://github.com/PinkXaciD/Squirrel/issues/new")!)
+                openURL(URLs.newGithubIssue)
             }
             
             Button("Buy me some noodles") {}

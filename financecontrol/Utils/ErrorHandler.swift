@@ -33,7 +33,7 @@ struct ErrorType: Identifiable, Equatable {
     init(error: Error) {
         self.errorDescription = "Unknown error: \(error.localizedDescription)"
         self.failureReason = error.localizedDescription
-        self.recoverySuggestion = "Please submit bug report and try to restart the app"
+        self.recoverySuggestion = "Please submit a bug report and try to restart the app"
         self.helpAnchor = ""
     }
     

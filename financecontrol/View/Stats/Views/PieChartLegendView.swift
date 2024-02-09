@@ -9,26 +9,29 @@ import SwiftUI
 
 struct PieChartLegendView: View {
     @EnvironmentObject
-    private var lpvvm: PieChartLazyPageViewViewModel
+    private var pcvm: PieChartViewModel
     @EnvironmentObject
     private var cdm: CoreDataModel
     @EnvironmentObject
     private var rvm: RatesViewModel
     
     @AppStorage("defaultCurrency")
-    private var defaultCurrency: String = Locale.current.currencySymbol ?? "USD"
+    private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
     
     @Binding
     var filterCategories: [CategoryEntity]
     @Binding
     var applyFilters: Bool
+    @Binding
+    var minimize: Bool
     
     var body: some View {
-        let operationsInMonthSorted = cdm.operationsInMonth(
+        let operationsInMonthSorted: [CategoryEntityLocal] = cdm.operationsInMonth(
             .now.getFirstDayOfMonth(
-                -lpvvm.selection
-            )
+                -pcvm.selection
+            ),
+            categoryName: pcvm.selectedCategory?.name
         ).sorted { first, second in
             var firstSum: Double = 0
             var secondSum: Double = 0
@@ -41,46 +44,42 @@ struct PieChartLegendView: View {
             return firstSum > secondSum
         }
         
-        return HStack {
-            LazyVStack (alignment: .leading, spacing: 10) {
-                ForEach(operationsInMonthSorted) { category in
-                    let amount: Double = countCategorySpendings(category)
-                    
-                    HStack {
-                        Text(category.name)
-                            .font(.system(size: 14).bold())
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 3)
-                            .foregroundColor(.white)
-                            .background {
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(Color[category.color])
-                            }
-                        
-                        Text(amount.formatted(.currency(code: defaultCurrency)))
+        if minimize {
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: 10) {
+                    ForEach(operationsInMonthSorted) { category in
+                        PieChartLegendRowView(
+                            filterCategories: $filterCategories,
+                            applyFilters: $applyFilters,
+                            amount: countCategorySpendings(category),
+                            category: category
+                        )
                     }
-                    .padding(.vertical, 3)
-                    .padding(.trailing, 6)
-                    .padding(.leading, 3)
-                    .background {
-                        RoundedRectangle(cornerRadius: 7)
-                            .fill(Color[category.color])
-                            .opacity(0.3)
-                    }
-                    .id(UUID())
-                    .onTapGesture {
-                        if let category = cdm.findCategory(category.id) {
-                            withAnimation {
-                                addToFilter(category)
-                            }
-                        }
-                    }
-                    .grayscale((isFiltered(category) || filterCategories.isEmpty) ? 0 : 1)
                 }
+                .padding(.horizontal, 20)
             }
-            Spacer()
+            .id(UUID())
+            .font(.system(size: 14))
+            .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 0))
+        } else {
+            HStack {
+                LazyVStack (alignment: .leading, spacing: 10) {
+                    ForEach(operationsInMonthSorted) { category in
+                        PieChartLegendRowView(
+                            filterCategories: $filterCategories,
+                            applyFilters: $applyFilters,
+                            amount: countCategorySpendings(category),
+                            category: category
+                        )
+                        .id(UUID())
+                        .transition(.identity.animation(.none))
+                    }
+                }
+                
+                Spacer()
+            }
+            .font(.system(size: 14))
         }
-        .font(.system(size: 14))
     }
     
     private func countCategorySpendings(_ category: CategoryEntityLocal) -> Double {
@@ -94,28 +93,5 @@ struct PieChartLegendView: View {
             }
         }
         return result
-    }
-    
-    private func addToFilter(_ category: CategoryEntity) {
-        if !filterCategories.contains(category) {
-            filterCategories.append(category)
-            applyFilters = true
-        } else {
-            guard let index: Int = filterCategories.firstIndex(of: category) else {
-                return
-            }
-            filterCategories.remove(at: index)
-            if filterCategories.isEmpty && lpvvm.selection == 0 {
-                applyFilters = false
-            }
-        }
-    }
-    
-    private func isFiltered(_ localCategory: CategoryEntityLocal) -> Bool {
-        if let category = cdm.findCategory(localCategory.id) {
-            return filterCategories.contains(category)
-        } else {
-            return false
-        }
     }
 }

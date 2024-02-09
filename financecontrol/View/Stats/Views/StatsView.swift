@@ -20,7 +20,7 @@ struct StatsView: View {
     @AppStorage("color")
     private var tint: String = "Orange"
     @StateObject
-    var lpvvm: PieChartLazyPageViewViewModel
+    var pcvm: PieChartViewModel
     
     @State
     var entityToEdit: SpendingEntity? = nil
@@ -57,36 +57,31 @@ struct StatsView: View {
     
     var body: some View {
         NavigationView {
-            List {
-                if search.isEmpty && !isSearching {
-                    PieChartView(
-                        filterCategories: $filterCategories,
-                        applyFilers: $applyFilters,
-                        size: size
+            ScrollViewReader { scroll in
+                List {
+                    if search.isEmpty && !isSearching {
+                        PieChartView(
+                            filterCategories: $filterCategories,
+                            applyFilers: $applyFilters,
+                            size: size
+                        )
+                        .environmentObject(pcvm)
+                        .id(0)
+                    }
+                    
+                    StatsListView(
+                        entityToEdit: $entityToEdit,
+                        entityToAddReturn: $entityToAddReturn,
+                        edit: $edit,
+                        search: $search,
+                        applyFilters: $applyFilters,
+                        startFilterDate: $startFilterDate,
+                        endFilterDate: $endFilterDate,
+                        filterCategories: $filterCategories
                     )
-                    .environmentObject(lpvvm)
                 }
-                
-                StatsListView(
-                    entityToEdit: $entityToEdit,
-                    entityToAddReturn: $entityToAddReturn,
-                    edit: $edit,
-                    search: $search,
-                    applyFilters: $applyFilters,
-                    startFilterDate: $startFilterDate,
-                    endFilterDate: $endFilterDate,
-                    filterCategories: $filterCategories
-                )
             }
-            .onChange(of: lpvvm.selection) { newValue in
-                #if DEBUG
-                logger.log("\(#fileID) \(#function) updated with \(newValue) value")
-                let startDate: Date = Date()
-                
-                defer {
-                    logger.log("\(#fileID) \(#function) updated within \(Date().timeIntervalSince(startDate)) seconds")
-                }
-                #endif
+            .onChange(of: pcvm.selection) { newValue in
                 onChangeFunc(-newValue)
             }
             .toolbar {
@@ -157,7 +152,7 @@ extension StatsView {
         }
         
         self.size = size
-        self._lpvvm = .init(wrappedValue: .init(contentSize: size, cdm: cdm))
+        self._pcvm = .init(wrappedValue: .init(contentSize: size, cdm: cdm))
     }
     
     private func searchFunc(_ data: StatsListData) -> StatsListData {
@@ -205,14 +200,6 @@ extension StatsView {
     }
     
     private func onChangeFunc(_ value: Int) {
-        #if DEBUG
-        let startDate: Date = Date()
-        
-        defer {
-            logger.log("\(#fileID) \(#function) completed within \(Date().timeIntervalSince(startDate)) seconds")
-        }
-        #endif
-        
         if value == 0 {
             if filterCategories.isEmpty {
                 applyFilters = false
@@ -238,11 +225,17 @@ extension StatsView {
         #endif
         
         withAnimation {
+            pcvm.selectedCategory = nil
+            pcvm.updateData()
             applyFilters = false
             startFilterDate = .now.getFirstDayOfMonth()
             endFilterDate = .now
             filterCategories = []
         }
+    }
+    
+    private func scrollToTop(_ scroll: ScrollViewProxy) {
+        scroll.scrollTo(0)
     }
 }
 

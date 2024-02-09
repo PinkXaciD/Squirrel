@@ -19,7 +19,7 @@ struct financecontrolApp: App {
         WindowGroup {
             ContentView(addExpenseAction: $addExpenseAction)
                 .onOpenURL { url in
-                    if url == URLS.addExpenseAction {
+                    if url == URLs.addExpenseAction {
                         addExpenseAction = true
                     }
                 }

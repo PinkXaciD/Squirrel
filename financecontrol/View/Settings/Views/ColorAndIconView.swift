@@ -53,17 +53,9 @@ struct ColorAndIconView: View {
     
     private var iconSection: some View {
         Section {
-            IconRow(.sqwoorl, selection: $selectedIcon)
-            
-            IconRow(.firstFlight, selection: $selectedIcon)
-            
-            IconRow(.neonNight, selection: $selectedIcon)
-            
-            IconRow(.winterized, selection: $selectedIcon)
-            
-            IconRow(.dawnOfSquipan, selection: $selectedIcon)
-            
-            IconRow(.NA, selection: $selectedIcon)
+            ForEach(CustomIcon.allCases, id: \.imageName) { icon in
+                IconRow(icon, selection: $selectedIcon)
+            }
         } header: {
             Text("Icon")
         }

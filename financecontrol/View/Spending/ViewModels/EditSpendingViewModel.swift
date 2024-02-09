@@ -40,7 +40,7 @@ final class EditSpendingViewModel: SpendingViewModel {
         self.cdm = cdm
         self.rvm = rvm
         self.entity = entity
-        self.amount = "\(entity.amount)"
+        self.amount = "\(entity.amount)".replacingOccurrences(of: ".", with: Locale.current.decimalSeparator ?? ".")
         self.currency = entity.wrappedCurrency
         self.date = entity.wrappedDate
         self.categoryName = entity.categoryName

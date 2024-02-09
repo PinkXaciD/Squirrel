@@ -198,8 +198,8 @@ extension DebugView {
     private func getDate(_ type: DateType) -> String {
         var dateFormatter: DateFormatter {
             let f = DateFormatter()
-            f.dateStyle = .medium
-            f.timeStyle = .long
+            f.dateStyle = .full
+            f.timeStyle = .full
             f.locale = Locale.current
             f.timeZone = Calendar.current.timeZone
             return f

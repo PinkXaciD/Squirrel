@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/PinkXaciD/ApplePie",
       "state" : {
-        "revision" : "d731202ccc9e5a9d5859b810184ac2d454353567",
-        "version" : "1.0.2"
+        "revision" : "1fc5b8aba55649cdfdf2c5887b0c728dbd1bd6dc",
+        "version" : "1.1.0"
       }
     }
   ],

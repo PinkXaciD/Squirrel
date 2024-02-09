@@ -46,9 +46,43 @@ extension CategoryEntity : Identifiable {
 
 }
 
-struct CategoryEntityLocal: Identifiable {
+struct CategoryEntityLocal: Identifiable, Equatable {
+    static func == (lhs: CategoryEntityLocal, rhs: CategoryEntityLocal) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
     var color: String
     var id: UUID
     var name: String
     var spendings: [SpendingEntityLocal]
+}
+
+extension CategoryEntityLocal {
+    init(from category: CategoryEntity) {
+        self.color = category.color ?? ""
+        self.id = category.id ?? .init()
+        self.name = category.name ?? ""
+        
+        var spendings: [SpendingEntityLocal] = []
+        
+        if let unwrapped = category.spendings?.allObjects as? [SpendingEntity] {
+            for spending in unwrapped {
+                spendings.append(
+                    .init(
+                        amountUSD: spending.amountUSD,
+                        amount: spending.amount,
+                        amountWithReturns: spending.amountWithReturns,
+                        amountUSDWithReturns: spending.amountUSDWithReturns,
+                        comment: spending.comment ?? "",
+                        currency: spending.wrappedCurrency,
+                        date: spending.wrappedDate,
+                        place: spending.place ?? "",
+                        categoryId: category.id ?? .init()
+                    )
+                )
+            }
+        }
+        
+        self.spendings = spendings
+    }
 }

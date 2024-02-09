@@ -5,20 +5,25 @@ Icon.png
 financecontrol/Assets.xcassets/AppIcon.appiconset/iOS_AppIcon_Default.png
 financecontrol/Assets.xcassets/AppIcon_Image.imageset/*.png
 
-financecontrol/Assets.xcassets/AppIcon_FirstFlight.appiconset/iOS_AppIcon_First_Flight.png
-financecontrol/Assets.xcassets/AppIcon_FirstFlight_Image.imageset/*.png
+financecontrol/Assets.xcassets/Icons/AppIcon_FirstFlight.appiconset/iOS_AppIcon_First_Flight.png
+financecontrol/Assets.xcassets/Icons/Previews/AppIcon_FirstFlight_Image.imageset/*.png
 
-financecontrol/Assets.xcassets/AppIcon_NeonNight.appiconset/iOS_AppIcon_Neon.png
-financecontrol/Assets.xcassets/AppIcon_NeonNight_Image.imageset/*.png
+financecontrol/Assets.xcassets/Icons/AppIcon_NeonNight.appiconset/iOS_AppIcon_Neon.png
+financecontrol/Assets.xcassets/Icons/Previews/AppIcon_NeonNight_Image.imageset/*.png
 
-financecontrol/Assets.xcassets/AppIcon_Winterized.appiconset/iOS_AppIcon_Winterized.png
-financecontrol/Assets.xcassets/AppIcon_Winterized_Image.imageset/*.png
+financecontrol/Assets.xcassets/Icons/AppIcon_Winterized.appiconset/iOS_AppIcon_Winterized.png
+financecontrol/Assets.xcassets/Icons/Previews/AppIcon_Winterized_Image.imageset/*.png
 
-financecontrol/Assets.xcassets/AppIcon_DawnOfSquipan.appiconset/iOS_AppIcon_DawnOfSquipan.png
-financecontrol/Assets.xcassets/AppIcon_DawnOfSquipan_Image.imageset/*.png
+financecontrol/Assets.xcassets/Icons/AppIcon_DawnOfSquipan.appiconset/iOS_AppIcon_DawnOfSquipan.png
+financecontrol/Assets.xcassets/Icons/Previews/AppIcon_DawnOfSquipan_Image.imageset/*.png
 
-financecontrol/Assets.xcassets/AppIcon_NA.appiconset/iOS_AppIcon_NA.png
-financecontrol/Assets.xcassets/AppIcon_NA_Image.imageset/*.png
+financecontrol/Assets.xcassets/Icons/AppIcon_NA.appiconset/iOS_AppIcon_NA.png
+financecontrol/Assets.xcassets/Icons/Previews/AppIcon_NA_Image.imageset/*.png
+
+financecontrol/Assets.xcassets/Icons/AppIcon_Stealth.appiconset/*.png
+financecontrol/Assets.xcassets/Icons/Previews/AppIcon_Stealth_Image.imageset/*.png
+
+financecontrol/Assets.xcassets/
 
 financecontrolWidget/Assets.xcassets/SquirrelLogoImage.imageset/*.png
 

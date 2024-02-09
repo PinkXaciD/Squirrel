@@ -13,7 +13,7 @@ import OSLog
 
 struct PieChartLazyPageView<Content: View>: View {
     @Environment(\.layoutDirection) private var layoutDirection
-    @EnvironmentObject private var vm: PieChartLazyPageViewViewModel
+    @EnvironmentObject private var vm: PieChartViewModel
     let size: CGFloat
     
     init(viewSize: CGFloat) {
@@ -129,14 +129,6 @@ fileprivate struct LazyTab<Content: View>: View {
             }
         }
         .onChange(of: selection) { newValue in
-            #if DEBUG
-            let startDate: Date = Date()
-
-            defer {
-                logger.log("\(#fileID) \(#function) completed within \(Date().timeIntervalSince(startDate)) seconds")
-            }
-            #endif
-            
             if range.contains(newValue) {
                 withAnimation {
                     viewState = .active

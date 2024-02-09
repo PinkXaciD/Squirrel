@@ -33,6 +33,7 @@ struct CategoryEditSubView: View {
     @State private var name: String
     @State private var colorSelected: Color
     @State private var colorSelectedDescription: String
+    @State private var triedToSave: Bool = false
     
     @FocusState var nameIsFocused: Bool
         
@@ -50,12 +51,14 @@ struct CategoryEditSubView: View {
             
             colorSection
             
-            saveSection
+            favoriteSection
             
             spendingsSection
         }
         .toolbar {
             keyboardToolbar
+            
+            trailingToolbar
         }
     }
     
@@ -63,23 +66,32 @@ struct CategoryEditSubView: View {
         Section {
             TextField("Enter name", text: $name)
                 .focused($nameIsFocused)
+        } footer: {
+            if triedToSave && name.isEmpty {
+                Text("Required")
+                    .foregroundColor(.red)
+            }
         }
     }
     
     private var colorSection: some View {
         Section {
             CustomColorSelector(colorSelected: $colorSelected, colorSelectedDescription: $colorSelectedDescription)
+        } footer: {
+            if triedToSave && colorSelectedDescription.isEmpty {
+                Text("Required")
+                    .foregroundColor(.red)
+            }
         }
     }
     
-    private var saveSection: some View {
+    private var favoriteSection: some View {
         Section {
-            Button("Save") {
-                cdm.editCategory(category, name: name, color: colorSelectedDescription)
-                dismiss.toggle()
+            Button(category.isFavorite ? "Remove from favorites" : "Add to favorites") {
+                withAnimation {
+                    cdm.changeFavoriteStateOfCategory(category)
+                }
             }
-            .font(.body.bold())
-            .disabled(name.isEmpty || colorSelectedDescription.isEmpty)
         }
     }
     
@@ -104,6 +116,25 @@ struct CategoryEditSubView: View {
     private var keyboardToolbar: ToolbarItemGroup<some View> {
         hideKeyboardToolbar {
             clearFocus()
+        }
+    }
+    
+    private var trailingToolbar: ToolbarItem<Void, some View> {
+        ToolbarItem(placement: .topBarTrailing) {
+            Button("Save") {
+                if name.isEmpty || colorSelectedDescription.isEmpty {
+                    withAnimation {
+                        triedToSave = true
+                    }
+                    HapticManager.shared.notification(.warning)
+                } else {
+                    cdm.editCategory(category, name: name, color: colorSelectedDescription)
+                    dismiss.toggle()
+                    HapticManager.shared.notification(.success)
+                }
+            }
+            .font(.body.bold())
+            .foregroundColor(name.isEmpty || colorSelectedDescription.isEmpty ? .secondary : .accentColor)
         }
     }
     

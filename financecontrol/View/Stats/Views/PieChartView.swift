@@ -13,7 +13,7 @@ struct PieChartView: View {
     @EnvironmentObject
     private var rvm: RatesViewModel
     @EnvironmentObject
-    private var lpvvm: PieChartLazyPageViewViewModel
+    private var pcvm: PieChartViewModel
     
     @Binding
     var filterCategories: [CategoryEntity]
@@ -26,59 +26,51 @@ struct PieChartView: View {
     var defaultCurrency: String = "USD"
     
     @State
-    private var showLegend: Bool = true
+    private var minimizeLegend: Bool = true
     
     var body: some View {
         Section {
             chart
             
-            if showLegend {
-                legend
-            }
+            legend
         } footer: {
             expandButton
         }
     }
     
     private var chart: some View {
-        
         PieChartLazyPageView<PieChartCompleteView<CenterChartView>>(viewSize: size)
             .frame(height: size * 1.1)
             .invertLayoutDirection()
             .listRowInsets(.init(top: 20, leading: 0, bottom: 20, trailing: 0))
             .onAppear {
                 if cdm.updateCharts {
-                    lpvvm.updateData()
+                    pcvm.updateData()
                     cdm.updateCharts = false
                 }
             }
             .onChange(of: cdm.updateCharts) { newValue in
                 if newValue {
-                    lpvvm.updateData()
+                    pcvm.updateData()
                     cdm.updateCharts = false
                 }
             }
     }
     
     private var legend: some View {
-        PieChartLegendView(filterCategories: $filterCategories, applyFilters: $applyFilters)
+        PieChartLegendView(filterCategories: $filterCategories, applyFilters: $applyFilters, minimize: $minimizeLegend)
     }
     
     private var expandButton: some View {
         HStack {
+            if let name = pcvm.selectedCategory?.name {
+                Text("Selected category: \(name)")
+            }
+            
             Spacer()
             
-            Image(systemName: "chevron.down")
-                .rotationEffect(showLegend ? .degrees(180) : .zero)
-                .foregroundColor(.accentColor)
-            
-            Button(showLegend ? "Minimize" : "Expand") {
-                withAnimation {
-                    showLegend.toggle()
-                }
-            }
+            Button(action: toggleLegend, label: expandButtonLabel)
         }
-        .font(.body)
     }
 }
 
@@ -91,6 +83,23 @@ extension PieChartView {
         self._filterCategories = filterCategories
         self._applyFilters = applyFilers
         self.size = size
+    }
+    
+    private func toggleLegend() {
+        withAnimation {
+            minimizeLegend.toggle()
+        }
+    }
+    
+    private func expandButtonLabel() -> some View {
+        Label {
+            Text(minimizeLegend ? "Expand" : "Minimize")
+        } icon: {
+            Image(systemName: "chevron.down")
+                .rotationEffect(minimizeLegend ? .zero : .degrees(180))
+                .foregroundColor(.accentColor)
+        }
+        .font(.body)
     }
 }
 

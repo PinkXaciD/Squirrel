@@ -179,21 +179,10 @@ extension CoreDataModel {
         .reduce(0, +)
     }
     
-    func operationsInMonth(_ date: Date) -> [CategoryEntityLocal] {
-        var firstDate: Date = .now
-        var secondDate: Date = .now
-        
-        var firstDateComponents = Calendar.current.dateComponents([.month, .year, .era], from: date)
-        firstDateComponents.day = 1
-        firstDateComponents.calendar = Calendar.current
-        firstDate = firstDateComponents.date ?? .distantPast
-        
-        if let endDate = Calendar.current.date(byAdding: .month, value: 1, to: date) {
-            var secondDateComponents = Calendar.current.dateComponents([.month, .year, .era], from: endDate)
-            secondDateComponents.day = 1
-            secondDateComponents.calendar = Calendar.current
-            secondDate = secondDateComponents.date ?? .distantPast
-        }
+    // MARK: Operations for legend
+    func operationsInMonth(_ date: Date, categoryName: String?) -> [CategoryEntityLocal] {
+        let firstDate: Date = date.getFirstDayOfMonth()
+        let secondDate: Date = date.getFirstDayOfMonth(1)
         
         let predicate = NSPredicate(format: "(date >= %@) AND (date < %@)", firstDate as CVarArg, secondDate as CVarArg)
         var filteredSpendings: [SpendingEntity] = []
@@ -204,47 +193,90 @@ extension CoreDataModel {
             ErrorType(error: error).publish()
         }
         
+        if let categoryName = categoryName {
+            filteredSpendings = filteredSpendings.filter({ $0.categoryName == categoryName })
+        }
+        
         var categories: [CategoryEntityLocal] {
-            var preResult: [UUID:CategoryEntityLocal] = [:]
+            var preResult: [String:CategoryEntityLocal] = [:]
+            let colors: [String] = Array(CustomColor.nordAurora.keys).sorted(by: <)
+            var colorIndex: Int = 0
+            
             for spending in filteredSpendings {
-                if let catId = spending.category?.id {
-                    var localCategory = preResult[catId] ?? CategoryEntityLocal(
-                        color: spending.category?.color ?? "",
-                        id: catId,
-                        name: spending.categoryName,
+                if categoryName != nil {
+                    var place: String {
+                        guard let place = spending.place, !place.isEmpty else {
+                            return NSLocalizedString("Unknown", comment: "")
+                        }
+                        
+                        return place
+                    }
+                    
+                    var localCategory: CategoryEntityLocal = preResult[place] ?? CategoryEntityLocal(
+                        color: place == NSLocalizedString("Unknown", comment: "") ? "secondary" : colors[colorIndex],
+                        id: spending.wrappedId,
+                        name: place,
                         spendings: []
                     )
+                    
+                    if preResult[place] == nil {
+                        if colorIndex < colors.count - 1 {
+                            colorIndex += 1
+                        } else {
+                            colorIndex = 0
+                        }
+                    }
                     
                     localCategory.spendings.append(
                         SpendingEntityLocal(
                             amountUSD: spending.amountUSD,
-                            amount: spending.amount, 
-                            amountWithReturns: spending.amountWithReturns, 
+                            amount: spending.amount,
+                            amountWithReturns: spending.amountWithReturns,
                             amountUSDWithReturns: spending.amountUSDWithReturns,
                             comment: spending.comment ?? "",
                             currency: spending.wrappedCurrency,
                             date: spending.wrappedDate,
                             place: spending.place ?? "",
-                            categoryId: catId
+                            categoryId: spending.wrappedId
                         )
                     )
-                    preResult.updateValue(localCategory, forKey: catId)
+                    
+                    preResult.updateValue(localCategory, forKey: place)
+                } else {
+                    if let catId = spending.category?.id {
+                        var localCategory = preResult[catId.uuidString] ?? CategoryEntityLocal(
+                            color: spending.category?.color ?? "",
+                            id: catId,
+                            name: spending.categoryName,
+                            spendings: []
+                        )
+                        
+                        localCategory.spendings.append(
+                            SpendingEntityLocal(
+                                amountUSD: spending.amountUSD,
+                                amount: spending.amount,
+                                amountWithReturns: spending.amountWithReturns,
+                                amountUSDWithReturns: spending.amountUSDWithReturns,
+                                comment: spending.comment ?? "",
+                                currency: spending.wrappedCurrency,
+                                date: spending.wrappedDate,
+                                place: spending.place ?? "",
+                                categoryId: catId
+                            )
+                        )
+                        preResult.updateValue(localCategory, forKey: catId.uuidString)
+                    }
                 }
             }
-            var result: [CategoryEntityLocal] = []
             
-            for category in preResult {
-                result.append(category.value)
-            }
-            
-            return result
+            return Array(preResult.values)
         }
         
         return categories
     }
     
     // MARK: Operations for chart
-    func getChartData(isMinimized: Bool = true) -> [ChartData] {
+    func getChartData(isMinimized: Bool = true, categoryName: String? = nil) -> [ChartData] {
         let currentCalendar = Calendar.current
         
         var chartData: [ChartData] = []
@@ -255,18 +287,8 @@ extension CoreDataModel {
         
         for index in interval {
             let date = currentCalendar.date(byAdding: .month, value: -index, to: .now) ?? .now
-            chartData.append(ChartData(date: date, id: -index, withOther: isMinimized, cdm: self))
+            chartData.append(ChartData(date: date, id: -index, withOther: isMinimized, cdm: self, categoryName: categoryName))
         }
-        
-        #if DEBUG
-        let fileName = #fileID
-        let function = #function
-        let logger = Logger(subsystem: Vars.appIdentifier, category: fileName)
-        let formatter = DateFormatter()
-        formatter.dateStyle = .short
-        formatter.timeStyle = .full
-        logger.log("\(function) called \nAt \(formatter.string(from: Date()))")
-        #endif
         
         return chartData
     }
@@ -288,128 +310,3 @@ extension CoreDataModel {
 }
 
 typealias StatsListData = [Date:[SpendingEntity]]
-
-struct ChartData: Identifiable {
-    let id: Int
-    let date: Date
-    let categories: [CategoryEntityLocal]
-    
-    init(date: Date, id: Int, withOther: Bool, cdm: CoreDataModel) {
-        let currentCalendar = Calendar.current
-        var components = currentCalendar.dateComponents([.month, .year, .era], from: date)
-        components.calendar = currentCalendar
-        let firstDate = components.date ?? .distantPast
-        let secondDate = currentCalendar.date(byAdding: .month, value: 1, to: firstDate) ?? .distantPast
-        
-        self.date = firstDate
-        self.id = id
-        
-        var tempCategories: [UUID:CategoryEntityLocal] = [:]
-//        let predicate = NSPredicate(format: "(date >= %@) AND (date < %@)", firstDate as CVarArg, secondDate as CVarArg)
-        let dateRange = firstDate..<secondDate
-        
-        let spendings = cdm.savedSpendings.filter { dateRange.contains($0.wrappedDate) }
-        
-        for spending in spendings {
-            guard
-                let category = spending.category,
-                let catId = category.id,
-                let categoryName = category.color,
-                let categoryColor = category.color
-            else {
-                continue
-            }
-                    
-            if let existing = tempCategories[catId] {
-                let localSpending = SpendingEntityLocal(
-                    amountUSD: spending.amountUSD,
-                    amount: spending.amount,
-                    amountWithReturns: spending.amountWithReturns,
-                    amountUSDWithReturns: spending.amountUSDWithReturns,
-                    comment: spending.comment ?? "",
-                    currency: spending.wrappedCurrency,
-                    date: spending.wrappedDate,
-                    place: spending.place ?? "",
-                    categoryId: catId
-                )
-                
-                var catSpendings: [SpendingEntityLocal] = existing.spendings
-                catSpendings.append(localSpending)
-                let updatedCategory = CategoryEntityLocal(
-                    color: existing.color,
-                    id: existing.id,
-                    name: existing.name,
-                    spendings: catSpendings
-                )
-                
-                tempCategories.updateValue(updatedCategory, forKey: catId)
-                
-            } else {
-                let localSpending = SpendingEntityLocal(
-                    amountUSD: spending.amountUSD,
-                    amount: spending.amount,
-                    amountWithReturns: spending.amountWithReturns,
-                    amountUSDWithReturns: spending.amountUSDWithReturns,
-                    comment: spending.comment ?? "",
-                    currency: spending.wrappedCurrency,
-                    date: spending.wrappedDate,
-                    place: spending.place ?? "",
-                    categoryId: catId
-                )
-                
-                let updatedCategory = CategoryEntityLocal(
-                    color: categoryColor,
-                    id: catId,
-                    name: categoryName,
-                    spendings: [localSpending]
-                )
-                
-                tempCategories.updateValue(updatedCategory, forKey: catId)
-            }
-        }
-        
-//        if withOther {
-//            let arr = Array(tempCategories.values).sorted { category1, category2 in
-//                let firstSum = category1.spendings.map { $0.amountUSD }.reduce(0, +)
-//                let secondSum = category2.spendings.map { $0.amountUSD }.reduce(0, +)
-//                
-//                return firstSum > secondSum
-//            }
-//            
-//            let id: UUID = .init()
-//            var otherSum: Double = 0
-//            var arr2: [CategoryEntityLocal] = []
-//            
-//            for index in 0..<arr.count {
-//                if index < 4 {
-//                    arr2.append(arr[index])
-//                } else {
-//                    otherSum += arr[index].spendings.map { $0.amountUSD }.reduce(0, +)
-//                }
-//            }
-//            
-//            if otherSum > 0 {
-//                arr2.append(
-//                    .init(
-//                        color: "secondary",
-//                        id: id,
-//                        name: "Other",
-//                        spendings: [.init(
-//                            amount: otherSum,
-//                            amountUSD: otherSum,
-//                            currency: UserDefaults.standard.string(forKey: "defaultCurrency") ?? "USD",
-//                            date: .now,
-//                            place: "",
-//                            categoryId: id,
-//                            comment: ""
-//                        )]
-//                    )
-//                )
-//            }
-//            
-//            self.categories = arr2
-//        } else {
-            self.categories = Array(tempCategories.values)
-//        }
-    }
-}
