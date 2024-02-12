@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import financecontrol
+@testable import Squirrel
 
 final class SpendingsCoreDataModelTests: XCTestCase {
     var cdm: CoreDataModel?
@@ -203,7 +203,7 @@ final class SpendingsCoreDataModelTests: XCTestCase {
                 amount: Double.random(in: 0..<10000),
                 amountUSD: Double.random(in: 0..<10000),
                 currency: ["USD", "EUR", "JPY"].randomElement()!,
-                date: Calendar.current.date(byAdding: .day, value: -index, to: .now)!,
+                date: Calendar.current.startOfDay(for: Calendar.current.date(byAdding: .day, value: -index, to: .now)!),
                 place: "Place",
                 categoryId: categoryId ?? .init(),
                 comment: "Comment"
@@ -215,7 +215,7 @@ final class SpendingsCoreDataModelTests: XCTestCase {
         let data = cdm?.operationsForList()
         
         for index in 0..<8 {
-            let key = dateFormat(Calendar.current.date(byAdding: .day, value: -index, to: .now)!)
+            let key = Calendar.current.startOfDay(for: Calendar.current.date(byAdding: .day, value: -index, to: .now)!)
             
             let element = data?[key]
             

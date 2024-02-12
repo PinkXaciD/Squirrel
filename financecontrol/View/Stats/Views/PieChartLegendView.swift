@@ -8,6 +8,26 @@
 import SwiftUI
 
 struct PieChartLegendView: View {
+    internal init(
+        filterCategories: Binding<[CategoryEntity]>,
+        applyFilters: Binding<Bool>,
+        minimize: Binding<Bool>,
+        cdm: CoreDataModel,
+        pcvm: PieChartViewModel
+    ) {
+        self._filterCategories = filterCategories
+        self._applyFilters = applyFilters
+        self._minimize = minimize
+        
+        self.operationsInMonthSorted = cdm.operationsInMonth(
+            startDate: .now.getFirstDayOfMonth(-pcvm.selection),
+            endDate: .now.getFirstDayOfMonth(-pcvm.selection + 1),
+            categoryName: pcvm.selectedCategory?.name
+        ).sorted { first, second in
+            return first.spendings.map { $0.amountUSD }.reduce(0, +) > second.spendings.map { $0.amountUSD }.reduce(0, +)
+        }
+    }
+    
     @EnvironmentObject
     private var pcvm: PieChartViewModel
     @EnvironmentObject
@@ -26,27 +46,12 @@ struct PieChartLegendView: View {
     @Binding
     var minimize: Bool
     
+    let operationsInMonthSorted: [CategoryEntityLocal]
+    
     var body: some View {
-        let operationsInMonthSorted: [CategoryEntityLocal] = cdm.operationsInMonth(
-            .now.getFirstDayOfMonth(
-                -pcvm.selection
-            ),
-            categoryName: pcvm.selectedCategory?.name
-        ).sorted { first, second in
-            var firstSum: Double = 0
-            var secondSum: Double = 0
-            for spending in first.spendings {
-                firstSum += spending.amountUSDWithReturns
-            }
-            for spending in second.spendings {
-                secondSum += spending.amountUSDWithReturns
-            }
-            return firstSum > secondSum
-        }
-        
         if minimize {
             ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(spacing: 10) {
+                HStack(spacing: 10) {
                     ForEach(operationsInMonthSorted) { category in
                         PieChartLegendRowView(
                             filterCategories: $filterCategories,
@@ -58,12 +63,14 @@ struct PieChartLegendView: View {
                 }
                 .padding(.horizontal, 20)
             }
-            .id(UUID())
             .font(.system(size: 14))
             .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 0))
+            .transaction { transaction in
+                transaction.animation = nil
+            }
         } else {
             HStack {
-                LazyVStack (alignment: .leading, spacing: 10) {
+                VStack(alignment: .leading, spacing: 10) {
                     ForEach(operationsInMonthSorted) { category in
                         PieChartLegendRowView(
                             filterCategories: $filterCategories,
@@ -71,14 +78,15 @@ struct PieChartLegendView: View {
                             amount: countCategorySpendings(category),
                             category: category
                         )
-                        .id(UUID())
-                        .transition(.identity.animation(.none))
                     }
                 }
                 
                 Spacer()
             }
             .font(.system(size: 14))
+            .transaction { transaction in
+                transaction.animation = nil
+            }
         }
     }
     

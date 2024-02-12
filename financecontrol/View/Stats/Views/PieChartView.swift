@@ -34,7 +34,7 @@ struct PieChartView: View {
             
             legend
         } footer: {
-            expandButton
+            footer
         }
     }
     
@@ -58,10 +58,16 @@ struct PieChartView: View {
     }
     
     private var legend: some View {
-        PieChartLegendView(filterCategories: $filterCategories, applyFilters: $applyFilters, minimize: $minimizeLegend)
+        PieChartLegendView(
+            filterCategories: $filterCategories,
+            applyFilters: $applyFilters,
+            minimize: $minimizeLegend,
+            cdm: cdm,
+            pcvm: pcvm
+        )
     }
     
-    private var expandButton: some View {
+    private var footer: some View {
         HStack {
             if let name = pcvm.selectedCategory?.name {
                 Text("Selected category: \(name)")

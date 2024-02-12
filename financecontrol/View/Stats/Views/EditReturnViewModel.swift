@@ -44,7 +44,7 @@ final class EditReturnViewModel: ViewModel {
         cdm.editReturn(
             entity: returnEntity,
             amount: doubleAmount,
-            amountUSD: doubleAmount,
+            amountUSD: doubleAmount / (rvm.rates[spending?.wrappedCurrency ?? currency] ?? 1),
             currency: spending?.wrappedCurrency ?? currency,
             date: date,
             name: name
@@ -58,7 +58,7 @@ final class EditReturnViewModel: ViewModel {
             spending: spending,
             oldReturn: returnEntity,
             amount: doubleAmount,
-            amountUSD: doubleAmount,
+            amountUSD: doubleAmount / (rvm.rates[spending.wrappedCurrency] ?? 1),
             currency: spending.wrappedCurrency,
             date: date,
             name: name

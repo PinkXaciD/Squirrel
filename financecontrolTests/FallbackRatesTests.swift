@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import financecontrol
+@testable import Squirrel
 
 final class FallbackRatesTests: XCTestCase {
     

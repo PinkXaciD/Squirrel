@@ -17,6 +17,8 @@ struct DebugView: View {
     private var defaultsConfirmationIsShowing: Bool = false
     @State
     private var timelineConfirmationIsShowing: Bool = false
+    @State
+    private var validateConfirmationIsShowing: Bool = false
     
     var body: some View {
         Form {
@@ -43,6 +45,11 @@ struct DebugView: View {
         }
         .confirmationDialog("", isPresented: $timelineConfirmationIsShowing) {
             Button("Reload all widget timelines", role: .destructive, action: WidgetsManager.shared.reloadAll)
+        }
+        .confirmationDialog("", isPresented: $validateConfirmationIsShowing) {
+            Button("Validate returns", role: .destructive) {
+                cdm.validateReturns(rvm: rvm)
+            }
         }
         .navigationTitle("Debug")
         .navigationBarTitleDisplayMode(.inline)
@@ -142,7 +149,7 @@ struct DebugView: View {
     private var validateSection: some View {
         Section {
             Button(role: .destructive) {
-                cdm.validateReturns()
+                validateConfirmationIsShowing.toggle()
             } label: {
                 Text("Validate returns")
             }

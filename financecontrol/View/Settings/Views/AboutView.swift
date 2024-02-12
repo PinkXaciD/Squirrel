@@ -43,11 +43,12 @@ struct AboutView: View {
     
     private var aboutHeader: some View {
         VStack(alignment: .center) {
-            if let image = Bundle.main.icon {
-                Image(uiImage: image)
-                    .cornerRadius(15)
-                    .onTapGesture(count: 5, perform: debugToggle)
-            }
+            let name = (UIApplication.shared.alternateIconName ?? "AppIcon") + "_Image"
+            
+            Image(name, bundle: .main)
+                .cornerRadius(15)
+                .onTapGesture(count: 5, perform: debugToggle)
+                .overlay { iconOverlay }
             
             Text("Squirrel, version \(version)")
                 .font(.body.bold())
@@ -62,6 +63,13 @@ struct AboutView: View {
         .frame(maxWidth: .infinity)
         .textCase(nil)
         .listRowInsets(.init(top: 15, leading: 20, bottom: 15, trailing: 20))
+    }
+    
+    private var iconOverlay: some View {
+        RoundedRectangle(cornerRadius: 15)
+            .stroke(lineWidth: 1)
+            .foregroundColor(.primary)
+            .opacity(0.3)
     }
     
     private var githubSection: some View {

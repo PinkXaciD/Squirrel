@@ -118,7 +118,7 @@ extension CoreDataModel {
         }
     }
     
-    func validateReturns() {
+    func validateReturns(rvm: RatesViewModel) {
         var count: Int = 0
         
         for spending in self.savedSpendings {
@@ -128,7 +128,7 @@ extension CoreDataModel {
                         spending: spending,
                         oldReturn: entity,
                         amount: entity.amount,
-                        amountUSD: entity.amountUSD,
+                        amountUSD: entity.amount / (rvm.rates[entity.currency ?? "USD"] ?? 1),
                         currency: entity.currency ?? "USD",
                         date: entity.date ?? Date(),
                         name: entity.name ?? ""
@@ -138,6 +138,8 @@ extension CoreDataModel {
                 }
             }
         }
+        
+        HapticManager.shared.notification(.success)
         
         #if DEBUG
         let logger = Logger(subsystem: Vars.appIdentifier, category: "CoreDataModel")
@@ -180,18 +182,11 @@ extension CoreDataModel {
     }
     
     // MARK: Operations for legend
-    func operationsInMonth(_ date: Date, categoryName: String?) -> [CategoryEntityLocal] {
-        let firstDate: Date = date.getFirstDayOfMonth()
-        let secondDate: Date = date.getFirstDayOfMonth(1)
+    func operationsInMonth(startDate: Date, endDate: Date, categoryName: String?) -> [CategoryEntityLocal] {
+        let range = startDate ..< endDate
         
-        let predicate = NSPredicate(format: "(date >= %@) AND (date < %@)", firstDate as CVarArg, secondDate as CVarArg)
-        var filteredSpendings: [SpendingEntity] = []
+        var filteredSpendings: [SpendingEntity] = savedSpendings.filter { range.contains($0.wrappedDate) }
         
-        do {
-            filteredSpendings = try getSpendings(predicate: predicate)
-        } catch {
-            ErrorType(error: error).publish()
-        }
         
         if let categoryName = categoryName {
             filteredSpendings = filteredSpendings.filter({ $0.categoryName == categoryName })

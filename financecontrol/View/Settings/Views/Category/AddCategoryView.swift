@@ -85,7 +85,7 @@ struct AddCategoryView: View {
                 }
             }
             .font(.body.bold())
-            .foregroundColor(name.isEmpty || colorSelectedDescription.isEmpty ? .secondary : .accentColor)
+            .foregroundColor(name.isEmpty || colorSelectedDescription.isEmpty ? .secondary.opacity(0.7) : .accentColor)
         }
     }
     
