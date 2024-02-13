@@ -43,14 +43,15 @@ struct AboutView: View {
     
     private var aboutHeader: some View {
         VStack(alignment: .center) {
-            let name = (UIApplication.shared.alternateIconName ?? "AppIcon") + "_Image"
+            let imageName = (UIApplication.shared.alternateIconName ?? "AppIcon") + "_Image"
+            let appName = Bundle.main.displayName ?? "Squirrel"
             
-            Image(name, bundle: .main)
+            Image(imageName, bundle: .main)
                 .cornerRadius(15)
                 .onTapGesture(count: 5, perform: debugToggle)
                 .overlay { iconOverlay }
             
-            Text("Squirrel, version \(version)")
+            Text("\(appName), version \(version)")
                 .font(.body.bold())
                 .foregroundColor(.primary)
             

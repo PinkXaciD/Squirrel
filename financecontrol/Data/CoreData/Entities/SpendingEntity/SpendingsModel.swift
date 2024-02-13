@@ -120,6 +120,9 @@ extension CoreDataModel {
     
     func validateReturns(rvm: RatesViewModel) {
         var count: Int = 0
+        #if DEBUG
+        let logger = Logger(subsystem: Vars.appIdentifier, category: "CoreDataModel")
+        #endif
         
         for spending in self.savedSpendings {
             if !spending.returnsArr.isEmpty {
@@ -142,7 +145,6 @@ extension CoreDataModel {
         HapticManager.shared.notification(.success)
         
         #if DEBUG
-        let logger = Logger(subsystem: Vars.appIdentifier, category: "CoreDataModel")
         logger.log("Validated \(count) returns")
         #endif
     }
@@ -211,7 +213,9 @@ extension CoreDataModel {
                         color: place == NSLocalizedString("Unknown", comment: "") ? "secondary" : colors[colorIndex],
                         id: spending.wrappedId,
                         name: place,
-                        spendings: []
+                        spendings: [], 
+                        sumUSDWithReturns: 0, 
+                        sumWithReturns: 0
                     )
                     
                     if preResult[place] == nil {
@@ -236,6 +240,19 @@ extension CoreDataModel {
                         )
                     )
                     
+                    localCategory.sumUSDWithReturns += spending.amountUSDWithReturns
+                    
+                    let defaultCurrency = UserDefaults.standard.string(forKey: "defaultCurrency") ?? Locale.current.currencyCode ?? "USD"
+                    
+                    if spending.currency == defaultCurrency {
+                        localCategory.sumWithReturns += spending.amountWithReturns
+                    } else {
+                        if let fetchedRates = UserDefaults.standard.dictionary(forKey: "rates") as? [String:Double],
+                           let defaultCurrencyRate = fetchedRates[defaultCurrency] {
+                            localCategory.sumWithReturns += (spending.amountUSDWithReturns * defaultCurrencyRate)
+                        }
+                    }
+                    
                     preResult.updateValue(localCategory, forKey: place)
                 } else {
                     if let catId = spending.category?.id {
@@ -243,7 +260,9 @@ extension CoreDataModel {
                             color: spending.category?.color ?? "",
                             id: catId,
                             name: spending.categoryName,
-                            spendings: []
+                            spendings: [], 
+                            sumUSDWithReturns: 0, 
+                            sumWithReturns: 0
                         )
                         
                         localCategory.spendings.append(
@@ -259,6 +278,20 @@ extension CoreDataModel {
                                 categoryId: catId
                             )
                         )
+                        
+                        localCategory.sumUSDWithReturns += spending.amountUSDWithReturns
+                        
+                        let defaultCurrency = UserDefaults.standard.string(forKey: "defaultCurrency") ?? Locale.current.currencyCode ?? "USD"
+                        
+                        if spending.currency == defaultCurrency {
+                            localCategory.sumWithReturns += spending.amountWithReturns
+                        } else {
+                            if let fetchedRates = UserDefaults.standard.dictionary(forKey: "rates") as? [String:Double],
+                               let defaultCurrencyRate = fetchedRates[defaultCurrency] {
+                                localCategory.sumWithReturns += (spending.amountUSDWithReturns * defaultCurrencyRate)
+                            }
+                        }
+                        
                         preResult.updateValue(localCategory, forKey: catId.uuidString)
                     }
                 }
@@ -267,7 +300,7 @@ extension CoreDataModel {
             return Array(preResult.values)
         }
         
-        return categories
+        return categories.sorted(by: >)
     }
     
     // MARK: Operations for chart

@@ -80,7 +80,7 @@ extension RatesViewModel {
 extension RatesViewModel {
     private func insertRates() {
         guard
-            let fetchedRates = UserDefaults.standard.value(forKey: "rates") as? [String: Double]
+            let fetchedRates = UserDefaults.standard.dictionary(forKey: "rates") as? [String: Double]
         else {
             rates = Rates.fallback.rates
             return

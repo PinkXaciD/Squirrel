@@ -20,7 +20,6 @@ struct PieChartLegendRowView: View {
     @Binding
     var applyFilters: Bool
     
-    let amount: Double
     let category: CategoryEntityLocal
     
     var isActive: Bool = true
@@ -71,7 +70,7 @@ struct PieChartLegendRowView: View {
                             .fill(Color[category.color])
                     }
                 
-                Text(amount.formatted(.currency(code: defaultCurrency)))
+                Text(category.sumWithReturns.formatted(.currency(code: defaultCurrency)))
             }
             .padding(.vertical, 3)
             .padding(.trailing, 6)

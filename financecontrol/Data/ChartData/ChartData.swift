@@ -43,19 +43,35 @@ struct ChartData: Identifiable {
                     return place
                 }
                 
+                var amountWithReturns: Double {
+                    let defaultCurrency: String = UserDefaults.standard.string(forKey: "defaultCurrency") ?? Locale.current.currencyCode ?? "USD"
+                    if spending.currency == defaultCurrency {
+                        return spending.amount
+                    } else {
+                        guard
+                            let fetchedRates = UserDefaults.standard.dictionary(forKey: "rates") as? [String:Double],
+                            let defaultCurrencyRate = fetchedRates[defaultCurrency]
+                        else {
+                            return 0
+                        }
+                        
+                        return spending.amountUSDWithReturns * defaultCurrencyRate
+                    }
+                }
+                
+                let localSpending = SpendingEntityLocal(
+                    amountUSD: spending.amountUSD,
+                    amount: spending.amount,
+                    amountWithReturns: spending.amountWithReturns,
+                    amountUSDWithReturns: spending.amountUSDWithReturns,
+                    comment: spending.comment ?? "",
+                    currency: spending.wrappedCurrency,
+                    date: spending.wrappedDate,
+                    place: spending.place ?? "",
+                    categoryId: spending.wrappedId
+                )
+                
                 if let existing = tempCategories[place] {
-                    let localSpending = SpendingEntityLocal(
-                        amountUSD: spending.amountUSD,
-                        amount: spending.amount,
-                        amountWithReturns: spending.amountWithReturns,
-                        amountUSDWithReturns: spending.amountUSDWithReturns,
-                        comment: spending.comment ?? "",
-                        currency: spending.wrappedCurrency,
-                        date: spending.wrappedDate,
-                        place: spending.place ?? "",
-                        categoryId: spending.wrappedId
-                    )
-                    
                     var catSpendings: [SpendingEntityLocal] = existing.spendings
                     catSpendings.append(localSpending)
                     
@@ -63,29 +79,20 @@ struct ChartData: Identifiable {
                         color: existing.color,
                         id: existing.id,
                         name: existing.name,
-                        spendings: catSpendings
+                        spendings: catSpendings, 
+                        sumUSDWithReturns: existing.sumUSDWithReturns + localSpending.amountUSDWithReturns, 
+                        sumWithReturns: existing.sumWithReturns + amountWithReturns
                     )
                     
                     tempCategories.updateValue(updatedCategory, forKey: place)
-                    
                 } else {
-                    let localSpending = SpendingEntityLocal(
-                        amountUSD: spending.amountUSD,
-                        amount: spending.amount,
-                        amountWithReturns: spending.amountWithReturns,
-                        amountUSDWithReturns: spending.amountUSDWithReturns,
-                        comment: spending.comment ?? "",
-                        currency: spending.wrappedCurrency,
-                        date: spending.wrappedDate,
-                        place: spending.place ?? "",
-                        categoryId: spending.wrappedId
-                    )
-                    
                     let updatedCategory = CategoryEntityLocal(
                         color: place == NSLocalizedString("Unknown", comment: "") ? "secondary" : colors[colorIndex],
                         id: spending.wrappedId,
                         name: place,
-                        spendings: [localSpending]
+                        spendings: [localSpending], 
+                        sumUSDWithReturns: localSpending.amountUSDWithReturns,
+                        sumWithReturns: amountWithReturns
                     )
                     
                     if colorIndex < colors.count - 1 {
@@ -107,49 +114,56 @@ struct ChartData: Identifiable {
                 else {
                     continue
                 }
+                
+                var amountWithReturns: Double {
+                    let defaultCurrency: String = UserDefaults.standard.string(forKey: "defaultCurrency") ?? Locale.current.currencyCode ?? "USD"
+                    if spending.currency == defaultCurrency {
+                        return spending.amount
+                    } else {
+                        guard
+                            let fetchedRates = UserDefaults.standard.dictionary(forKey: "rates") as? [String:Double],
+                            let defaultCurrencyRate = fetchedRates[defaultCurrency]
+                        else {
+                            return 0
+                        }
+                        
+                        return spending.amountUSDWithReturns * defaultCurrencyRate
+                    }
+                }
+                
+                let localSpending = SpendingEntityLocal(
+                    amountUSD: spending.amountUSD,
+                    amount: spending.amount,
+                    amountWithReturns: spending.amountWithReturns,
+                    amountUSDWithReturns: spending.amountUSDWithReturns,
+                    comment: spending.comment ?? "",
+                    currency: spending.wrappedCurrency,
+                    date: spending.wrappedDate,
+                    place: spending.place ?? "",
+                    categoryId: catId
+                )
                         
                 if let existing = tempCategories[catId.uuidString] {
-                    let localSpending = SpendingEntityLocal(
-                        amountUSD: spending.amountUSD,
-                        amount: spending.amount,
-                        amountWithReturns: spending.amountWithReturns,
-                        amountUSDWithReturns: spending.amountUSDWithReturns,
-                        comment: spending.comment ?? "",
-                        currency: spending.wrappedCurrency,
-                        date: spending.wrappedDate,
-                        place: spending.place ?? "",
-                        categoryId: catId
-                    )
-                    
                     var catSpendings: [SpendingEntityLocal] = existing.spendings
                     catSpendings.append(localSpending)
                     let updatedCategory = CategoryEntityLocal(
                         color: existing.color,
                         id: existing.id,
                         name: existing.name,
-                        spendings: catSpendings
+                        spendings: catSpendings, 
+                        sumUSDWithReturns: existing.sumUSDWithReturns + localSpending.amountUSDWithReturns, 
+                        sumWithReturns: existing.sumWithReturns + amountWithReturns
                     )
                     
                     tempCategories.updateValue(updatedCategory, forKey: catId.uuidString)
-                    
                 } else {
-                    let localSpending = SpendingEntityLocal(
-                        amountUSD: spending.amountUSD,
-                        amount: spending.amount,
-                        amountWithReturns: spending.amountWithReturns,
-                        amountUSDWithReturns: spending.amountUSDWithReturns,
-                        comment: spending.comment ?? "",
-                        currency: spending.wrappedCurrency,
-                        date: spending.wrappedDate,
-                        place: spending.place ?? "",
-                        categoryId: catId
-                    )
-                    
                     let updatedCategory = CategoryEntityLocal(
                         color: categoryColor,
                         id: catId,
                         name: categoryName,
-                        spendings: [localSpending]
+                        spendings: [localSpending], 
+                        sumUSDWithReturns: localSpending.amountUSDWithReturns,
+                        sumWithReturns: amountWithReturns
                     )
                     
                     tempCategories.updateValue(updatedCategory, forKey: catId.uuidString)

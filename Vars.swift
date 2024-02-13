@@ -12,9 +12,9 @@ struct Vars {
     
     static let groupName: String = "group.dev.squirrelapp.squirrel"
     
-    static let appIdentifier: String = "dev.squirrelapp.squirrel"
+    static let appIdentifier: String = Bundle.main.bundleIdentifier ?? "dev.squirrelapp.squirrel"
     
-    static let widgetIdentifier: String = "dev.squirrelapp.squirrel.squirrelWidget"
+    static let widgetIdentifier: String = appIdentifier + ".squirrelWidget"
 }
 
 struct URLs {

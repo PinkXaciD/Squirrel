@@ -23,7 +23,7 @@ struct SettingsView: View {
     @State
     private var presentCustomAlert: Bool = false
     @State
-    private var customAlertMessage: String = ""
+    private var customAlertMessage: Text = .init("")
     @State
     private var customAlertType: CustomAlertType = .unknown
     

@@ -23,9 +23,7 @@ struct PieChartLegendView: View {
             startDate: .now.getFirstDayOfMonth(-pcvm.selection),
             endDate: .now.getFirstDayOfMonth(-pcvm.selection + 1),
             categoryName: pcvm.selectedCategory?.name
-        ).sorted { first, second in
-            return first.spendings.map { $0.amountUSD }.reduce(0, +) > second.spendings.map { $0.amountUSD }.reduce(0, +)
-        }
+        )
     }
     
     @EnvironmentObject
@@ -56,7 +54,6 @@ struct PieChartLegendView: View {
                         PieChartLegendRowView(
                             filterCategories: $filterCategories,
                             applyFilters: $applyFilters,
-                            amount: countCategorySpendings(category),
                             category: category
                         )
                     }
@@ -75,7 +72,6 @@ struct PieChartLegendView: View {
                         PieChartLegendRowView(
                             filterCategories: $filterCategories,
                             applyFilters: $applyFilters,
-                            amount: countCategorySpendings(category),
                             category: category
                         )
                     }
@@ -88,18 +84,5 @@ struct PieChartLegendView: View {
                 transaction.animation = nil
             }
         }
-    }
-    
-    private func countCategorySpendings(_ category: CategoryEntityLocal) -> Double {
-        let defaultCurrencyValue = rvm.rates[defaultCurrency] ?? 1
-        var result: Double = 0
-        for spending in category.spendings {
-            if spending.currency == defaultCurrency {
-                result += spending.amountWithReturns
-            } else {
-                result += (spending.amountUSDWithReturns * defaultCurrencyValue)
-            }
-        }
-        return result
     }
 }

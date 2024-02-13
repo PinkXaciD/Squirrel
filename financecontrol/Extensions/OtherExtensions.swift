@@ -16,7 +16,7 @@ extension Bundle {
         return infoDictionary?["CFBundleVersion"] as? String
     }
     
-    public var icon: UIImage? {
+    var icon: UIImage? {
         guard
             let icons = infoDictionary?["CFBundleIcons"] as? [String:Any],
             let primaryIcon = icons["CFBundlePrimaryIcon"] as? [String:Any],
@@ -30,6 +30,10 @@ extension Bundle {
     }
     
     static let mainIdentifier = Bundle.main.bundleIdentifier ?? "com.pinkxacid.financecontrol"
+    
+    var displayName: String? {
+        return object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
+    }
 }
 
 extension CodingUserInfoKey {

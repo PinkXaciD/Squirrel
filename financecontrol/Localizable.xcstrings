@@ -10,6 +10,16 @@
     "%@" : {
 
     },
+    "%@, version %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@, version %2$@"
+          }
+        }
+      }
+    },
     "%@.\n%@" : {
       "localizations" : {
         "en" : {
@@ -396,6 +406,9 @@
     "No URL was found" : {
 
     },
+    "Nothing to import" : {
+
+    },
     "OK" : {
 
     },
@@ -483,9 +496,6 @@
     "Squirrel" : {
 
     },
-    "Squirrel, version %@" : {
-
-    },
     "Sqwoorl" : {
 
     },
@@ -495,10 +505,35 @@
     "Stealth" : {
 
     },
+    "Successfully imported %lld expenses" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Successfully imported %lld expense"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "new",
+                  "value" : "Successfully imported %lld expenses"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "Swipe left to restore, swipe right to delete" : {
 
     },
     "Tap to add" : {
+
+    },
+    "Tap to remove selection" : {
 
     },
     "Teal" : {

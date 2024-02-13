@@ -103,5 +103,6 @@ struct ErrorType: Identifiable, Equatable {
         
         ErrorHandler.shared.appError = self
         ErrorHandler.shared.showAlert = true
+        HapticManager.shared.notification(.error)
     }
 }

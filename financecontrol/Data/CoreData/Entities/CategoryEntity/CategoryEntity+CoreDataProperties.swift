@@ -46,7 +46,11 @@ extension CategoryEntity : Identifiable {
 
 }
 
-struct CategoryEntityLocal: Identifiable, Equatable {
+struct CategoryEntityLocal: Identifiable, Equatable, Comparable {
+    static func < (lhs: CategoryEntityLocal, rhs: CategoryEntityLocal) -> Bool {
+        return lhs.sumUSDWithReturns < rhs.sumUSDWithReturns
+    }
+    
     static func == (lhs: CategoryEntityLocal, rhs: CategoryEntityLocal) -> Bool {
         return lhs.id == rhs.id
     }
@@ -55,6 +59,8 @@ struct CategoryEntityLocal: Identifiable, Equatable {
     var id: UUID
     var name: String
     var spendings: [SpendingEntityLocal]
+    var sumUSDWithReturns: Double
+    var sumWithReturns: Double
 }
 
 extension CategoryEntityLocal {
@@ -64,6 +70,8 @@ extension CategoryEntityLocal {
         self.name = category.name ?? ""
         
         var spendings: [SpendingEntityLocal] = []
+        var sumUSDWithReturns: Double = 0
+        var sumWithReturns: Double = 0
         
         if let unwrapped = category.spendings?.allObjects as? [SpendingEntity] {
             for spending in unwrapped {
@@ -80,9 +88,28 @@ extension CategoryEntityLocal {
                         categoryId: category.id ?? .init()
                     )
                 )
+                
+                sumUSDWithReturns += spending.amountUSDWithReturns
+                
+                let defaultCurrency = UserDefaults.standard.string(forKey: "defaultCurrency") ?? Locale.current.currencyCode ?? "USD"
+                
+                if spending.wrappedCurrency == defaultCurrency {
+                    sumWithReturns += spending.amount
+                } else {
+                    guard
+                        let fetchedRates = UserDefaults.standard.dictionary(forKey: "rates") as? [String:Double],
+                        let defaultCurrencyRate = fetchedRates[defaultCurrency]
+                    else {
+                        continue
+                    }
+                    
+                    sumWithReturns += (spending.amountUSDWithReturns * defaultCurrencyRate)
+                }
             }
         }
         
         self.spendings = spendings
+        self.sumUSDWithReturns = sumUSDWithReturns
+        self.sumWithReturns = sumWithReturns
     }
 }

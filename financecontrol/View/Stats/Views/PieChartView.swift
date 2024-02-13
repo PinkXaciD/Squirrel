@@ -68,9 +68,33 @@ struct PieChartView: View {
     }
     
     private var footer: some View {
-        HStack {
+        HStack(alignment: .center) {
             if let name = pcvm.selectedCategory?.name {
-                Text("Selected category: \(name)")
+                Button {
+                    withAnimation {
+                        pcvm.selectedCategory = nil
+                        pcvm.updateData()
+                    }
+                    
+                    if filterCategories.count == 1 {
+                        withAnimation {
+                            filterCategories.removeAll()
+                        }
+                        
+                        if pcvm.selection == 0 {
+                            withAnimation {
+                                applyFilters = false
+                            }
+                        }
+                    }
+                } label: {
+                    VStack(alignment: .leading) {
+                        Text("Selected category: \(name)")
+                        
+                        Text("Tap to remove selection")
+                    }
+                }
+                .buttonStyle(.plain)
             }
             
             Spacer()
