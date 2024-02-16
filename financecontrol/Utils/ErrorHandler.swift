@@ -37,25 +37,11 @@ struct ErrorType: Identifiable, Equatable {
         self.helpAnchor = ""
     }
     
-    init(localizedError: LocalizedError) {
+    init(_ localizedError: LocalizedError) {
         self.errorDescription = localizedError.errorDescription ?? ""
         self.failureReason = localizedError.failureReason ?? ""
         self.recoverySuggestion = localizedError.recoverySuggestion ?? ""
         self.helpAnchor = localizedError.helpAnchor ?? ""
-    }
-    
-    init(_ infoPlistError: InfoPlistError) {
-        self.errorDescription = infoPlistError.errorDescription
-        self.failureReason = infoPlistError.failureReason
-        self.recoverySuggestion = infoPlistError.recoverySuggestion
-        self.helpAnchor = ""
-    }
-    
-    init(_ ratesFetchError: RatesFetchError) {
-        self.errorDescription = ratesFetchError.errorDescription
-        self.failureReason = ratesFetchError.failureReason
-        self.recoverySuggestion = ratesFetchError.recoverySuggestion
-        self.helpAnchor = ""
     }
     
     init(_ urlError: URLError) {

@@ -82,6 +82,8 @@ extension CoreDataModel {
             if Calendar.current.isDateInToday(spending.date) {
                 passSpendingsToSumWidget()
             }
+            
+            HapticManager.shared.notification(.success)
         }
     }
     
@@ -103,6 +105,8 @@ extension CoreDataModel {
         if Calendar.current.isDateInToday(newSpending.date) {
             passSpendingsToSumWidget()
         }
+        
+        HapticManager.shared.notification(.success)
     }
     
     func deleteSpending(_ spending: SpendingEntity) {

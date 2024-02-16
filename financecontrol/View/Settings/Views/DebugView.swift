@@ -58,19 +58,19 @@ struct DebugView: View {
     private var infoPlistSection: some View {
         Section {
             Button("Throw Info.plist error") {
-                ErrorType(.noInfoFound).publish()
+                ErrorType(InfoPlistError.noInfoFound).publish()
             }
             
             Button("Throw URL error") {
-                ErrorType(.noURLFound).publish()
+                ErrorType(InfoPlistError.noURLFound).publish()
             }
             
             Button("Throw URL components error") {
-                ErrorType(.failedToReadURLComponents).publish()
+                ErrorType(InfoPlistError.failedToReadURLComponents).publish()
             }
             
             Button("Throw API key error") {
-                ErrorType(.noAPIKeyFound).publish()
+                ErrorType(InfoPlistError.noAPIKeyFound).publish()
             }
         } header: {
             Text(verbatim: "Info.plist error")
@@ -118,6 +118,15 @@ struct DebugView: View {
                     .foregroundColor(.secondary)
             }
             .normalizePadding()
+            
+            #if DEBUG
+            Button("Fetch rates", role: .destructive) {
+                let rm = RatesModel()
+                Task {
+                    try await rm.downloadRates(timestamp: Date())
+                }
+            }
+            #endif
         } header: {
             Text("Rates")
         }
@@ -134,10 +143,18 @@ struct DebugView: View {
         } header: {
             Text("Bundle")
         }
+        .onTapGesture(count: 2) {
+            UIPasteboard.general.string = Bundle.main.bundleIdentifier
+            HapticManager.shared.impact(.rigid)
+        }
     }
     
     private var defaultsSection: some View {
         Section {
+            NavigationLink("UserDefaults values") {
+                UserDefaultsValuesView(defaults: .standard)
+            }
+            
             Button(role: .destructive) {
                 defaultsConfirmationIsShowing.toggle()
             } label: {
@@ -180,19 +197,28 @@ struct DebugView: View {
     }
     
     private func clearStandartUserDefaults() {
-        let keys: [String] = ["defaultCurrency", "rates", "updateTime", "updateRates", "updateTime", "color", "theme"]
-        
-        for key in keys {
-            UserDefaults.standard.removeObject(forKey: key)
+        let defaults = UserDefaults.standard
+        let dictionary = defaults.dictionaryRepresentation()
+        dictionary.keys.forEach { key in
+            defaults.removeObject(forKey: key)
+        }
+        if UserDefaults.standard.dictionaryRepresentation().isEmpty {
+            HapticManager.shared.notification(.success)
+        } else {
+            HapticManager.shared.notification(.warning)
         }
     }
     
     private func clearSharedUserDefaults() {
-        let keys: [String] = ["amount", "date"]
-        let defaults: UserDefaults? = .init(suiteName: Vars.groupName)
-        
-        for key in keys {
+        let defaults = UserDefaults(suiteName: Vars.groupName)
+        let dictionary = defaults?.dictionaryRepresentation()
+        dictionary?.keys.forEach { key in
             defaults?.removeObject(forKey: key)
+        }
+        if let dict = defaults?.dictionaryRepresentation(), dict.isEmpty {
+            HapticManager.shared.notification(.success)
+        } else {
+            HapticManager.shared.notification(.warning)
         }
     }
 }
@@ -228,6 +254,49 @@ extension DebugView {
             let date: Date = isoDateFromatter.date(from: ratesUpdateTime) ?? .distantPast
             return dateFormatter.string(from: date)
         }
+    }
+}
+
+struct UserDefaultsValuesView: View {
+    let defaults: [String:Any]
+    
+    @State
+    private var search: String = ""
+    
+    var body: some View {
+        List {
+            ForEach(Array(searchFunc().sorted(by: <)), id: \.self) { key in
+                Section {
+                    Text(defaults[key].debugDescription)
+                        .onTapGesture(count: 2) {
+                            UIPasteboard.general.string = defaults[key].debugDescription
+                            HapticManager.shared.impact(.rigid)
+                        }
+                } header: {
+                    Text(key)
+                        .font(.body.bold())
+                        .textCase(nil)
+                        .onTapGesture(count: 2) {
+                            UIPasteboard.general.string = key
+                            HapticManager.shared.impact(.rigid)
+                        }
+                }
+            }
+        }
+        .searchable(text: $search)
+        .navigationTitle("UserDefaults")
+    }
+    
+    private func searchFunc() -> [String] {
+        if search.isEmpty {
+            return Array(defaults.keys)
+        } else {
+            return Array(defaults.keys).filter { $0.localizedCaseInsensitiveContains(search) }
+        }
+    }
+    
+    init(defaults: UserDefaults) {
+        self.defaults = defaults.dictionaryRepresentation()
     }
 }
 

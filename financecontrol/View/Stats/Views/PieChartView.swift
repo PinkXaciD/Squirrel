@@ -23,10 +23,10 @@ struct PieChartView: View {
     let size: CGFloat
     
     @AppStorage("defaultCurrency")
-    var defaultCurrency: String = "USD"
+    var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
     @State
-    private var minimizeLegend: Bool = true
+    private var minimizeLegend: Bool = UserDefaults.standard.bool(forKey: "minimizeLegend")
     
     var body: some View {
         Section {
@@ -119,6 +119,7 @@ extension PieChartView {
         withAnimation {
             minimizeLegend.toggle()
         }
+        UserDefaults.standard.set(minimizeLegend, forKey: "minimizeLegend")
     }
     
     private func expandButtonLabel() -> some View {

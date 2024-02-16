@@ -9,7 +9,10 @@ import Foundation
 
 extension Date {
     var previousDay: Date {
-        return Calendar.current.date(byAdding: .day, value: -1, to: self)!
+        guard let date = Calendar.current.date(byAdding: .day, value: -1, to: self) else {
+            return self
+        }
+        return date
     }
     
     func getFirstDayOfMonth(_ value: Int = 0) -> Date {

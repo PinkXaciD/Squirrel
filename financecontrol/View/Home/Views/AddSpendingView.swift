@@ -18,7 +18,7 @@ struct AddSpendingView: View {
     @AppStorage("color") 
     private var tint: String = "Orange"
     @AppStorage("defaultCurrency") 
-    private var defaultCurrency: String = "USD"
+    private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
     @Environment(\.dismiss) 
     private var dismiss

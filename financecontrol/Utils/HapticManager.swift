@@ -8,7 +8,6 @@
 import UIKit
 
 final class HapticManager {
-    
     static let shared = HapticManager()
     
     func notification(_ type: UINotificationFeedbackGenerator.FeedbackType) {

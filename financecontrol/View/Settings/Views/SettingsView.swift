@@ -11,7 +11,7 @@ struct SettingsView: View {
     @AppStorage("color")
     var defaultColor: String = "Orange"
     @AppStorage("defaultCurrency")
-    var defaultCurrency: String = "USD"
+    var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     @AppStorage("theme")
     var theme: String = "None"
     

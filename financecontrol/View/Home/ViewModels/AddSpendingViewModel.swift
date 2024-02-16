@@ -37,7 +37,7 @@ final class AddSpendingViewModel: ViewModel {
     
     init(ratesViewModel rvm: RatesViewModel, coreDataModel cdm: CoreDataModel) {
         self.amount = ""
-        self.currency = UserDefaults.standard.string(forKey: "defaultCurrency") ?? "USD"
+        self.currency = UserDefaults.standard.string(forKey: "defaultCurrency") ?? Locale.current.currencyCode ?? "USD"
         self.date = .now
         self.categoryName = "Select Category"
         self.categoryId = .init()
@@ -69,7 +69,21 @@ final class AddSpendingViewModel: ViewModel {
                 comment: comment
             )
             
-            if !Calendar.current.isDateInToday(date) {
+            if currency == "USD" {
+                spending.amountUSD = doubleAmount
+                cdm.addSpending(spending: spending)
+                #if DEBUG
+                let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
+                logger.log("Currency is USD, skipping rates fetching...")
+                #endif
+                return
+            }
+            
+            if Calendar.current.isDateInToday(date) {
+                spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
+                
+                cdm.addSpending(spending: spending)
+            } else {
                 Task {
                     let oldRates = try? await rvm.getRates(date).rates
                     await MainActor.run {
@@ -82,16 +96,8 @@ final class AddSpendingViewModel: ViewModel {
                         cdm.addSpending(spending: spending)
                     }
                 }
-            } else {
-                spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
-                
-                cdm.addSpending(spending: spending)
             }
-            
-            HapticManager.shared.notification(.success)
         } else {
-            HapticManager.shared.notification(.error)
-            
             ErrorType(
                 errorDescription: "Failed to add expence",
                 failureReason: "Cannot convert amount to number",

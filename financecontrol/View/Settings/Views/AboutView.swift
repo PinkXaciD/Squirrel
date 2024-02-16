@@ -101,6 +101,7 @@ struct AboutView: View {
         withAnimation {
             showDebug.toggle()
         }
+        HapticManager.shared.impact(.rigid)
     }
 }
 

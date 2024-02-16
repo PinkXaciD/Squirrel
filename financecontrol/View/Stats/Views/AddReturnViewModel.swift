@@ -6,6 +6,9 @@
 //
 
 import SwiftUI
+#if DEBUG
+import OSLog
+#endif
 
 final class AddReturnViewModel: ViewModel {
     @ObservedObject var cdm: CoreDataModel
@@ -41,14 +44,33 @@ final class AddReturnViewModel: ViewModel {
         guard
             let returns = spending.returns?.allObjects as? [ReturnEntity]
         else {
-            HapticManager.shared.notification(.error)
-            
             ErrorType(
                 errorDescription: "Failed to add return",
                 failureReason: "Cannot convert amount to number",
                 recoverySuggestion: "Try again"
             )
             .publish()
+            
+            return
+        }
+        
+        if spending.wrappedCurrency == "USD" {
+            if countSum(doubleAmount, returns: returns) {
+                return
+            }
+            
+            cdm.addReturn(
+                to: spending,
+                amount: doubleAmount,
+                amountUSD: doubleAmount,
+                currency: spending.wrappedCurrency,
+                date: date,
+                name: name
+            )
+            #if DEBUG
+            let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
+            logger.log("Currency is USD, skipping rates fetching...")
+            #endif
             
             return
         }
@@ -66,7 +88,7 @@ final class AddReturnViewModel: ViewModel {
                         cdm.addReturn(
                             to: spending,
                             amount: doubleAmount,
-                            amountUSD: doubleAmount / (oldRates[currency] ?? 1),
+                            amountUSD: doubleAmount / (oldRates[spending.wrappedCurrency] ?? 1),
                             currency: spending.wrappedCurrency,
                             date: date,
                             name: name
@@ -79,7 +101,7 @@ final class AddReturnViewModel: ViewModel {
                         cdm.addReturn(
                             to: spending,
                             amount: doubleAmount,
-                            amountUSD: doubleAmount / (rvm.rates[currency] ?? 1),
+                            amountUSD: doubleAmount / (rvm.rates[spending.wrappedCurrency] ?? 1),
                             currency: spending.wrappedCurrency,
                             date: date,
                             name: name
@@ -95,14 +117,12 @@ final class AddReturnViewModel: ViewModel {
             cdm.addReturn(
                 to: spending,
                 amount: doubleAmount,
-                amountUSD: doubleAmount / (rvm.rates[currency] ?? 1),
+                amountUSD: doubleAmount / (rvm.rates[spending.wrappedCurrency] ?? 1),
                 currency: spending.wrappedCurrency,
                 date: date,
                 name: name
             )
         }
-        
-        HapticManager.shared.notification(.success)
     }
     
     func addFull() {

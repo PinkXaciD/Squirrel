@@ -11,10 +11,17 @@ struct CurrencyRow: View {
     @EnvironmentObject private var cdm: CoreDataModel
     @EnvironmentObject private var rvm: RatesViewModel
     
-    @AppStorage("defaultCurrency") var defaultCurrency: String = "USD"
+    @AppStorage("defaultCurrency") var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
     let tag: String
     let currency: CurrencyEntity
+    
+    var currencyFormatter: NumberFormatter {
+        let currencyFormatter = NumberFormatter()
+        currencyFormatter.maximumFractionDigits = 2
+        currencyFormatter.minimumFractionDigits = 2
+        return currencyFormatter
+    }
     
     var body: some View {
         HStack {
@@ -29,7 +36,7 @@ struct CurrencyRow: View {
                         if tag == defaultCurrency {
                             Text("Selected as default")
                         } else {
-                            Text("1 \(tag) = \(String((1 / rate) * defaultRate).currencyFormat) \(defaultCurrency)")
+                            Text("1 \(tag) = \(currencyFormatter.string(from: (1 / rate) * defaultRate as NSNumber) ?? "Error") \(defaultCurrency)")
                         }
                     } else {
                         Text("No up to date exchange rate found")

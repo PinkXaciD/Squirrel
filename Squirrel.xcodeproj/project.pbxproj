@@ -125,6 +125,7 @@
 		8DEED7282A5C4A3700C79752 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEED7272A5C4A3700C79752 /* SettingsView.swift */; };
 		8DF003752B0CB07900133554 /* PieChartCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF003742B0CB07900133554 /* PieChartCenterView.swift */; };
 		8DF003772B0CC0A200133554 /* FiltersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF003762B0CC0A200133554 /* FiltersView.swift */; };
+		8DF6B9D22B7E78CA0088645E /* StatsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF6B9D12B7E78CA0088645E /* StatsListView.swift */; };
 		8DF8AE9C2AB47334006D287B /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 8DF8AE9B2AB47334006D287B /* .gitignore */; };
 		8DFA1EDE2B4C163100B97113 /* CustomIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DFA1EDD2B4C163100B97113 /* CustomIcon.swift */; };
 		8DFA1EE02B4C16DE00B97113 /* IconRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DFA1EDF2B4C16DE00B97113 /* IconRow.swift */; };
@@ -285,6 +286,7 @@
 		8DEED7272A5C4A3700C79752 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		8DF003742B0CB07900133554 /* PieChartCenterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieChartCenterView.swift; sourceTree = "<group>"; };
 		8DF003762B0CC0A200133554 /* FiltersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersView.swift; sourceTree = "<group>"; };
+		8DF6B9D12B7E78CA0088645E /* StatsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsListView.swift; sourceTree = "<group>"; };
 		8DF8AE9B2AB47334006D287B /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		8DFA1EDD2B4C163100B97113 /* CustomIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomIcon.swift; sourceTree = "<group>"; };
 		8DFA1EDF2B4C16DE00B97113 /* IconRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconRow.swift; sourceTree = "<group>"; };
@@ -638,6 +640,7 @@
 				8D06810B2B6D45CD00195205 /* PieChartLegendView.swift */,
 				8D06810F2B6D466600195205 /* PieChartCompleteView.swift */,
 				8DBCEF2B2B762D35005F4BCC /* PieChartLegendRowView.swift */,
+				8DF6B9D12B7E78CA0088645E /* StatsListView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -990,6 +993,7 @@
 				8D591EA82A93AAF700A9CD07 /* LaunchActions.swift in Sources */,
 				8D6E441F2B18D6AE00FDFF9D /* AddReturnViewModel.swift in Sources */,
 				8DD5C38C2A603F4500FC862C /* Formatters.swift in Sources */,
+				8DF6B9D22B7E78CA0088645E /* StatsListView.swift in Sources */,
 				8D2240BD2B0F94B500D5572B /* ViewModelProtocol.swift in Sources */,
 				8D35AC962B0E62DE0030F7DF /* AddSpendingViewModel.swift in Sources */,
 				8D4A539C2A78055200081E5F /* EditSpendingView.swift in Sources */,
@@ -1115,7 +1119,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1154,7 +1158,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1315,7 +1319,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				ENABLE_PREVIEWS = YES;
@@ -1361,7 +1365,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				ENABLE_PREVIEWS = YES;

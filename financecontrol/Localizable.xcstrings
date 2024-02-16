@@ -205,6 +205,9 @@
     "Clear filters" : {
 
     },
+    "Clear selection" : {
+
+    },
     "Clear shared UserDefaults" : {
 
     },
@@ -317,6 +320,9 @@
 
     },
     "Filter" : {
+
+    },
+    "Filter by Categories" : {
 
     },
     "Filters" : {
@@ -573,6 +579,12 @@
 
     },
     "Unknown" : {
+
+    },
+    "UserDefaults" : {
+
+    },
+    "UserDefaults values" : {
 
     },
     "Validate returns" : {

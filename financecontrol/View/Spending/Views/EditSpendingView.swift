@@ -192,7 +192,7 @@ struct EditSpendingView: View {
             .disabled(
                 !utils.checkAll(amount: vm.amount, place: vm.place, category: vm.categoryName, comment: vm.comment)
                 ||
-                entity.returnsSum > (Double(vm.amount) ?? 0)
+                entity.returnsSum > (Double(vm.amount.replacingOccurrences(of: ",", with: ".")) ?? 0)
             )
         }
     }

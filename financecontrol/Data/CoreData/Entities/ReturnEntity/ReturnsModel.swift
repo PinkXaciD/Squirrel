@@ -31,6 +31,8 @@ extension CoreDataModel {
         if Calendar.current.isDateInToday(spending.wrappedDate) {
             passSpendingsToSumWidget()
         }
+        
+        HapticManager.shared.notification(.success)
     }
     
     func deleteReturn(spendingReturn: ReturnEntity) {

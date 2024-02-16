@@ -6,6 +6,9 @@
 //
 
 import SwiftUI
+#if DEBUG
+import OSLog
+#endif
 
 final class EditReturnViewModel: ViewModel {
     @Published var amount: String
@@ -54,11 +57,42 @@ final class EditReturnViewModel: ViewModel {
     }
     
     func editFromSpending(spending: SpendingEntity) {
+        var amountUSD: Double {
+            if spending.wrappedCurrency == "USD" {
+                #if DEBUG
+                let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
+                logger.log("Currency is USD, skipping rates fetching...")
+                #endif
+                return doubleAmount
+            }
+            
+            var result: Double = 0
+            
+            if Calendar.current.isDateInToday(date) {
+                result = doubleAmount / (rvm.rates[spending.wrappedCurrency] ?? 1)
+            } else {
+                Task {
+                    let oldRates = try? await rvm.getRates(date).rates
+                    let preResult: Double = await MainActor.run {
+                        if let rate = oldRates?[spending.wrappedCurrency] {
+                            return doubleAmount / rate
+                        } else {
+                            return doubleAmount / (rvm.rates[spending.wrappedCurrency] ?? 1)
+                        }
+                    }
+                    
+                    result = preResult
+                }
+            }
+            
+            return result
+        }
+        
         cdm.editRerturnFromSpending(
             spending: spending,
             oldReturn: returnEntity,
             amount: doubleAmount,
-            amountUSD: doubleAmount / (rvm.rates[spending.wrappedCurrency] ?? 1),
+            amountUSD: amountUSD,
             currency: spending.wrappedCurrency,
             date: date,
             name: name
