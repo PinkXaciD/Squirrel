@@ -32,7 +32,7 @@ extension View {
     ///   - presenting: State of presentation
     ///   - message: Text inside an alert
     /// - Returns: View with added custom alert overlay
-    func customAlert(_ type: CustomAlertType, presenting: Binding<Bool>, message: String = "") -> some View {
+    func customAlert(_ type: CustomAlertType, presenting: Binding<Bool>, message: Text = .init(verbatim: "")) -> some View {
         
         let offset = -(
             UIScreen.main.bounds.height / 2
@@ -94,7 +94,7 @@ extension View {
             .modifier(SpendingPlaceTextFieldStyleModifier())
     }
     
-    func roundedStrikeThrough(_ color: Color, thickness: CGFloat = 2) -> some View {
+    func roundedStrikeThrough(_ color: Color = .primary, thickness: CGFloat = 2) -> some View {
         return self
             .modifier(RoundedStrikeThroughModifier(color: color, thickness: thickness))
     }

@@ -10,6 +10,16 @@
     "%@" : {
 
     },
+    "%@, version %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@, version %2$@"
+          }
+        }
+      }
+    },
     "%@.\n%@" : {
       "localizations" : {
         "en" : {
@@ -159,9 +169,6 @@
     "Apply" : {
 
     },
-    "Archieved categories" : {
-
-    },
     "Archive" : {
 
     },
@@ -196,6 +203,9 @@
 
     },
     "Clear filters" : {
+
+    },
+    "Clear selection" : {
 
     },
     "Clear shared UserDefaults" : {
@@ -312,6 +322,9 @@
     "Filter" : {
 
     },
+    "Filter by Categories" : {
+
+    },
     "Filters" : {
 
     },
@@ -363,9 +376,6 @@
     "Name" : {
 
     },
-    "Name is too long" : {
-
-    },
     "Neon Night" : {
 
     },
@@ -387,6 +397,9 @@
     "No Info file was found" : {
 
     },
+    "No radar will find you now" : {
+
+    },
     "No results" : {
 
     },
@@ -397,6 +410,9 @@
 
     },
     "No URL was found" : {
+
+    },
+    "Nothing to import" : {
 
     },
     "OK" : {
@@ -414,13 +430,19 @@
     "Pink" : {
 
     },
+    "Place" : {
+
+    },
     "Place (Optional)" : {
 
     },
-    "Please submit bug report and try to reinstall the app" : {
+    "Place name is too long" : {
 
     },
-    "Please submit bug report and try to restart the app" : {
+    "Please submit a bug report and try to reinstall the app" : {
+
+    },
+    "Please submit a bug report and try to restart the app" : {
 
     },
     "Purple" : {
@@ -468,6 +490,9 @@
     "Selected as default" : {
 
     },
+    "Selected category: %@" : {
+
+    },
     "Settings" : {
 
     },
@@ -477,19 +502,44 @@
     "Squirrel" : {
 
     },
-    "Squirrel, version %@" : {
-
-    },
     "Sqwoorl" : {
 
     },
     "Stats" : {
 
     },
+    "Stealth" : {
+
+    },
+    "Successfully imported %lld expenses" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Successfully imported %lld expense"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "new",
+                  "value" : "Successfully imported %lld expenses"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "Swipe left to restore, swipe right to delete" : {
 
     },
     "Tap to add" : {
+
+    },
+    "Tap to remove selection" : {
 
     },
     "Teal" : {
@@ -526,6 +576,15 @@
 
     },
     "Today" : {
+
+    },
+    "Unknown" : {
+
+    },
+    "UserDefaults" : {
+
+    },
+    "UserDefaults values" : {
 
     },
     "Validate returns" : {

@@ -72,20 +72,10 @@ struct FiltersView: View {
     
     private var categoriesSection: some View {
         Section {
-            Button {
-                toggleCategoriesPicker()
+            NavigationLink {
+                FiltersCategoriesView(categories: $categories, applyFilters: $applyFilters, cdm: cdm)
             } label: {
                 categoriesPickerLabel
-            }
-            
-            if showCategoriesPicker {
-                ForEach(cdm.savedCategories + cdm.shadowedCategories) { category in
-                    Button {
-                        categoryButtonAction(category)
-                    } label: {
-                        categoryRowLabel(category)
-                    }
-                }
             }
         } header: {
             Text("Categories")
@@ -94,10 +84,6 @@ struct FiltersView: View {
     
     private var categoriesPickerLabel: some View {
         HStack(spacing: 5) {
-            Image(systemName: "chevron.down")
-                .rotationEffect(showCategoriesPicker ? .degrees(180) : .degrees(0))
-                .font(.body.bold())
-            
             Text("Categories")
             
             Spacer()
@@ -139,6 +125,62 @@ extension FiltersView {
         }
     }
     
+    private func clearFilters() {
+        withAnimation(.linear(duration: 0.1)) {
+            applyFilters = false
+            categories = []
+        }
+        firstFilterDate = .now.getFirstDayOfMonth()
+        secondFilterDate = .now
+    }
+}
+
+struct FiltersCategoriesView: View {
+    @Environment(\.dismiss)
+    private var dismiss
+    
+    @Binding 
+    var categories: [CategoryEntity]
+    @Binding
+    var applyFilters: Bool
+    
+    let listData: [CategoryEntity]
+    
+    var body: some View {
+        List {
+            Section {
+                ForEach(listData) { category in
+                    Button {
+                        categoryButtonAction(category)
+                    } label: {
+                        categoryRowLabel(category)
+                    }
+                }
+            }
+            
+            Section {
+                Button("Clear selection", role: .destructive) {
+                    categories.removeAll()
+                }
+                .disabled(categories.isEmpty)
+                .animation(.default.speed(2), value: categories)
+            }
+        }
+        .navigationTitle("Filter by Categories")
+        .toolbar {
+            trailingToolbar
+        }
+    }
+    
+    private var trailingToolbar: ToolbarItem<Void, some View> {
+        ToolbarItem {
+            Button("Save") {
+                dismiss()
+            }
+            .font(.body.bold())
+        }
+    }
+    
     private func categoryButtonAction(_ category: CategoryEntity) {
         if categories.contains(category) {
             let index: Int = categories.firstIndex(of: category) ?? 0
@@ -150,24 +192,25 @@ extension FiltersView {
     
     private func categoryRowLabel(_ category: CategoryEntity) -> some View {
         return HStack {
+            Image(systemName: "circle.fill")
+                .foregroundColor(Color[category.color ?? ""])
+                .font(.body)
+                
             Text(category.name ?? "Error")
                 .foregroundColor(.primary)
             
             Spacer()
             
-            if categories.contains(category) {
-                Image(systemName: "checkmark")
-                    .font(.body.bold())
-            }
+            Image(systemName: "checkmark")
+                .font(.body.bold())
+                .opacity(categories.contains(category) ? 1 : 0)
+                .animation(.default.speed(3), value: categories)
         }
     }
     
-    private func clearFilters() {
-        withAnimation(.linear(duration: 0.1)) {
-            applyFilters = false
-            categories = []
-        }
-        firstFilterDate = .now.getFirstDayOfMonth()
-        secondFilterDate = .now
+    init(categories: Binding<[CategoryEntity]>, applyFilters: Binding<Bool>, cdm: CoreDataModel) {
+        self._categories = categories
+        self._applyFilters = applyFilters
+        self.listData = (cdm.savedCategories + cdm.shadowedCategories).sorted { $0.name ?? "" < $1.name ?? "" }
     }
 }

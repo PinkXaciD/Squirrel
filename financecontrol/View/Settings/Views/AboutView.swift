@@ -34,7 +34,7 @@ struct AboutView: View {
             Button("App site") {}
             
             Button {
-                openURL(URL(string: "https://github.com/PinkXaciD/Squirrel")!)
+                openURL(URLs.github)
             } label: {
                 Text(verbatim: "GitHub")
             }
@@ -43,13 +43,15 @@ struct AboutView: View {
     
     private var aboutHeader: some View {
         VStack(alignment: .center) {
-            if let image = Bundle.main.icon {
-                Image(uiImage: image)
-                    .cornerRadius(15)
-                    .onTapGesture(count: 5, perform: debugToggle)
-            }
+            let imageName = (UIApplication.shared.alternateIconName ?? "AppIcon") + "_Image"
+            let appName = Bundle.main.displayName ?? "Squirrel"
             
-            Text("Squirrel, version \(version)")
+            Image(imageName, bundle: .main)
+                .cornerRadius(15)
+                .onTapGesture(count: 5, perform: debugToggle)
+                .overlay { iconOverlay }
+            
+            Text("\(appName), version \(version)")
                 .font(.body.bold())
                 .foregroundColor(.primary)
             
@@ -64,10 +66,17 @@ struct AboutView: View {
         .listRowInsets(.init(top: 15, leading: 20, bottom: 15, trailing: 20))
     }
     
+    private var iconOverlay: some View {
+        RoundedRectangle(cornerRadius: 15)
+            .stroke(lineWidth: 1)
+            .foregroundColor(.primary)
+            .opacity(0.3)
+    }
+    
     private var githubSection: some View {
         Section {
             Button("Create an issue on GitHub") {
-                openURL(URL(string: "https://github.com/PinkXaciD/Squirrel/issues/new")!)
+                openURL(URLs.newGithubIssue)
             }
             
             Button("Buy me some noodles") {}
@@ -92,6 +101,7 @@ struct AboutView: View {
         withAnimation {
             showDebug.toggle()
         }
+        HapticManager.shared.impact(.rigid)
     }
 }
 

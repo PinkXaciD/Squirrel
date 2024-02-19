@@ -15,7 +15,7 @@ public enum InfoPlistError: LocalizedError {
 }
 
 extension InfoPlistError {
-    public var failureReason: String {
+    public var failureReason: String? {
         switch self {
         case .noInfoFound:
             return NSLocalizedString("No Info file was found", comment: "")
@@ -29,7 +29,7 @@ extension InfoPlistError {
         
     }
     
-    public var errorDescription: String {
+    public var errorDescription: String? {
         switch self {
         case .noInfoFound, .failedToReadURLComponents:
             return NSLocalizedString("It seems some system files are missing or corrupted", comment: "")
@@ -38,28 +38,12 @@ extension InfoPlistError {
         }
     }
     
-    public var recoverySuggestion: String {
+    public var recoverySuggestion: String? {
         switch self {
         case .noInfoFound, .failedToReadURLComponents:
-            return NSLocalizedString("Please submit bug report and try to reinstall the app", comment: "")
+            return NSLocalizedString("Please submit a bug report and try to reinstall the app", comment: "")
         case .noURLFound, .noAPIKeyFound:
-            return NSLocalizedString("Please submit bug report and try to restart the app", comment: "")
-        }
-    }
-}
-
-extension InfoPlistError {
-    
-    func errorType() -> ErrorType {
-        switch self {
-        case .failedToReadURLComponents:
-            return ErrorType(.failedToReadURLComponents)
-        case .noAPIKeyFound:
-            return ErrorType(.noAPIKeyFound)
-        case .noInfoFound:
-            return ErrorType(.noInfoFound)
-        case .noURLFound:
-            return ErrorType(.noURLFound)
+            return NSLocalizedString("Please submit a bug report and try to restart the app", comment: "")
         }
     }
 }
@@ -69,21 +53,21 @@ enum RatesFetchError: LocalizedError {
 }
 
 extension RatesFetchError {
-    var errorDescription: String {
+    var errorDescription: String? {
         switch self {
         case .emptyDatabase:
             return NSLocalizedString("It seems some system files are missing or corrupted", comment: "")
         }
     }
     
-    var recoverySuggestion: String {
+    var recoverySuggestion: String? {
         switch self {
         case .emptyDatabase:
-            return NSLocalizedString("Please submit bug report and try to reinstall the app", comment: "")
+            return NSLocalizedString("Please submit a bug report and try to reinstall the app", comment: "")
         }
     }
     
-    var failureReason: String {
+    var failureReason: String? {
         switch self {
         case .emptyDatabase:
             return NSLocalizedString("Empty database", comment: "")

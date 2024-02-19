@@ -11,11 +11,11 @@ import OSLog
 
 struct AddExpenseWidgetProvider: TimelineProvider {
     func placeholder(in context: Context) -> AddExpenseEntry {
-        AddExpenseEntry(date: Date(), image: { Image(.squirrelLogo) }, url: URLS.addExpenseAction)
+        AddExpenseEntry(date: Date(), image: { Image(.squirrelLogo) }, url: URLs.addExpenseAction)
     }
     
     func getSnapshot(in context: Context, completion: @escaping (AddExpenseEntry) -> Void) {
-        let entry = AddExpenseEntry(date: Date(), image: { Image(.squirrelLogo) }, url: URLS.addExpenseAction)
+        let entry = AddExpenseEntry(date: Date(), image: { Image(.squirrelLogo) }, url: URLs.addExpenseAction)
         completion(entry)
     }
     
@@ -26,7 +26,7 @@ struct AddExpenseWidgetProvider: TimelineProvider {
         for _ in 0..<2 {
             let entryDate = Calendar.current.startOfDay(for: .init())
             let entryImage = Image(.squirrelLogo)
-            let entryURL = URLS.addExpenseAction
+            let entryURL = URLs.addExpenseAction
             let entry = AddExpenseEntry(date: entryDate, image: { entryImage }, url: entryURL)
             entries.append(entry)
             logger.debug("Generating entry... Date: \(entryDate), image name: \("squirrelLogo"), URL: \(entryURL?.absoluteString ?? "No URL")")

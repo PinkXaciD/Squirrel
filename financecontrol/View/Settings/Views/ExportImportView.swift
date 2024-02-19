@@ -17,7 +17,7 @@ struct ExportImportView: View {
     @State private var presentImportSheet: Bool = false
     
     @Binding var presentAlert: Bool
-    @Binding var alertMessage: String
+    @Binding var alertMessage: Text
     @Binding var alertType: CustomAlertType
     
     var body: some View {
@@ -90,10 +90,10 @@ extension ExportImportView {
             if let imported = cdm.importJSON(url) {
                 switch imported {
                 case 0:
-                    self.alertMessage = "Nothing to import"
+                    self.alertMessage = .init("Nothing to import")
                     self.alertType = .warning
                 default:
-                    self.alertMessage = "Successfully imported \(imported) \(imported == 1 ? "category" : "categories")"
+                    self.alertMessage = .init("Successfully imported \(imported) expenses")
                     self.alertType = .success
                 }
                 

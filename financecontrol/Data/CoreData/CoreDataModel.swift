@@ -75,20 +75,29 @@ extension CoreDataModel {
                 let jsonData = try Data(contentsOf: url)
                 let decoder = JSONDecoder()
                 decoder.dateDecodingStrategy = .iso8601
-                decoder.userInfo[.moc] = manager.context
+                decoder.userInfo[.moc] = context
                 
                 url.stopAccessingSecurityScopedResource()
                 
                 let tempData = try decoder.decode([CategoryEntity].self, from: jsonData)
                 
-                importedCount = tempData.count
-                
                 let existingCategoryIds = savedCategories.map { $0.id } + shadowedCategories.map { $0.id }
+                let existingSpendingsIds = savedSpendings.map { $0.id }
                 
                 for category in tempData {
+                    if let spendings = category.spendings?.allObjects as? [SpendingEntity], !spendings.isEmpty {
+                        for spending in spendings {
+                            if !existingSpendingsIds.contains(spending.id) {
+                                if let id = spending.category?.id, let category = findCategory(id) {
+                                    addToCategory(spending, category)
+                                    importedCount += 1
+                                }
+                            }
+                        }
+                    }
+                    
                     if existingCategoryIds.contains(category.id) {
-                        manager.context.delete(category)
-                        importedCount -= 1
+                        context.delete(category)
                     }
                 }
 
@@ -104,6 +113,7 @@ extension CoreDataModel {
                 return nil
             }
         } catch {
+            context.rollback()
             ErrorType(error: error).publish()
             return nil
         }

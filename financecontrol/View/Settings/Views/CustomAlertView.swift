@@ -10,7 +10,7 @@ import SwiftUI
 struct CustomAlertView: View {
     @Binding var isPresented: Bool
     var type: CustomAlertType
-    var text: String
+    var text: Text
     
     var body: some View {
         
@@ -32,9 +32,7 @@ struct CustomAlertView: View {
                         Text(type.alertTitle)
                             .fontWeight(.bold)
                         
-                        if !text.isEmpty {
-                            Text(text)
-                        }
+                        text
                     }
                     .padding(.vertical, 5)
                     

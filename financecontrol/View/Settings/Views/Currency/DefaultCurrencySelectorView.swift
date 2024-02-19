@@ -12,7 +12,7 @@ struct DefaultCurrencySelectorView: View {
     
     @EnvironmentObject var cdm: CoreDataModel
     
-    @AppStorage("defaultCurrency") var defaultCurrency: String = "USD"
+    @AppStorage("defaultCurrency") var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
     var body: some View {
         let currencies = cdm.savedCurrencies.sorted {

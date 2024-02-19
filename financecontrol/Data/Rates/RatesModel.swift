@@ -17,14 +17,14 @@ final class RatesModel {
     
     init() {
         #if DEBUG
-        let logger = Logger(subsystem: Vars.appIdentifier, category: "RatesModel state")
+        let logger = Logger(subsystem: Vars.appIdentifier, category: "\(#fileID) state")
         logger.debug("RatesModel initialized")
         #endif
     }
     
     #if DEBUG
     deinit {
-        let logger = Logger(subsystem: Vars.appIdentifier, category: "RatesModel state")
+        let logger = Logger(subsystem: Vars.appIdentifier, category: "\(#fileID) state")
         logger.debug("RatesModel deinitialized")
     }
     #endif
@@ -41,6 +41,7 @@ extension RatesModel {
             
             if let timestamp = timestamp {
                 let formatter = ISO8601DateFormatter()
+                formatter.timeZone = .init(secondsFromGMT: 0)
                         
                 timestampString = "\"" + formatter.string(from: timestamp) + "\""
             }

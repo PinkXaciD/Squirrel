@@ -43,7 +43,7 @@ struct CategoriesEditView: View {
                 ShadowedCategoriesView()
             } label: {
                 HStack {
-                    Text("Archieved categories")
+                    Text("Archived categories")
                     Spacer()
                     Text("\(cdm.shadowedCategories.count)")
                         .foregroundStyle(.secondary)

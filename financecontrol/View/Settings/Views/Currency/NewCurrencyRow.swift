@@ -11,10 +11,17 @@ struct NewCurrencyRow: View {
     @EnvironmentObject private var cdm: CoreDataModel
     @EnvironmentObject private var rvm: RatesViewModel
     @Environment(\.dismiss) private var dismiss
-    @AppStorage("defaultCurrency") private var defaultCurrency: String = "USD"
+    @AppStorage("defaultCurrency") private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
     let name: String
     let code: String
+    
+    var currencyFormatter: NumberFormatter {
+        let currencyFormatter = NumberFormatter()
+        currencyFormatter.maximumFractionDigits = 2
+        currencyFormatter.minimumFractionDigits = 2
+        return currencyFormatter
+    }
     
     var body: some View {
         Button(action: addCurrency) {
@@ -29,7 +36,7 @@ struct NewCurrencyRow: View {
                 .foregroundStyle(.primary)
             
             if let rate = rvm.rates[code], let defaultRate = rvm.rates[defaultCurrency] {
-                Text("1 \(code) = \(String((1 / rate) * defaultRate).currencyFormat) \(defaultCurrency)")
+                Text("1 \(code) = \(currencyFormatter.string(from: (1 / rate) * defaultRate as NSNumber) ?? "Error") \(defaultCurrency)")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             } else {

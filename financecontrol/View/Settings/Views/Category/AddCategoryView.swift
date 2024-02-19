@@ -1,5 +1,5 @@
 //
-//  NewCategoryView.swift
+//  AddCategoryView.swift
 //  financecontrol
 //
 //  Created by PinkXaciD on R 5/07/19.
@@ -13,60 +13,79 @@ struct AddCategoryView: View {
     @Binding var id: UUID
     let insert: Bool
     
-    @State private var input: String = ""
+    @State private var name: String = ""
     @State private var colorSelected: Color = Color.clear
     @State private var colorSelectedDescription: String = ""
+    @State private var triedToSave: Bool = false
     
     @FocusState private var isFocused: Bool
     
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        
-        
-        
         List {
-            Section {
-                TextField("Enter name", text: $input)
-                    .focused($isFocused)
-                    .onAppear(perform: fieldFocus)
-            } header: {
-                Text("Name")
-            }
+            nameSection
             
-            Section {
-                CustomColorSelector(colorSelected: $colorSelected, colorSelectedDescription: $colorSelectedDescription)
-                    .padding(.vertical, 10)
-                
-            } header: {
-                
-                Text("Color")
-                
-            }
-            
-            Button {
-                if insert {
-                    id = cdm.addCategory(name: input, color: colorSelectedDescription)
-                } else {
-                    _ = cdm.addCategory(name: input, color: colorSelectedDescription)
-                }
-                
-                dismiss()
-            } label: {
-                Text("Save")
-                    .fontWeight(.semibold)
-            }
-            .disabled(input == "" || colorSelectedDescription == "")
-            .toolbar {
-                keyboardToolbar
-            }
+            colorSection
         }
         .navigationTitle("New Category")
+        .toolbar {
+            keyboardToolbar
+            
+            trailingToolbar
+        }
     }
     
-    var keyboardToolbar: ToolbarItemGroup<some View> {
+    private var nameSection: some View {
+        Section {
+            TextField("Enter name", text: $name)
+                .focused($isFocused)
+                .onAppear(perform: fieldFocus)
+        } footer: {
+            if triedToSave && name.isEmpty {
+                Text("Required")
+                    .foregroundColor(.red)
+            }
+        }
+    }
+    
+    private var colorSection: some View {
+        Section {
+            CustomColorSelector(colorSelected: $colorSelected, colorSelectedDescription: $colorSelectedDescription)
+                .padding(.vertical, 10)
+        } footer: {
+            if triedToSave && colorSelectedDescription.isEmpty {
+                Text("Required")
+                    .foregroundColor(.red)
+            }
+        }
+    }
+    
+    private var keyboardToolbar: ToolbarItemGroup<some View> {
         hideKeyboardToolbar {
             clearFocus()
+        }
+    }
+    
+    private var trailingToolbar: ToolbarItem<Void, some View> {
+        ToolbarItem(placement: .topBarTrailing) {
+            Button("Save") {
+                if name.isEmpty || colorSelectedDescription.isEmpty {
+                    triedToSave = true
+                    HapticManager.shared.notification(.warning)
+                } else {
+                    if insert {
+                        id = cdm.addCategory(name: name, color: colorSelectedDescription)
+                    } else {
+                        _ = cdm.addCategory(name: name, color: colorSelectedDescription)
+                    }
+                    
+                    HapticManager.shared.notification(.success)
+                    dismiss()
+                }
+            }
+            .font(.body.bold())
+            .foregroundColor(name.isEmpty || colorSelectedDescription.isEmpty ? .secondary.opacity(0.7) : .accentColor)
         }
     }
     

@@ -11,7 +11,7 @@ struct SettingsView: View {
     @AppStorage("color")
     var defaultColor: String = "Orange"
     @AppStorage("defaultCurrency")
-    var defaultCurrency: String = "USD"
+    var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     @AppStorage("theme")
     var theme: String = "None"
     
@@ -23,7 +23,7 @@ struct SettingsView: View {
     @State
     private var presentCustomAlert: Bool = false
     @State
-    private var customAlertMessage: String = ""
+    private var customAlertMessage: Text = .init("")
     @State
     private var customAlertType: CustomAlertType = .unknown
     

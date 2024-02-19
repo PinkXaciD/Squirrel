@@ -15,7 +15,7 @@ final class WidgetsManager {
     let sumWidgets: [Widgets] = [.smallSum, .accessorySum]
     
     #if DEBUG
-    let logger = Logger(subsystem: Vars.appIdentifier, category: "WidgetsManager")
+    let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
     #endif
     
     var sumWidgetsNeedsToReload: Bool = false
@@ -48,7 +48,7 @@ extension WidgetsManager {
     
     func passAmountToSumWidgets(_ amount: Double) {
         #if DEBUG
-        logger.debug("passAmountToSumWidget(_: Double) called")
+        logger.debug("\(#function) called")
         #endif
         
         guard let sharedDefaults = sharedDefaults else {

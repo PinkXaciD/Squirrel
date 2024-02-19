@@ -13,7 +13,7 @@ struct CenterChartView: View {
     @EnvironmentObject
     private var rvm: RatesViewModel
     @AppStorage("defaultCurrency")
-    var defaultCurrency: String = "USD"
+    var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     var selectedMonth: Date
     
     let width: CGFloat
@@ -23,7 +23,7 @@ struct CenterChartView: View {
         VStack(alignment: .center) {
             
             Text(dateText())
-                .padding(.top, 10)
+                .padding(.top, 5)
             
             Text(operationsSum(operationsInMonth: operationsInMonth))
                 .lineLimit(1)
@@ -46,10 +46,13 @@ extension CenterChartView {
     }
     
     private func dateText() -> String {
-        var formatter: DateFormatter {
-            let formatter = DateFormatter()
-            formatter.setLocalizedDateFormatFromTemplate("MMMMyyyy")
-            return formatter
+        let formatter = DateFormatter()
+        formatter.locale = .current
+        
+        if Calendar.current.isDate(selectedMonth, equalTo: Date(), toGranularity: .year) {
+            formatter.setLocalizedDateFormatFromTemplate("MMMM")
+        } else {
+            formatter.setLocalizedDateFormatFromTemplate("MMMyyyy")
         }
         
         return formatter.string(from: selectedMonth).capitalized
@@ -67,6 +70,11 @@ extension CenterChartView {
                 }
             }
         }
-        return result.description.currencyFormat
+        
+        let currencyFormatter = NumberFormatter()
+        currencyFormatter.maximumFractionDigits = 2
+        currencyFormatter.minimumFractionDigits = 2
+        
+        return currencyFormatter.string(from: result as NSNumber) ?? "Error"
     }
 }

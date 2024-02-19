@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AddSpendingView: View {
-    internal init(ratesViewModel rvm: RatesViewModel, codeDataModel cdm: CoreDataModel) {
+    init(ratesViewModel rvm: RatesViewModel, codeDataModel cdm: CoreDataModel) {
         self._vm = StateObject(wrappedValue: AddSpendingViewModel(ratesViewModel: rvm, coreDataModel: cdm))
     }
     
@@ -18,7 +18,7 @@ struct AddSpendingView: View {
     @AppStorage("color") 
     private var tint: String = "Orange"
     @AppStorage("defaultCurrency") 
-    private var defaultCurrency: String = "USD"
+    private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
     @Environment(\.dismiss) 
     private var dismiss
@@ -128,7 +128,7 @@ struct AddSpendingView: View {
     
     private var placeAndCommentSection: some View {
         Section(header: Text("Optional"), footer: placeAndCommentSectionFooter) {
-            TextField("Name", text: $vm.place)
+            TextField("Place", text: $vm.place)
                 .focused($focusedField, equals: .place)
                 .onSubmit {
                     nextField()
@@ -162,7 +162,7 @@ struct AddSpendingView: View {
             }
             
             if vm.place.count > 100 {
-                Text("Name is too long")
+                Text("Place name is too long")
                     .foregroundColor(.red)
             }
             

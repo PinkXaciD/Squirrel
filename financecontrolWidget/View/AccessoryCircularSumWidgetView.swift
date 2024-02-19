@@ -26,7 +26,10 @@ struct AccessoryCircularSumWidgetView: View {
         numberFormatter.maximumFractionDigits = 2
         numberFormatter.minimumFractionDigits = 0
         
-        if number >= 1000000 {
+        if number >= 1000000000 {
+            let preResult = numberFormatter.string(from: round(number / 10000000)/100 as NSNumber) ?? "Error"
+            return "\(preResult)B"
+        } else if number >= 1000000 {
             let preResult = numberFormatter.string(from: round(number / 10000)/100 as NSNumber) ?? "Error"
             return "\(preResult)M"
         } else if number >= 1000 {
@@ -43,7 +46,7 @@ struct AccessoryCircularSumWidgetView: View {
             Circle()
                 .fill(Material.regular)
             
-            VStack(spacing: 0.5) {
+            VStack(spacing: 0) {
                 Text(entry.currency)
                     .font(.footnote)
                 
@@ -51,7 +54,7 @@ struct AccessoryCircularSumWidgetView: View {
                     .font(.system(.title, design: .rounded).bold())
                     .minimumScaleFactor(0.5)
                     .scaledToFit()
-                    .padding(.horizontal, 6)
+                    .padding(.horizontal, 10)
             }
             .privacySensitive()
         }
@@ -86,7 +89,7 @@ struct AccessoryCircularSumWidgetViewPreviews: PreviewProvider {
         AccessoryCircularSumWidgetView(
             entry: .init(
                 date: .init(),
-                expenses: 1180.50,
+                expenses: 100,
                 currency: "JPY"
             )
         )

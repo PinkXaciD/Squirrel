@@ -31,7 +31,7 @@ struct SpendingView: View {
     private var dismiss
     
     @AppStorage("defaultCurrency") 
-    var defaultCurrency: String = "USD"
+    var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
     @State
     private var alertIsPresented: Bool = false
@@ -45,6 +45,10 @@ struct SpendingView: View {
             if !(entity.returns?.allObjects.isEmpty ?? true) {
                 returnsSection
             }
+            
+            #if DEBUG
+            debugSection
+            #endif
         }
         .alert("Delete this expense?", isPresented: $alertIsPresented) {
             Button("Cancel", role: .cancel) {}
@@ -184,6 +188,40 @@ struct SpendingView: View {
         }
     }
     
+    #if DEBUG
+    private var debugSection: some View {
+        Section {
+            HStack {
+                Text("Amount in USD:")
+                
+                Spacer()
+                
+                Text("\(entity.amountUSD.formatted(.currency(code: "USD")))")
+                    .foregroundColor(.secondary)
+            }
+            
+            HStack {
+                Text("Amount in USD with returns:")
+                
+                Spacer()
+                
+                Text("\(entity.amountUSDWithReturns.formatted(.currency(code: "USD")))")
+                    .foregroundColor(.secondary)
+            }
+            
+            VStack(alignment: .leading) {
+                Text("ID:")
+                
+                Text("\(entity.wrappedId.uuidString)")
+                    .foregroundColor(.secondary)
+                    .font(.system(size: 14))
+            }
+        } header: {
+            Text("Debug")
+        }
+    }
+    #endif
+    
     private var returnsSection: some View {
         Section {
             ForEach(entity.returnsArr.sorted { $0.date ?? .distantPast > $1.date ?? .distantPast }) { returnEntity in
@@ -274,6 +312,20 @@ extension SpendingView {
                     .font(.callout)
                     .foregroundColor(.secondary)
             }
+            
+            #if DEBUG
+            Divider()
+            
+            HStack {
+                Text("Amount in USD:")
+                
+                Spacer()
+                
+                Text("\(returnEntity.amountUSD.formatted(.currency(code: "USD")))")
+                    .foregroundColor(.secondary)
+            }
+            .padding(.top, 3)
+            #endif
         }
         .padding(.vertical, 1)
         .foregroundColor(.primary)
