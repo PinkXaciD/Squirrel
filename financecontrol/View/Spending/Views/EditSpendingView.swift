@@ -69,7 +69,7 @@ struct EditSpendingView: View {
             }
         }
         .onChange(of: toDismiss) { _ in
-            editButtonAction()
+            cancelButtonAction()
         }
         .navigationBarTitleDisplayMode(.inline)
         .onAppear(perform: appearActions)
@@ -169,7 +169,7 @@ struct EditSpendingView: View {
     
     private var returnsSection: some View {
         Section {
-            ForEach(entity.returnsArr.sorted { $0.date ?? .distantPast > $1.date ?? .distantPast }) { returnEntity in
+            ForEach(entity.returnsArr) { returnEntity in
                 returnRow(returnEntity)
             }
         } header: {
@@ -199,7 +199,7 @@ struct EditSpendingView: View {
     
     private var leadingToolbar: ToolbarItem<Void, some View> {
         ToolbarItem(placement: .navigationBarLeading) {
-            Button("Cancel", action: editButtonAction)
+            Button("Cancel", action: cancelButtonAction)
         }
     }
 }
@@ -245,16 +245,17 @@ extension EditSpendingView {
     }
     
     private func doneButtonAction() {
-        clearFocus()
         vm.done()
+        clearFocus()
         withAnimation {
             edit.toggle()
         }
     }
     
-    private func editButtonAction() {
+    private func cancelButtonAction() {
         withAnimation {
             edit.toggle()
+            vm.clear()
         }
     }
     

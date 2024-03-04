@@ -22,7 +22,7 @@ struct CenterChartView: View {
     var body: some View {
         VStack(alignment: .center) {
             
-            Text(dateText())
+            dateText()
                 .padding(.top, 5)
             
             Text(operationsSum(operationsInMonth: operationsInMonth))
@@ -45,17 +45,12 @@ extension CenterChartView {
         self.operationsInMonth = operationsInMonth
     }
     
-    private func dateText() -> String {
-        let formatter = DateFormatter()
-        formatter.locale = .current
-        
+    private func dateText() -> Text {
         if Calendar.current.isDate(selectedMonth, equalTo: Date(), toGranularity: .year) {
-            formatter.setLocalizedDateFormatFromTemplate("MMMM")
+            return Text(selectedMonth, format: .dateTime.month(.wide))
         } else {
-            formatter.setLocalizedDateFormatFromTemplate("MMMyyyy")
+            return Text(selectedMonth, format: .dateTime.month().year())
         }
-        
-        return formatter.string(from: selectedMonth).capitalized
     }
     
     private func operationsSum(operationsInMonth: [CategoryEntityLocal]) -> String {

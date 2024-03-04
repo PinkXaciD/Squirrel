@@ -7,17 +7,32 @@
 
 import SwiftUI
 import ApplePie
+import Combine
+#if DEBUG
+import OSLog
+#endif
 
 final class PieChartViewModel: ViewModel {
     @AppStorage("defaultCurrency") private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
-    @ObservedObject private var cdm: CoreDataModel
+    private var cdm: CoreDataModel
     @Published var selection: Int = 0
     @Published var content: [PieChartCompleteView<CenterChartView>] = []
     @Published var selectedCategory: CategoryEntity? = nil
     let size: CGFloat
+    var cancellables = Set<AnyCancellable>()
+    let id = UUID()
     
-    init(selection: Int = 0, contentSize size: CGFloat, cdm: CoreDataModel) {
-        self._cdm = .init(initialValue: cdm)
+    init(selection: Int = 0, cdm: CoreDataModel) {
+        self.cdm = cdm
+        
+        let size: CGFloat = {
+            let currentScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+            let windowBounds = currentScene?.windows.first(where: { $0.isKeyWindow })?.bounds
+            let width = windowBounds?.width ?? UIScreen.main.bounds.width
+            let height = windowBounds?.height ?? UIScreen.main.bounds.height
+            return width > height ? (height / 1.7) : (width / 1.7)
+        }()
+        
         self.size = size
         
         let chartData = cdm.getChartData()
@@ -26,7 +41,7 @@ final class PieChartViewModel: ViewModel {
         var count = 0
         for element in chartData {
             data.append(
-                .init(
+                PieChartCompleteView(
                     chart: APChart(
                         separators: 0.15,
                         innerRadius: 0.73,
@@ -46,6 +61,18 @@ final class PieChartViewModel: ViewModel {
         }
         
         self.content = data
+        subscribeToUpdate()
+        #if DEBUG
+        let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
+        logger.debug("ViewModel initialized")
+        #endif
+    }
+    
+    deinit {
+        #if DEBUG
+        let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
+        logger.debug("ViewModel deinitialized")
+        #endif
     }
     
     func updateData() {
@@ -114,5 +141,18 @@ final class PieChartViewModel: ViewModel {
         }
         
         return result.compactMap { $0 }.filter { $0.value != 0 }.sorted(by: >)
+    }
+    
+    private func subscribeToUpdate() {
+        cdm.$updateCharts
+            .subscribe(on: DispatchQueue.global())
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in
+                if value {
+                    self?.updateData()
+                    self?.cdm.updateCharts = false
+                }
+            }
+            .store(in: &cancellables)
     }
 }

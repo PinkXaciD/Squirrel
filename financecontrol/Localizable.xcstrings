@@ -10,22 +10,22 @@
     "%@" : {
 
     },
+    "%@\n%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@\n%2$@"
+          }
+        }
+      }
+    },
     "%@, version %@" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
             "value" : "%1$@, version %2$@"
-          }
-        }
-      }
-    },
-    "%@.\n%@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@.\n%2$@"
           }
         }
       }
@@ -289,6 +289,9 @@
     "Error" : {
 
     },
+    "Errors" : {
+
+    },
     "Even a squirrel needs a hat in winter" : {
 
     },
@@ -314,6 +317,15 @@
 
     },
     "Failed to create URL from given components" : {
+
+    },
+    "Failed to find category for this spending" : {
+
+    },
+    "Failed to get CoreData entity description" : {
+
+    },
+    "Failed to import" : {
 
     },
     "Fallback rates timestamp:" : {
@@ -385,7 +397,7 @@
     "No API key was found" : {
 
     },
-    "No archived categories" : {
+    "No Archived Categories" : {
 
     },
     "No comment provided" : {
@@ -400,7 +412,10 @@
     "No radar will find you now" : {
 
     },
-    "No results" : {
+    "No Results for \"(vm.showedSearch)\"" : {
+
+    },
+    "No Results for These Filters" : {
 
     },
     "No up to date exchange rate for %@ found" : {
@@ -440,6 +455,9 @@
 
     },
     "Please submit a bug report and try to reinstall the app" : {
+
+    },
+    "Please submit a bug report and try to restart or reinstall the app" : {
 
     },
     "Please submit a bug report and try to restart the app" : {
@@ -554,7 +572,13 @@
     "Throw bad URL error" : {
 
     },
+    "Throw category error" : {
+
+    },
     "Throw Empty database error" : {
+
+    },
+    "Throw entity description error" : {
 
     },
     "Throw Info.plist error" : {
@@ -576,6 +600,9 @@
 
     },
     "Today" : {
+
+    },
+    "Try another search." : {
 
     },
     "Unknown" : {
@@ -607,6 +634,9 @@
 
     },
     "Yesterday" : {
+
+    },
+    "You can archive categories in settings, they will be hidden from selection when you add new expenses, but all old expenses will be saved" : {
 
     },
     "You will not be able to undo this action.\nAll expenses in this category will be permanently deleted" : {

@@ -19,15 +19,31 @@ struct ContentView: View {
     private var theme: String = "None"
     
     @StateObject
-    private var cdm: CoreDataModel = .init()
+    private var cdm: CoreDataModel
     @StateObject
     private var rvm: RatesViewModel = .init()
+    @StateObject
+    private var fvm: FiltersViewModel
+    @StateObject
+    private var pcvm: PieChartViewModel
+    @StateObject
+    private var searchModel: StatsSearchViewModel = StatsSearchViewModel()
     
     @ObservedObject 
     private var errorHandler = ErrorHandler.shared
     
     @Binding
     var addExpenseAction: Bool
+    
+    init(addExpenseAction: Binding<Bool>) {
+        let cdm = CoreDataModel()
+        let pcvm = PieChartViewModel(cdm: cdm)
+        let fvm = FiltersViewModel(pcvm: pcvm)
+        self._cdm = StateObject(wrappedValue: cdm)
+        self._pcvm = StateObject(wrappedValue: pcvm)
+        self._fvm = StateObject(wrappedValue: fvm)
+        self._addExpenseAction = addExpenseAction
+    }
         
     var body: some View {
         TabView {
@@ -38,6 +54,9 @@ struct ContentView: View {
                 }
             
             StatsSearchView()
+                .environmentObject(pcvm)
+                .environmentObject(fvm)
+                .environmentObject(searchModel)
                 .tabItem {
                     Image(systemName: "chart.pie.fill")
                     Text("Stats")
@@ -67,7 +86,7 @@ struct ContentView: View {
             if error.createIssue {
                 Button("Create an issue on GitHub") {
                     errorHandler.dropError()
-                    openURL(URL(string: "https://github.com/PinkXaciD/Squirrel/issues/new")!)
+                    openURL(URLs.newGithubIssue)
                 }
             }
             
@@ -75,7 +94,7 @@ struct ContentView: View {
                 errorHandler.dropError()
             }
         } message: { error in
-            Text("\(error.errorDescription).\n\(error.recoverySuggestion)")
+            Text("\(error.errorDescription)\n\(error.recoverySuggestion)")
         }
     }
 }

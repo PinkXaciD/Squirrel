@@ -103,8 +103,8 @@ extension SpendingCompleteView {
         ratesViewModel rvm: RatesViewModel
     ) {
         self._edit = edit
-        self.entity = entity
-        self.editFocus = editFocus
+        self._entity = .init(initialValue: entity)
+        self._editFocus = .init(initialValue: editFocus)
         self._vm = StateObject(wrappedValue: .init(ratesViewModel: rvm, coreDataModel: cdm, entity: entity))
         self.cdm = cdm
         self.rvm = rvm

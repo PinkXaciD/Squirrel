@@ -19,10 +19,16 @@ struct InputUtils {
     }
     
     func amountCheck(amount: String) -> Bool {
+        var formatter: NumberFormatter {
+            let formatter = NumberFormatter()
+            
+            return formatter
+        }
+        
         guard
-            let doubleAmount = Double(amount.replacingOccurrences(of: ",", with: ".")),
-            doubleAmount < Double.greatestFiniteMagnitude,
-            doubleAmount > 0
+            let number = formatter.number(from: amount),
+            Double(truncating: number) < Double.greatestFiniteMagnitude,
+            Double(truncating: number) > 0
         else {
             return false
         }

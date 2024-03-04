@@ -14,19 +14,33 @@ struct HomeView: View {
     @EnvironmentObject private var rvm: RatesViewModel
     
     var body: some View {
-        
         NavigationView {
-            Form {
+            List {
                 barChartSection
                     .padding(.horizontal, -10)
                 
-//                SheetPresenter("Add Expense", image: .init(systemName: "plus"), style: .sheet) {
-//                    AddSpendingView(ratesViewModel: rvm, codeDataModel: cdm)
-//                        .environmentObject(rvm)
-//                        .environmentObject(cdm)
-//                }
-//                .padding(.horizontal, -5)
                 addButton
+                    #if DEBUG
+                    .swipeActions(edge: .leading) {
+                        Button {
+                            cdm.addSpending(
+                                spending: .init(
+                                    amountUSD: 1,
+                                    amount: 1,
+                                    amountWithReturns: 1,
+                                    amountUSDWithReturns: 1,
+                                    comment: "Test comment",
+                                    currency: "USD",
+                                    date: Date(),
+                                    place: "Test place",
+                                    categoryId: cdm.savedCategories.first?.id ?? .init()
+                                )
+                            )
+                        } label: {
+                            Label("Add test", systemImage: "ladybug.fill")
+                        }
+                    }
+                    #endif
             }
             .navigationTitle("Home")
             .sheet(isPresented: $showingSheet) {
@@ -36,7 +50,14 @@ struct HomeView: View {
         .navigationViewStyle(.stack)
     }
     
-    var addButton: some View {
+    private var barChartSection: some View {
+        Section {
+            BarChartGenerator()
+                .padding(.vertical)
+        }
+    }
+    
+    private var addButton: some View {
         Button(action: toggleSheet) {
             HStack(spacing: 15) {
                 Image(systemName: "plus")
@@ -47,15 +68,6 @@ struct HomeView: View {
         .padding()
     }
     
-    var barChartSection: some View {
-        Section {
-            BarChartGenerator()
-                .padding(.vertical)
-        }
-    }
-}
-
-extension HomeView {
     func toggleSheet() {
         showingSheet = true
     }

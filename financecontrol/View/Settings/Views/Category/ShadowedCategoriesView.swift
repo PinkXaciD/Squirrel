@@ -15,17 +15,20 @@ struct ShadowedCategoriesView: View {
     var body: some View {
         if !cdm.shadowedCategories.isEmpty {
             List {
-                ForEach(cdm.shadowedCategories) { category in
-                    ShadowedCategoriesRow(category: category)
+                Section {
+                    ForEach(cdm.shadowedCategories) { category in
+                        ShadowedCategoriesRow(category: category)
+                    }
+                } footer: {
+                    Text("Swipe left to restore, swipe right to delete")
                 }
             }
-            .navigationTitle("Archived categories")
-            
         } else {
-            Text("No archived categories")
-                .font(.title2)
-                .fontWeight(.semibold)
-                .navigationTitle("Archived categories")
+            CustomContentUnavailableView(
+                NSLocalizedString("No Archived Categories", comment: ""),
+                imageName: "archivebox.fill",
+                description: NSLocalizedString("You can archive categories in settings, they will be hidden from selection when you add new expenses, but all old expenses will be saved", comment: "")
+            )
         }
     }
 }

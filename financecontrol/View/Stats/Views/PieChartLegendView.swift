@@ -8,15 +8,7 @@
 import SwiftUI
 
 struct PieChartLegendView: View {
-    internal init(
-        filterCategories: Binding<[CategoryEntity]>,
-        applyFilters: Binding<Bool>,
-        minimize: Binding<Bool>,
-        cdm: CoreDataModel,
-        pcvm: PieChartViewModel
-    ) {
-        self._filterCategories = filterCategories
-        self._applyFilters = applyFilters
+    init(minimize: Binding<Bool>, cdm: CoreDataModel, pcvm: PieChartViewModel) {
         self._minimize = minimize
         
         self.operationsInMonthSorted = cdm.operationsInMonth(
@@ -28,19 +20,10 @@ struct PieChartLegendView: View {
     
     @EnvironmentObject
     private var pcvm: PieChartViewModel
-    @EnvironmentObject
-    private var cdm: CoreDataModel
-    @EnvironmentObject
-    private var rvm: RatesViewModel
     
     @AppStorage("defaultCurrency")
     private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
-    
-    @Binding
-    var filterCategories: [CategoryEntity]
-    @Binding
-    var applyFilters: Bool
     @Binding
     var minimize: Bool
     
@@ -51,11 +34,7 @@ struct PieChartLegendView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
                     ForEach(operationsInMonthSorted) { category in
-                        PieChartLegendRowView(
-                            filterCategories: $filterCategories,
-                            applyFilters: $applyFilters,
-                            category: category
-                        )
+                        PieChartLegendRowView(category: category)
                     }
                 }
                 .padding(.horizontal, 20)
@@ -69,11 +48,7 @@ struct PieChartLegendView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 10) {
                     ForEach(operationsInMonthSorted) { category in
-                        PieChartLegendRowView(
-                            filterCategories: $filterCategories,
-                            applyFilters: $applyFilters,
-                            category: category
-                        )
+                        PieChartLegendRowView(category: category)
                     }
                 }
                 

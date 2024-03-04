@@ -6,15 +6,16 @@
 //
 
 import SwiftUI
+#if DEBUG
+import OSLog
+#endif
 
 struct StatsSearchView: View {
-    @State
-    private var searchText: String = ""
     @EnvironmentObject
-    private var cdm: CoreDataModel
+    private var svm: StatsSearchViewModel
     
     var body: some View {
-        StatsView(search: $searchText, cdm: cdm)
-            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search by place or comment")
+        StatsView()
+            .searchable(text: $svm.search, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search by place or comment")
     }
 }

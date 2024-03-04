@@ -14,6 +14,7 @@ struct StatsRow: View {
     private var rvm: RatesViewModel
     
     let entity: SpendingEntity
+    let localEntity: TSSpendingEntity
     
     @Binding 
     var entityToEdit: SpendingEntity?
@@ -30,21 +31,6 @@ struct StatsRow: View {
         } label: {
             buttonLabel
         }
-        .swipeActions(edge: .leading) {
-            editButton
-        }
-        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-            deleteButton
-            
-            returnButon
-        }
-        .contextMenu {
-            editButton
-            
-            returnButon
-            
-            deleteButton
-        }
     }
     
     // MARK: Variables
@@ -52,15 +38,15 @@ struct StatsRow: View {
     var buttonLabel: some View {
         HStack {
             VStack(alignment: .leading, spacing: 5) {
-                if let place = entity.place, !place.isEmpty {
-                    Text(entity.category?.name ?? "Error")
+                if let place = localEntity.place, !place.isEmpty {
+                    Text(localEntity.categoryName)
                         .font(.caption)
                         .foregroundColor(Color.secondary)
                     
                     Text(place)
                         .foregroundColor(.primary)
                 } else {
-                    Text(entity.category?.name ?? "Error")
+                    Text(localEntity.categoryName)
                         .foregroundColor(.primary)
                 }
             }
@@ -68,29 +54,22 @@ struct StatsRow: View {
             Spacer()
             
             VStack(alignment: .trailing, spacing: 5) {
-                Text(dateFormatter.string(from: entity.wrappedDate))
+                Text(localEntity.wrappedDate, format: .dateTime.hour().minute())
                     .font(.caption)
                     .foregroundColor(Color.secondary)
                 
                 HStack {
-                    if !entity.returnsArr.isEmpty {
+                    if !localEntity.returnsArr.isEmpty {
                         Image(systemName: "arrow.uturn.backward")
                             .foregroundColor(.secondary)
                             .font(.caption.bold())
                     }
                     
-                    Text("-\((entity.amountWithReturns).formatted(.currency(code: entity.wrappedCurrency)))")
+                    Text("-\((localEntity.amountWithReturns).formatted(.currency(code: localEntity.wrappedCurrency)))")
                 }
-                .foregroundColor(entity.amountWithReturns != 0 ? .primary : .secondary)
+                .foregroundColor(localEntity.amountWithReturns != 0 ? .primary : .secondary)
             }
         }
-    }
-    
-    private var dateFormatter: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .none
-        formatter.timeStyle = .short
-        return formatter
     }
     
     private var editButton: some View {
@@ -132,8 +111,18 @@ struct StatsRow: View {
     
     // MARK: Functions
     
+    init(entity: SpendingEntity, entityToEdit: Binding<SpendingEntity?>, entityToAddReturn: Binding<SpendingEntity?>, edit: Binding<Bool>) {
+        self.entity = entity
+        self.localEntity = entity.safeObject()
+        self._entityToEdit = entityToEdit
+        self._entityToAddReturn = entityToAddReturn
+        self._edit = edit
+    }
+    
     private func deleteSpending(_ entity: SpendingEntity) {
-        cdm.deleteSpending(entity)
+        withAnimation {
+            cdm.deleteSpending(entity)
+        }
     }
 }
 

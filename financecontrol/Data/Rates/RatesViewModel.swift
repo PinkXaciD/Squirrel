@@ -75,7 +75,7 @@ extension RatesViewModel {
     }
 }
 
-// MARK: Rates View Model CoreData
+// MARK: Rates View Model UserDefaults
 
 extension RatesViewModel {
     private func insertRates() {

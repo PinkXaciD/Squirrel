@@ -41,6 +41,7 @@ struct CategoriesEditView: View {
             
             NavigationLink {
                 ShadowedCategoriesView()
+                    .navigationTitle("Archived categories")
             } label: {
                 HStack {
                     Text("Archived categories")
@@ -63,6 +64,7 @@ struct CategoriesEditView: View {
     private var shadowedCategoriesToolbarButton: some View {
         NavigationLink {
             ShadowedCategoriesView()
+                .navigationTitle("Archived categories")
         } label: {
             Label("Archived categories", systemImage: "archivebox")
         }

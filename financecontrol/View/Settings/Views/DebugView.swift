@@ -22,11 +22,7 @@ struct DebugView: View {
     
     var body: some View {
         Form {
-            infoPlistSection
-            
-            ratesFetchErrorSection
-            
-            urlErrorSection
+            errorsSection
             
             ratesSection
             
@@ -53,6 +49,25 @@ struct DebugView: View {
         }
         .navigationTitle("Debug")
         .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    private var errorsSection: some View {
+        Section {
+            NavigationLink("Errors") {
+                List {
+                    infoPlistSection
+                    
+                    ratesFetchErrorSection
+                    
+                    urlErrorSection
+                    
+                    coreDataErrorSection
+                }
+                .navigationTitle("Errors")
+            }
+        } header: {
+            Text("Errors")
+        }
     }
     
     private var infoPlistSection: some View {
@@ -98,6 +113,20 @@ struct DebugView: View {
             }
         } header: {
             Text(verbatim: "URL errors")
+        }
+    }
+    
+    private var coreDataErrorSection: some View {
+        Section {
+            Button("Throw entity description error") {
+                ErrorType(CoreDataError.failedToGetEntityDescription).publish()
+            }
+            
+            Button("Throw category error") {
+                ErrorType(CoreDataError.failedToFindCategory).publish()
+            }
+        } header: {
+            Text(verbatim: "CoreData errors")
         }
     }
     

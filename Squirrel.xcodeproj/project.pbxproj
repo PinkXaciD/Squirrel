@@ -47,12 +47,16 @@
 		8D4E08182AAA152A00B3544F /* SpendingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4E08172AAA152A00B3544F /* SpendingsModel.swift */; };
 		8D4E081A2AAA15B900B3544F /* CategoriesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4E08192AAA15B900B3544F /* CategoriesModel.swift */; };
 		8D4E081C2AAA163800B3544F /* CurrenciesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4E081B2AAA163800B3544F /* CurrenciesModel.swift */; };
+		8D54F4F62B96326200B17886 /* StatsSearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D54F4F52B96326200B17886 /* StatsSearchViewModel.swift */; };
+		8D54F4F82B96329800B17886 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D54F4F72B96329800B17886 /* SearchViewModel.swift */; };
+		8D54F4FB2B96335100B17886 /* CustomContentUnavailableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D54F4FA2B96335100B17886 /* CustomContentUnavailableView.swift */; };
 		8D5587202A95FE7600FEF2B5 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D55871F2A95FE7600FEF2B5 /* StringExtensions.swift */; };
 		8D5860332A5F3898001D97AC /* SpendingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5860322A5F3898001D97AC /* SpendingView.swift */; };
 		8D5894982A829E3D00A6DB65 /* BarChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5894972A829E3D00A6DB65 /* BarChart.swift */; };
 		8D591EA82A93AAF700A9CD07 /* LaunchActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D591EA72A93AAF700A9CD07 /* LaunchActions.swift */; };
 		8D5B961A2B62944700715C3F /* AccessoryCircularSumWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5B96192B62944700715C3F /* AccessoryCircularSumWidgetView.swift */; };
 		8D5B961C2B6294A300715C3F /* AccessoryRectangularSumWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5B961B2B6294A300715C3F /* AccessoryRectangularSumWidgetView.swift */; };
+		8D5CBE782B84F68300435335 /* CoreDataErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5CBE772B84F68300435335 /* CoreDataErrors.swift */; };
 		8D6059E22AB874FA0043A293 /* RatesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6059E12AB874FA0043A293 /* RatesViewModel.swift */; };
 		8D6059E42AB87AF60043A293 /* RatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6059E32AB87AF60043A293 /* RatesView.swift */; };
 		8D64ABEB2B21D3EF008C025C /* StatsSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D64ABEA2B21D3EF008C025C /* StatsSearchView.swift */; };
@@ -121,6 +125,8 @@
 		8DDFD4742A68249100493753 /* DefaultCurrencySelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DDFD4732A68249100493753 /* DefaultCurrencySelectorView.swift */; };
 		8DE29BA82A683F01002F5C42 /* AddCategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DE29BA72A683F01002F5C42 /* AddCategoryView.swift */; };
 		8DE48D122A72DA88008A2DD4 /* CategoriesEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DE48D112A72DA88008A2DD4 /* CategoriesEditView.swift */; };
+		8DE80D8F2B8CF5E300B6ACA8 /* StatsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DE80D8E2B8CF5E300B6ACA8 /* StatsListViewModel.swift */; };
+		8DE80D912B8D096400B6ACA8 /* FiltersViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DE80D902B8D096400B6ACA8 /* FiltersViewModel.swift */; };
 		8DEC3FF12AD580D700F5D82E /* DebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEC3FF02AD580D700F5D82E /* DebugView.swift */; };
 		8DEED7282A5C4A3700C79752 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEED7272A5C4A3700C79752 /* SettingsView.swift */; };
 		8DF003752B0CB07900133554 /* PieChartCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF003742B0CB07900133554 /* PieChartCenterView.swift */; };
@@ -204,12 +210,16 @@
 		8D4E08172AAA152A00B3544F /* SpendingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpendingsModel.swift; sourceTree = "<group>"; };
 		8D4E08192AAA15B900B3544F /* CategoriesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoriesModel.swift; sourceTree = "<group>"; };
 		8D4E081B2AAA163800B3544F /* CurrenciesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrenciesModel.swift; sourceTree = "<group>"; };
+		8D54F4F52B96326200B17886 /* StatsSearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsSearchViewModel.swift; sourceTree = "<group>"; };
+		8D54F4F72B96329800B17886 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
+		8D54F4FA2B96335100B17886 /* CustomContentUnavailableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomContentUnavailableView.swift; sourceTree = "<group>"; };
 		8D55871F2A95FE7600FEF2B5 /* StringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = StringExtensions.swift; path = financecontrol/Extensions/StringExtensions.swift; sourceTree = SOURCE_ROOT; };
 		8D5860322A5F3898001D97AC /* SpendingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpendingView.swift; sourceTree = "<group>"; };
 		8D5894972A829E3D00A6DB65 /* BarChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarChart.swift; sourceTree = "<group>"; };
 		8D591EA72A93AAF700A9CD07 /* LaunchActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchActions.swift; sourceTree = "<group>"; };
 		8D5B96192B62944700715C3F /* AccessoryCircularSumWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessoryCircularSumWidgetView.swift; sourceTree = "<group>"; };
 		8D5B961B2B6294A300715C3F /* AccessoryRectangularSumWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessoryRectangularSumWidgetView.swift; sourceTree = "<group>"; };
+		8D5CBE772B84F68300435335 /* CoreDataErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataErrors.swift; sourceTree = "<group>"; };
 		8D6059E12AB874FA0043A293 /* RatesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatesViewModel.swift; sourceTree = "<group>"; };
 		8D6059E32AB87AF60043A293 /* RatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatesView.swift; sourceTree = "<group>"; };
 		8D64ABEA2B21D3EF008C025C /* StatsSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsSearchView.swift; sourceTree = "<group>"; };
@@ -282,6 +292,8 @@
 		8DDFD4732A68249100493753 /* DefaultCurrencySelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultCurrencySelectorView.swift; sourceTree = "<group>"; };
 		8DE29BA72A683F01002F5C42 /* AddCategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCategoryView.swift; sourceTree = "<group>"; };
 		8DE48D112A72DA88008A2DD4 /* CategoriesEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoriesEditView.swift; sourceTree = "<group>"; };
+		8DE80D8E2B8CF5E300B6ACA8 /* StatsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsListViewModel.swift; sourceTree = "<group>"; };
+		8DE80D902B8D096400B6ACA8 /* FiltersViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersViewModel.swift; sourceTree = "<group>"; };
 		8DEC3FF02AD580D700F5D82E /* DebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugView.swift; sourceTree = "<group>"; };
 		8DEED7272A5C4A3700C79752 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		8DF003742B0CB07900133554 /* PieChartCenterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieChartCenterView.swift; sourceTree = "<group>"; };
@@ -343,7 +355,6 @@
 		8D0763A92A4B278100D2C3FF /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				8D2316F72AD3112F00CEE8C1 /* ErrorHandler.swift */,
 				8DD5C38B2A603F4500FC862C /* Formatters.swift */,
 				8D28C7EF2A73DF7000F27CD4 /* Colors.swift */,
 				8D3876622A740F960005FFAF /* InputUtils.swift */,
@@ -352,7 +363,6 @@
 				8D1F51372AE927610037A4A8 /* HapticManager.swift */,
 				8DFA1EDD2B4C163100B97113 /* CustomIcon.swift */,
 				8D9F30E82B4D7C3E00A0B8C3 /* WidgetsManager.swift */,
-				8D7710A62B60615D00D3ECF5 /* UniversalViews.swift */,
 				8D4A7A642B6960BA0038C0FE /* PieChartLazyPageView.swift */,
 			);
 			path = Utils;
@@ -374,6 +384,7 @@
 			isa = PBXGroup;
 			children = (
 				8DAFF8AF2B39D1C4001D5A9D /* Protocols */,
+				8D54F4F72B96329800B17886 /* SearchViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -468,6 +479,15 @@
 			path = Data;
 			sourceTree = "<group>";
 		};
+		8D54F4F92B96331800B17886 /* Universal */ = {
+			isa = PBXGroup;
+			children = (
+				8D7710A62B60615D00D3ECF5 /* UniversalViews.swift */,
+				8D54F4FA2B96335100B17886 /* CustomContentUnavailableView.swift */,
+			);
+			path = Universal;
+			sourceTree = "<group>";
+		};
 		8D5894942A829D8C00A6DB65 /* Spending */ = {
 			isa = PBXGroup;
 			children = (
@@ -477,12 +497,21 @@
 			path = Spending;
 			sourceTree = "<group>";
 		};
+		8D5CBE762B84ECFE00435335 /* Error */ = {
+			isa = PBXGroup;
+			children = (
+				8D5CBE772B84F68300435335 /* CoreDataErrors.swift */,
+				8D9B50152AC2FCCD00C7732B /* RatesErrors.swift */,
+				8D2316F72AD3112F00CEE8C1 /* ErrorHandler.swift */,
+			);
+			path = Error;
+			sourceTree = "<group>";
+		};
 		8D6059E02AB874C30043A293 /* Rates */ = {
 			isa = PBXGroup;
 			children = (
 				8D6059E12AB874FA0043A293 /* RatesViewModel.swift */,
 				8D9B50112AC1A5C800C7732B /* RatesModel.swift */,
-				8D9B50152AC2FCCD00C7732B /* RatesErrors.swift */,
 				8D31CE5D2AD029EC00E8B74B /* APIURLComponents.swift */,
 				8DAFF8BE2B3A11F9001D5A9D /* Rates.swift */,
 			);
@@ -532,6 +561,9 @@
 			isa = PBXGroup;
 			children = (
 				8D06810D2B6D461600195205 /* PieChartViewModel.swift */,
+				8DE80D8E2B8CF5E300B6ACA8 /* StatsListViewModel.swift */,
+				8DE80D902B8D096400B6ACA8 /* FiltersViewModel.swift */,
+				8D54F4F52B96326200B17886 /* StatsSearchViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -748,6 +780,7 @@
 				8D4E08162AAA14FA00B3544F /* Data */,
 				8D7EFB092A850934009797E8 /* Extensions */,
 				8D8EA1912B2A18A3009B8B5D /* Wrappers */,
+				8D5CBE762B84ECFE00435335 /* Error */,
 				8D0763A92A4B278100D2C3FF /* Utils */,
 			);
 			path = financecontrol;
@@ -762,6 +795,7 @@
 				8D406EA72A9A36A6002D3ED1 /* Settings */,
 				8D4B69A92A66ED40008F098B /* Selectors */,
 				8D5894942A829D8C00A6DB65 /* Spending */,
+				8D54F4F92B96331800B17886 /* Universal */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -955,6 +989,7 @@
 				8D6059E22AB874FA0043A293 /* RatesViewModel.swift in Sources */,
 				8D5860332A5F3898001D97AC /* SpendingView.swift in Sources */,
 				8D7EFB0B2A85096B009797E8 /* DateExtensions.swift in Sources */,
+				8D54F4F62B96326200B17886 /* StatsSearchViewModel.swift in Sources */,
 				8DCB302B2A971C2F00DC9ABB /* OtherExtensions.swift in Sources */,
 				8D88CDC12AA0E37000668DEC /* CategoryEntity+CoreDataProperties.swift in Sources */,
 				8DCB302F2A97578F00DC9ABB /* ViewExtensions.swift in Sources */,
@@ -1004,12 +1039,15 @@
 				8D06810E2B6D461600195205 /* PieChartViewModel.swift in Sources */,
 				8D9F30E92B4D7C3E00A0B8C3 /* WidgetsManager.swift in Sources */,
 				8D9E22D82AE6A1BD00801932 /* CustomShareSheet.swift in Sources */,
+				8D54F4F82B96329800B17886 /* SearchViewModel.swift in Sources */,
 				8D5894982A829E3D00A6DB65 /* BarChart.swift in Sources */,
 				8DBED4D32ADC37660031DBA8 /* CurrencyRow.swift in Sources */,
 				8D6059E42AB87AF60043A293 /* RatesView.swift in Sources */,
 				8D75E5B02A67FAF9009CA5C6 /* ColorAndIconView.swift in Sources */,
 				8DEC3FF12AD580D700F5D82E /* DebugView.swift in Sources */,
+				8DE80D8F2B8CF5E300B6ACA8 /* StatsListViewModel.swift in Sources */,
 				8D05C6D82AE0479E0097078A /* ExportImportView.swift in Sources */,
+				8D5CBE782B84F68300435335 /* CoreDataErrors.swift in Sources */,
 				8D0429DB2A9B8D2400A09BB4 /* BarChartGenerator.swift in Sources */,
 				8D28C7F02A73DF7000F27CD4 /* Colors.swift in Sources */,
 				8DBCEF2C2B762D35005F4BCC /* PieChartLegendRowView.swift in Sources */,
@@ -1026,10 +1064,12 @@
 				8DAFF8BF2B3A11F9001D5A9D /* Rates.swift in Sources */,
 				8DCAB8732A7D4F83009B2F89 /* AddCurrencyView.swift in Sources */,
 				8D830DF12AE00CE600EFB1E7 /* ShadowedCategoriesRow.swift in Sources */,
+				8DE80D912B8D096400B6ACA8 /* FiltersViewModel.swift in Sources */,
 				8D06810C2B6D45CD00195205 /* PieChartLegendView.swift in Sources */,
 				8D91DB842B74EB990040C2CE /* ChartData.swift in Sources */,
 				8DFA1EE02B4C16DE00B97113 /* IconRow.swift in Sources */,
 				8DB42E6C2B0F6BE1000E7EA5 /* EditSpendingViewModel.swift in Sources */,
+				8D54F4FB2B96335100B17886 /* CustomContentUnavailableView.swift in Sources */,
 				8DE48D122A72DA88008A2DD4 /* CategoriesEditView.swift in Sources */,
 				8DEED7282A5C4A3700C79752 /* SettingsView.swift in Sources */,
 				8D4A7A652B6960BA0038C0FE /* PieChartLazyPageView.swift in Sources */,
@@ -1119,7 +1159,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1134,7 +1174,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 0.3.1;
+				MARKETING_VERSION = 0.3.2;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirreldebug.squirrelWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1158,7 +1198,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1173,7 +1213,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 0.3.1;
+				MARKETING_VERSION = 0.3.2;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirrel.squirrelWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1319,7 +1359,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				ENABLE_PREVIEWS = YES;
@@ -1340,7 +1380,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.3.1;
+				MARKETING_VERSION = 0.3.2;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirreldebug;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1365,7 +1405,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				ENABLE_PREVIEWS = YES;
@@ -1386,7 +1426,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.3.1;
+				MARKETING_VERSION = 0.3.2;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirrel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum InfoPlistError: LocalizedError {
+enum InfoPlistError: LocalizedError {
     case noInfoFound
     case noURLFound
     case noAPIKeyFound

@@ -12,7 +12,7 @@ import OSLog
 
 func launch() -> Void {
     #if DEBUG
-    let logger = Logger(subsystem: Vars.appIdentifier, category: "Launch Actions")
+    let logger = Logger(subsystem: Vars.appIdentifier, category: "\(#fileID)")
     #endif
     let dateFormatter = ISO8601DateFormatter()
     dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -34,5 +34,9 @@ func launch() -> Void {
         logger.debug("Current date: \(currentDate)")
         logger.debug("Updated at: \(updateTime)")
         #endif
+    }
+    
+    if UserDefaults.standard.string(forKey: "defaultCurrency") == nil {
+        UserDefaults.standard.setValue(Locale.current.currencyCode ?? "USD", forKey: "defaultCurrency")
     }
 }

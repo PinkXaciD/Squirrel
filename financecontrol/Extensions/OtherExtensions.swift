@@ -16,20 +16,7 @@ extension Bundle {
         return infoDictionary?["CFBundleVersion"] as? String
     }
     
-    var icon: UIImage? {
-        guard
-            let icons = infoDictionary?["CFBundleIcons"] as? [String:Any],
-            let primaryIcon = icons["CFBundlePrimaryIcon"] as? [String:Any],
-            let iconFiles = primaryIcon["CFBundleIconFiles"] as? [String],
-            let lastIcon = iconFiles.last
-        else {
-            return nil
-        }
-        
-        return UIImage(named: lastIcon)
-    }
-    
-    static let mainIdentifier = Bundle.main.bundleIdentifier ?? "com.pinkxacid.financecontrol"
+    static let mainIdentifier: String = Bundle.main.bundleIdentifier ?? "dev.squirrelapp.squirrel"
     
     var displayName: String? {
         return object(forInfoDictionaryKey: "CFBundleDisplayName") as? String

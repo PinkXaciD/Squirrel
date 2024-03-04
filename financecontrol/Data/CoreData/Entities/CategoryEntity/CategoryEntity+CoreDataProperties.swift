@@ -46,6 +46,29 @@ extension CategoryEntity : Identifiable {
 
 }
 
+extension CategoryEntity: ToSafeObject {
+    func safeObject() -> TSCategoryEntity {
+        var safeSpendings: NSSet {
+            guard let spendings = self.spendings?.allObjects as? [SpendingEntity] else {
+                return []
+            }
+            
+            let array = spendings.map { $0.safeObject() }
+            
+            return Set(array) as NSSet
+        }
+        
+        return TSCategoryEntity(
+            color: color,
+            id: id,
+            isShadowed: isShadowed,
+            isFavorite: isFavorite,
+            name: name,
+            spendings: safeSpendings
+        )
+    }
+}
+
 struct CategoryEntityLocal: Identifiable, Equatable, Comparable {
     static func < (lhs: CategoryEntityLocal, rhs: CategoryEntityLocal) -> Bool {
         return lhs.sumUSDWithReturns < rhs.sumUSDWithReturns
@@ -112,4 +135,45 @@ extension CategoryEntityLocal {
         self.sumUSDWithReturns = sumUSDWithReturns
         self.sumWithReturns = sumWithReturns
     }
+}
+
+struct TSCategoryEntity: ToUnsafeObject {
+    func unsafeObject(in context: NSManagedObjectContext) throws -> CategoryEntity {
+        try context.performAndWait {
+            guard let description = NSEntityDescription.entity(forEntityName: "CategoryEntity", in: context) else {
+                throw CoreDataError.failedToGetEntityDescription
+            }
+            
+            let entity = CategoryEntity(entity: description, insertInto: context)
+            entity.id = self.id
+            entity.name = self.name
+            entity.color = self.color
+            entity.isFavorite = self.isFavorite
+            entity.isShadowed = self.isShadowed
+            
+            var unsafeSpendings: NSSet {
+                guard let spendings = self.spendings?.allObjects as? [TSSpendingEntity] else {
+                    return []
+                }
+                
+                guard
+                    let array = try? spendings.map({ try $0.unsafeObject(in: context) })
+                else {
+                    return []
+                }
+                
+                return Set(array) as NSSet
+            }
+            
+            entity.spendings = unsafeSpendings
+            return entity
+        }
+    }
+    
+    let color: String?
+    let id: UUID?
+    let isShadowed: Bool
+    let isFavorite: Bool
+    let name: String?
+    let spendings: NSSet?
 }

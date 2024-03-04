@@ -81,10 +81,12 @@ struct ErrorType: Identifiable, Equatable {
         self.createIssue = false
     }
     
-    func publish() {
+    func publish(file: String? = nil, function: String? = nil) {
         #if DEBUG
-        let logger = Logger(subsystem: "com.pinkxacid.financecontrol", category: "errors")
-        logger.error("Failure reason: \(self.failureReason), occured at \(Date.now.formatted(date: .numeric, time: .standard))")
+        let fileString = file != nil ? ", in file \(file ?? "")" : ""
+        let funcString = function != nil ? ", in function \(function ?? "")" : ""
+        let logger = Logger(subsystem: Vars.appIdentifier, category: "errors")
+        logger.error("Failure reason: \(self.failureReason)\(fileString)\(funcString), occured at \(Date.now.formatted(date: .numeric, time: .standard))")
         #endif
         
         ErrorHandler.shared.appError = self

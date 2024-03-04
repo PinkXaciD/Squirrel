@@ -14,20 +14,17 @@ struct PieChartLegendRowView: View {
     private var cdm: CoreDataModel
     @EnvironmentObject
     private var pcvm: PieChartViewModel
-    
-    @Binding
-    var filterCategories: [CategoryEntity]
-    @Binding
-    var applyFilters: Bool
+    @EnvironmentObject
+    private var fvm: FiltersViewModel
     
     let category: CategoryEntityLocal
     
-    var isActive: Bool = true
+//    var isActive: Bool = true
     
     var body: some View {
         Button {
-            if let category = cdm.findCategory(isActive ? category.id : .init()) {
-                if filterCategories.isEmpty {
+            if let category = cdm.findCategory(category.id) {
+                if fvm.filterCategories.isEmpty {
                     withAnimation {
                         addToFilter(category)
                     }
@@ -40,22 +37,30 @@ struct PieChartLegendRowView: View {
                 }
                 
                 pcvm.updateData()
+                
+                withAnimation {
+                    fvm.updateList = true
+                }
             } else {
                 withAnimation {
                     pcvm.selectedCategory = nil
                     pcvm.updateData()
                 }
                 
-                if filterCategories.count == 1 {
+                if fvm.filterCategories.count == 1 {
                     withAnimation {
-                        filterCategories.removeAll()
+                        fvm.filterCategories.removeAll()
                     }
                     
                     if pcvm.selection == 0 {
                         withAnimation {
-                            applyFilters = false
+                            fvm.applyFilters = false
                         }
                     }
+                }
+                
+                withAnimation {
+                    fvm.updateList = true
                 }
             }
         } label: {
@@ -86,16 +91,18 @@ struct PieChartLegendRowView: View {
     
     
     private func addToFilter(_ category: CategoryEntity) {
-        if !filterCategories.contains(category) {
-            filterCategories.append(category)
-            applyFilters = true
+        if let id = category.id, !fvm.filterCategories.contains(id) {
+            fvm.filterCategories.append(id)
+            fvm.applyFilters = true
         } else {
-            guard let index: Int = filterCategories.firstIndex(of: category) else {
+            guard
+                let id = category.id,
+                let index: Int = fvm.filterCategories.firstIndex(of: id) else {
                 return
             }
-            filterCategories.remove(at: index)
-            if filterCategories.isEmpty && pcvm.selection == 0 {
-                applyFilters = false
+            fvm.filterCategories.remove(at: index)
+            if fvm.filterCategories.isEmpty && pcvm.selection == 0 {
+                fvm.applyFilters = false
             }
         }
     }

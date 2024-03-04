@@ -10,19 +10,12 @@ import SwiftUI
 struct FiltersView: View {
     @EnvironmentObject
     private var cdm: CoreDataModel
+    @EnvironmentObject
+    private var fvm: FiltersViewModel
     @Environment(\.dismiss)
     private var dismiss
     @AppStorage("color")
     private var tint: String = "Orange"
-    
-    @Binding
-    var firstFilterDate: Date
-    @Binding
-    var secondFilterDate: Date
-    @Binding
-    var categories: [CategoryEntity]
-    @Binding
-    var applyFilters: Bool
     
     @State
     private var showCategoriesPicker: Bool = false
@@ -63,17 +56,17 @@ struct FiltersView: View {
     private var firstDatePicker: some View {
         let firstDate: Date = cdm.savedSpendings.last?.wrappedDate ?? .init(timeIntervalSinceReferenceDate: 0)
         
-        return DatePicker("From", selection: $firstFilterDate, in: firstDate...secondFilterDate, displayedComponents: .date)
+        return DatePicker("From", selection: $fvm.startFilterDate, in: firstDate...fvm.endFilterDate, displayedComponents: .date)
     }
     
     private var secondDatePicker: some View {
-        DatePicker("To", selection: $secondFilterDate, in: firstFilterDate...Date.now, displayedComponents: .date)
+        DatePicker("To", selection: $fvm.endFilterDate, in: fvm.startFilterDate...Date.now, displayedComponents: .date)
     }
     
     private var categoriesSection: some View {
         Section {
             NavigationLink {
-                FiltersCategoriesView(categories: $categories, applyFilters: $applyFilters, cdm: cdm)
+                FiltersCategoriesView(categories: $fvm.filterCategories, applyFilters: $fvm.applyFilters, cdm: cdm)
             } label: {
                 categoriesPickerLabel
             }
@@ -88,7 +81,7 @@ struct FiltersView: View {
             
             Spacer()
             
-            Text("\(categories.count) selected")
+            Text("\(fvm.filterCategories.count) selected")
                 .foregroundColor(.secondary)
         }
     }
@@ -110,7 +103,8 @@ struct FiltersView: View {
     private var trailingToolbar: ToolbarItem<(), some View> {
         ToolbarItem(placement: .topBarTrailing) {
             Button("Apply") {
-                applyFilters = true
+                fvm.applyFilters = true
+                fvm.updateList = true
                 dismiss()
             }
             .font(.body.bold())
@@ -126,12 +120,9 @@ extension FiltersView {
     }
     
     private func clearFilters() {
-        withAnimation(.linear(duration: 0.1)) {
-            applyFilters = false
-            categories = []
+        withAnimation {
+            fvm.clearFilters()
         }
-        firstFilterDate = .now.getFirstDayOfMonth()
-        secondFilterDate = .now
     }
 }
 
@@ -140,7 +131,7 @@ struct FiltersCategoriesView: View {
     private var dismiss
     
     @Binding 
-    var categories: [CategoryEntity]
+    var categories: [UUID]
     @Binding
     var applyFilters: Bool
     
@@ -182,11 +173,15 @@ struct FiltersCategoriesView: View {
     }
     
     private func categoryButtonAction(_ category: CategoryEntity) {
-        if categories.contains(category) {
-            let index: Int = categories.firstIndex(of: category) ?? 0
+        guard let id = category.id else {
+            return
+        }
+        
+        if categories.contains(id) {
+            let index: Int = categories.firstIndex(of: id) ?? 0
             categories.remove(at: index)
         } else {
-            categories.append(category)
+            categories.append(id)
         }
     }
     
@@ -203,12 +198,12 @@ struct FiltersCategoriesView: View {
             
             Image(systemName: "checkmark")
                 .font(.body.bold())
-                .opacity(categories.contains(category) ? 1 : 0)
+                .opacity(categories.contains(category.id ?? .init()) ? 1 : 0)
                 .animation(.default.speed(3), value: categories)
         }
     }
     
-    init(categories: Binding<[CategoryEntity]>, applyFilters: Binding<Bool>, cdm: CoreDataModel) {
+    init(categories: Binding<[UUID]>, applyFilters: Binding<Bool>, cdm: CoreDataModel) {
         self._categories = categories
         self._applyFilters = applyFilters
         self.listData = (cdm.savedCategories + cdm.shadowedCategories).sorted { $0.name ?? "" < $1.name ?? "" }

@@ -14,6 +14,7 @@ struct ShadowedCategoriesRow: View {
     @State private var alertIsPresented: Bool = false
     
     let category: CategoryEntity
+    let safeCategory: TSCategoryEntity
     
     var body: some View {
         categoryInfo
@@ -49,12 +50,8 @@ struct ShadowedCategoriesRow: View {
                 .foregroundStyle(.tertiary)
             
             VStack(alignment: .leading) {
-                Text(category.name ?? "Deleted")
+                Text(safeCategory.name ?? "Error")
                     .foregroundStyle(.primary)
-                
-                Text("Swipe left to restore, swipe right to delete")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
             }
         }
         .padding(.vertical, 1) /// Strange behavior without padding
@@ -79,5 +76,10 @@ struct ShadowedCategoriesRow: View {
             Label("Restore", systemImage: "arrow.uturn.backward")
         }
         .tint(Color.green)
+    }
+    
+    init(category: CategoryEntity) {
+        self.category = category
+        self.safeCategory = category.safeObject()
     }
 }

@@ -22,7 +22,15 @@ final class EditReturnViewModel: ViewModel {
     @ObservedObject private var rvm: RatesViewModel
     
     init(returnEntity: ReturnEntity, cdm: CoreDataModel, rvm: RatesViewModel) {
-        self.amount = String(returnEntity.amount)
+        var formatter: NumberFormatter {
+            let formatter = NumberFormatter()
+            formatter.maximumFractionDigits = 2
+            formatter.minimumFractionDigits = 0
+            formatter.decimalSeparator = Locale.current.decimalSeparator ?? "."
+            return formatter
+        }
+        
+        self.amount = formatter.string(from: returnEntity.amount as NSNumber) ?? "\(returnEntity.amount)".replacingOccurrences(of: ".", with: Locale.current.decimalSeparator ?? ".")
         self.name = returnEntity.name ?? ""
         self.date = returnEntity.date ?? .now
         self.currency = returnEntity.currency ?? "USD"
@@ -33,11 +41,19 @@ final class EditReturnViewModel: ViewModel {
         self._rvm = .init(initialValue: rvm)
     }
     
+//    var formatter: NumberFormatter {
+//        let formatter = NumberFormatter()
+//        formatter.maximumFractionDigits = 2
+//        formatter.minimumFractionDigits = 0
+//        formatter.decimalSeparator = Locale.current.decimalSeparator ?? "."
+//        return formatter
+//    }
+    
     var doubleAmount: Double {
         if currency == spending?.wrappedCurrency {
-            return Double(amount.replacingOccurrences(of: ",", with: ".")) ?? 0
+            return Double(truncating: NumberFormatter().number(from: amount) ?? 0)
         } else {
-            let doubleAmount = Double(amount.replacingOccurrences(of: ",", with: ".")) ?? 0
+            let doubleAmount = Double(truncating: NumberFormatter().number(from: amount) ?? 0)
             
             return round(doubleAmount / (rvm.rates[currency] ?? 1) * (rvm.rates[spending?.wrappedCurrency ?? "USD"] ?? 1) * 100) / 100
         }
@@ -102,10 +118,10 @@ final class EditReturnViewModel: ViewModel {
     func validate() -> Bool {
         guard
             !amount.isEmpty,
-            let doubleAmount = Double(amount.replacingOccurrences(of: ",", with: ".")),
-            doubleAmount != 0,
+            let number = NumberFormatter().number(from: amount),
+            Double(truncating: number) != 0,
             let spending = self.spending,
-            doubleAmount <= (spending.amountWithReturns + oldAmount)
+            Double(truncating: number) <= (spending.amountWithReturns + oldAmount)
         else {
             return true
         }
