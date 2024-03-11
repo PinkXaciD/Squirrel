@@ -19,13 +19,8 @@ struct StatsView: View {
     private var rvm: RatesViewModel
     @EnvironmentObject
     private var fvm: FiltersViewModel
-    @EnvironmentObject
-    private var pcvm: PieChartViewModel
-    @EnvironmentObject
-    private var searchModel: StatsSearchViewModel
-    
-//    @Binding
-//    var search: String
+//    @EnvironmentObject
+//    private var searchModel: StatsSearchViewModel
     
     @State
     var entityToEdit: SpendingEntity? = nil
@@ -50,17 +45,22 @@ struct StatsView: View {
             List {
                 if !isSearching {
                     PieChartView(size: size)
-                        .environmentObject(pcvm)
-                        .id(0)
+//                        .id(0)
                 }
                 
                 StatsListView(
                     entityToEdit: $entityToEdit,
                     entityToAddReturn: $entityToAddReturn,
-                    edit: $edit,
-                    vm: .init(cdm: cdm, fvm: fvm, searchModel: searchModel)
+                    edit: $edit
                 )
             }
+//            .overlay {
+//                if isSearching {
+//                    List {
+//                        StatsListView(entityToEdit: $entityToEdit, entityToAddReturn: $entityToAddReturn, edit: $edit)
+//                    }
+//                }
+//            }
             .toolbar {
                 toolbar
             }
@@ -87,20 +87,19 @@ struct StatsView: View {
     
     private var toolbar: ToolbarItemGroup<some View> {
         ToolbarItemGroup(placement: .topBarTrailing) {
-            HStack {
+            if fvm.applyFilters {
                 Button {
                     clearFilters()
                 } label: {
                     Label("Clear filters", systemImage: "xmark.circle")
                 }
                 .disabled(!fvm.applyFilters)
-                .opacity(fvm.applyFilters ? 1.0 : 0.0)
-                
-                Button {
-                    showFilters.toggle()
-                } label: {
-                    Label("Filter", systemImage: "line.3.horizontal.decrease.circle\(fvm.applyFilters ? ".fill" : "")")
-                }
+            }
+            
+            Button {
+                showFilters.toggle()
+            } label: {
+                Label("Filter", systemImage: fvm.applyFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
             }
         }
     }
@@ -134,18 +133,20 @@ extension StatsView {
         #endif
         
         withAnimation {
-            pcvm.selectedCategory = nil
-            pcvm.updateData()
-            fvm.applyFilters = false
-            fvm.updateList = true
-            DispatchQueue.main.async {
-                fvm.startFilterDate = .now.getFirstDayOfMonth()
-                fvm.endFilterDate = .now
-                fvm.filterCategories = []
-            }
+            fvm.pcvm.selectedCategory = nil
+            fvm.pcvm.updateData()
+            fvm.clearFilters()
         }
     }
 }
+
+//struct StatsSearchOverlayView: View {
+//    @EnvironmentObject private var vm: StatsSearchViewModel
+//    
+//    var body: some View {
+//        EmptyView()
+//    }
+//}
 
 //struct StatsView_Previews: PreviewProvider {
 //    static var previews: some View {

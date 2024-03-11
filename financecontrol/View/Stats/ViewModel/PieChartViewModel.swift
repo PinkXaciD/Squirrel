@@ -18,6 +18,8 @@ final class PieChartViewModel: ViewModel {
     @Published var selection: Int = 0
     @Published var content: [PieChartCompleteView<CenterChartView>] = []
     @Published var selectedCategory: CategoryEntity? = nil
+    @Published var isScrollDisabled: Bool = false
+    @Published var data: [ChartData]
     let size: CGFloat
     var cancellables = Set<AnyCancellable>()
     let id = UUID()
@@ -36,6 +38,7 @@ final class PieChartViewModel: ViewModel {
         self.size = size
         
         let chartData = cdm.getChartData()
+        self.data = chartData
         
         var data: [PieChartCompleteView<CenterChartView>] = []
         var count = 0
@@ -77,6 +80,7 @@ final class PieChartViewModel: ViewModel {
     
     func updateData() {
         let chartData: [ChartData] = cdm.getChartData(categoryName: selectedCategory?.name)
+        self.data = chartData
         
         var data: [PieChartCompleteView<CenterChartView>] = []
         var count = 0
@@ -130,12 +134,12 @@ final class PieChartViewModel: ViewModel {
         self.content = data
     }
     
-    private func setData(_ operations: [CategoryEntityLocal]) -> [APChartSectorData] {
+    private func setData(_ operations: [TSCategoryEntity]) -> [APChartSectorData] {
         let result = operations.map { element in
-            let value = element.spendings.map { $0.amountUSDWithReturns }.reduce(0, +)
+            let value = element.sumUSDWithReturns
             return APChartSectorData(
                 value,
-                Color[element.color],
+                Color[element.color ?? ""],
                 id: element.id
             )
         }
@@ -149,7 +153,9 @@ final class PieChartViewModel: ViewModel {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
                 if value {
-                    self?.updateData()
+                    withAnimation {
+                        self?.updateData()
+                    }
                     self?.cdm.updateCharts = false
                 }
             }

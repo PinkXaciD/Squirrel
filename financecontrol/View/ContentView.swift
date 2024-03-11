@@ -23,11 +23,13 @@ struct ContentView: View {
     @StateObject
     private var rvm: RatesViewModel = .init()
     @StateObject
-    private var fvm: FiltersViewModel
+    private var filtersViewModel: FiltersViewModel
     @StateObject
-    private var pcvm: PieChartViewModel
+    private var pieChartViewModel: PieChartViewModel
     @StateObject
-    private var searchModel: StatsSearchViewModel = StatsSearchViewModel()
+    private var statsListViewModel: StatsListViewModel
+    @StateObject
+    private var statsSearchViewModel: StatsSearchViewModel
     
     @ObservedObject 
     private var errorHandler = ErrorHandler.shared
@@ -36,12 +38,16 @@ struct ContentView: View {
     var addExpenseAction: Bool
     
     init(addExpenseAction: Binding<Bool>) {
-        let cdm = CoreDataModel()
-        let pcvm = PieChartViewModel(cdm: cdm)
-        let fvm = FiltersViewModel(pcvm: pcvm)
-        self._cdm = StateObject(wrappedValue: cdm)
-        self._pcvm = StateObject(wrappedValue: pcvm)
-        self._fvm = StateObject(wrappedValue: fvm)
+        let coreDataModel = CoreDataModel()
+        let pieChartViewModel = PieChartViewModel(cdm: coreDataModel)
+        let filtersViewModel = FiltersViewModel(pcvm: pieChartViewModel)
+        let statsSearchViewModel = StatsSearchViewModel()
+        let statsListViewModel = StatsListViewModel(cdm: coreDataModel, fvm: filtersViewModel, pcvm: pieChartViewModel, searchModel: statsSearchViewModel)
+        self._cdm = StateObject(wrappedValue: coreDataModel)
+        self._pieChartViewModel = StateObject(wrappedValue: pieChartViewModel)
+        self._filtersViewModel = StateObject(wrappedValue: filtersViewModel)
+        self._statsListViewModel = StateObject(wrappedValue: statsListViewModel)
+        self._statsSearchViewModel = StateObject(wrappedValue: statsSearchViewModel)
         self._addExpenseAction = addExpenseAction
     }
         
@@ -49,23 +55,21 @@ struct ContentView: View {
         TabView {
             HomeView(showingSheet: $addExpenseAction)
                 .tabItem {
-                    Image(systemName: "house.fill")
-                    Text("Home")
+                    Label("Home", systemImage: "house.fill")
                 }
             
             StatsSearchView()
-                .environmentObject(pcvm)
-                .environmentObject(fvm)
-                .environmentObject(searchModel)
+                .environmentObject(pieChartViewModel)
+                .environmentObject(filtersViewModel)
+                .environmentObject(statsSearchViewModel)
+                .environmentObject(statsListViewModel)
                 .tabItem {
-                    Image(systemName: "chart.pie.fill")
-                    Text("Stats")
+                    Label("Stats", systemImage: "chart.pie.fill")
                 }
             
             SettingsView()
                 .tabItem {
-                    Image(systemName: "gearshape.fill")
-                    Text("Settings")
+                    Label("Settings", systemImage: "gearshape.fill")
                 }
         }
         .onChange(of: scenePhase) { value in

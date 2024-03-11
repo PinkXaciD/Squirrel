@@ -103,6 +103,9 @@ struct FiltersView: View {
     private var trailingToolbar: ToolbarItem<(), some View> {
         ToolbarItem(placement: .topBarTrailing) {
             Button("Apply") {
+                fvm.pcvm.selection = 0
+                fvm.pcvm.isScrollDisabled = true
+                fvm.pcvm.selectedCategory = nil
                 fvm.applyFilters = true
                 fvm.updateList = true
                 dismiss()

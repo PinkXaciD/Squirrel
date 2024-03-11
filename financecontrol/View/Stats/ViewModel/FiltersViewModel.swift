@@ -36,7 +36,7 @@ final class FiltersViewModel: ViewModel {
         self.search = ""
         self.pcvm = pcvm
         
-        subscribeToSelection()
+//        subscribeToSelection()
         
         #if DEBUG
         let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
@@ -52,18 +52,17 @@ final class FiltersViewModel: ViewModel {
     }
     
     func clearFilters() {
-        DispatchQueue.main.async {
-            self.applyFilters = false
-            self.startFilterDate = .now.getFirstDayOfMonth()
-            self.endFilterDate = .now
-            self.filterCategories = []
-            self.updateList = true
-        }
+        self.applyFilters = false
+        self.startFilterDate = .now.getFirstDayOfMonth()
+        self.endFilterDate = .now
+        self.filterCategories = []
+        self.updateList = true
+        self.pcvm.isScrollDisabled = false
     }
     
     private func subscribeToSelection() {
         pcvm.$selection
-            .subscribe(on: DispatchQueue.global())
+//            .subscribe(on: DispatchQueue.global())
             .receive(on: DispatchQueue.main)
             .dropFirst()
             .sink { [weak self] value in
@@ -99,9 +98,7 @@ final class FiltersViewModel: ViewModel {
     }
     
     func listUpdated() {
-        DispatchQueue.main.async {
-            self.updateList = false
-        }
+        self.updateList = false
     }
 }
 

@@ -149,11 +149,13 @@ struct DebugView: View {
             .normalizePadding()
             
             #if DEBUG
-            Button("Fetch rates", role: .destructive) {
+            Button(role: .destructive) {
                 let rm = RatesModel()
                 Task {
                     try await rm.downloadRates(timestamp: Date())
                 }
+            } label: {
+                Text(verbatim: "Fetch rates")
             }
             #endif
         } header: {

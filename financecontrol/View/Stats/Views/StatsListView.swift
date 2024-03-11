@@ -10,13 +10,14 @@ import SwiftUI
 struct StatsListView: View {
     @EnvironmentObject private var cdm: CoreDataModel
     @EnvironmentObject private var fvm: FiltersViewModel
+    @EnvironmentObject private var vm: StatsListViewModel
     @Environment(\.isSearching) private var isSearching
     
     @Binding var entityToEdit: SpendingEntity?
     @Binding var entityToAddReturn: SpendingEntity?
     @Binding var edit: Bool
     
-    @StateObject var vm: StatsListViewModel
+//    @StateObject var vm: StatsListViewModel
     
     var body: some View {
         if !vm.data.isEmpty {

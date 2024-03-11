@@ -27,7 +27,11 @@ struct PieChartView: View {
     
     var body: some View {
         Section {
-            chart
+            VStack {
+                chart
+            }
+            .frame(height: size * 1.1)
+            .disabled(pcvm.isScrollDisabled)
             
             legend
         } footer: {
@@ -37,29 +41,12 @@ struct PieChartView: View {
     
     private var chart: some View {
         PieChartLazyPageView<PieChartCompleteView<CenterChartView>>(viewSize: size)
-            .frame(height: size * 1.1)
             .invertLayoutDirection()
             .listRowInsets(.init(top: 20, leading: 0, bottom: 20, trailing: 0))
-//            .onAppear {
-//                if cdm.updateCharts {
-//                    pcvm.updateData()
-//                    cdm.updateCharts = false
-//                }
-//            }
-//            .onChange(of: cdm.updateCharts) { newValue in
-//                if newValue {
-//                    pcvm.updateData()
-//                    cdm.updateCharts = false
-//                }
-//            }
     }
     
     private var legend: some View {
-        PieChartLegendView(
-            minimize: $minimizeLegend,
-            cdm: cdm,
-            pcvm: pcvm
-        )
+        PieChartLegendView(minimize: $minimizeLegend)
     }
     
     private var footer: some View {
@@ -104,21 +91,11 @@ extension PieChartView {
     }
     
     private func removeSelection() {
-        withAnimation {
-            pcvm.selectedCategory = nil
-            pcvm.updateData()
-        }
+        pcvm.selectedCategory = nil
+        pcvm.updateData()
         
         if fvm.filterCategories.count == 1 {
-            withAnimation {
-                fvm.filterCategories.removeAll()
-            }
-            
-            if pcvm.selection == 0 {
-                withAnimation {
-                    fvm.applyFilters = false
-                }
-            }
+            fvm.clearFilters()
         }
         
         fvm.updateList = true

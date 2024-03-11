@@ -394,6 +394,9 @@
     "New Category" : {
 
     },
+    "New Shortcut" : {
+
+    },
     "No API key was found" : {
 
     },
@@ -416,6 +419,9 @@
 
     },
     "No Results for These Filters" : {
+
+    },
+    "No Shortcuts" : {
 
     },
     "No up to date exchange rate for %@ found" : {
@@ -514,6 +520,12 @@
     "Settings" : {
 
     },
+    "Shortcuts" : {
+
+    },
+    "Shortcuts (beta)" : {
+
+    },
     "Something went wrong..." : {
 
     },
@@ -606,7 +618,7 @@
 
     },
     "Unknown" : {
-
+      "comment" : "Unknown place"
     },
     "UserDefaults" : {
 

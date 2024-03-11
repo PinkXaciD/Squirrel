@@ -71,7 +71,14 @@ extension CategoryEntity: ToSafeObject {
 
 struct CategoryEntityLocal: Identifiable, Equatable, Comparable {
     static func < (lhs: CategoryEntityLocal, rhs: CategoryEntityLocal) -> Bool {
-        return lhs.sumUSDWithReturns < rhs.sumUSDWithReturns
+        let firstSum = lhs.sumUSDWithReturns
+        let secondSum = rhs.sumUSDWithReturns
+        
+        if firstSum == secondSum {
+            return lhs.name > rhs.name
+        }
+        
+        return firstSum < secondSum
     }
     
     static func == (lhs: CategoryEntityLocal, rhs: CategoryEntityLocal) -> Bool {
@@ -137,7 +144,7 @@ extension CategoryEntityLocal {
     }
 }
 
-struct TSCategoryEntity: ToUnsafeObject {
+struct TSCategoryEntity: ToUnsafeObject, Identifiable, Comparable {
     func unsafeObject(in context: NSManagedObjectContext) throws -> CategoryEntity {
         try context.performAndWait {
             guard let description = NSEntityDescription.entity(forEntityName: "CategoryEntity", in: context) else {
@@ -170,10 +177,47 @@ struct TSCategoryEntity: ToUnsafeObject {
         }
     }
     
+    static func < (lhs: TSCategoryEntity, rhs: TSCategoryEntity) -> Bool {
+        let firstSum = lhs.sumUSDWithReturns
+        let secondSum = rhs.sumUSDWithReturns
+        
+        if firstSum == secondSum {
+            return lhs.name ?? "" > rhs.name ?? ""
+        }
+        
+        return firstSum < secondSum
+    }
+    
+    static func == (lhs: TSCategoryEntity, rhs: TSCategoryEntity) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
     let color: String?
     let id: UUID?
     let isShadowed: Bool
     let isFavorite: Bool
     let name: String?
-    let spendings: NSSet?
+    var spendings: NSSet?
+    
+    var spendingsArray: [TSSpendingEntity] {
+        return spendings?.allObjects as? [TSSpendingEntity] ?? []
+    }
+    
+    var sumWithReturns: Double {
+        let rates = UserDefaults.standard.dictionary(forKey: "rates") as? [String: Double] ?? [:]
+        let defaultCurrency = UserDefaults.standard.string(forKey: "defaultCurrency") ?? Locale.current.currencyCode ?? "USD"
+        let sum = self.spendingsArray.compactMap {
+            if $0.wrappedCurrency == defaultCurrency {
+                return $0.amountWithReturns
+            } else {
+                return $0.amountUSDWithReturns * (rates[defaultCurrency] ?? 1)
+            }
+        }
+        
+        return sum.reduce(0, +)
+    }
+    
+    var sumUSDWithReturns: Double {
+        self.spendingsArray.compactMap { $0.amountUSDWithReturns }.reduce(0, +)
+    }
 }

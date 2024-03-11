@@ -126,8 +126,17 @@ final class AddReturnViewModel: ViewModel {
     }
     
     func addFull() {
+        var formatter: NumberFormatter {
+            let formatter = NumberFormatter()
+            formatter.maximumFractionDigits = 2
+            formatter.minimumFractionDigits = 0
+            formatter.decimalSeparator = Locale.current.decimalSeparator ?? "."
+            return formatter
+        }
+        
         self.currency = spending.wrappedCurrency
         self.amount = String(spending.amountWithReturns)
+        self.amount = formatter.string(from: spending.amountWithReturns as NSNumber) ?? String(spending.amountWithReturns).replacingOccurrences(of: ",", with: Locale.current.decimalSeparator ?? ".")
     }
     
     private func countSum(_ newAmount: Double, returns: [ReturnEntity]) -> Bool {

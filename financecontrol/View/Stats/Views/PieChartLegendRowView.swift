@@ -17,13 +17,13 @@ struct PieChartLegendRowView: View {
     @EnvironmentObject
     private var fvm: FiltersViewModel
     
-    let category: CategoryEntityLocal
+    let category: TSCategoryEntity
     
 //    var isActive: Bool = true
     
     var body: some View {
         Button {
-            if let category = cdm.findCategory(category.id) {
+            if let category = cdm.findCategory(category.id ?? .init()) {
                 if fvm.filterCategories.isEmpty {
                     withAnimation {
                         addToFilter(category)
@@ -49,13 +49,7 @@ struct PieChartLegendRowView: View {
                 
                 if fvm.filterCategories.count == 1 {
                     withAnimation {
-                        fvm.filterCategories.removeAll()
-                    }
-                    
-                    if pcvm.selection == 0 {
-                        withAnimation {
-                            fvm.applyFilters = false
-                        }
+                        fvm.clearFilters()
                     }
                 }
                 
@@ -65,14 +59,14 @@ struct PieChartLegendRowView: View {
             }
         } label: {
             HStack {
-                Text(category.name)
+                Text(category.name ?? "Error")
                     .font(.system(size: 14).bold())
                     .padding(.horizontal, 6)
                     .padding(.vertical, 3)
                     .foregroundColor(.white)
                     .background {
                         RoundedRectangle(cornerRadius: 4)
-                            .fill(Color[category.color])
+                            .fill(Color[category.color ?? ""])
                     }
                 
                 Text(category.sumWithReturns.formatted(.currency(code: defaultCurrency)))
@@ -82,7 +76,7 @@ struct PieChartLegendRowView: View {
             .padding(.leading, 3)
             .background {
                 RoundedRectangle(cornerRadius: 7)
-                    .fill(Color[category.color])
+                    .fill(Color[category.color ?? ""])
                     .opacity(0.3)
             }
         }
@@ -93,16 +87,19 @@ struct PieChartLegendRowView: View {
     private func addToFilter(_ category: CategoryEntity) {
         if let id = category.id, !fvm.filterCategories.contains(id) {
             fvm.filterCategories.append(id)
+            fvm.startFilterDate = Date().getFirstDayOfMonth(-pcvm.selection)
+            fvm.endFilterDate = Date().getFirstDayOfMonth(-pcvm.selection + 1)
             fvm.applyFilters = true
         } else {
             guard
                 let id = category.id,
-                let index: Int = fvm.filterCategories.firstIndex(of: id) else {
+                let index: Int = fvm.filterCategories.firstIndex(of: id)
+            else {
                 return
             }
             fvm.filterCategories.remove(at: index)
-            if fvm.filterCategories.isEmpty && pcvm.selection == 0 {
-                fvm.applyFilters = false
+            if fvm.filterCategories.isEmpty /*&& pcvm.selection == 0*/ {
+                fvm.clearFilters()
             }
         }
     }

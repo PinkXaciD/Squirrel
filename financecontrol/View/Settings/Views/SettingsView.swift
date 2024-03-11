@@ -62,6 +62,8 @@ struct SettingsView: View {
                 
                 currencySection
                 
+//                shortcutsSection
+                
                 categorySection
                 
                 exportImportSection
@@ -122,6 +124,16 @@ struct SettingsView: View {
             }
             
             NavigationLink("Rates", destination: RatesView())
+        }
+    }
+    
+    private var shortcutsSection: some View {
+        Section {
+            NavigationLink("Shortcuts (beta)") {
+                AddSpendingShortcutListView()
+            }
+        } header: {
+            Text("Shortcuts (beta)")
         }
     }
     

@@ -8,16 +8,6 @@
 import SwiftUI
 
 struct PieChartLegendView: View {
-    init(minimize: Binding<Bool>, cdm: CoreDataModel, pcvm: PieChartViewModel) {
-        self._minimize = minimize
-        
-        self.operationsInMonthSorted = cdm.operationsInMonth(
-            startDate: .now.getFirstDayOfMonth(-pcvm.selection),
-            endDate: .now.getFirstDayOfMonth(-pcvm.selection + 1),
-            categoryName: pcvm.selectedCategory?.name
-        )
-    }
-    
     @EnvironmentObject
     private var pcvm: PieChartViewModel
     
@@ -27,13 +17,15 @@ struct PieChartLegendView: View {
     @Binding
     var minimize: Bool
     
-    let operationsInMonthSorted: [CategoryEntityLocal]
+//    let operationsInMonthSorted: [CategoryEntityLocal]
     
     var body: some View {
+        let data = pcvm.data[(pcvm.selection >= pcvm.data.count || pcvm.selection < 0) ? 0 : pcvm.selection]
+        
         if minimize {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
-                    ForEach(operationsInMonthSorted) { category in
+                    ForEach(data.categories.sorted(by: >)) { category in
                         PieChartLegendRowView(category: category)
                     }
                 }
@@ -47,7 +39,7 @@ struct PieChartLegendView: View {
         } else {
             HStack {
                 VStack(alignment: .leading, spacing: 10) {
-                    ForEach(operationsInMonthSorted) { category in
+                    ForEach(data.categories.sorted(by: >)) { category in
                         PieChartLegendRowView(category: category)
                     }
                 }

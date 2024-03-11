@@ -17,7 +17,7 @@ struct CenterChartView: View {
     var selectedMonth: Date
     
     let width: CGFloat
-    let operationsInMonth: [CategoryEntityLocal]
+    let operationsInMonth: [TSCategoryEntity]
     
     var body: some View {
         VStack(alignment: .center) {
@@ -39,7 +39,7 @@ struct CenterChartView: View {
 }
 
 extension CenterChartView {
-    internal init(selectedMonth: Date, width: CGFloat, operationsInMonth: [CategoryEntityLocal]) {
+    internal init(selectedMonth: Date, width: CGFloat, operationsInMonth: [TSCategoryEntity]) {
         self.selectedMonth = selectedMonth
         self.width = width
         self.operationsInMonth = operationsInMonth
@@ -53,8 +53,8 @@ extension CenterChartView {
         }
     }
     
-    private func operationsSum(operationsInMonth: [CategoryEntityLocal]) -> String {
-        let values = operationsInMonth.map { $0.spendings }
+    private func operationsSum(operationsInMonth: [TSCategoryEntity]) -> String {
+        let values = operationsInMonth.map { $0.spendingsArray }
         var result: Double = 0
         for value in values {
             for spending in value {

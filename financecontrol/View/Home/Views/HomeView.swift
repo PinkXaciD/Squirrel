@@ -10,6 +10,7 @@ import SwiftUI
 struct HomeView: View {
     @AppStorage("addExpenseAction") private var addExpenseAction: Bool = false
     @Binding var showingSheet: Bool
+    @State private var shortcut: AddSpendingShortcut? = nil
     @EnvironmentObject private var cdm: CoreDataModel
     @EnvironmentObject private var rvm: RatesViewModel
     
@@ -37,14 +38,20 @@ struct HomeView: View {
                                 )
                             )
                         } label: {
-                            Label("Add test", systemImage: "ladybug.fill")
+                            Label {
+                                Text(verbatim: "Add test")
+                            } icon: {
+                                Image(systemName: "ladybug.fill")
+                            }
                         }
                     }
                     #endif
+                
+//                shortcutsSection
             }
             .navigationTitle("Home")
             .sheet(isPresented: $showingSheet) {
-                AddSpendingView(ratesViewModel: rvm, codeDataModel: cdm)
+                AddSpendingView(ratesViewModel: rvm, codeDataModel: cdm, shortcut: shortcut)
             }
         }
         .navigationViewStyle(.stack)
@@ -66,6 +73,23 @@ struct HomeView: View {
             }
         }
         .padding()
+    }
+    
+    @ViewBuilder
+    private var shortcutsSection: some View {
+        if let shortcuts = UserDefaults.standard.value(forKey: "addSpendingShortcuts") as? [AddSpendingShortcut], !shortcuts.isEmpty {
+            Section {
+                ForEach(shortcuts) { shortcut in
+                    Button {
+                        self.shortcut = shortcut
+                        showingSheet.toggle()
+                    } label: {
+                        Text(shortcut.shortcutName)
+                    }
+
+                }
+            }
+        }
     }
     
     func toggleSheet() {

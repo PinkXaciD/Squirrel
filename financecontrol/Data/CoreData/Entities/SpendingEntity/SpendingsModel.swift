@@ -107,6 +107,10 @@ extension CoreDataModel {
             HapticManager.shared.notification(.success)
             
             backgroundContext.reset()
+            
+            DispatchQueue.main.async { [weak self] in
+                self?.updateCharts = true
+            }
         }
     }
     
@@ -159,6 +163,8 @@ extension CoreDataModel {
             if Calendar.current.isDateInToday(newSpending.date) {
                 self?.passSpendingsToSumWidget()
             }
+            
+            self?.updateCharts = true
             
             HapticManager.shared.notification(.success)
         }
@@ -271,127 +277,128 @@ extension CoreDataModel {
         .reduce(0, +)
     }
     
-    // MARK: Operations for legend
-    func operationsInMonth(startDate: Date, endDate: Date, categoryName: String?) -> [CategoryEntityLocal] {
-        context.performAndWait {
-            let range = startDate ..< endDate
-            
-            var filteredSpendings: [SpendingEntity] = savedSpendings.filter { range.contains($0.wrappedDate) }
-            
-            
-            if let categoryName = categoryName {
-                filteredSpendings = filteredSpendings.filter({ $0.categoryName == categoryName })
-            }
-            
-            var categories: [CategoryEntityLocal] {
-                var preResult: [String:CategoryEntityLocal] = [:]
-                let colors: [String] = Array(CustomColor.nordAurora.keys).sorted(by: <)
-                var colorIndex: Int = 0
-                
-                for spending in filteredSpendings {
-                    if categoryName != nil {
-                        var place: String {
-                            guard let place = spending.place, !place.isEmpty else {
-                                return NSLocalizedString("Unknown", comment: "")
-                            }
-                            
-                            return place
-                        }
-                        
-                        var localCategory: CategoryEntityLocal = preResult[place] ?? CategoryEntityLocal(
-                            color: place == NSLocalizedString("Unknown", comment: "") ? "secondary" : colors[colorIndex],
-                            id: spending.wrappedId,
-                            name: place,
-                            spendings: [],
-                            sumUSDWithReturns: 0,
-                            sumWithReturns: 0
-                        )
-                        
-                        if preResult[place] == nil {
-                            if colorIndex < colors.count - 1 {
-                                colorIndex += 1
-                            } else {
-                                colorIndex = 0
-                            }
-                        }
-                        
-                        localCategory.spendings.append(
-                            SpendingEntityLocal(
-                                amountUSD: spending.amountUSD,
-                                amount: spending.amount,
-                                amountWithReturns: spending.amountWithReturns,
-                                amountUSDWithReturns: spending.amountUSDWithReturns,
-                                comment: spending.comment ?? "",
-                                currency: spending.wrappedCurrency,
-                                date: spending.wrappedDate,
-                                place: spending.place ?? "",
-                                categoryId: spending.wrappedId
-                            )
-                        )
-                        
-                        localCategory.sumUSDWithReturns += spending.amountUSDWithReturns
-                        
-                        let defaultCurrency = UserDefaults.standard.string(forKey: "defaultCurrency") ?? Locale.current.currencyCode ?? "USD"
-                        
-                        if spending.currency == defaultCurrency {
-                            localCategory.sumWithReturns += spending.amountWithReturns
-                        } else {
-                            if let fetchedRates = UserDefaults.standard.dictionary(forKey: "rates") as? [String:Double],
-                               let defaultCurrencyRate = fetchedRates[defaultCurrency] {
-                                localCategory.sumWithReturns += (spending.amountUSDWithReturns * defaultCurrencyRate)
-                            }
-                        }
-                        
-                        preResult.updateValue(localCategory, forKey: place)
-                    } else {
-                        if let catId = spending.category?.id {
-                            var localCategory = preResult[catId.uuidString] ?? CategoryEntityLocal(
-                                color: spending.category?.color ?? "",
-                                id: catId,
-                                name: spending.categoryName,
-                                spendings: [],
-                                sumUSDWithReturns: 0,
-                                sumWithReturns: 0
-                            )
-                            
-                            localCategory.spendings.append(
-                                SpendingEntityLocal(
-                                    amountUSD: spending.amountUSD,
-                                    amount: spending.amount,
-                                    amountWithReturns: spending.amountWithReturns,
-                                    amountUSDWithReturns: spending.amountUSDWithReturns,
-                                    comment: spending.comment ?? "",
-                                    currency: spending.wrappedCurrency,
-                                    date: spending.wrappedDate,
-                                    place: spending.place ?? "",
-                                    categoryId: catId
-                                )
-                            )
-                            
-                            localCategory.sumUSDWithReturns += spending.amountUSDWithReturns
-                            
-                            let defaultCurrency = UserDefaults.standard.string(forKey: "defaultCurrency") ?? Locale.current.currencyCode ?? "USD"
-                            
-                            if spending.currency == defaultCurrency {
-                                localCategory.sumWithReturns += spending.amountWithReturns
-                            } else {
-                                if let fetchedRates = UserDefaults.standard.dictionary(forKey: "rates") as? [String:Double],
-                                   let defaultCurrencyRate = fetchedRates[defaultCurrency] {
-                                    localCategory.sumWithReturns += (spending.amountUSDWithReturns * defaultCurrencyRate)
-                                }
-                            }
-                            
-                            preResult.updateValue(localCategory, forKey: catId.uuidString)
-                        }
-                    }
-                }
-                
-                return Array(preResult.values)
-            }
-            
-            return categories.sorted(by: >)
-        }
-    }
+    // MARK: Operations for legend (deprecated)
+//    func operationsInMonth(startDate: Date, endDate: Date, categoryName: String?) -> [CategoryEntityLocal] {
+//        let request = SpendingEntity.fetchRequest()
+//        let predicate = NSPredicate(format: "date >= %@ AND date < %@", argumentArray: [startDate as NSDate, endDate as NSDate])
+//        request.predicate = predicate
+//        
+//        let filteredSpendings: [SpendingEntity]? = try? context.fetch(request)
+//        
+//        guard var filteredSpendings else { return [] }
+//        
+//        if let categoryName = categoryName {
+//            filteredSpendings = filteredSpendings.filter { $0.categoryName == categoryName }
+//        }
+//        
+//        var categories: [CategoryEntityLocal] {
+//            var preResult: [String:CategoryEntityLocal] = [:]
+//            let colors: [String] = Array(CustomColor.nordAurora.keys).sorted(by: <)
+//            var colorIndex: Int = 0
+//            
+//            for spending in filteredSpendings {
+//                if categoryName != nil {
+//                    var place: String {
+//                        guard let place = spending.place, !place.isEmpty else {
+//                            return NSLocalizedString("Unknown", comment: "")
+//                        }
+//                        
+//                        return place
+//                    }
+//                    
+//                    var localCategory: CategoryEntityLocal = preResult[place] ?? CategoryEntityLocal(
+//                        color: place == NSLocalizedString("Unknown", comment: "") ? "secondary" : colors[colorIndex],
+//                        id: spending.wrappedId,
+//                        name: place,
+//                        spendings: [],
+//                        sumUSDWithReturns: 0,
+//                        sumWithReturns: 0
+//                    )
+//                    
+//                    if preResult[place] == nil {
+//                        if colorIndex < colors.count - 1 {
+//                            colorIndex += 1
+//                        } else {
+//                            colorIndex = 0
+//                        }
+//                    }
+//                    
+//                    localCategory.spendings.append(
+//                        SpendingEntityLocal(
+//                            amountUSD: spending.amountUSD,
+//                            amount: spending.amount,
+//                            amountWithReturns: spending.amountWithReturns,
+//                            amountUSDWithReturns: spending.amountUSDWithReturns,
+//                            comment: spending.comment ?? "",
+//                            currency: spending.wrappedCurrency,
+//                            date: spending.wrappedDate,
+//                            place: spending.place ?? "",
+//                            categoryId: spending.wrappedId
+//                        )
+//                    )
+//                    
+//                    localCategory.sumUSDWithReturns += spending.amountUSDWithReturns
+//                    
+//                    let defaultCurrency = UserDefaults.standard.string(forKey: "defaultCurrency") ?? Locale.current.currencyCode ?? "USD"
+//                    
+//                    if spending.currency == defaultCurrency {
+//                        localCategory.sumWithReturns += spending.amountWithReturns
+//                    } else {
+//                        if let fetchedRates = UserDefaults.standard.dictionary(forKey: "rates") as? [String:Double],
+//                           let defaultCurrencyRate = fetchedRates[defaultCurrency] {
+//                            localCategory.sumWithReturns += (spending.amountUSDWithReturns * defaultCurrencyRate)
+//                        }
+//                    }
+//                    
+//                    preResult.updateValue(localCategory, forKey: place)
+//                } else {
+//                    if let catId = spending.category?.id {
+//                        var localCategory = preResult[catId.uuidString] ?? CategoryEntityLocal(
+//                            color: spending.category?.color ?? "",
+//                            id: catId,
+//                            name: spending.categoryName,
+//                            spendings: [],
+//                            sumUSDWithReturns: 0,
+//                            sumWithReturns: 0
+//                        )
+//                        
+//                        localCategory.spendings.append(
+//                            SpendingEntityLocal(
+//                                amountUSD: spending.amountUSD,
+//                                amount: spending.amount,
+//                                amountWithReturns: spending.amountWithReturns,
+//                                amountUSDWithReturns: spending.amountUSDWithReturns,
+//                                comment: spending.comment ?? "",
+//                                currency: spending.wrappedCurrency,
+//                                date: spending.wrappedDate,
+//                                place: spending.place ?? "",
+//                                categoryId: catId
+//                            )
+//                        )
+//                        
+//                        localCategory.sumUSDWithReturns += spending.amountUSDWithReturns
+//                        
+//                        let defaultCurrency = UserDefaults.standard.string(forKey: "defaultCurrency") ?? Locale.current.currencyCode ?? "USD"
+//                        
+//                        if spending.currency == defaultCurrency {
+//                            localCategory.sumWithReturns += spending.amountWithReturns
+//                        } else {
+//                            if let fetchedRates = UserDefaults.standard.dictionary(forKey: "rates") as? [String:Double],
+//                               let defaultCurrencyRate = fetchedRates[defaultCurrency] {
+//                                localCategory.sumWithReturns += (spending.amountUSDWithReturns * defaultCurrencyRate)
+//                            }
+//                        }
+//                        
+//                        preResult.updateValue(localCategory, forKey: catId.uuidString)
+//                    }
+//                }
+//            }
+//            
+//            return Array(preResult.values)
+//        }
+//        
+//        return categories.sorted(by: >)
+//    }
     
     // MARK: Operations for chart
     func getChartData(isMinimized: Bool = true, categoryName: String? = nil) -> [ChartData] {
@@ -399,9 +406,9 @@ extension CoreDataModel {
         
         var chartData: [ChartData] = []
         
-        let firstSpendingDate: Date = savedSpendings.last?.date?.getFirstDayOfMonth() ?? .now
+        let firstSpendingDate: Date = savedSpendings.last?.date?.getFirstDayOfMonth() ?? Date()
         
-        let interval = 0...(Calendar.current.dateComponents([.month], from: firstSpendingDate, to: .now).month ?? 1)
+        let interval = 0...(Calendar.current.dateComponents([.month], from: firstSpendingDate, to: Date()).month ?? 1)
         
         for index in interval {
             let date = currentCalendar.date(byAdding: .month, value: -index, to: .now) ?? .now
