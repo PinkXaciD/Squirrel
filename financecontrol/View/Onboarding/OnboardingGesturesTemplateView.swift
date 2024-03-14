@@ -15,10 +15,12 @@ struct OnboardingGesturesTemplateView: View {
         List {
             categorySection
                 .normalizePadding()
+                .padding(.vertical, 1)
             
             if !spendingDeleted {
                 spendingSection
                     .normalizePadding()
+                    .padding(.vertical, 1)
             }
         }
     }

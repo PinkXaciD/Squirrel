@@ -187,9 +187,13 @@ struct DebugView: View {
     
     private var defaultsSection: some View {
         Section {
-            NavigationLink("UserDefaults values") {
+            #if DEBUG
+            NavigationLink {
                 UserDefaultsValuesView(defaults: .standard)
+            } label: {
+                Text(verbatim: "UserDefaults values")
             }
+            #endif
             
             Button(role: .destructive) {
                 defaultsConfirmationIsShowing.toggle()
@@ -303,6 +307,7 @@ extension DebugView {
     }
 }
 
+#if DEBUG
 struct UserDefaultsValuesView: View {
     let defaults: [String:Any]
     
@@ -330,7 +335,7 @@ struct UserDefaultsValuesView: View {
             }
         }
         .searchable(text: $search)
-        .navigationTitle("UserDefaults")
+        .navigationTitle(Text(verbatim: "UserDefaults"))
     }
     
     private func searchFunc() -> [String] {
@@ -349,3 +354,4 @@ struct UserDefaultsValuesView: View {
 #Preview {
     DebugView(presentOnboarding: .constant(false))
 }
+#endif

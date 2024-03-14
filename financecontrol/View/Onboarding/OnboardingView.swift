@@ -41,24 +41,31 @@ struct OnboardingView: View {
             }
         }
         .overlay(alignment: .bottom) {
-            if showOverlay {
+//            if showOverlay {
                 ZStack(alignment: .bottom) {
-                    gradient
-                        .frame(maxHeight: screen > 1 && screen < finalScreenNumber ? 121 : 80)
-                    
-                    VStack {
-                        continueButton
-                            .padding(.horizontal, 30)
-                            .zIndex(1.0)
+                    if showOverlay {
+                        gradient
+                            .frame(maxHeight: 80)
+                            .transition(.move(edge: .bottom))
+                            .zIndex(0)
                         
-                        if screen > 1 && screen < finalScreenNumber {
-                            skipButton
+                        VStack {
+                            continueButton
+                                .padding(.horizontal, 30)
+                            
+    //                        if screen > 1 && screen < finalScreenNumber {
+    //                            skipButton
+    //                        }
                         }
+                        .zIndex(1)
+                        .padding(.bottom, 30)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
-                    .padding(.bottom, 30)
                 }
-                .transition(.move(edge: .bottom).animation(.easeIn(duration: 0.5)).combined(with: .opacity).animation(.easeIn(duration: 0.5)))
-            }
+//                .transition(.move(edge: .bottom).combined(with: .scale))
+                .animation(.smooth, value: showOverlay)
+                
+//            }
         }
         .ignoresSafeArea(.container)
     }
@@ -114,7 +121,7 @@ struct OnboardingView: View {
                     .foregroundColor(.orange)
                     .frame(maxHeight: 50)
                 
-                Text("Continue")
+                Text(screen == finalScreenNumber ? "Done" : "Continue")
                     .foregroundColor(.white)
                     .font(.body.bold())
             }
