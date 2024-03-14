@@ -11,7 +11,7 @@ struct PieChartLegendView: View {
     @EnvironmentObject
     private var pcvm: PieChartViewModel
     
-    @AppStorage("defaultCurrency")
+    @AppStorage(UDKeys.defaultCurrency)
     private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
     @Binding

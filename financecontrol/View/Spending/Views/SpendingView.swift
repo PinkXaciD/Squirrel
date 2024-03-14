@@ -30,7 +30,7 @@ struct SpendingView: View {
     @Environment(\.dismiss) 
     private var dismiss
     
-    @AppStorage("defaultCurrency") 
+    @AppStorage(UDKeys.defaultCurrency) 
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
     @State

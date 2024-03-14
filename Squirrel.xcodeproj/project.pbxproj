@@ -33,6 +33,12 @@
 		8D2316F82AD3112F00CEE8C1 /* ErrorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2316F72AD3112F00CEE8C1 /* ErrorHandler.swift */; };
 		8D28C7F02A73DF7000F27CD4 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D28C7EF2A73DF7000F27CD4 /* Colors.swift */; };
 		8D292EFD2B3D7E7F00E69BA7 /* FallbackRatesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D292EFC2B3D7E7F00E69BA7 /* FallbackRatesTests.swift */; };
+		8D2AD7CC2BA1CD62001DCC61 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AD7CB2BA1CD62001DCC61 /* OnboardingView.swift */; };
+		8D2AD7CE2BA1CDA2001DCC61 /* OnboardingWelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AD7CD2BA1CDA2001DCC61 /* OnboardingWelcomeView.swift */; };
+		8D2AD7D02BA1CE28001DCC61 /* OnboardingCurrencyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AD7CF2BA1CE28001DCC61 /* OnboardingCurrencyView.swift */; };
+		8D2AD7D22BA1CE6E001DCC61 /* OnboardingGesturesTemplateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AD7D12BA1CE6E001DCC61 /* OnboardingGesturesTemplateView.swift */; };
+		8D2AD7D42BA1CEA6001DCC61 /* OnboardingCategoriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AD7D32BA1CEA6001DCC61 /* OnboardingCategoriesView.swift */; };
+		8D2AD7D62BA21152001DCC61 /* TransitionExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AD7D52BA21152001DCC61 /* TransitionExtensions.swift */; };
 		8D31CE5E2AD029EC00E8B74B /* APIURLComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D31CE5D2AD029EC00E8B74B /* APIURLComponents.swift */; };
 		8D35AC962B0E62DE0030F7DF /* AddSpendingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D35AC952B0E62DE0030F7DF /* AddSpendingViewModel.swift */; };
 		8D3876632A740F960005FFAF /* InputUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D3876622A740F960005FFAF /* InputUtils.swift */; };
@@ -196,6 +202,12 @@
 		8D28C7EF2A73DF7000F27CD4 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Colors.swift; path = financecontrol/Utils/Colors.swift; sourceTree = SOURCE_ROOT; };
 		8D292EF32B3D75DC00E69BA7 /* SquirrelTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SquirrelTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D292EFC2B3D7E7F00E69BA7 /* FallbackRatesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FallbackRatesTests.swift; sourceTree = "<group>"; };
+		8D2AD7CB2BA1CD62001DCC61 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		8D2AD7CD2BA1CDA2001DCC61 /* OnboardingWelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingWelcomeView.swift; sourceTree = "<group>"; };
+		8D2AD7CF2BA1CE28001DCC61 /* OnboardingCurrencyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCurrencyView.swift; sourceTree = "<group>"; };
+		8D2AD7D12BA1CE6E001DCC61 /* OnboardingGesturesTemplateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingGesturesTemplateView.swift; sourceTree = "<group>"; };
+		8D2AD7D32BA1CEA6001DCC61 /* OnboardingCategoriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCategoriesView.swift; sourceTree = "<group>"; };
+		8D2AD7D52BA21152001DCC61 /* TransitionExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionExtensions.swift; sourceTree = "<group>"; };
 		8D31CE5D2AD029EC00E8B74B /* APIURLComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIURLComponents.swift; sourceTree = "<group>"; };
 		8D35AC952B0E62DE0030F7DF /* AddSpendingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddSpendingViewModel.swift; sourceTree = "<group>"; };
 		8D3876622A740F960005FFAF /* InputUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputUtils.swift; sourceTree = "<group>"; };
@@ -398,6 +410,18 @@
 			path = financecontrolTests;
 			sourceTree = "<group>";
 		};
+		8D2AD7CA2BA1CD41001DCC61 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				8D2AD7CB2BA1CD62001DCC61 /* OnboardingView.swift */,
+				8D2AD7CD2BA1CDA2001DCC61 /* OnboardingWelcomeView.swift */,
+				8D2AD7CF2BA1CE28001DCC61 /* OnboardingCurrencyView.swift */,
+				8D2AD7D12BA1CE6E001DCC61 /* OnboardingGesturesTemplateView.swift */,
+				8D2AD7D32BA1CEA6001DCC61 /* OnboardingCategoriesView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
 		8D35AC942B0E62C70030F7DF /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
@@ -527,6 +551,7 @@
 				8D7EFB0A2A85096B009797E8 /* DateExtensions.swift */,
 				8D1E71E22AAEFED6004A17B4 /* ColorExtensions.swift */,
 				8DCB302A2A971C2F00DC9ABB /* OtherExtensions.swift */,
+				8D2AD7D52BA21152001DCC61 /* TransitionExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -795,6 +820,7 @@
 				8D406EA72A9A36A6002D3ED1 /* Settings */,
 				8D4B69A92A66ED40008F098B /* Selectors */,
 				8D5894942A829D8C00A6DB65 /* Spending */,
+				8D2AD7CA2BA1CD41001DCC61 /* Onboarding */,
 				8D54F4F92B96331800B17886 /* Universal */,
 			);
 			path = View;
@@ -995,15 +1021,18 @@
 				8DCB302F2A97578F00DC9ABB /* ViewExtensions.swift in Sources */,
 				8D88CDC32AA0E37000668DEC /* SpendingEntity+CoreDataProperties.swift in Sources */,
 				8D6E441B2B18C6E800FDFF9D /* ReturnsModel.swift in Sources */,
+				8D2AD7CE2BA1CDA2001DCC61 /* OnboardingWelcomeView.swift in Sources */,
 				8D6E44152B18C5AE00FDFF9D /* ReturnEntity+CoreDataProperties.swift in Sources */,
 				8DC4279C2A570D9600525DC4 /* StatsView.swift in Sources */,
 				8D7ECC7A2AACAF6F005A515D /* CustomColorSelector.swift in Sources */,
+				8D2AD7D42BA1CEA6001DCC61 /* OnboardingCategoriesView.swift in Sources */,
 				8D2240BB2B0F949100D5572B /* SpendingViewModelProtocol.swift in Sources */,
 				8D39C6952B1F3CC500F40FD6 /* EditReturnViewModel.swift in Sources */,
 				8D0763A32A4B07ED00D2C3FF /* AddSpendingView.swift in Sources */,
 				8D31CE5E2AD029EC00E8B74B /* APIURLComponents.swift in Sources */,
 				8D0763A82A4B257F00D2C3FF /* CurrencySelector.swift in Sources */,
 				8D7710A72B60615D00D3ECF5 /* UniversalViews.swift in Sources */,
+				8D2AD7CC2BA1CD62001DCC61 /* OnboardingView.swift in Sources */,
 				8DAFF8A62B39CEDD001D5A9D /* CoreDataModel.swift in Sources */,
 				8DFA1EDE2B4C163100B97113 /* CustomIcon.swift in Sources */,
 				8DB294BA2A7C0FF800170BA2 /* NumbersViewModifier.swift in Sources */,
@@ -1036,6 +1065,7 @@
 				8DF003772B0CC0A200133554 /* FiltersView.swift in Sources */,
 				8DCA25E42A9F4E5300A5BC31 /* ShadowedCategoriesView.swift in Sources */,
 				8DBA96A62AD48DB800F900C4 /* AboutView.swift in Sources */,
+				8D2AD7D62BA21152001DCC61 /* TransitionExtensions.swift in Sources */,
 				8D06810E2B6D461600195205 /* PieChartViewModel.swift in Sources */,
 				8D9F30E92B4D7C3E00A0B8C3 /* WidgetsManager.swift in Sources */,
 				8D9E22D82AE6A1BD00801932 /* CustomShareSheet.swift in Sources */,
@@ -1050,6 +1080,7 @@
 				8D5CBE782B84F68300435335 /* CoreDataErrors.swift in Sources */,
 				8D0429DB2A9B8D2400A09BB4 /* BarChartGenerator.swift in Sources */,
 				8D28C7F02A73DF7000F27CD4 /* Colors.swift in Sources */,
+				8D2AD7D22BA1CE6E001DCC61 /* OnboardingGesturesTemplateView.swift in Sources */,
 				8DBCEF2C2B762D35005F4BCC /* PieChartLegendRowView.swift in Sources */,
 				8D0DF5512AE80D5F00C3CC1F /* CustomAlertView.swift in Sources */,
 				8D406EAC2A9A386E002D3ED1 /* BarChartData.swift in Sources */,
@@ -1079,6 +1110,7 @@
 				8DBFEBF92A49ED9A00165414 /* HomeView.swift in Sources */,
 				8DE29BA82A683F01002F5C42 /* AddCategoryView.swift in Sources */,
 				8D4E081A2AAA15B900B3544F /* CategoriesModel.swift in Sources */,
+				8D2AD7D02BA1CE28001DCC61 /* OnboardingCurrencyView.swift in Sources */,
 				8D88CDC02AA0E37000668DEC /* CategoryEntity+CoreDataClass.swift in Sources */,
 				8DDFD4742A68249100493753 /* DefaultCurrencySelectorView.swift in Sources */,
 			);
@@ -1159,7 +1191,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1198,7 +1230,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1359,7 +1391,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				ENABLE_PREVIEWS = YES;
@@ -1405,7 +1437,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				ENABLE_PREVIEWS = YES;

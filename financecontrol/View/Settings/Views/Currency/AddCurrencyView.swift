@@ -15,7 +15,7 @@ struct AddCurrencyView: View {
     
     var currencies = Locale.customCommonISOCurrencyCodes
     
-    var currenciesFull: [Dictionary<String, String>.Element] {
+    var currenciesFull: [(key: String, value: String)] {
         let currenciesFiltered = excludeAdded()
         var currenciesFull: [String:String] {
             var currenciesFull = [String:String]()
@@ -28,20 +28,27 @@ struct AddCurrencyView: View {
         let sorted = currenciesFull.sorted {
             $0.value < $1.value
         }
+        
         return sorted
     }
     
     var body: some View {
-        List {
+        Group {
             let searchResult = searchFunc()
             
-            Section(header: Text("Tap to add")) {
-                ForEach(0..<searchResult.count, id: \.self) { index in
-                    
-                    let currency = searchResult[index]
-                    
-                    NewCurrencyRow(name: currency.value, code: currency.key)
+            if !searchResult.isEmpty {
+                List {
+                    Section(header: Text("Tap to add")) {
+                        ForEach(0..<searchResult.count, id: \.self) { index in
+                            
+                            let currency = searchResult[index]
+                            
+                            NewCurrencyRow(name: currency.value, code: currency.key)
+                        }
+                    }
                 }
+            } else {
+                CustomContentUnavailableView("No results for \"\(search)\"", imageName: "magnifyingglass", description: "Try another search.")
             }
         }
         .searchable(

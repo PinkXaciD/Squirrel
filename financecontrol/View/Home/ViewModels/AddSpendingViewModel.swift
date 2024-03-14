@@ -52,7 +52,7 @@ final class AddSpendingViewModel: ViewModel {
                 self.amount = ""
             }
             
-            self.currency = shortcut.currency ?? UserDefaults.standard.string(forKey: "defaultCurrency") ?? Locale.current.currencyCode ?? "USD"
+            self.currency = shortcut.currency ?? UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD"
             self.date = Date()
             
             if let categoryID = shortcut.categoryID, let categoryName = cdm.findCategory(categoryID)?.name {
@@ -67,7 +67,7 @@ final class AddSpendingViewModel: ViewModel {
             self.comment = shortcut.comment ?? ""
         } else {
             self.amount = ""
-            self.currency = UserDefaults.standard.string(forKey: "defaultCurrency") ?? Locale.current.currencyCode ?? "USD"
+            self.currency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD"
             self.date = .now
             self.categoryName = "Select Category"
             self.categoryId = .init()

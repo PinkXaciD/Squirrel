@@ -13,15 +13,15 @@ extension CoreDataModel {
     func fetchCurrencies() {
         
         let request = CurrencyEntity.fetchRequest()
-        let localeDefaultCurrency: String = Locale.current.currencyCode ?? "USD"
+//        let localeDefaultCurrency: String = Locale.current.currencyCode ?? "USD"
         
         do {
             savedCurrencies = try context.fetch(request)
-            if savedCurrencies.isEmpty {
-                addCurrency(tag: localeDefaultCurrency, isFavorite: true)
-                UserDefaults.standard.set(localeDefaultCurrency, forKey: "defaultCurrency")
-                UserDefaults(suiteName: Vars.groupName)?.set(localeDefaultCurrency, forKey: "defaultCurrency")
-            }
+//            if savedCurrencies.isEmpty {
+//                addCurrency(tag: localeDefaultCurrency, isFavorite: true)
+//                UserDefaults.standard.set(localeDefaultCurrency, forKey: "defaultCurrency")
+//                UserDefaults(suiteName: Vars.groupName)?.set(localeDefaultCurrency, forKey: "defaultCurrency")
+//            }
         } catch let error {
             ErrorType(error: error).publish()
         }

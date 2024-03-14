@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PieChartLegendRowView: View {
-    @AppStorage("defaultCurrency")
+    @AppStorage(UDKeys.defaultCurrency)
     private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     @EnvironmentObject
     private var cdm: CoreDataModel

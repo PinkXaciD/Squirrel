@@ -14,6 +14,9 @@ struct AboutView: View {
     
     @State private var showDebug: Bool = false
     
+    @Binding
+    var presentOnboarding: Bool
+    
     var body: some View {
         Form {
             aboutSection
@@ -86,13 +89,13 @@ struct AboutView: View {
     private var debugSection: some View {
         Section {
             NavigationLink("Debug") {
-                DebugView()
+                DebugView(presentOnboarding: $presentOnboarding)
             }
         }
     }
     
     private var copyrightText: Text {
-        Text(verbatim: "© \(Calendar.current.currentYearTextualRepresentation()) PinkXaciD")
+        Text(verbatim: "© \(Date().formatted(.dateTime.year())) PinkXaciD")
             .font(.caption)
             .foregroundColor(.secondary)
     }
@@ -106,5 +109,5 @@ struct AboutView: View {
 }
 
 #Preview {
-    AboutView()
+    AboutView(presentOnboarding: .constant(false))
 }

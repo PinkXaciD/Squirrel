@@ -16,17 +16,9 @@ struct CustomColorSelector: View {
     
     var body: some View {
         
-        let columns = [
-            GridItem(.flexible(minimum: 35, maximum: 50)),
-            GridItem(.flexible(minimum: 35, maximum: 50)),
-            GridItem(.flexible(minimum: 35, maximum: 50)),
-            GridItem(.flexible(minimum: 35, maximum: 50)),
-            GridItem(.flexible(minimum: 35, maximum: 50)),
-            GridItem(.flexible(minimum: 35, maximum: 50)),
-            GridItem(.flexible(minimum: 35, maximum: 50))
-        ]
+        let columns: [GridItem] = Array(repeating: .init(.flexible(minimum: 35, maximum: 50), spacing: 10, alignment: .center), count: 7)
         
-        LazyVGrid(columns: columns, spacing: 10) {
+        LazyVGrid(columns: columns) {
             ForEach(colors.compactMap{$0.key}.sorted{$0 < $1}, id: \.self) { colorDescription in
 //                if colorDescription == colorSelectedDescription {
 //                    ZStack {
@@ -86,6 +78,7 @@ struct CustomColorSelector: View {
                     .opacity(colorDescription == colorSelectedDescription ? 1 : 0)
                     .scaleEffect(colorDescription == colorSelectedDescription ? 0.8 : 1)
             }
+            .frame(minWidth: 35, maxWidth: 50, minHeight: 35, maxHeight: 50)
     }
     
     private func buttonAction(_ colorDescription: String) {
@@ -97,10 +90,16 @@ struct CustomColorSelector: View {
 }
 
 struct CustomColorSelectorPreviews: PreviewProvider {
-    @State static var colorSelected: Color = .nordRed
-    @State static var colorSelectedDescription: String = "nordRed"
-    
     static var previews: some View {
+        CustomColorSelectorPreview()
+    }
+}
+
+fileprivate struct CustomColorSelectorPreview: View {
+    @State var colorSelected: Color = .nordRed
+    @State var colorSelectedDescription: String = "nordRed"
+    
+    var body: some View {
         List {
             CustomColorSelector(colorSelected: $colorSelected, colorSelectedDescription: $colorSelectedDescription)
         }

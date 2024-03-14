@@ -15,9 +15,9 @@ struct AddSpendingView: View {
     @StateObject
     private var vm: AddSpendingViewModel
     
-    @AppStorage("color") 
+    @AppStorage(UDKeys.color)
     private var tint: String = "Orange"
-    @AppStorage("defaultCurrency") 
+    @AppStorage(UDKeys.defaultCurrency) 
     private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
     @Environment(\.dismiss) 
@@ -262,7 +262,7 @@ extension AddSpendingView {
     }
     
     private func getColorScheme() -> ColorScheme {
-        let saved = UserDefaults.standard.string(forKey: "theme") ?? ""
+        let saved = UserDefaults.standard.string(forKey: UDKeys.theme) ?? ""
         return themeConvert(saved) ?? colorScheme
     }
 }
@@ -338,7 +338,7 @@ struct AddSpendingShortcutAddView: View {
     
     @State private var shortcutName: String = ""
     @State private var amount: String = ""
-    @State private var currency: String = UserDefaults.standard.string(forKey: "defaultCurrency") ?? Locale.current.currencyCode ?? "USD"
+    @State private var currency: String = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD"
     @State private var categoryID: UUID = .init()
     @State private var place: String = ""
     @State private var comment: String = ""
@@ -360,7 +360,7 @@ struct AddSpendingShortcutAddView: View {
                 self.amount = formatter.string(from: amount as NSNumber) ?? ""
             }
             
-            self.currency = shortcut.currency ?? UserDefaults.standard.string(forKey: "defaultCurrency") ?? Locale.current.currencyCode ?? "USD"
+            self.currency = shortcut.currency ?? UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD"
             self.categoryID = shortcut.categoryID ?? .init()
             self.place = shortcut.place ?? ""
             self.comment = shortcut.comment ?? ""

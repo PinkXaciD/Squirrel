@@ -14,7 +14,7 @@ struct FiltersView: View {
     private var fvm: FiltersViewModel
     @Environment(\.dismiss)
     private var dismiss
-    @AppStorage("color")
+    @AppStorage(UDKeys.color)
     private var tint: String = "Orange"
     
     @State

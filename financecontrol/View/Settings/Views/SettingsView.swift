@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @AppStorage("color")
+    @AppStorage(UDKeys.color)
     var defaultColor: String = "Orange"
-    @AppStorage("defaultCurrency")
+    @AppStorage(UDKeys.defaultCurrency)
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
-    @AppStorage("theme")
+    @AppStorage(UDKeys.theme)
     var theme: String = "None"
     
     @State
@@ -26,6 +26,9 @@ struct SettingsView: View {
     private var customAlertMessage: Text = .init("")
     @State
     private var customAlertType: CustomAlertType = .unknown
+    
+    @Binding
+    var presentOnboarding: Bool
     
     let version: String? = Bundle.main.releaseVersionNumber
     let build: String? = Bundle.main.buildVersionNumber
@@ -79,7 +82,7 @@ struct SettingsView: View {
     var aboutSection: some View {
         Section {
             NavigationLink("About") {
-                AboutView()
+                AboutView(presentOnboarding: $presentOnboarding)
                     .navigationTitle("About")
                     .navigationBarTitleDisplayMode(.inline)
             }
@@ -181,7 +184,7 @@ extension SettingsView {
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView()
+        SettingsView(presentOnboarding: .constant(false))
             .environmentObject(CoreDataModel())
     }
 }

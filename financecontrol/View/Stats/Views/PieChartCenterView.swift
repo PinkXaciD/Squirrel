@@ -12,7 +12,7 @@ struct CenterChartView: View {
     private var cdm: CoreDataModel
     @EnvironmentObject
     private var rvm: RatesViewModel
-    @AppStorage("defaultCurrency")
+    @AppStorage(UDKeys.defaultCurrency)
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     var selectedMonth: Date
     

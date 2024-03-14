@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct HomeView: View {
-    @AppStorage("addExpenseAction") private var addExpenseAction: Bool = false
+    @AppStorage(UDKeys.addExpenseAction) private var addExpenseAction: Bool = false
     @Binding var showingSheet: Bool
+    @Binding var presentOnboarding: Bool
     @State private var shortcut: AddSpendingShortcut? = nil
     @EnvironmentObject private var cdm: CoreDataModel
     @EnvironmentObject private var rvm: RatesViewModel
@@ -46,6 +47,14 @@ struct HomeView: View {
                         }
                     }
                     #endif
+                
+                #if DEBUG
+                Section {
+                    Button("Present onboarding") {
+                        presentOnboarding = true
+                    }
+                }
+                #endif
                 
 //                shortcutsSection
             }
@@ -99,7 +108,7 @@ struct HomeView: View {
 
 struct SwiftUIView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView(showingSheet: .constant(false))
+        HomeView(showingSheet: .constant(false), presentOnboarding: .constant(false))
             .environmentObject(CoreDataModel())
     }
 }

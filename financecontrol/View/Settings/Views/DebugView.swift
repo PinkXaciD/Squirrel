@@ -20,6 +20,9 @@ struct DebugView: View {
     @State
     private var validateConfirmationIsShowing: Bool = false
     
+    @Binding
+    var presentOnboarding: Bool
+    
     var body: some View {
         Form {
             errorsSection
@@ -29,6 +32,8 @@ struct DebugView: View {
             bundleSection
             
             defaultsSection
+            
+            onboardingSection
             
             reloadWidgetsSection
             
@@ -194,6 +199,16 @@ struct DebugView: View {
         }
     }
     
+    private var onboardingSection: some View {
+        Section {
+            Button {
+                presentOnboarding = true
+            } label: {
+                Text(verbatim: "Present onboarding")
+            }
+        }
+    }
+    
     private var validateSection: some View {
         Section {
             Button(role: .destructive) {
@@ -281,7 +296,7 @@ extension DebugView {
             let date: Date = isoDateFromatter.date(from: Rates.fallback.timestamp) ?? .distantPast
             return dateFormatter.string(from: date)
         case .update:
-            let ratesUpdateTime: String = UserDefaults.standard.string(forKey: "updateTime") ?? "Error"
+            let ratesUpdateTime: String = UserDefaults.standard.string(forKey: UDKeys.updateTime) ?? "Error"
             let date: Date = isoDateFromatter.date(from: ratesUpdateTime) ?? .distantPast
             return dateFormatter.string(from: date)
         }
@@ -332,5 +347,5 @@ struct UserDefaultsValuesView: View {
 }
 
 #Preview {
-    DebugView()
+    DebugView(presentOnboarding: .constant(false))
 }

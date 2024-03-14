@@ -13,7 +13,7 @@ import OSLog
 #endif
 
 final class PieChartViewModel: ViewModel {
-    @AppStorage("defaultCurrency") private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
+    @AppStorage(UDKeys.defaultCurrency) private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     private var cdm: CoreDataModel
     @Published var selection: Int = 0
     @Published var content: [PieChartCompleteView<CenterChartView>] = []

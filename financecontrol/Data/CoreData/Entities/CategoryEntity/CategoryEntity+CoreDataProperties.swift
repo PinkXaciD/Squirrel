@@ -121,13 +121,13 @@ extension CategoryEntityLocal {
                 
                 sumUSDWithReturns += spending.amountUSDWithReturns
                 
-                let defaultCurrency = UserDefaults.standard.string(forKey: "defaultCurrency") ?? Locale.current.currencyCode ?? "USD"
+                let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD"
                 
                 if spending.wrappedCurrency == defaultCurrency {
                     sumWithReturns += spending.amount
                 } else {
                     guard
-                        let fetchedRates = UserDefaults.standard.dictionary(forKey: "rates") as? [String:Double],
+                        let fetchedRates = UserDefaults.standard.dictionary(forKey: UDKeys.rates) as? [String:Double],
                         let defaultCurrencyRate = fetchedRates[defaultCurrency]
                     else {
                         continue
@@ -204,8 +204,8 @@ struct TSCategoryEntity: ToUnsafeObject, Identifiable, Comparable {
     }
     
     var sumWithReturns: Double {
-        let rates = UserDefaults.standard.dictionary(forKey: "rates") as? [String: Double] ?? [:]
-        let defaultCurrency = UserDefaults.standard.string(forKey: "defaultCurrency") ?? Locale.current.currencyCode ?? "USD"
+        let rates = UserDefaults.standard.dictionary(forKey: UDKeys.rates) as? [String: Double] ?? [:]
+        let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD"
         let sum = self.spendingsArray.compactMap {
             if $0.wrappedCurrency == defaultCurrency {
                 return $0.amountWithReturns

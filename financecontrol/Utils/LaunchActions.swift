@@ -19,7 +19,7 @@ func launch() -> Void {
     dateFormatter.timeZone = .init(identifier: "GMT")
     
     let currentDate = dateFormatter.string(from: .now)
-    let updateTime = UserDefaults.standard.string(forKey: "updateTime") ?? dateFormatter.string(from: .distantPast)
+    let updateTime = UserDefaults.standard.string(forKey: UDKeys.updateTime) ?? dateFormatter.string(from: .distantPast)
     
     if !Calendar.current.isDate(dateFormatter.date(from: updateTime) ?? .distantPast, equalTo: .now, toGranularity: .hour) {
         #if DEBUG
@@ -36,7 +36,7 @@ func launch() -> Void {
         #endif
     }
     
-    if UserDefaults.standard.string(forKey: "defaultCurrency") == nil {
-        UserDefaults.standard.setValue(Locale.current.currencyCode ?? "USD", forKey: "defaultCurrency")
+    if UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) == nil {
+        UserDefaults.standard.setValue(Locale.current.currencyCode ?? "USD", forKey: UDKeys.defaultCurrency)
     }
 }

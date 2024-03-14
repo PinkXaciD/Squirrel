@@ -20,6 +20,9 @@
         }
       }
     },
+    "%@ Search" : {
+
+    },
     "%@, version %@" : {
       "localizations" : {
         "en" : {
@@ -125,6 +128,12 @@
 
     },
     "Add" : {
+
+    },
+    "Add categories" : {
+
+    },
+    "Add category" : {
 
     },
     "Add Currency" : {
@@ -233,6 +242,9 @@
 
     },
     "Comment is too long" : {
+
+    },
+    "Continue" : {
 
     },
     "Create an issue on GitHub" : {
@@ -344,6 +356,9 @@
 
     },
     "From" : {
+
+    },
+    "Gestures" : {
 
     },
     "Hide keyboard" : {
@@ -526,6 +541,15 @@
     "Shortcuts (beta)" : {
 
     },
+    "Skip" : {
+
+    },
+    "Some category" : {
+
+    },
+    "Some place" : {
+
+    },
     "Something went wrong..." : {
 
     },
@@ -639,6 +663,9 @@
         }
       }
     },
+    "Welcome to" : {
+
+    },
     "Winterized" : {
 
     },
@@ -648,7 +675,16 @@
     "Yesterday" : {
 
     },
+    "You can add categories later in settings" : {
+
+    },
     "You can archive categories in settings, they will be hidden from selection when you add new expenses, but all old expenses will be saved" : {
+
+    },
+    "You can change default currency or add more later in settings" : {
+
+    },
+    "You can perform quick actions like editing or deleting via swipe actions or by holding row" : {
 
     },
     "You will not be able to undo this action.\nAll expenses in this category will be permanently deleted" : {

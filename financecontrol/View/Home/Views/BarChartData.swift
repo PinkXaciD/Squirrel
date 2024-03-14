@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct BarChartData {
-    @AppStorage("defaultCurrency")
+    @AppStorage(UDKeys.defaultCurrency)
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
     var data: [SpendingEntity]

@@ -13,9 +13,9 @@ struct ContentView: View {
     @Environment(\.openURL)
     private var openURL
     
-    @AppStorage("color")
+    @AppStorage(UDKeys.color)
     private var tint: String = "Orange"
-    @AppStorage("theme")
+    @AppStorage(UDKeys.theme)
     private var theme: String = "None"
     
     @StateObject
@@ -36,6 +36,8 @@ struct ContentView: View {
     
     @Binding
     var addExpenseAction: Bool
+    @AppStorage(UDKeys.presentOnboarding)
+    private var presentOnboarding: Bool = true
     
     init(addExpenseAction: Binding<Bool>) {
         let coreDataModel = CoreDataModel()
@@ -53,7 +55,7 @@ struct ContentView: View {
         
     var body: some View {
         TabView {
-            HomeView(showingSheet: $addExpenseAction)
+            HomeView(showingSheet: $addExpenseAction, presentOnboarding: $presentOnboarding)
                 .tabItem {
                     Label("Home", systemImage: "house.fill")
                 }
@@ -67,7 +69,7 @@ struct ContentView: View {
                     Label("Stats", systemImage: "chart.pie.fill")
                 }
             
-            SettingsView()
+            SettingsView(presentOnboarding: $presentOnboarding)
                 .tabItem {
                     Label("Settings", systemImage: "gearshape.fill")
                 }
@@ -79,6 +81,12 @@ struct ContentView: View {
         }
         .environmentObject(cdm)
         .environmentObject(rvm)
+        .sheet(isPresented: $presentOnboarding) {
+            OnboardingView()
+                .environmentObject(cdm)
+                .accentColor(.orange)
+                .interactiveDismissDisabled()
+        }
         .tint(colorIdentifier(color: tint))
         .accentColor(colorIdentifier(color: tint))
         .preferredColorScheme(themeConvert(theme))

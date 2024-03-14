@@ -27,21 +27,6 @@ extension CodingUserInfoKey {
     static let moc = CodingUserInfoKey(rawValue: "managedObjectContext")!
 }
 
-extension Calendar {
-    func currentYearTextualRepresentation() -> String {
-        let formatter = DateFormatter()
-        switch self.identifier {
-        case .japanese:
-            formatter.dateFormat = "G y"
-        case .buddhist:
-            formatter.dateFormat = "y G"
-        default:
-            formatter.dateFormat = "y"
-        }
-        return formatter.string(from: .now)
-    }
-}
-
 extension Locale {
     static let customCommonISOCurrencyCodes: [String] = [
         "AED",

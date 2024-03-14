@@ -42,6 +42,10 @@ struct CustomContentUnavailableView: View {
     }
 }
 
+extension CustomContentUnavailableView {
+    static let search: Self = CustomContentUnavailableView("No results", imageName: "magnifyingglass", description: "Try another search.")
+}
+
 #Preview {
     CustomContentUnavailableView("Test")
 }
