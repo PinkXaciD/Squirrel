@@ -29,13 +29,14 @@ struct OnboardingGesturesTemplateView: View {
         VStack(alignment: .leading) {
             Text("Gestures")
                 .font(.system(.largeTitle).bold())
+                .foregroundColor(.primary)
             
             Text("You can perform quick actions like editing or deleting via swipe actions or by holding row")
                 .font(.footnote)
                 .foregroundColor(.secondary)
+                .lineLimit(3)
         }
         .textCase(nil)
-        .foregroundColor(.primary)
         .listRowInsets(.init(top: 50, leading: 0, bottom: 70, trailing: 0))
     }
     
@@ -96,7 +97,7 @@ struct OnboardingGesturesTemplateView: View {
     
     private var spendingSection: some View {
         var sum: Double {
-            let sum = (10 * (Rates.fallback.rates[Locale.current.currencyCode ?? "USD"] ?? 1))
+            let sum = (10 * (Rates.fallback.rates[UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD"] ?? 1))
             return sum.rounded(.toNearestOrAwayFromZero)
         }
         
@@ -118,7 +119,7 @@ struct OnboardingGesturesTemplateView: View {
                         .font(.caption)
                         .foregroundColor(Color.secondary)
                     
-                    Text(sum.formatted(.currency(code: Locale.current.currencyCode ?? "USD")))
+                    Text(sum.formatted(.currency(code: UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD")))
                         .foregroundColor(.primary)
                 }
             }
@@ -150,7 +151,7 @@ struct OnboardingGesturesTemplateView: View {
                 spendingDeleted = true
             }
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 withAnimation {
                     spendingDeleted = false
                 }
@@ -165,7 +166,7 @@ struct OnboardingGesturesTemplateView: View {
         Button(role: .destructive) {
             spendingDeleted = true
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 withAnimation {
                     spendingDeleted = false
                 }

@@ -50,8 +50,10 @@ struct HomeView: View {
                 
                 #if DEBUG
                 Section {
-                    Button("Present onboarding") {
+                    Button {
                         presentOnboarding = true
+                    } label: {
+                        Text(verbatim: "Present onboarding")
                     }
                 }
                 #endif

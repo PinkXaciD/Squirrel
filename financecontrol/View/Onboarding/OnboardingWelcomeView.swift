@@ -28,8 +28,8 @@ struct OnboardingWelcomeView: View {
                         .padding(.vertical)
                         .transition(.moveFromBottom)
                         .animation(.smooth, value: showIcon)
-                        .rotationEffect(.degrees(rotateIcon ? 720 : 0))
-                        .onTapGesture(count: 5) {
+                        .rotationEffect(.degrees(rotateIcon ? 720 : 0), anchor: .center)
+                        .onTapGesture(count: 3) {
                             withAnimation(.bouncy(duration: 1)) {
                                 rotateIcon.toggle()
                             }
@@ -68,24 +68,28 @@ struct OnboardingWelcomeView: View {
             }
         }
         .onAppear {
+            playAnimation()
+        }
+    }
+    
+    private func playAnimation() {
+        withAnimation {
+            showIcon = true
+        }
+        HapticManager.shared.impact(.light)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             withAnimation {
-                showIcon = true
+                showUpperText = true
             }
             HapticManager.shared.impact(.light)
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                withAnimation {
-                    showUpperText = true
-                }
-                HapticManager.shared.impact(.light)
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            withAnimation {
+                showBottomText = true
             }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                withAnimation {
-                    showBottomText = true
-                }
-                HapticManager.shared.impact(.light)
-            }
+            HapticManager.shared.impact(.light)
         }
     }
 }

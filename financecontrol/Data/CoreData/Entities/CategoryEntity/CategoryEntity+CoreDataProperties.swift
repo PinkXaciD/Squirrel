@@ -127,7 +127,7 @@ extension CategoryEntityLocal {
                     sumWithReturns += spending.amount
                 } else {
                     guard
-                        let fetchedRates = UserDefaults.standard.dictionary(forKey: UDKeys.rates) as? [String:Double],
+                        let fetchedRates = UserDefaults.standard.getRates(),
                         let defaultCurrencyRate = fetchedRates[defaultCurrency]
                     else {
                         continue
@@ -151,29 +151,43 @@ struct TSCategoryEntity: ToUnsafeObject, Identifiable, Comparable {
                 throw CoreDataError.failedToGetEntityDescription
             }
             
-            let entity = CategoryEntity(entity: description, insertInto: context)
-            entity.id = self.id
-            entity.name = self.name
-            entity.color = self.color
-            entity.isFavorite = self.isFavorite
-            entity.isShadowed = self.isShadowed
-            
-            var unsafeSpendings: NSSet {
-                guard let spendings = self.spendings?.allObjects as? [TSSpendingEntity] else {
-                    return []
-                }
-                
-                guard
-                    let array = try? spendings.map({ try $0.unsafeObject(in: context) })
-                else {
-                    return []
-                }
-                
-                return Set(array) as NSSet
+            guard let id = self.id else {
+                throw CoreDataError.failedToFindCategory
             }
             
-            entity.spendings = unsafeSpendings
-            return entity
+            let predicate = NSPredicate(format: "id == %@", id as NSUUID)
+            let request = CategoryEntity.fetchRequest()
+            request.predicate = predicate
+            
+            guard let unsafeEntity = try context.fetch(request).first else {
+                throw CoreDataError.failedToFindCategory
+            }
+            
+            return unsafeEntity
+            
+//            let entity = CategoryEntity(entity: description, insertInto: context)
+//            entity.id = self.id
+//            entity.name = self.name
+//            entity.color = self.color
+//            entity.isFavorite = self.isFavorite
+//            entity.isShadowed = self.isShadowed
+//            
+//            var unsafeSpendings: NSSet {
+//                guard let spendings = self.spendings?.allObjects as? [TSSpendingEntity] else {
+//                    return []
+//                }
+//                
+//                guard
+//                    let array = try? spendings.map({ try $0.unsafeObject(in: context) })
+//                else {
+//                    return []
+//                }
+//                
+//                return Set(array) as NSSet
+//            }
+//            
+//            entity.spendings = unsafeSpendings
+//            return entity
         }
     }
     
@@ -204,7 +218,7 @@ struct TSCategoryEntity: ToUnsafeObject, Identifiable, Comparable {
     }
     
     var sumWithReturns: Double {
-        let rates = UserDefaults.standard.dictionary(forKey: UDKeys.rates) as? [String: Double] ?? [:]
+        let rates = UserDefaults.standard.getRates() ?? [:]
         let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD"
         let sum = self.spendingsArray.compactMap {
             if $0.wrappedCurrency == defaultCurrency {

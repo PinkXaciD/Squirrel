@@ -162,7 +162,17 @@ struct AddSpendingView: View {
                     .focused($focusedField, equals: .comment)
             } else {
                 TextEditor(text: $vm.comment)
+                    .padding(.horizontal, -5)
                     .focused($focusedField, equals: .comment)
+                    .overlay(alignment: .leading) {
+                        if vm.comment.isEmpty {
+                            Text("Comment")
+                                .foregroundColor(.secondary.opacity(0.5))
+                        }
+                    }
+                    .onTapGesture {
+                        focusedField = .comment
+                    }
             }
         }
     }
@@ -267,6 +277,7 @@ extension AddSpendingView {
     }
 }
 
+// MARK: Preview
 struct AmountInput_Previews: PreviewProvider {
     static var previews: some View {
         AddSpendingView(ratesViewModel: .init(), codeDataModel: .init())
@@ -282,12 +293,6 @@ struct AddSpendingShortcut: Identifiable {
     var categoryID: UUID?
     var place: String?
     var comment: String?
-}
-
-func test() {
-    var value = UserDefaults.standard.value(forKey: "addSpendingShortcuts") as? [UUID:AddSpendingShortcut] ?? [:]
-    let shortcut = AddSpendingShortcut(shortcutName: "test")
-    UserDefaults.standard.set(value.updateValue(shortcut, forKey: shortcut.id), forKey: "addSpendingShortcuts")
 }
 
 struct AddSpendingShortcutListView: View {

@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct OnboardingCurrencyView: View {
-    @Binding var selectedCurrency: String
     @Binding var showOverlay: Bool
+    @Binding var selectedCurrency: String
     @State private var search: String = ""
+    @State private var showButton: Bool = false
     @FocusState private var searchIsFocused: Bool
     
     var currencies: [String] {
@@ -27,42 +28,86 @@ struct OnboardingCurrencyView: View {
     
     var body: some View {
         List {
-            Section {
-                TextField("\(Image(systemName: "magnifyingglass")) Search", text: $search)
-                    .font(.headline)
-                    .focused($searchIsFocused)
-            } header: {
-                VStack(alignment: .leading) {
-                    Text("Select currency")
-                        .font(.system(.largeTitle).bold())
-                    
-                    Text("You can change default currency or add more later in settings")
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-                }
-                .textCase(nil)
-                .foregroundColor(.primary)
-                .listRowInsets(.init(top: 50, leading: 0, bottom: 20, trailing: 0))
-            }
+            searchSection
             
-            Section {
-                getRow(Locale.current.currencyCode ?? "USD")
-            }
+            recommendedSection
             
-            Section {
-                ForEach(searchFunc(), id: \.self) { code in
-                    getRow(code)
-                }
-            } footer: {
-                Rectangle()
-                    .fill(Color(uiColor: .systemGroupedBackground))
-                    .frame(height: 100)
+            currenciesSection
+        }
+        .onChange(of: search) { value in
+            if value.isEmpty {
+                showButton = false
+            } else {
+                showButton = true
             }
         }
         .onChange(of: searchIsFocused) { value in
             withAnimation {
                 showOverlay = !value
             }
+        }
+    }
+    
+    private var searchSection: some View {
+        Section {
+            HStack(spacing: 5) {
+                Image(systemName: "magnifyingglass")
+                    .font(.body.bold())
+                    .foregroundColor(.secondary.opacity(0.5))
+                    .animation(.default, value: showButton)
+                
+                TextField("Search", text: $search)
+                    .focused($searchIsFocused)
+                
+                Button {
+                    search = ""
+                    withAnimation {
+                        searchIsFocused = false
+                    }
+                } label: {
+                    Label("Cancel", systemImage: "xmark.circle.fill")
+                        .labelStyle(.iconOnly)
+                        .font(.body)
+                        .foregroundColor(.secondary.opacity(0.5))
+                }
+                .opacity(showButton ? 1 : 0)
+                .offset(x: showButton ? 0 : 20, y: 0)
+                .foregroundColor(.secondary)
+                .disabled(!showButton)
+                .animation(.default, value: showButton)
+            }
+        } header: {
+            VStack(alignment: .leading) {
+                Text("Select currency")
+                    .font(.system(.largeTitle).bold())
+                
+                Text("You can change default currency or add more later in settings")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+            }
+            .textCase(nil)
+            .foregroundColor(.primary)
+            .listRowInsets(.init(top: 50, leading: 0, bottom: 20, trailing: 0))
+        }
+    }
+    
+    private var recommendedSection: some View {
+        Section {
+            getRow(UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD")
+        } header: {
+            Text("Recommended")
+        }
+    }
+    
+    private var currenciesSection: some View {
+        Section {
+            ForEach(searchFunc(), id: \.self) { code in
+                getRow(code)
+            }
+        } footer: {
+            Rectangle()
+                .fill(Color(uiColor: .systemGroupedBackground))
+                .frame(height: 100)
         }
     }
     
@@ -97,3 +142,31 @@ struct OnboardingCurrencyView: View {
         }
     }
 }
+
+#if DEBUG
+struct OnboardingCurrencyViewPreviews: PreviewProvider {
+    static var previews: some View {
+        OnboardingPreview()
+    }
+}
+
+fileprivate struct OnboardingPreview: View {
+    @State var showSheet: Bool = true
+    
+    var body: some View {
+        NavigationView {
+            Button {
+                showSheet.toggle()
+            } label: {
+                Rectangle()
+                    .foregroundColor(.secondary)
+            }
+        }
+        .sheet(isPresented: $showSheet) {
+            OnboardingView()
+                .environmentObject(CoreDataModel())
+                .accentColor(.orange)
+        }
+    }
+}
+#endif

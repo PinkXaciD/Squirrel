@@ -85,7 +85,7 @@ extension CoreDataModel {
                 try privateContext.performAndWait {
                     let tempData = try decoder.decode([CategoryEntity].self, from: jsonData)
                     
-                    let existingCategoryIds = savedCategories.map { $0.id } + shadowedCategories.map { $0.id }
+                    let existingCategoryIds = (savedCategories + shadowedCategories).map { $0.id }
                     let existingSpendingsIds = savedSpendings.map { $0.id }
                     
                     for category in tempData {
@@ -107,8 +107,6 @@ extension CoreDataModel {
                             privateContext.delete(category)
                         }
                     }
-                    
-    //                importedCount = (try? privateContext.count(for: SpendingEntity.fetchRequest())) ?? 0
                     
                     do {
                         try privateContext.save()

@@ -52,7 +52,7 @@ extension CoreDataModel {
         
         guard 
             let spendings = try? getSpendings(predicate: predicate),
-            let rates = UserDefaults.standard.value(forKey: UDKeys.rates) as? [String: Double],
+            let rates = UserDefaults.standard.getRates(),
             let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency)
         else {
             return

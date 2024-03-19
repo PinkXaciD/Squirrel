@@ -9,57 +9,82 @@ import SwiftUI
 
 struct OnboardingCategoriesView: View {
     @Binding var showOverlay: Bool
+    @Binding var screen: Int
     @EnvironmentObject private var cdm: CoreDataModel
+    
+    @State private var presentImportSheet: Bool = false
     
     var body: some View {
         NavigationView {
             List {
-                Section {
-                    NavigationLink("Add category") {
-                        AddCategoryView(id: .constant(.init()), insert: false)
-                            .onAppear {
-                                withAnimation {
-                                    showOverlay = false
-                                }
-                            }
-                            .onDisappear {
-                                withAnimation {
-                                    showOverlay = true
-                                }
-                            }
-                    }
-                } header: {
-                    VStack(alignment: .leading) {
-                        Text("Add categories")
-                            .font(.largeTitle.bold())
-                        
-                        Text("You can add categories later in settings")
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
-                    }
-                    .textCase(nil)
-                    .foregroundColor(.primary)
-                    .listRowInsets(.init(top: 50, leading: 0, bottom: 20, trailing: 0))
-                }
+                addSection
                 
-                Section {
-                    ForEach(cdm.savedCategories) { category in
-                        HStack {
-                            Image(systemName: category.isFavorite ? "star.circle.fill" : "circle.fill")
-                                .font(.title)
-                                .foregroundColor(Color[category.color ?? ""])
-                            
-                            Text(category.name ?? "Error")
-                                .padding(.vertical)
-                        }
-                    }
-                } footer: {
-                    Rectangle()
-                        .fill(Color(uiColor: .systemGroupedBackground))
-                        .frame(height: 125)
-                }
+                categoriesSection
+            }
+            .fileImporter(isPresented: $presentImportSheet, allowedContentTypes: [.json]) { result in
+                importJSON(result)
             }
             .navigationBarHidden(true)
+        }
+    }
+    
+    private var header: some View {
+        VStack(alignment: .leading) {
+            Text("Add categories")
+                .font(.largeTitle.bold())
+            
+            Text("You can add categories later in settings")
+                .font(.footnote)
+                .foregroundColor(.secondary)
+                .lineLimit(3)
+        }
+        .textCase(nil)
+        .foregroundColor(.primary)
+        .listRowInsets(.init(top: 50, leading: 0, bottom: 20, trailing: 0))
+    }
+    
+    private var addSection: some View {
+        Section {
+            NavigationLink("Add category") {
+                AddCategoryView(id: .constant(.init()), insert: false)
+                    .onAppear {
+                        withAnimation {
+                            showOverlay = false
+                        }
+                    }
+                    .onDisappear {
+                        withAnimation {
+                            showOverlay = true
+                        }
+                    }
+            }
+        } header: {
+            header
+        }
+    }
+    
+    private var categoriesSection: some View {
+        Section {
+            if cdm.savedCategories.isEmpty {
+                Button("Import existing data") {
+                    presentImportSheet.toggle()
+                }
+            }
+            
+            ForEach(cdm.savedCategories) { category in
+                HStack {
+                    Image(systemName: "circle.fill")
+                        .font(.title)
+                        .foregroundColor(Color[category.color ?? ""])
+                    
+                    Text(category.name ?? "Error")
+                        .padding(.vertical)
+                }
+            }
+        } footer: {
+            Rectangle()
+                .fill(Color(uiColor: .systemGroupedBackground))
+                .frame(height: 80)
         }
     }
     
@@ -76,5 +101,24 @@ struct OnboardingCategoriesView: View {
                 .padding(.vertical)
         }
         .foregroundStyle(Color.primary, Color.secondary, colors.randomElement()!)
+    }
+    
+    private func importJSON(_ result: Result<URL, Error>) {
+        switch result {
+        case .success(let url):
+            if let imported = cdm.importJSON(url) {
+                switch imported {
+                case 0:
+                    HapticManager.shared.notification(.error)
+                default:
+                    HapticManager.shared.notification(.success)
+                    withAnimation {
+                        screen += 1
+                    }
+                }
+            }
+        case .failure(let failure):
+            ErrorType(error: failure).publish()
+        }
     }
 }

@@ -21,6 +21,8 @@ struct AboutView: View {
         Form {
             aboutSection
             
+            onboardingSection
+            
             githubSection
                                                 
             if showDebug {
@@ -76,6 +78,14 @@ struct AboutView: View {
             .opacity(0.3)
     }
     
+    private var onboardingSection: some View {
+        Section {
+            Button("Show onboarding") {
+                presentOnboarding = true
+            }
+        }
+    }
+    
     private var githubSection: some View {
         Section {
             Button("Create an issue on GitHub") {
@@ -89,7 +99,7 @@ struct AboutView: View {
     private var debugSection: some View {
         Section {
             NavigationLink("Debug") {
-                DebugView(presentOnboarding: $presentOnboarding)
+                DebugView()
             }
         }
     }

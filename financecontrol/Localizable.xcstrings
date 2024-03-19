@@ -20,9 +20,6 @@
         }
       }
     },
-    "%@ Search" : {
-
-    },
     "%@, version %@" : {
       "localizations" : {
         "en" : {
@@ -379,6 +376,9 @@
     "Import data as JSON" : {
 
     },
+    "Import existing data" : {
+
+    },
     "Indigo" : {
 
     },
@@ -493,6 +493,9 @@
     "Rates updated at:" : {
 
     },
+    "Recommended" : {
+
+    },
     "Red" : {
 
     },
@@ -517,6 +520,9 @@
     "Save" : {
 
     },
+    "Search" : {
+
+    },
     "Search by place or comment" : {
 
     },
@@ -539,6 +545,9 @@
 
     },
     "Shortcuts (beta)" : {
+
+    },
+    "Show onboarding" : {
 
     },
     "Skip" : {

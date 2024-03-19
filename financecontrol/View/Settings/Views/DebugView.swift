@@ -20,9 +20,6 @@ struct DebugView: View {
     @State
     private var validateConfirmationIsShowing: Bool = false
     
-    @Binding
-    var presentOnboarding: Bool
-    
     var body: some View {
         Form {
             errorsSection
@@ -32,8 +29,6 @@ struct DebugView: View {
             bundleSection
             
             defaultsSection
-            
-            onboardingSection
             
             reloadWidgetsSection
             
@@ -203,16 +198,6 @@ struct DebugView: View {
         }
     }
     
-    private var onboardingSection: some View {
-        Section {
-            Button {
-                presentOnboarding = true
-            } label: {
-                Text(verbatim: "Present onboarding")
-            }
-        }
-    }
-    
     private var validateSection: some View {
         Section {
             Button(role: .destructive) {
@@ -352,6 +337,6 @@ struct UserDefaultsValuesView: View {
 }
 
 #Preview {
-    DebugView(presentOnboarding: .constant(false))
+    DebugView()
 }
 #endif

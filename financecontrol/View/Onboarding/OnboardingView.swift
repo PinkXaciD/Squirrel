@@ -15,7 +15,7 @@ struct OnboardingView: View {
     @State private var selectedCurrency: String = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD"
     @State private var showOverlay: Bool = true
     
-    let finalScreenNumber: Int = 3
+    let finalScreenNumber: UInt8 = 3
     
     var body: some View {
         Group {
@@ -41,31 +41,27 @@ struct OnboardingView: View {
             }
         }
         .overlay(alignment: .bottom) {
-//            if showOverlay {
-                ZStack(alignment: .bottom) {
-                    if showOverlay {
-                        gradient
-                            .frame(maxHeight: 80)
-                            .transition(.move(edge: .bottom))
-                            .zIndex(0)
+            ZStack(alignment: .bottom) {
+                if showOverlay {
+                    gradient
+                        .frame(maxHeight: 80)
+                        .transition(.move(edge: .bottom))
+                        .zIndex(0)
+                    
+                    VStack {
+                        continueButton
+                            .padding(.horizontal, 30)
                         
-                        VStack {
-                            continueButton
-                                .padding(.horizontal, 30)
-                            
-    //                        if screen > 1 && screen < finalScreenNumber {
-    //                            skipButton
-    //                        }
-                        }
-                        .zIndex(1)
-                        .padding(.bottom, 30)
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
+//                        if screen > 1 && screen < finalScreenNumber {
+//                            skipButton
+//                        }
                     }
+                    .zIndex(1)
+                    .padding(.bottom, 30)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
-//                .transition(.move(edge: .bottom).combined(with: .scale))
-                .animation(.smooth, value: showOverlay)
-                
-//            }
+            }
+            .animation(.smooth, value: showOverlay)
         }
         .ignoresSafeArea(.container)
     }
@@ -94,11 +90,9 @@ struct OnboardingView: View {
     private var continueButton: some View {
         Button {
             if screen == 1 {
-                if selectedCurrency != Locale.current.currencyCode {
-                    UserDefaults.standard.setValue(selectedCurrency, forKey: UDKeys.defaultCurrency)
-                }
+                UserDefaults.standard.setValue(selectedCurrency, forKey: UDKeys.defaultCurrency)
                 
-                if cdm.savedCurrencies.isEmpty {
+                if !cdm.savedCurrencies.map({ $0.tag }).contains(selectedCurrency) {
                     cdm.addCurrency(tag: selectedCurrency, isFavorite: true)
                 }
                 
@@ -133,11 +127,11 @@ struct OnboardingView: View {
     }
     
     private var screen1: some View {
-        OnboardingCurrencyView(selectedCurrency: $selectedCurrency, showOverlay: $showOverlay)
+        OnboardingCurrencyView(showOverlay: $showOverlay, selectedCurrency: $selectedCurrency)
     }
     
     private var screen2: some View {
-        OnboardingCategoriesView(showOverlay: $showOverlay)
+        OnboardingCategoriesView(showOverlay: $showOverlay, screen: $screen)
             .environmentObject(cdm)
     }
     
