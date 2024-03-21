@@ -12,6 +12,8 @@ struct FiltersView: View {
     private var cdm: CoreDataModel
     @EnvironmentObject
     private var fvm: FiltersViewModel
+    @EnvironmentObject
+    private var pcvm: PieChartViewModel
     @Environment(\.dismiss)
     private var dismiss
     @AppStorage(UDKeys.color)
@@ -22,7 +24,7 @@ struct FiltersView: View {
     
     var body: some View {
         NavigationView {
-            Form {
+            List {
                 dateSection
                     .datePickerStyle(.compact)
                 
@@ -46,6 +48,28 @@ struct FiltersView: View {
             firstDatePicker
             
             secondDatePicker
+            
+            HStack {
+                Button {
+                    setCurrentMonth()
+                } label: {
+                    Text("Current month")
+                        .foregroundColor(.accentColor)
+                }
+                .buttonStyle(PlainButtonStyle())
+                .frame(maxWidth: .infinity)
+                
+                Divider()
+                
+                Button {
+                    setCurrentYear()
+                } label: {
+                    Text("Current year")
+                        .foregroundColor(.accentColor)
+                }
+                .buttonStyle(PlainButtonStyle())
+                .frame(maxWidth: .infinity)
+            }
         }
     }
     
@@ -103,11 +127,12 @@ struct FiltersView: View {
     private var trailingToolbar: ToolbarItem<(), some View> {
         ToolbarItem(placement: .topBarTrailing) {
             Button("Apply") {
-                fvm.pcvm.selection = 0
-                fvm.pcvm.isScrollDisabled = true
-                fvm.pcvm.selectedCategory = nil
+                pcvm.selection = 0
+                pcvm.isScrollDisabled = true
+                pcvm.selectedCategory = nil
                 fvm.applyFilters = true
                 fvm.updateList = true
+                pcvm.updateData()
                 dismiss()
             }
             .font(.body.bold())
@@ -116,16 +141,34 @@ struct FiltersView: View {
 }
     
 extension FiltersView {
-    private func toggleCategoriesPicker() {
+    private func clearFilters() {
         withAnimation {
-            showCategoriesPicker.toggle()
+            pcvm.selectedCategory = nil
+            fvm.clearFilters()
+            pcvm.updateData()
+            pcvm.isScrollDisabled = false
         }
     }
     
-    private func clearFilters() {
-        withAnimation {
-            fvm.clearFilters()
+    private func setCurrentMonth() {
+        let firstDate: Date = cdm.savedSpendings.last?.wrappedDate ?? .init(timeIntervalSinceReferenceDate: 0)
+        
+        fvm.startFilterDate = Date().getFirstDayOfMonth() < firstDate ? firstDate : Date().getFirstDayOfMonth()
+        fvm.endFilterDate = Date()
+    }
+    
+    private func setCurrentYear() {
+        var components: DateComponents = Calendar.current.dateComponents([.year, .era], from: Date())
+        components.calendar = Calendar.current
+        
+        guard let startDate = components.date else {
+            return
         }
+        
+        let firstDate: Date = cdm.savedSpendings.last?.wrappedDate ?? .init(timeIntervalSinceReferenceDate: 0)
+        
+        fvm.startFilterDate = startDate < firstDate ? firstDate : startDate
+        fvm.endFilterDate = Date()
     }
 }
 

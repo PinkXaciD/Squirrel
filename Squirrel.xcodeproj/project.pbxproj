@@ -53,6 +53,8 @@
 		8D4E08182AAA152A00B3544F /* SpendingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4E08172AAA152A00B3544F /* SpendingsModel.swift */; };
 		8D4E081A2AAA15B900B3544F /* CategoriesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4E08192AAA15B900B3544F /* CategoriesModel.swift */; };
 		8D4E081C2AAA163800B3544F /* CurrenciesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4E081B2AAA163800B3544F /* CurrenciesModel.swift */; };
+		8D4FE3002BA9D954001009F2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8DFF59662BA35D1F002DBB1B /* PrivacyInfo.xcprivacy */; };
+		8D4FE3022BA9DA11001009F2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8DFF59662BA35D1F002DBB1B /* PrivacyInfo.xcprivacy */; };
 		8D54F4F62B96326200B17886 /* StatsSearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D54F4F52B96326200B17886 /* StatsSearchViewModel.swift */; };
 		8D54F4F82B96329800B17886 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D54F4F72B96329800B17886 /* SearchViewModel.swift */; };
 		8D54F4FB2B96335100B17886 /* CustomContentUnavailableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D54F4FA2B96335100B17886 /* CustomContentUnavailableView.swift */; };
@@ -953,6 +955,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8D4FE3022BA9DA11001009F2 /* PrivacyInfo.xcprivacy in Resources */,
 				8DAA0E282B48367E0076B81E /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -962,6 +965,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8DF8AE9C2AB47334006D287B /* .gitignore in Resources */,
+				8D4FE3002BA9D954001009F2 /* PrivacyInfo.xcprivacy in Resources */,
 				8D7FCA552B16A59C009AAAEB /* Localizable.xcstrings in Resources */,
 				8DAFF8BA2B39D274001D5A9D /* Themes.png in Resources */,
 				8DAFF8B92B39D274001D5A9D /* Currencies.png in Resources */,
@@ -1193,7 +1197,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1232,7 +1236,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1393,7 +1397,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				ENABLE_PREVIEWS = YES;
@@ -1402,7 +1406,6 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Squirrel_Dev;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2024, PinkXaciD";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIRequiresFullScreen = NO;
@@ -1439,7 +1442,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				ENABLE_PREVIEWS = YES;
@@ -1448,7 +1451,6 @@
 				INFOPLIST_KEY_CFBundleDisplayName = Squirrel;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2024, PinkXaciD";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIRequiresFullScreen = NO;

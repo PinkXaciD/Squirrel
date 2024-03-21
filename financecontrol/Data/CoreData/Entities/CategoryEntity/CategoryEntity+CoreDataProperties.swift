@@ -147,10 +147,6 @@ extension CategoryEntityLocal {
 struct TSCategoryEntity: ToUnsafeObject, Identifiable, Comparable {
     func unsafeObject(in context: NSManagedObjectContext) throws -> CategoryEntity {
         try context.performAndWait {
-            guard let description = NSEntityDescription.entity(forEntityName: "CategoryEntity", in: context) else {
-                throw CoreDataError.failedToGetEntityDescription
-            }
-            
             guard let id = self.id else {
                 throw CoreDataError.failedToFindCategory
             }

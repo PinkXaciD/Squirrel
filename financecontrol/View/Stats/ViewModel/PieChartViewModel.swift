@@ -15,6 +15,7 @@ import OSLog
 final class PieChartViewModel: ViewModel {
     @AppStorage(UDKeys.defaultCurrency) private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     private var cdm: CoreDataModel
+    var fvm: FiltersViewModel
     @Published var selection: Int = 0
     @Published var content: [PieChartCompleteView<CenterChartView>] = []
     @Published var selectedCategory: CategoryEntity? = nil
@@ -24,8 +25,9 @@ final class PieChartViewModel: ViewModel {
     var cancellables = Set<AnyCancellable>()
     let id = UUID()
     
-    init(selection: Int = 0, cdm: CoreDataModel) {
+    init(selection: Int = 0, cdm: CoreDataModel, fvm: FiltersViewModel) {
         self.cdm = cdm
+        self.fvm = fvm
         
         let size: CGFloat = {
             let currentScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
@@ -79,7 +81,14 @@ final class PieChartViewModel: ViewModel {
     }
     
     func updateData() {
-        let chartData: [ChartData] = cdm.getChartData(categoryName: selectedCategory?.name)
+        let chartData: [ChartData] = {
+            if fvm.applyFilters {
+                return cdm.getFilteredChartData(firstDate: fvm.startFilterDate, secondDate: fvm.endFilterDate, categories: fvm.filterCategories)
+            }
+            
+            return cdm.getChartData(categoryName: selectedCategory?.name)
+        }()
+        
         self.data = chartData
         
         var data: [PieChartCompleteView<CenterChartView>] = []
@@ -149,8 +158,8 @@ final class PieChartViewModel: ViewModel {
     
     private func subscribeToUpdate() {
         cdm.$updateCharts
-            .subscribe(on: DispatchQueue.global())
             .receive(on: DispatchQueue.main)
+            .filter { $0 == true }
             .sink { [weak self] value in
                 if value {
                     withAnimation {

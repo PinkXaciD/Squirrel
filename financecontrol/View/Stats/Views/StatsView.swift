@@ -18,6 +18,8 @@ struct StatsView: View {
     @EnvironmentObject
     private var rvm: RatesViewModel
     @EnvironmentObject
+    private var pcvm: PieChartViewModel
+    @EnvironmentObject
     private var fvm: FiltersViewModel
 //    @EnvironmentObject
 //    private var searchModel: StatsSearchViewModel
@@ -54,15 +56,20 @@ struct StatsView: View {
                     edit: $edit
                 )
             }
-//            .overlay {
-//                if isSearching {
-//                    List {
-//                        StatsListView(entityToEdit: $entityToEdit, entityToAddReturn: $entityToAddReturn, edit: $edit)
-//                    }
-//                }
-//            }
             .toolbar {
-                toolbar
+                trailingToolbar
+                
+                ToolbarItem(placement: .topBarLeading) {
+                    if fvm.applyFilters {
+                        Button {
+                            clearFilters()
+                        } label: {
+                            Label("Clear filters", systemImage: "xmark")
+                        }
+                        .disabled(!fvm.applyFilters)
+                        .buttonStyle(BorderedButtonStyle())
+                    }
+                }
             }
             .sheet(item: $entityToEdit) { entity in
                 SpendingCompleteView(
@@ -85,28 +92,63 @@ struct StatsView: View {
         .navigationViewStyle(.stack)
     }
     
-    private var toolbar: ToolbarItemGroup<some View> {
+    private var trailingToolbar: ToolbarItemGroup<some View> {
         ToolbarItemGroup(placement: .topBarTrailing) {
             if fvm.applyFilters {
                 Button {
-                    clearFilters()
+                    showFilters.toggle()
                 } label: {
-                    Label("Clear filters", systemImage: "xmark.circle")
+                    HStack(spacing: 5) {
+                        if Calendar.current.isDate(fvm.startFilterDate, equalTo: fvm.endFilterDate, toGranularity: .year) {
+                            Text(fvm.startFilterDate, format: .dateTime.day(.defaultDigits).month(.defaultDigits))
+                            
+                            Text(verbatim: "-")
+                            
+                            Text(fvm.endFilterDate, format: .dateTime.day(.defaultDigits).month(.defaultDigits))
+                        } else {
+                            Text(fvm.startFilterDate, format: .dateTime.month(.defaultDigits).year(.defaultDigits))
+                            
+                            Text(verbatim: "-")
+                            
+                            Text(fvm.endFilterDate, format: .dateTime.month(.defaultDigits).year(.defaultDigits))
+                        }
+                    }
+                    .font(.footnote)
                 }
-                .disabled(!fvm.applyFilters)
+                .buttonStyle(BorderedButtonStyle())
+            } else {
+                Button {
+                    showFilters.toggle()
+                } label: {
+                    Label("Filter", systemImage: "line.3.horizontal.decrease")
+                }
+                .buttonStyle(BorderedButtonStyle())
             }
             
-            Button {
-                showFilters.toggle()
-            } label: {
-                Label("Filter", systemImage: fvm.applyFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
-            }
+//            Button {
+//                showFilters.toggle()
+//            } label: {
+//                if fvm.applyFilters {
+//                    HStack {
+//                        Text(fvm.startFilterDate, format: .dateTime.day(.defaultDigits).month(.defaultDigits).year(.defaultDigits))
+//                        
+//                        Text(verbatim: "-")
+//                        
+//                        Text(fvm.endFilterDate, format: .dateTime.day(.defaultDigits).month(.defaultDigits).year(.defaultDigits))
+//                    }
+//                    .font(.footnote)
+//                } else {
+//                    Label("Filter", systemImage: "line.3.horizontal.decrease")
+//                }
+//            }
+//            .buttonStyle(BorderedButtonStyle())
         }
     }
     
     private var filters: some View {
         FiltersView()
             .environmentObject(fvm)
+            .environmentObject(pcvm)
     }
 }
 
@@ -133,20 +175,14 @@ extension StatsView {
         #endif
         
         withAnimation {
-            fvm.pcvm.selectedCategory = nil
-            fvm.pcvm.updateData()
+            pcvm.selectedCategory = nil
             fvm.clearFilters()
         }
+        
+        pcvm.updateData()
+        pcvm.isScrollDisabled = false
     }
 }
-
-//struct StatsSearchOverlayView: View {
-//    @EnvironmentObject private var vm: StatsSearchViewModel
-//    
-//    var body: some View {
-//        EmptyView()
-//    }
-//}
 
 //struct StatsView_Previews: PreviewProvider {
 //    static var previews: some View {

@@ -256,6 +256,12 @@
     "Currency name or ISO Code" : {
 
     },
+    "Current month" : {
+
+    },
+    "Current year" : {
+
+    },
     "Dark Mode" : {
 
     },
@@ -347,6 +353,9 @@
 
     },
     "Filters" : {
+
+    },
+    "Filters applied" : {
 
     },
     "First Flight" : {
@@ -597,9 +606,6 @@
       }
     },
     "Swipe left to restore, swipe right to delete" : {
-
-    },
-    "Tap to add" : {
 
     },
     "Tap to remove selection" : {

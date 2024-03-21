@@ -239,4 +239,111 @@ struct ChartData: Identifiable {
 //        }
 //        self.categories = Array(tempCategories.values)
     }
+    
+    init(firstDate: Date, secondDate: Date, cdm: CoreDataModel, categories filterCategories: [UUID]) {
+        var categories: [TSCategoryEntity] = []
+        
+        let spendings = cdm.savedSpendings.filter { spending in
+            guard spending.wrappedDate >= firstDate && spending.wrappedDate < secondDate else {
+                return false
+            }
+            
+            if filterCategories.isEmpty {
+                return true
+            }
+            
+            guard let catId = spending.category?.id else {
+                return false
+            }
+            
+            return filterCategories.contains(catId)
+        }
+        .map { $0.safeObject() }
+        
+//        if false {
+//            let unknown = NSLocalizedString("Unknown", comment: "Unknown place")
+//            var dict: [String:[TSSpendingEntity]] {
+//                var result = [String:[TSSpendingEntity]]()
+//                
+//                for spending in spendings {
+//                    guard let place = spending.place else { continue }
+//                    let placeName = place.isEmpty ? unknown : place
+//                    var values = result[placeName] ?? []
+//                    values.append(spending)
+//                    result.updateValue(values, forKey: placeName)
+//                }
+//                
+//                return result
+//            }
+//            
+//            let colors: [String] = Array(CustomColor.nordAurora.keys).sorted(by: <)
+//            var colorIndex: Int = 0
+//            
+//            for key in dict.keys {
+//                var category = TSCategoryEntity(color: key == unknown ? "secondary" : colors[colorIndex], id: .init(), isShadowed: false, isFavorite: false, name: key)
+//                category.spendings = Set(dict[key] ?? []) as NSSet
+//                categories.append(category)
+//                
+//                if key != unknown {
+//                    if colorIndex < colors.count - 1 {
+//                        colorIndex += 1
+//                    } else {
+//                        colorIndex = 0
+//                    }
+//                }
+//            }
+//        } else {
+//            var dict: [UUID:[TSSpendingEntity]] {
+//                var result = [UUID:[TSSpendingEntity]]()
+//                
+//                for spending in spendings {
+//                    guard let categoryID = spending.categoryID else { continue }
+//                    var values = (result[categoryID] ?? [])
+//                    values.append(spending)
+//                    result.updateValue(values, forKey: categoryID)
+//                }
+//                
+//                return result
+//            }
+//            
+//            for key in dict.keys {
+//                guard var category = cdm.findCategory(key)?.safeObject() else { continue }
+//                category.spendings = Set(dict[key] ?? []) as NSSet
+//                categories.append(category)
+//            }
+//        }
+        
+        var dict: [UUID:[TSSpendingEntity]] {
+            var result = [UUID:[TSSpendingEntity]]()
+            
+            for spending in spendings {
+                guard let categoryID = spending.categoryID else { continue }
+                var values = (result[categoryID] ?? [])
+                values.append(spending)
+                result.updateValue(values, forKey: categoryID)
+            }
+            
+            return result
+        }
+        
+        for key in dict.keys {
+            guard var category = cdm.findCategory(key)?.safeObject() else { continue }
+            category.spendings = Set(dict[key] ?? []) as NSSet
+            categories.append(category)
+        }
+        
+        self.categories = categories
+        self.date = firstDate
+        self.id = 0
+    }
+    
+    private init() {
+        self.id = 0
+        self.date = Date()
+        self.categories = []
+    }
+    
+    static func getEmpty() -> ChartData {
+        return ChartData()
+    }
 }

@@ -418,6 +418,21 @@ extension CoreDataModel {
         return chartData
     }
     
+    func getFilteredChartData(firstDate: Date, secondDate: Date, categories: [UUID] = []) -> [ChartData] {
+        var chartData: [ChartData] = []
+        
+        let firstSpendingDate: Date = savedSpendings.last?.date?.getFirstDayOfMonth() ?? Date()
+        
+        let interval = 0...(Calendar.current.dateComponents([.month], from: firstSpendingDate, to: Date()).month ?? 1)
+        
+        for _ in interval {
+            chartData.append(ChartData.getEmpty())
+        }
+        
+        chartData[0] = ChartData(firstDate: firstDate, secondDate: secondDate, cdm: self, categories: categories)
+        return chartData
+    }
+    
     // MARK: Operations for list
     func operationsForList() -> StatsListData {
         context.performAndWait {

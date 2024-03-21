@@ -38,12 +38,23 @@ struct AddCurrencyView: View {
             
             if !searchResult.isEmpty {
                 List {
-                    Section(header: Text("Tap to add")) {
-                        ForEach(0..<searchResult.count, id: \.self) { index in
-                            
-                            let currency = searchResult[index]
-                            
-                            NewCurrencyRow(name: currency.value, code: currency.key)
+//                    Section(header: Text("Tap to add")) {
+//                        ForEach(0..<searchResult.count, id: \.self) { index in
+//                            
+//                            let currency = searchResult[index]
+//                            
+//                            NewCurrencyRow(name: currency.value, code: currency.key)
+//                        }
+//                    }
+                    ForEach(Array(searchResult.keys).sorted(), id: \.self) { key in
+                        Section {
+                            if let currencies = searchResult[key] {
+                                ForEach(currencies.sorted { (Locale.current.localizedString(forCurrencyCode: $0) ?? "") < (Locale.current.localizedString(forCurrencyCode: $1) ?? "") }, id: \.self) { currency in
+                                    NewCurrencyRow(name: Locale.current.localizedString(forCurrencyCode: currency) ?? "Error", code: currency)
+                                }
+                            }
+                        } header: {
+                            Text(key)
                         }
                     }
                 }
@@ -69,13 +80,23 @@ struct AddCurrencyView: View {
         return currencies.filter { !removeSet.contains($0) }
     }
     
-    private func searchFunc() -> [Dictionary<String, String>.Element] {
+    private func searchFunc() -> [String : [String]] {
+        let dict = Dictionary(
+            grouping: Locale.customCommonISOCurrencyCodes.filter { !cdm.savedCurrencies.compactMap { $0.tag }.contains($0) },
+            by: { (Locale.current.localizedString(forCurrencyCode: $0) ?? "Error").prefix(1).capitalized }
+        )
+        
         if search.isEmpty {
-            return currenciesFull
+            return dict
         } else {
-            return currenciesFull.filter {
-                $0.value.localizedCaseInsensitiveContains(search) || $0.key.localizedCaseInsensitiveContains(search)
+            let trimmedSearch = search.trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            return dict.mapValues { values in
+                values.filter { value in
+                    value.localizedCaseInsensitiveContains(trimmedSearch) || (Locale.current.localizedString(forCurrencyCode: value) ?? "").localizedCaseInsensitiveContains(trimmedSearch)
+                }
             }
+            .filter { !$0.value.isEmpty }
         }
     }
 }

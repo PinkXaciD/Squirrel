@@ -23,39 +23,20 @@ struct PieChartLegendRowView: View {
     
     var body: some View {
         Button {
-            if let category = cdm.findCategory(category.id ?? .init()) {
-                if fvm.filterCategories.isEmpty {
-                    withAnimation {
-                        addToFilter(category)
-                    }
-                }
-                
+            guard !pcvm.isScrollDisabled else {
+                return
+            }
+            
+            if let catId = category.id, let category = cdm.findCategory(catId) {
                 if pcvm.selectedCategory == nil {
-                    withAnimation {
-                        pcvm.selectedCategory = category
-                    }
+                    pcvm.selectedCategory = category
                 }
                 
                 pcvm.updateData()
-                
-                withAnimation {
-                    fvm.updateList = true
-                }
             } else {
-                withAnimation {
-                    pcvm.selectedCategory = nil
-                    pcvm.updateData()
-                }
+                pcvm.selectedCategory = nil
                 
-                if fvm.filterCategories.count == 1 {
-                    withAnimation {
-                        fvm.clearFilters()
-                    }
-                }
-                
-                withAnimation {
-                    fvm.updateList = true
-                }
+                pcvm.updateData()
             }
         } label: {
             HStack {

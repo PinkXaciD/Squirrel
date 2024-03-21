@@ -42,13 +42,11 @@ final class StatsListViewModel: ViewModel {
     }
     
     private func setData(_ data: StatsListData) {
-        self.data = data
+        self.data = data.mapValues { Array(Set($0)) }
     }
     
     private func setDefaultData() {
-//        withAnimation(.easeIn(duration: 0.3)) {
         self.data = self.defaultData
-//        }
     }
     
     private func subscribeToData() {
@@ -63,23 +61,6 @@ final class StatsListViewModel: ViewModel {
             }
             .store(in: &cancellables)
     }
-    
-//    private func subscribeToData() {
-//        savedSpendingsPublisher
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] spendings in
-//                let safeSpendings = spendings.map { $0.safeObject() }
-//                
-//                #if DEBUG
-//                self?.logger.debug("\(#function) called")
-//                #endif
-//                
-//                self?.updateFromCoreData(safeSpendings)
-//                
-//                self?.update()
-//            }
-//            .store(in: &cancellables)
-//    }
     
     private func updateDefaultData(_ data: [TSSpendingEntity]) {
         var defaultData: StatsListData = [:]
@@ -103,7 +84,6 @@ final class StatsListViewModel: ViewModel {
             .receive(on: DispatchQueue.main)
             .dropFirst()
             .sink { [weak self] selection in
-//                self?.updateWithSelection(selection)
                 if !(self?.fvm.applyFilters ?? true) && selection == 0 {
                     withAnimation {
                         self?.setDefaultData()
@@ -126,59 +106,7 @@ final class StatsListViewModel: ViewModel {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
                 if value {
-                    self?.update()
-                    
-//                    guard let self else { return }
-//                    
-//                    guard self.fvm.applyFilters else {
-//                        self.setDefaultData()
-//                        #if DEBUG
-//                        let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
-//                        logger.debug("\(#function) worked")
-//                        #endif
-//                        
-//                        return
-//                    }
-//
-//                    var result = self.defaultData
-//                    let context = DataManager.shared.context
-//                    let request = SpendingEntity.fetchRequest()
-//                    
-//                    request.predicate = NSPredicate(format: "date >= %@ AND date < %@", fvm.startFilterDate as NSDate, fvm.endFilterDate as NSDate)
-//                    
-//                    let spendings = context.performAndWait {
-//                        try? context.fetch(request).map { $0.safeObject() }
-//                    }
-//                    
-//                    guard let spendings else { return }
-//                    
-//                    var result: StatsListData = [:]
-//                    
-//                    for spending in spendings {
-//                        let day = Calendar.current.startOfDay(for: spending.wrappedDate)
-//                        var existingData = result[day] ?? []
-//                        existingData.append(spending)
-//                        result.updateValue(existingData, forKey: day)
-//                    }
-//                    
-//                    result = self.filterByDate(result)
-//                    
-//                    result = self.filterByCategory(result)
-//                    
-//                    if !self.searchModel.search.isEmpty {
-//                        result = self.searchFunc(result, prompt: searchModel.search)
-//                    }
-//                    
-//                    result = result.filter { !$0.value.isEmpty }
-//                    
-//                    self.setData(result)
-//                    
-//                    self.fvm.listUpdated()
-//                    
-//                    #if DEBUG
-//                    let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
-//                    logger.debug("\(#function) worked")
-//                    #endif
+                    self?.update(animation: false)
                 }
             }
             .store(in: &cancellables)
@@ -213,61 +141,7 @@ final class StatsListViewModel: ViewModel {
             }
             .store(in: &cancellables)
     }
-    
-//    private func updateWithSelection(_ value: Int) {
-//        let startTime = Date()
-//        
-//        guard value > 0 else {
-//            setDefaultData()
-//            
-//            #if DEBUG
-//            let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
-//            logger.debug("\(#function) worked in \(Date().timeIntervalSince(startTime)) seconds")
-//            #endif
-//            
-//            return
-//        }
-//        
-////        let spendings = pcvm.data[pcvm.selection].categories.flatMap { $0.spendings }
-////        
-////        let context = DataManager.shared.context
-////        let request = SpendingEntity.fetchRequest()
-////        
-////        request.predicate = NSPredicate(
-////            format: "date >= %@ AND date < %@",
-////            argumentArray: [Date().getFirstDayOfMonth(-value) as NSDate, Date().getFirstDayOfMonth(-value + 1) as NSDate]
-////        )
-////        request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
-////        
-////        let spendings = context.performAndWait {
-////            try? context.fetch(request).map { $0.safeObject() }
-////        }
-//        
-//        let spendings = pcvm.data[pcvm.selection].categories.flatMap { $0.spendingsArray }.sorted { $0.wrappedDate > $1.wrappedDate }
-//        
-////        guard let spendings else { return }
-//        
-//        let filteredSpendings = self.filterByCategory(spendings)
-//        
-//        var result: StatsListData = [:]
-//        
-//        for spending in filteredSpendings {
-//            let day = Calendar.current.startOfDay(for: spending.wrappedDate)
-//            var existingData = result[day] ?? []
-//            existingData.append(spending)
-//            result.updateValue(existingData, forKey: day)
-//        }
-//        
-//        self.setData(result)
-//        
-//        self.fvm.listUpdated()
-//        
-//        #if DEBUG
-//        let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
-//        logger.debug("\(#function) worked in \(Date().timeIntervalSince(startTime)) seconds")
-//        #endif
-//    }
-    
+        
     private func update(animation: Bool = false) {
         guard self.fvm.applyFilters || pcvm.selection != 0 else {
             setDefaultData()
@@ -294,9 +168,13 @@ final class StatsListViewModel: ViewModel {
             #if DEBUG
             logger.debug("Selection == 0")
             #endif
-            var data = StatsListData()
             
-            data = filterByDate(self.defaultData)
+            guard fvm.applyFilters else {
+                self.setDefaultData()
+                return
+            }
+            
+            var data = filterByDate(self.defaultData)
             
             data = filterDataByCategory(data)
             
@@ -326,104 +204,7 @@ final class StatsListViewModel: ViewModel {
             self.setData(data)
         }
     }
-    
-//    private func update(_ data: [TSSpendingEntity]? = nil) {
-//        let startTime = Date()
-//        
-//        guard self.fvm.applyFilters || pcvm.selection != 0 else {
-//            self.setDefaultData()
-//            #if DEBUG
-//            let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
-//            logger.debug("\(#function) exited in \(Date().timeIntervalSince(startTime)) seconds")
-//            #endif
-//            
-//            return
-//        }
-//        
-////        let context = DataManager.shared.context
-////        let request = SpendingEntity.fetchRequest()
-////        
-////        request.predicate = NSPredicate(format: "date >= %@ AND date < %@", argumentArray: [fvm.startFilterDate as NSDate, fvm.endFilterDate as NSDate])
-////        request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
-////        
-////        let spendings = (data != nil) ? data : context.performAndWait {
-////            try? context.fetch(request).map { $0.safeObject() }
-////        }
-////        
-////        guard var spendings else { return }
-//        
-//        var spendings = data != nil ? data ?? [] : pcvm.data[pcvm.selection].categories.flatMap { $0.spendingsArray }
-//        
-//        if data != nil {
-//            let capturedSpendings = spendings
-//            
-//            DispatchQueue.global(qos: .utility).async { [weak self] in
-//                var defaultData: StatsListData = [:]
-//                
-//                for spending in capturedSpendings {
-//                    let day = Calendar.current.startOfDay(for: spending.wrappedDate)
-//                    var existingData = defaultData[day] ?? []
-//                    existingData.append(spending)
-//                    defaultData.updateValue(existingData, forKey: day)
-//                }
-//                
-//                self?.defaultData = defaultData
-//            }
-//        }
-//        
-////        if fvm.applyFilters {
-////            spendings = spendings.filter { $0.wrappedDate >= fvm.startFilterDate && $0.wrappedDate < fvm.endFilterDate }
-////        }
-//        
-//        spendings = self.filterByCategory(spendings)
-//        
-//        var result: StatsListData = [:]
-//        
-//        for spending in spendings {
-//            let day = Calendar.current.startOfDay(for: spending.wrappedDate)
-//            var existingData = result[day] ?? []
-//            existingData.append(spending)
-//            result.updateValue(existingData, forKey: day)
-//        }
-//        
-//        self.setData(result)
-//        
-//        self.fvm.listUpdated()
-//        
-//        #if DEBUG
-//        let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
-//        logger.debug("\(#function) worked in \(Date().timeIntervalSince(startTime)) seconds")
-//        #endif
-//    }
-    
-//    private func updateFromData(_ data: [TSSpendingEntity]) {
-//        var preResult = data
-//        
-//        if self.fvm.applyFilters {
-//            preResult = preResult
-//                .filter { $0.date ?? .distantFuture >= self.fvm.startFilterDate && $0.date ?? .distantPast < self.fvm.endFilterDate }
-//            
-//            preResult = self.filterByCategory(preResult)
-//        }
-//        
-//        var result: StatsListData = [:]
-//        
-//        for spending in preResult {
-//            let day = Calendar.current.startOfDay(for: spending.wrappedDate)
-//            var existingData = result[day] ?? []
-//            existingData.append(spending)
-//            result.updateValue(existingData, forKey: day)
-//        }
-//        
-//        self.defaultData = result
-//        
-//        if !searchModel.search.isEmpty {
-//            result = self.searchFunc(result, prompt: searchModel.search)
-//        }
-//        
-//        setData(result)
-//    }
-    
+        
     private func filterByDate(_ data: StatsListData) -> StatsListData {
         guard fvm.applyFilters else {
             return data
@@ -440,7 +221,6 @@ final class StatsListViewModel: ViewModel {
             }
         }
         
-//        let dateRange = fvm.startFilterDate..<fvm.endFilterDate
         return result
     }
     

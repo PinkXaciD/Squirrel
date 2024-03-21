@@ -41,8 +41,8 @@ struct ContentView: View {
     
     init(addExpenseAction: Binding<Bool>) {
         let coreDataModel = CoreDataModel()
-        let pieChartViewModel = PieChartViewModel(cdm: coreDataModel)
-        let filtersViewModel = FiltersViewModel(pcvm: pieChartViewModel)
+        let filtersViewModel = FiltersViewModel()
+        let pieChartViewModel = PieChartViewModel(cdm: coreDataModel, fvm: filtersViewModel)
         let statsSearchViewModel = StatsSearchViewModel()
         let statsListViewModel = StatsListViewModel(cdm: coreDataModel, fvm: filtersViewModel, pcvm: pieChartViewModel, searchModel: statsSearchViewModel)
         self._cdm = StateObject(wrappedValue: coreDataModel)

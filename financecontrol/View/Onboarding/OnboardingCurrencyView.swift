@@ -16,7 +16,6 @@ struct OnboardingCurrencyView: View {
     
     var currencies: [String] {
         var result = Locale.customCommonISOCurrencyCodes
-        result.remove(at: Locale.customCommonISOCurrencyCodes.firstIndex(of: Locale.current.currencyCode ?? "") ?? 0)
         result.sort { first, second in
             let name1 = Locale.current.localizedString(forCurrencyCode: first) ?? first
             let name2 = Locale.current.localizedString(forCurrencyCode: second) ?? second

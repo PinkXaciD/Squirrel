@@ -93,12 +93,6 @@ extension PieChartView {
     private func removeSelection() {
         pcvm.selectedCategory = nil
         pcvm.updateData()
-        
-        if fvm.filterCategories.count == 1 {
-            fvm.clearFilters()
-        }
-        
-        fvm.updateList = true
     }
 }
 

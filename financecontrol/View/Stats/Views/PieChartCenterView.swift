@@ -12,6 +12,8 @@ struct CenterChartView: View {
     private var cdm: CoreDataModel
     @EnvironmentObject
     private var rvm: RatesViewModel
+    @EnvironmentObject
+    private var fvm: FiltersViewModel
     @AppStorage(UDKeys.defaultCurrency)
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     var selectedMonth: Date
@@ -24,6 +26,7 @@ struct CenterChartView: View {
             
             dateText()
                 .padding(.top, 5)
+                .scaledToFit()
             
             Text(operationsSum(operationsInMonth: operationsInMonth))
                 .lineLimit(1)
@@ -45,11 +48,16 @@ extension CenterChartView {
         self.operationsInMonth = operationsInMonth
     }
     
-    private func dateText() -> Text {
-        if Calendar.current.isDate(selectedMonth, equalTo: Date(), toGranularity: .year) {
-            return Text(selectedMonth, format: .dateTime.month(.wide))
+    @ViewBuilder
+    private func dateText() -> some View {
+        if fvm.applyFilters {
+            Text("Filters applied")
         } else {
-            return Text(selectedMonth, format: .dateTime.month().year())
+            if Calendar.current.isDate(selectedMonth, equalTo: Date(), toGranularity: .year) {
+                Text(selectedMonth, format: .dateTime.month(.wide))
+            } else {
+                Text(selectedMonth, format: .dateTime.month().year())
+            }
         }
     }
     
