@@ -9,146 +9,147 @@ import SwiftUI
 
 struct StatsListView: View {
     @EnvironmentObject private var cdm: CoreDataModel
+    @EnvironmentObject private var fvm: FiltersViewModel
+    @EnvironmentObject private var vm: StatsListViewModel
+    @Environment(\.isSearching) private var isSearching
     
     @Binding var entityToEdit: SpendingEntity?
     @Binding var entityToAddReturn: SpendingEntity?
     @Binding var edit: Bool
     
-    @Binding var search: String
-    @Binding var applyFilters: Bool
-    @Binding var startFilterDate: Date
-    @Binding var endFilterDate: Date
-    @Binding var filterCategories: [CategoryEntity]
+//    @StateObject var vm: StatsListViewModel
     
     var body: some View {
-        let listData: StatsListData = getListData()
-        
-        if !listData.isEmpty {
-            ForEach(Array(listData.keys).sorted(by: >), id: \.self) { sectionKey in
-                if let sectionData = listData[sectionKey] {
-                    Section {
-                        ForEach(sectionData) { spending in
-                            StatsRow(
-                                entity: spending,
-                                entityToEdit: $entityToEdit,
-                                entityToAddReturn: $entityToAddReturn,
-                                edit: $edit
-                            )
-                            .normalizePadding()
-                        }
-                    } header: {
-                        Text(dateFormatForList(sectionKey))
-                            .textCase(nil)
-                            .font(.subheadline.bold())
-                    }
-                }
-            }
+        if !vm.data.isEmpty {
+            list
         } else {
             noResults
         }
     }
     
+    private var list: some View {
+        ForEach(Array(vm.data.keys).sorted(by: >), id: \.self) { sectionKey in
+            if let sectionData = vm.data[sectionKey] {
+                Section {
+                    ForEach(sectionData) { spending in
+                        if let entity = try? spending.unsafeObject(in: cdm.context) {
+                            StatsRow(
+                                entity: entity,
+                                entityToEdit: $entityToEdit,
+                                entityToAddReturn: $entityToAddReturn,
+                                edit: $edit
+                            )
+                            .normalizePadding()
+                            .swipeActions(edge: .trailing) {
+                                getDeleteButton(entity, sectionKey)
+                                
+                                getReturnButton(entity)
+                            }
+                            .swipeActions(edge: .leading) {
+                                getEditButton(entity)
+                            }
+                            .contextMenu {
+                                getEditButton(entity)
+                                
+                                getReturnButton(entity)
+                                
+                                getDeleteButton(entity, sectionKey)
+                            }
+                        }
+                    }
+                } header: {
+                    dateFormatForList(sectionKey)
+                        .textCase(nil)
+                        .font(.subheadline.bold())
+                }
+            }
+        }
+    }
+    
     private var noResults: some View {
-        Section {
-            HStack {
-                Spacer()
-                Text("No results")
-                    .font(.body.bold())
-                    .padding()
-                Spacer()
-            }
+//        Section {
+//            HStack {
+//                Spacer()
+//                
+//                VStack(spacing: 10) {
+//                    Image(systemName: "tray.fill")
+//                        .font(.largeTitle.bold())
+//                        .opacity(0.7)
+//                    
+//                    Text("No results")
+//                        .font(.body.bold())
+//                }
+//                .padding()
+//                
+//                Spacer()
+//            }
+//            .padding(.horizontal, isSearching ? 10 : 0)
+//        }
+        
+        HStack {
+            Spacer()
+            
+            CustomContentUnavailableView(
+                vm.showedSearch.isEmpty ? NSLocalizedString("No Results for These Filters", comment: "") : NSLocalizedString("No Results for \"\(vm.showedSearch)\"", comment: ""),
+                imageName: vm.showedSearch.isEmpty ? "tray.fill" : "magnifyingglass",
+                description: vm.showedSearch.isEmpty ? nil : NSLocalizedString("Try another search.", comment: "")
+            )
+            
+            Spacer()
         }
+        .listRowBackground(Color.clear)
+        .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 0))
     }
     
-    private func dateFormatForList(_ date: Date) -> String {
+    private func getEditButton(_ spending: SpendingEntity) -> some View {
+        Button {
+            edit.toggle()
+            entityToEdit = spending
+        } label: {
+            Label {
+                Text("Edit")
+            } icon: {
+                Image(systemName: "pencil")
+            }
+        }
+        .tint(.accentColor)
+    }
+    
+    private func getDeleteButton(_ spending: SpendingEntity, _ key: Date) -> some View {
+        Button(role: .destructive) {
+            withAnimation {
+                vm.data[key]?.removeAll(where: { $0.id == spending.id })
+                cdm.deleteSpending(spending)
+            }
+        } label: {
+            Label {
+                Text("Delete")
+            } icon: {
+                Image(systemName: "trash.fill")
+            }
+        }
+        .tint(.red)
+    }
+    
+    private func getReturnButton(_ spending: SpendingEntity) -> some View {
+        Button {
+            entityToAddReturn = spending
+        } label: {
+            Label("Add return", systemImage: "arrow.uturn.backward")
+        }
+        .tint(.yellow)
+        .disabled(spending.amountWithReturns == 0)
+    }
+    
+    private func dateFormatForList(_ date: Date) -> Text {
         if Calendar.current.isDateInToday(date) {
-            return NSLocalizedString("Today", comment: "")
+            return Text("Today")
         } else if Calendar.current.isDateInYesterday(date) {
-            return NSLocalizedString("Yesterday", comment: "")
+            return Text("Yesterday")
         } else if Calendar.current.isDate(date, equalTo: Date(), toGranularity: .year) {
-            let dateFormatter: DateFormatter = .init()
-            dateFormatter.locale = .current
-            dateFormatter.setLocalizedDateFormatFromTemplate("MMMMd")
-            
-            return dateFormatter.string(from: date)
+            return Text(date, format: .dateTime.day().month(.wide))
         } else {
-            let dateFormatter: DateFormatter = .init()
-            dateFormatter.dateStyle = .long
-            dateFormatter.timeStyle = .none
-            
-            return dateFormatter.string(from: date)
-        }
-    }
-    
-    private func keySort(_ value1: String, _ value2: String) -> Bool {
-        func dateFormatter(_ value: String) -> Date {
-            if value == NSLocalizedString("Today", comment: "") {
-                return .now
-            } else if value == NSLocalizedString("Yesterday", comment: "") {
-                return .now.previousDay
-            } else {
-                let formatter = DateFormatter()
-                formatter.dateStyle = .long
-                formatter.timeStyle = .none
-                return formatter.date(from: value) ?? .distantPast
-            }
-        }
-        
-        return dateFormatter(value1) > dateFormatter(value2)
-    }
-    
-    private func getListData() -> StatsListData {
-        var result: StatsListData = cdm.operationsForList()
-        
-        result = searchFunc(result)
-        
-        result = filterFunc(result)
-        
-        return result
-    }
-    
-    private func searchFunc(_ data: StatsListData) -> StatsListData {
-        if !search.isEmpty {
-            let trimmedSearch = search.trimmingCharacters(in: .whitespacesAndNewlines)
-            
-            let result = data.mapValues { entities in
-                entities.filter { entity in
-                    entity.place?.localizedCaseInsensitiveContains(trimmedSearch) ?? false
-                    ||
-                    entity.comment?.localizedCaseInsensitiveContains(trimmedSearch) ?? false
-                }
-            }
-            .filter { !$0.value.isEmpty }
-            
-            return result
-        } else {
-            return data
-        }
-    }
-    
-    private func filterFunc(_ data: StatsListData) -> StatsListData {
-        if applyFilters {
-            let result = data.mapValues { entities in
-                entities.filter { entity in
-                    var filter: Bool = true
-                    
-                    if !filterCategories.isEmpty, let category = entity.category {
-                        filter = filterCategories.contains(category)
-                    }
-                    
-                    if filter {
-                        filter = entity.wrappedDate >= startFilterDate && entity.wrappedDate <= endFilterDate
-                    }
-                    
-                    return filter
-                }
-            }
-            .filter { !$0.value.isEmpty }
-            
-            return result
-        } else {
-            return data
+            return Text(date, format: .dateTime.day().month(.wide).year())
         }
     }
 }
-

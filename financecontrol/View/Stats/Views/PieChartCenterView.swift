@@ -12,18 +12,21 @@ struct CenterChartView: View {
     private var cdm: CoreDataModel
     @EnvironmentObject
     private var rvm: RatesViewModel
-    @AppStorage("defaultCurrency")
+    @EnvironmentObject
+    private var fvm: FiltersViewModel
+    @AppStorage(UDKeys.defaultCurrency)
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     var selectedMonth: Date
     
     let width: CGFloat
-    let operationsInMonth: [CategoryEntityLocal]
+    let operationsInMonth: [TSCategoryEntity]
     
     var body: some View {
         VStack(alignment: .center) {
             
-            Text(dateText())
+            dateText()
                 .padding(.top, 5)
+                .scaledToFit()
             
             Text(operationsSum(operationsInMonth: operationsInMonth))
                 .lineLimit(1)
@@ -39,27 +42,27 @@ struct CenterChartView: View {
 }
 
 extension CenterChartView {
-    internal init(selectedMonth: Date, width: CGFloat, operationsInMonth: [CategoryEntityLocal]) {
+    internal init(selectedMonth: Date, width: CGFloat, operationsInMonth: [TSCategoryEntity]) {
         self.selectedMonth = selectedMonth
         self.width = width
         self.operationsInMonth = operationsInMonth
     }
     
-    private func dateText() -> String {
-        let formatter = DateFormatter()
-        formatter.locale = .current
-        
-        if Calendar.current.isDate(selectedMonth, equalTo: Date(), toGranularity: .year) {
-            formatter.setLocalizedDateFormatFromTemplate("MMMM")
+    @ViewBuilder
+    private func dateText() -> some View {
+        if fvm.applyFilters {
+            Text("Filters applied")
         } else {
-            formatter.setLocalizedDateFormatFromTemplate("MMMyyyy")
+            if Calendar.current.isDate(selectedMonth, equalTo: Date(), toGranularity: .year) {
+                Text(selectedMonth, format: .dateTime.month(.wide))
+            } else {
+                Text(selectedMonth, format: .dateTime.month().year())
+            }
         }
-        
-        return formatter.string(from: selectedMonth).capitalized
     }
     
-    private func operationsSum(operationsInMonth: [CategoryEntityLocal]) -> String {
-        let values = operationsInMonth.map { $0.spendings }
+    private func operationsSum(operationsInMonth: [TSCategoryEntity]) -> String {
+        let values = operationsInMonth.map { $0.spendingsArray }
         var result: Double = 0
         for value in values {
             for spending in value {

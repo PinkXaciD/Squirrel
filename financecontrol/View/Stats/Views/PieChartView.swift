@@ -14,23 +14,24 @@ struct PieChartView: View {
     private var rvm: RatesViewModel
     @EnvironmentObject
     private var pcvm: PieChartViewModel
-    
-    @Binding
-    var filterCategories: [CategoryEntity]
-    @Binding
-    var applyFilters: Bool
+    @EnvironmentObject
+    private var fvm: FiltersViewModel
     
     let size: CGFloat
     
-    @AppStorage("defaultCurrency")
+    @AppStorage(UDKeys.defaultCurrency)
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
     @State
-    private var minimizeLegend: Bool = UserDefaults.standard.bool(forKey: "minimizeLegend")
+    private var minimizeLegend: Bool = UserDefaults.standard.bool(forKey: UDKeys.minimizeLegend)
     
     var body: some View {
         Section {
-            chart
+            VStack {
+                chart
+            }
+            .frame(height: size * 1.1)
+            .disabled(pcvm.isScrollDisabled)
             
             legend
         } footer: {
@@ -40,53 +41,19 @@ struct PieChartView: View {
     
     private var chart: some View {
         PieChartLazyPageView<PieChartCompleteView<CenterChartView>>(viewSize: size)
-            .frame(height: size * 1.1)
             .invertLayoutDirection()
             .listRowInsets(.init(top: 20, leading: 0, bottom: 20, trailing: 0))
-            .onAppear {
-                if cdm.updateCharts {
-                    pcvm.updateData()
-                    cdm.updateCharts = false
-                }
-            }
-            .onChange(of: cdm.updateCharts) { newValue in
-                if newValue {
-                    pcvm.updateData()
-                    cdm.updateCharts = false
-                }
-            }
     }
     
     private var legend: some View {
-        PieChartLegendView(
-            filterCategories: $filterCategories,
-            applyFilters: $applyFilters,
-            minimize: $minimizeLegend,
-            cdm: cdm,
-            pcvm: pcvm
-        )
+        PieChartLegendView(minimize: $minimizeLegend)
     }
     
     private var footer: some View {
         HStack(alignment: .center) {
             if let name = pcvm.selectedCategory?.name {
                 Button {
-                    withAnimation {
-                        pcvm.selectedCategory = nil
-                        pcvm.updateData()
-                    }
-                    
-                    if filterCategories.count == 1 {
-                        withAnimation {
-                            filterCategories.removeAll()
-                        }
-                        
-                        if pcvm.selection == 0 {
-                            withAnimation {
-                                applyFilters = false
-                            }
-                        }
-                    }
+                    removeSelection()
                 } label: {
                     VStack(alignment: .leading) {
                         Text("Selected category: \(name)")
@@ -105,21 +72,11 @@ struct PieChartView: View {
 }
 
 extension PieChartView {
-    internal init(
-        filterCategories: Binding<[CategoryEntity]>,
-        applyFilers: Binding<Bool>,
-        size: CGFloat
-    ) {
-        self._filterCategories = filterCategories
-        self._applyFilters = applyFilers
-        self.size = size
-    }
-    
     private func toggleLegend() {
         withAnimation {
             minimizeLegend.toggle()
         }
-        UserDefaults.standard.set(minimizeLegend, forKey: "minimizeLegend")
+        UserDefaults.standard.set(minimizeLegend, forKey: UDKeys.minimizeLegend)
     }
     
     private func expandButtonLabel() -> some View {
@@ -131,6 +88,11 @@ extension PieChartView {
                 .foregroundColor(.accentColor)
         }
         .font(.body)
+    }
+    
+    private func removeSelection() {
+        pcvm.selectedCategory = nil
+        pcvm.updateData()
     }
 }
 

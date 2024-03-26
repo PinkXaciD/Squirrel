@@ -10,22 +10,42 @@
     "%@" : {
 
     },
+    "%@\n%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@\n%2$@"
+          }
+        }
+      }
+    },
+    "%@ - %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ - %2$@"
+          }
+        }
+      }
+    },
+    "%@ = %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ = %2$@"
+          }
+        }
+      }
+    },
     "%@, version %@" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
             "value" : "%1$@, version %2$@"
-          }
-        }
-      }
-    },
-    "%@.\n%@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@.\n%2$@"
           }
         }
       }
@@ -105,16 +125,6 @@
     "0.00" : {
 
     },
-    "1 %@ = %@ %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "1 %1$@ = %2$@ %3$@"
-          }
-        }
-      }
-    },
     "1 USD" : {
 
     },
@@ -125,6 +135,12 @@
 
     },
     "Add" : {
+
+    },
+    "Add categories" : {
+
+    },
+    "Add category" : {
 
     },
     "Add Currency" : {
@@ -235,6 +251,9 @@
     "Comment is too long" : {
 
     },
+    "Continue" : {
+
+    },
     "Create an issue on GitHub" : {
 
     },
@@ -245,6 +264,9 @@
 
     },
     "Currency name or ISO Code" : {
+
+    },
+    "Current year" : {
 
     },
     "Dark Mode" : {
@@ -289,6 +311,9 @@
     "Error" : {
 
     },
+    "Errors" : {
+
+    },
     "Even a squirrel needs a hat in winter" : {
 
     },
@@ -316,6 +341,15 @@
     "Failed to create URL from given components" : {
 
     },
+    "Failed to find category for this spending" : {
+
+    },
+    "Failed to get CoreData entity description" : {
+
+    },
+    "Failed to import" : {
+
+    },
     "Fallback rates timestamp:" : {
 
     },
@@ -328,10 +362,16 @@
     "Filters" : {
 
     },
+    "Filters applied" : {
+
+    },
     "First Flight" : {
 
     },
     "From" : {
+
+    },
+    "Gestures" : {
 
     },
     "Hide keyboard" : {
@@ -350,6 +390,9 @@
 
     },
     "Import data as JSON" : {
+
+    },
+    "Import existing data" : {
 
     },
     "Indigo" : {
@@ -382,10 +425,13 @@
     "New Category" : {
 
     },
+    "New Shortcut" : {
+
+    },
     "No API key was found" : {
 
     },
-    "No archived categories" : {
+    "No Archived Categories" : {
 
     },
     "No comment provided" : {
@@ -400,7 +446,13 @@
     "No radar will find you now" : {
 
     },
-    "No results" : {
+    "No Results for \"(vm.showedSearch)\"" : {
+
+    },
+    "No Results for These Filters" : {
+
+    },
+    "No Shortcuts" : {
 
     },
     "No up to date exchange rate for %@ found" : {
@@ -442,6 +494,9 @@
     "Please submit a bug report and try to reinstall the app" : {
 
     },
+    "Please submit a bug report and try to restart or reinstall the app" : {
+
+    },
     "Please submit a bug report and try to restart the app" : {
 
     },
@@ -452,6 +507,9 @@
 
     },
     "Rates updated at:" : {
+
+    },
+    "Recommended" : {
 
     },
     "Red" : {
@@ -478,6 +536,9 @@
     "Save" : {
 
     },
+    "Search" : {
+
+    },
     "Search by place or comment" : {
 
     },
@@ -494,6 +555,24 @@
 
     },
     "Settings" : {
+
+    },
+    "Shortcuts" : {
+
+    },
+    "Shortcuts (beta)" : {
+
+    },
+    "Show onboarding" : {
+
+    },
+    "Skip" : {
+
+    },
+    "Some category" : {
+
+    },
+    "Some place" : {
 
     },
     "Something went wrong..." : {
@@ -536,9 +615,6 @@
     "Swipe left to restore, swipe right to delete" : {
 
     },
-    "Tap to add" : {
-
-    },
     "Tap to remove selection" : {
 
     },
@@ -554,7 +630,13 @@
     "Throw bad URL error" : {
 
     },
+    "Throw category error" : {
+
+    },
     "Throw Empty database error" : {
+
+    },
+    "Throw entity description error" : {
 
     },
     "Throw Info.plist error" : {
@@ -578,14 +660,11 @@
     "Today" : {
 
     },
+    "Try another search." : {
+
+    },
     "Unknown" : {
-
-    },
-    "UserDefaults" : {
-
-    },
-    "UserDefaults values" : {
-
+      "comment" : "Unknown place"
     },
     "Validate returns" : {
 
@@ -600,6 +679,9 @@
         }
       }
     },
+    "Welcome to" : {
+
+    },
     "Winterized" : {
 
     },
@@ -607,6 +689,18 @@
 
     },
     "Yesterday" : {
+
+    },
+    "You can add categories later in settings" : {
+
+    },
+    "You can archive categories in settings, they will be hidden from selection when you add new expenses, but all old expenses will be saved" : {
+
+    },
+    "You can change default currency or add more later in settings" : {
+
+    },
+    "You can perform quick actions like editing or deleting via swipe actions or by holding row" : {
 
     },
     "You will not be able to undo this action.\nAll expenses in this category will be permanently deleted" : {

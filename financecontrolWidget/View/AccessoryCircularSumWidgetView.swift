@@ -20,26 +20,6 @@ struct AccessoryCircularSumWidgetView: View {
         }
     }
     
-    private func format(_ number: Double) -> String {
-        let numberFormatter = NumberFormatter()
-        numberFormatter.numberStyle = .decimal
-        numberFormatter.maximumFractionDigits = 2
-        numberFormatter.minimumFractionDigits = 0
-        
-        if number >= 1000000000 {
-            let preResult = numberFormatter.string(from: round(number / 10000000)/100 as NSNumber) ?? "Error"
-            return "\(preResult)B"
-        } else if number >= 1000000 {
-            let preResult = numberFormatter.string(from: round(number / 10000)/100 as NSNumber) ?? "Error"
-            return "\(preResult)M"
-        } else if number >= 1000 {
-            let preResult = numberFormatter.string(from: round(number / 10)/100 as NSNumber) ?? "Error"
-            return "\(preResult)K"
-        }
-        
-        return numberFormatter.string(from: number as NSNumber) ?? "Error"
-    }
-    
     @available(iOS 17.0, *)
     private func getNewWidget() -> some View {
         ZStack(alignment: .center) {
@@ -50,7 +30,7 @@ struct AccessoryCircularSumWidgetView: View {
                 Text(entry.currency)
                     .font(.footnote)
                 
-                Text(format(entry.expenses))
+                Text(entry.expenses.formatted(.number.notation(.compactName)))
                     .font(.system(.title, design: .rounded).bold())
                     .minimumScaleFactor(0.5)
                     .scaledToFit()
@@ -71,7 +51,7 @@ struct AccessoryCircularSumWidgetView: View {
                 Text(entry.currency)
                     .font(.footnote)
                 
-                Text(format(entry.expenses))
+                Text(entry.expenses.formatted(.number.notation(.compactName)))
                     .font(.system(.title, design: .rounded).bold())
                     .minimumScaleFactor(0.5)
                     .scaledToFit()
@@ -89,7 +69,7 @@ struct AccessoryCircularSumWidgetViewPreviews: PreviewProvider {
         AccessoryCircularSumWidgetView(
             entry: .init(
                 date: .init(),
-                expenses: 100,
+                expenses: 122,
                 currency: "JPY"
             )
         )

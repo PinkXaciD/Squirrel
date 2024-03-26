@@ -66,7 +66,7 @@ extension SpendingEntity {
             return []
         }
         
-        return returns
+        return returns.sorted { $0.date ?? Date() < $1.date ?? Date() }
     }
     
     public var returnsSum: Double {
@@ -103,6 +103,23 @@ extension SpendingEntity {
     @objc(removeReturns:)
     @NSManaged public func removeFromReturns(_ values: NSSet)
 
+}
+
+extension SpendingEntity: ToSafeObject {
+    func safeObject() -> TSSpendingEntity {
+        TSSpendingEntity(
+            amount: amount,
+            amountUSD: amountUSD,
+            comment: comment,
+            currency: currency,
+            date: date,
+            id: id,
+            place: place,
+            categoryID: category?.id,
+            categoryName: categoryName,
+            returns: returns
+        )
+    }
 }
 
 struct SpendingEntityLocal {
@@ -159,4 +176,95 @@ extension SpendingEntityLocal {
         self.amountUSDWithReturns = amountUSDWithReturns
         self.amountWithReturns = amountWithReturns
     }
+}
+
+struct TSSpendingEntity: ToUnsafeObject, Hashable, Identifiable {
+    let amount: Double
+    let amountUSD: Double
+    let comment: String?
+    let currency: String?
+    let date: Date?
+    let id: UUID?
+    let place: String?
+//    let category: CategoryEntity?
+    let categoryID: UUID?
+    let categoryName: String
+    let returns: NSSet?
+    
+    public var wrappedCurrency: String {
+        currency ?? "Error"
+    }
+    
+    public var wrappedDate: Date {
+        date ?? Date()
+    }
+    
+    public var wrappedId: UUID {
+        id ?? UUID()
+    }
+    
+    public var amountUSDWithReturns: Double {
+        guard
+            let returnsArr = returns?.allObjects as? [ReturnEntity],
+            !returnsArr.isEmpty
+        else {
+            return amountUSD
+        }
+        
+        let result = returnsArr.map{ $0.amountUSD }.reduce(amountUSD, -)
+        
+        if result < 0 {
+            return 0
+        } else {
+            return result
+        }
+    }
+    
+    public var returnsArr: [ReturnEntity] {
+        guard
+            let returns = returns?.allObjects as? [ReturnEntity]
+        else {
+            return []
+        }
+        
+        return returns.sorted { $0.date ?? Date() < $1.date ?? Date() }
+    }
+    
+    public var returnsSum: Double {
+        guard
+            !returnsArr.isEmpty
+        else {
+            return 0
+        }
+        
+        return returnsArr.map({ $0.amount }).reduce(0, +)
+    }
+    
+    public var amountWithReturns: Double {
+        return amount - returnsSum
+    }
+    
+    func unsafeObject(in context: NSManagedObjectContext) throws -> SpendingEntity {
+        try context.performAndWait {
+            let predicate = NSPredicate(format: "id == %@", self.wrappedId as CVarArg)
+            let request = SpendingEntity.fetchRequest()
+            request.predicate = predicate
+            
+            guard let unsafeEntity = try context.fetch(request).first else {
+                throw CoreDataError.failedToFindCategory
+            }
+            
+            return unsafeEntity
+        }
+    }
+}
+
+protocol ToSafeObject {
+    associatedtype SafeType
+    func safeObject() throws -> SafeType
+}
+
+protocol ToUnsafeObject {
+    associatedtype UnsafeType: NSManagedObject
+    func unsafeObject(in context: NSManagedObjectContext) throws -> UnsafeType
 }

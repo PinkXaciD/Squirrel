@@ -7,26 +7,46 @@
 
 import SwiftUI
 import ApplePie
+import Combine
+#if DEBUG
+import OSLog
+#endif
 
 final class PieChartViewModel: ViewModel {
-    @AppStorage("defaultCurrency") private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
-    @ObservedObject private var cdm: CoreDataModel
+    @AppStorage(UDKeys.defaultCurrency) private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
+    private var cdm: CoreDataModel
+    var fvm: FiltersViewModel
     @Published var selection: Int = 0
     @Published var content: [PieChartCompleteView<CenterChartView>] = []
     @Published var selectedCategory: CategoryEntity? = nil
+    @Published var isScrollDisabled: Bool = false
+    @Published var data: [ChartData]
     let size: CGFloat
+    var cancellables = Set<AnyCancellable>()
+    let id = UUID()
     
-    init(selection: Int = 0, contentSize size: CGFloat, cdm: CoreDataModel) {
-        self._cdm = .init(initialValue: cdm)
+    init(selection: Int = 0, cdm: CoreDataModel, fvm: FiltersViewModel) {
+        self.cdm = cdm
+        self.fvm = fvm
+        
+        let size: CGFloat = {
+            let currentScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+            let windowBounds = currentScene?.windows.first(where: { $0.isKeyWindow })?.bounds
+            let width = windowBounds?.width ?? UIScreen.main.bounds.width
+            let height = windowBounds?.height ?? UIScreen.main.bounds.height
+            return width > height ? (height / 1.7) : (width / 1.7)
+        }()
+        
         self.size = size
         
         let chartData = cdm.getChartData()
+        self.data = chartData
         
         var data: [PieChartCompleteView<CenterChartView>] = []
         var count = 0
         for element in chartData {
             data.append(
-                .init(
+                PieChartCompleteView(
                     chart: APChart(
                         separators: 0.15,
                         innerRadius: 0.73,
@@ -46,10 +66,30 @@ final class PieChartViewModel: ViewModel {
         }
         
         self.content = data
+        subscribeToUpdate()
+        #if DEBUG
+        let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
+        logger.debug("ViewModel initialized")
+        #endif
+    }
+    
+    deinit {
+        #if DEBUG
+        let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
+        logger.debug("ViewModel deinitialized")
+        #endif
     }
     
     func updateData() {
-        let chartData: [ChartData] = cdm.getChartData(categoryName: selectedCategory?.name)
+        let chartData: [ChartData] = {
+            if fvm.applyFilters {
+                return cdm.getFilteredChartData(firstDate: fvm.startFilterDate, secondDate: fvm.endFilterDate, categories: fvm.filterCategories)
+            }
+            
+            return cdm.getChartData(categoryName: selectedCategory?.name)
+        }()
+        
+        self.data = chartData
         
         var data: [PieChartCompleteView<CenterChartView>] = []
         var count = 0
@@ -103,16 +143,31 @@ final class PieChartViewModel: ViewModel {
         self.content = data
     }
     
-    private func setData(_ operations: [CategoryEntityLocal]) -> [APChartSectorData] {
+    private func setData(_ operations: [TSCategoryEntity]) -> [APChartSectorData] {
         let result = operations.map { element in
-            let value = element.spendings.map { $0.amountUSDWithReturns }.reduce(0, +)
+            let value = element.sumUSDWithReturns
             return APChartSectorData(
                 value,
-                Color[element.color],
+                Color[element.color ?? ""],
                 id: element.id
             )
         }
         
         return result.compactMap { $0 }.filter { $0.value != 0 }.sorted(by: >)
+    }
+    
+    private func subscribeToUpdate() {
+        cdm.$updateCharts
+            .receive(on: DispatchQueue.main)
+            .filter { $0 == true }
+            .sink { [weak self] value in
+                if value {
+                    withAnimation {
+                        self?.updateData()
+                    }
+                    self?.cdm.updateCharts = false
+                }
+            }
+            .store(in: &cancellables)
     }
 }

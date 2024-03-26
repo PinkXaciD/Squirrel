@@ -30,7 +30,7 @@ extension CoreDataModel {
         }
     }
     
-    func findCategory(_ id: UUID) -> CategoryEntity? {
+    func findCategory(_ id: UUID, in context: NSManagedObjectContext = DataManager.shared.context) -> CategoryEntity? {
         
         let request = CategoryEntity.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", id as CVarArg)

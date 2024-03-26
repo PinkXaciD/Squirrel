@@ -35,6 +35,29 @@ extension CoreDataModel {
         HapticManager.shared.notification(.success)
     }
     
+    func importReturn(to spending: SpendingEntity, returnEntity: ReturnEntity) {
+        guard
+            let description = NSEntityDescription.entity(forEntityName: "ReturnEntity", in: context)
+        else {
+            ErrorType(CoreDataError.failedToGetEntityDescription).publish()
+            return
+        }
+        
+        let newReturn: ReturnEntity = .init(entity: description, insertInto: context)
+        newReturn.id = returnEntity.id ?? .init()
+        newReturn.amount = returnEntity.amount
+        newReturn.amountUSD = returnEntity.amountUSD
+        newReturn.currency = returnEntity.currency ?? spending.wrappedCurrency
+        newReturn.date = returnEntity.date ?? Date()
+        newReturn.name = returnEntity.name
+        
+        spending.addToReturns(newReturn)
+        
+        let privateContext = returnEntity.managedObjectContext
+        
+        privateContext?.delete(returnEntity)
+    }
+    
     func deleteReturn(spendingReturn: ReturnEntity) {
         let date = spendingReturn.date
         context.delete(spendingReturn)

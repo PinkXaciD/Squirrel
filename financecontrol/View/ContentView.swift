@@ -13,41 +13,70 @@ struct ContentView: View {
     @Environment(\.openURL)
     private var openURL
     
-    @AppStorage("color")
+    @AppStorage(UDKeys.color)
     private var tint: String = "Orange"
-    @AppStorage("theme")
+    @AppStorage(UDKeys.theme)
     private var theme: String = "None"
+    @AppStorage(UDKeys.presentOnboarding)
+    private var presentOnboarding: Bool = true
     
     @StateObject
-    private var cdm: CoreDataModel = .init()
+    private var cdm: CoreDataModel
     @StateObject
     private var rvm: RatesViewModel = .init()
+    @StateObject
+    private var filtersViewModel: FiltersViewModel
+    @StateObject
+    private var pieChartViewModel: PieChartViewModel
+    @StateObject
+    private var statsListViewModel: StatsListViewModel
+    @StateObject
+    private var statsSearchViewModel: StatsSearchViewModel
     
     @ObservedObject 
     private var errorHandler = ErrorHandler.shared
     
-    @Binding
-    var addExpenseAction: Bool
+    @State
+    private var addExpenseAction: Bool = false
+    
+    init() {
+        let coreDataModel = CoreDataModel()
+        let filtersViewModel = FiltersViewModel()
+        let pieChartViewModel = PieChartViewModel(cdm: coreDataModel, fvm: filtersViewModel)
+        let statsSearchViewModel = StatsSearchViewModel()
+        let statsListViewModel = StatsListViewModel(cdm: coreDataModel, fvm: filtersViewModel, pcvm: pieChartViewModel, searchModel: statsSearchViewModel)
+        self._cdm = StateObject(wrappedValue: coreDataModel)
+        self._pieChartViewModel = StateObject(wrappedValue: pieChartViewModel)
+        self._filtersViewModel = StateObject(wrappedValue: filtersViewModel)
+        self._statsListViewModel = StateObject(wrappedValue: statsListViewModel)
+        self._statsSearchViewModel = StateObject(wrappedValue: statsSearchViewModel)
+    }
         
     var body: some View {
         TabView {
-            HomeView(showingSheet: $addExpenseAction)
+            HomeView(showingSheet: $addExpenseAction, presentOnboarding: $presentOnboarding)
                 .tabItem {
-                    Image(systemName: "house.fill")
-                    Text("Home")
+                    Label("Home", systemImage: "house.fill")
                 }
             
             StatsSearchView()
+                .environmentObject(pieChartViewModel)
+                .environmentObject(filtersViewModel)
+                .environmentObject(statsSearchViewModel)
+                .environmentObject(statsListViewModel)
                 .tabItem {
-                    Image(systemName: "chart.pie.fill")
-                    Text("Stats")
+                    Label("Stats", systemImage: "chart.pie.fill")
                 }
             
-            SettingsView()
+            SettingsView(presentOnboarding: $presentOnboarding)
                 .tabItem {
-                    Image(systemName: "gearshape.fill")
-                    Text("Settings")
+                    Label("Settings", systemImage: "gearshape.fill")
                 }
+        }
+        .onOpenURL { url in
+            if url == URLs.addExpenseAction {
+                addExpenseAction = true
+            }
         }
         .onChange(of: scenePhase) { value in
             if value == .inactive {
@@ -56,6 +85,12 @@ struct ContentView: View {
         }
         .environmentObject(cdm)
         .environmentObject(rvm)
+        .sheet(isPresented: $presentOnboarding) {
+            OnboardingView()
+                .environmentObject(cdm)
+                .accentColor(.orange)
+                .interactiveDismissDisabled()
+        }
         .tint(colorIdentifier(color: tint))
         .accentColor(colorIdentifier(color: tint))
         .preferredColorScheme(themeConvert(theme))
@@ -67,7 +102,7 @@ struct ContentView: View {
             if error.createIssue {
                 Button("Create an issue on GitHub") {
                     errorHandler.dropError()
-                    openURL(URL(string: "https://github.com/PinkXaciD/Squirrel/issues/new")!)
+                    openURL(URLs.newGithubIssue)
                 }
             }
             
@@ -75,13 +110,13 @@ struct ContentView: View {
                 errorHandler.dropError()
             }
         } message: { error in
-            Text("\(error.errorDescription).\n\(error.recoverySuggestion)")
+            Text("\(error.errorDescription)\n\(error.recoverySuggestion)")
         }
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(addExpenseAction: .constant(false))
+        ContentView()
     }
 }

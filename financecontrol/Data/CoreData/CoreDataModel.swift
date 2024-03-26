@@ -73,34 +73,49 @@ extension CoreDataModel {
         do {
             if url.startAccessingSecurityScopedResource() {
                 let jsonData = try Data(contentsOf: url)
-                let decoder = JSONDecoder()
-                decoder.dateDecodingStrategy = .iso8601
-                decoder.userInfo[.moc] = context
                 
                 url.stopAccessingSecurityScopedResource()
                 
-                let tempData = try decoder.decode([CategoryEntity].self, from: jsonData)
+                let privateContext = manager.container.newBackgroundContext()
                 
-                let existingCategoryIds = savedCategories.map { $0.id } + shadowedCategories.map { $0.id }
-                let existingSpendingsIds = savedSpendings.map { $0.id }
+                let decoder = JSONDecoder()
+                decoder.dateDecodingStrategy = .iso8601
+                decoder.userInfo[.moc] = privateContext
                 
-                for category in tempData {
-                    if let spendings = category.spendings?.allObjects as? [SpendingEntity], !spendings.isEmpty {
-                        for spending in spendings {
-                            if !existingSpendingsIds.contains(spending.id) {
-                                if let id = spending.category?.id, let category = findCategory(id) {
-                                    addToCategory(spending, category)
+                try privateContext.performAndWait {
+                    let tempData = try decoder.decode([CategoryEntity].self, from: jsonData)
+                    
+                    let existingCategoryIds = (savedCategories + shadowedCategories).map { $0.id }
+                    let existingSpendingsIds = savedSpendings.map { $0.id }
+                    
+                    for category in tempData {
+                        if let spendings = category.spendings?.allObjects as? [SpendingEntity], !spendings.isEmpty {
+                            for spending in spendings {
+                                if !existingSpendingsIds.contains(spending.id) {
+                                    if existingCategoryIds.contains(category.id) {
+                                        importSpending(spending)
+                                    }
+                                    
                                     importedCount += 1
+                                } else {
+                                    privateContext.delete(spending)
                                 }
                             }
                         }
+                        
+                        if existingCategoryIds.contains(category.id) {
+                            privateContext.delete(category)
+                        }
                     }
                     
-                    if existingCategoryIds.contains(category.id) {
-                        context.delete(category)
+                    do {
+                        try privateContext.save()
+                        privateContext.reset()
+                    } catch {
+                        ErrorType(error: error).publish()
                     }
                 }
-
+                
                 manager.save()
                 
                 fetchCategories()

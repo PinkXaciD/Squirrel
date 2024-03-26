@@ -14,9 +14,14 @@ struct AboutView: View {
     
     @State private var showDebug: Bool = false
     
+    @Binding
+    var presentOnboarding: Bool
+    
     var body: some View {
         Form {
             aboutSection
+            
+            onboardingSection
             
             githubSection
                                                 
@@ -73,6 +78,14 @@ struct AboutView: View {
             .opacity(0.3)
     }
     
+    private var onboardingSection: some View {
+        Section {
+            Button("Show onboarding") {
+                presentOnboarding = true
+            }
+        }
+    }
+    
     private var githubSection: some View {
         Section {
             Button("Create an issue on GitHub") {
@@ -92,7 +105,7 @@ struct AboutView: View {
     }
     
     private var copyrightText: Text {
-        Text(verbatim: "© \(Calendar.current.currentYearTextualRepresentation()) PinkXaciD")
+        Text(verbatim: "© \(Date().formatted(.dateTime.year())) PinkXaciD")
             .font(.caption)
             .foregroundColor(.secondary)
     }
@@ -106,5 +119,5 @@ struct AboutView: View {
 }
 
 #Preview {
-    AboutView()
+    AboutView(presentOnboarding: .constant(false))
 }

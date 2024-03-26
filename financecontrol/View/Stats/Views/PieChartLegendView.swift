@@ -8,54 +8,25 @@
 import SwiftUI
 
 struct PieChartLegendView: View {
-    internal init(
-        filterCategories: Binding<[CategoryEntity]>,
-        applyFilters: Binding<Bool>,
-        minimize: Binding<Bool>,
-        cdm: CoreDataModel,
-        pcvm: PieChartViewModel
-    ) {
-        self._filterCategories = filterCategories
-        self._applyFilters = applyFilters
-        self._minimize = minimize
-        
-        self.operationsInMonthSorted = cdm.operationsInMonth(
-            startDate: .now.getFirstDayOfMonth(-pcvm.selection),
-            endDate: .now.getFirstDayOfMonth(-pcvm.selection + 1),
-            categoryName: pcvm.selectedCategory?.name
-        )
-    }
-    
     @EnvironmentObject
     private var pcvm: PieChartViewModel
-    @EnvironmentObject
-    private var cdm: CoreDataModel
-    @EnvironmentObject
-    private var rvm: RatesViewModel
     
-    @AppStorage("defaultCurrency")
+    @AppStorage(UDKeys.defaultCurrency)
     private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
-    
-    @Binding
-    var filterCategories: [CategoryEntity]
-    @Binding
-    var applyFilters: Bool
     @Binding
     var minimize: Bool
     
-    let operationsInMonthSorted: [CategoryEntityLocal]
+//    let operationsInMonthSorted: [CategoryEntityLocal]
     
     var body: some View {
+        let data = pcvm.data[(pcvm.selection >= pcvm.data.count || pcvm.selection < 0) ? 0 : pcvm.selection]
+        
         if minimize {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
-                    ForEach(operationsInMonthSorted) { category in
-                        PieChartLegendRowView(
-                            filterCategories: $filterCategories,
-                            applyFilters: $applyFilters,
-                            category: category
-                        )
+                    ForEach(data.categories.sorted(by: >)) { category in
+                        PieChartLegendRowView(category: category)
                     }
                 }
                 .padding(.horizontal, 20)
@@ -68,12 +39,8 @@ struct PieChartLegendView: View {
         } else {
             HStack {
                 VStack(alignment: .leading, spacing: 10) {
-                    ForEach(operationsInMonthSorted) { category in
-                        PieChartLegendRowView(
-                            filterCategories: $filterCategories,
-                            applyFilters: $applyFilters,
-                            category: category
-                        )
+                    ForEach(data.categories.sorted(by: >)) { category in
+                        PieChartLegendRowView(category: category)
                     }
                 }
                 

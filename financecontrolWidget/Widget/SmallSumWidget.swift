@@ -10,7 +10,7 @@ import SwiftUI
 
 struct SmallSumWidget: Widget {
     let kind: String = "SmallSumWidget"
-    let currency: String = UserDefaults.standard.string(forKey: "defaultCurrency") ?? "JPY"
+    let currency: String = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? "JPY"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: SumWidgetTimelineProvider()) { entry in

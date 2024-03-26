@@ -24,12 +24,14 @@ final class CoreDataModelTests: XCTestCase {
     }
 
     func testInitSettingUpProperties() {
-        if let currencies = cdm?.savedCurrencies, let currency = currencies.first {
-            XCTAssertEqual(currency.tag, Locale.current.currencyCode)
-        } else {
-            XCTFail("Currency not setted up")
-        }
+        // MARK: Currencies now setting up from onboarding
+//        if let currencies = cdm?.savedCurrencies, let currency = currencies.first {
+//            XCTAssertEqual(currency.tag, Locale.current.currencyCode)
+//        } else {
+//            XCTFail("Currency not setted up")
+//        }
         
+        XCTAssertTrue(cdm?.savedCurrencies == [])
         XCTAssertTrue(cdm?.savedSpendings == [])
         XCTAssertTrue(cdm?.savedCategories == [])
         XCTAssertTrue(cdm?.shadowedCategories == [])

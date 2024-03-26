@@ -30,7 +30,7 @@ struct SpendingView: View {
     @Environment(\.dismiss) 
     private var dismiss
     
-    @AppStorage("defaultCurrency") 
+    @AppStorage(UDKeys.defaultCurrency) 
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
     @State
@@ -67,7 +67,6 @@ struct SpendingView: View {
     // MARK: Variables
     
     private var infoSection: some View {
-        
         Section(header: infoHeader) {
             HStack {
                 Text("Category")
@@ -82,7 +81,7 @@ struct SpendingView: View {
             HStack {
                 Text("Date")
                 Spacer()
-                Text(entity.wrappedDate.formatted(date: .long, time: .shortened))
+                Text(entity.wrappedDate, format: .dateTime.year().month(.wide).day().hour().minute())
                     .foregroundColor(.secondary)
             }
             .onTapGesture {
@@ -192,7 +191,7 @@ struct SpendingView: View {
     private var debugSection: some View {
         Section {
             HStack {
-                Text("Amount in USD:")
+                Text(verbatim: "Amount in USD:")
                 
                 Spacer()
                 
@@ -201,7 +200,7 @@ struct SpendingView: View {
             }
             
             HStack {
-                Text("Amount in USD with returns:")
+                Text(verbatim: "Amount in USD with returns:")
                 
                 Spacer()
                 
@@ -210,11 +209,18 @@ struct SpendingView: View {
             }
             
             VStack(alignment: .leading) {
-                Text("ID:")
+                Text(verbatim: "ID:")
                 
                 Text("\(entity.wrappedId.uuidString)")
                     .foregroundColor(.secondary)
                     .font(.system(size: 14))
+            }
+            
+            VStack(alignment: .leading) {
+                Text(verbatim: "Context")
+                
+                Text("\(entity.managedObjectContext?.name ?? "Error")")
+                    .foregroundColor(.secondary)
             }
         } header: {
             Text("Debug")
@@ -317,7 +323,7 @@ extension SpendingView {
             Divider()
             
             HStack {
-                Text("Amount in USD:")
+                Text(verbatim: "Amount in USD:")
                 
                 Spacer()
                 

@@ -22,11 +22,7 @@ struct DebugView: View {
     
     var body: some View {
         Form {
-            infoPlistSection
-            
-            ratesFetchErrorSection
-            
-            urlErrorSection
+            errorsSection
             
             ratesSection
             
@@ -53,6 +49,25 @@ struct DebugView: View {
         }
         .navigationTitle("Debug")
         .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    private var errorsSection: some View {
+        Section {
+            NavigationLink("Errors") {
+                List {
+                    infoPlistSection
+                    
+                    ratesFetchErrorSection
+                    
+                    urlErrorSection
+                    
+                    coreDataErrorSection
+                }
+                .navigationTitle("Errors")
+            }
+        } header: {
+            Text("Errors")
+        }
     }
     
     private var infoPlistSection: some View {
@@ -101,6 +116,20 @@ struct DebugView: View {
         }
     }
     
+    private var coreDataErrorSection: some View {
+        Section {
+            Button("Throw entity description error") {
+                ErrorType(CoreDataError.failedToGetEntityDescription).publish()
+            }
+            
+            Button("Throw category error") {
+                ErrorType(CoreDataError.failedToFindCategory).publish()
+            }
+        } header: {
+            Text(verbatim: "CoreData errors")
+        }
+    }
+    
     private var ratesSection: some View {
         Section {
             VStack(alignment: .leading) {
@@ -120,11 +149,13 @@ struct DebugView: View {
             .normalizePadding()
             
             #if DEBUG
-            Button("Fetch rates", role: .destructive) {
+            Button(role: .destructive) {
                 let rm = RatesModel()
                 Task {
                     try await rm.downloadRates(timestamp: Date())
                 }
+            } label: {
+                Text(verbatim: "Fetch rates")
             }
             #endif
         } header: {
@@ -151,9 +182,13 @@ struct DebugView: View {
     
     private var defaultsSection: some View {
         Section {
-            NavigationLink("UserDefaults values") {
+            #if DEBUG
+            NavigationLink {
                 UserDefaultsValuesView(defaults: .standard)
+            } label: {
+                Text(verbatim: "UserDefaults values")
             }
+            #endif
             
             Button(role: .destructive) {
                 defaultsConfirmationIsShowing.toggle()
@@ -250,13 +285,14 @@ extension DebugView {
             let date: Date = isoDateFromatter.date(from: Rates.fallback.timestamp) ?? .distantPast
             return dateFormatter.string(from: date)
         case .update:
-            let ratesUpdateTime: String = UserDefaults.standard.string(forKey: "updateTime") ?? "Error"
+            let ratesUpdateTime: String = UserDefaults.standard.string(forKey: UDKeys.updateTime) ?? "Error"
             let date: Date = isoDateFromatter.date(from: ratesUpdateTime) ?? .distantPast
             return dateFormatter.string(from: date)
         }
     }
 }
 
+#if DEBUG
 struct UserDefaultsValuesView: View {
     let defaults: [String:Any]
     
@@ -284,7 +320,7 @@ struct UserDefaultsValuesView: View {
             }
         }
         .searchable(text: $search)
-        .navigationTitle("UserDefaults")
+        .navigationTitle(Text(verbatim: "UserDefaults"))
     }
     
     private func searchFunc() -> [String] {
@@ -303,3 +339,4 @@ struct UserDefaultsValuesView: View {
 #Preview {
     DebugView()
 }
+#endif

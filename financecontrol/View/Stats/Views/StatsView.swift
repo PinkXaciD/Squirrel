@@ -17,35 +17,22 @@ struct StatsView: View {
     private var cdm: CoreDataModel
     @EnvironmentObject
     private var rvm: RatesViewModel
-    @AppStorage("color")
-    private var tint: String = "Orange"
-    @StateObject
-    var pcvm: PieChartViewModel
+    @EnvironmentObject
+    private var pcvm: PieChartViewModel
+    @EnvironmentObject
+    private var fvm: FiltersViewModel
+//    @EnvironmentObject
+//    private var searchModel: StatsSearchViewModel
     
-    @State
-    var entityToEdit: SpendingEntity? = nil
-    @State
-    var entityToAddReturn: SpendingEntity? = nil
+    @Binding
+    var entityToEdit: SpendingEntity?
+    @Binding
+    var entityToAddReturn: SpendingEntity?
     @State
     private var edit: Bool = false
     
-// MARK: Filters
-    
     @State
     private var showFilters: Bool = false
-    
-    @State
-    private var startFilterDate: Date = .now.getFirstDayOfMonth()
-    @State
-    private var endFilterDate: Date = .now
-    @State
-    private var filterCategories: [CategoryEntity] = []
-    @State
-    private var excludeCategories: Bool = false
-    @State
-    private var applyFilters: Bool = false
-    @Binding
-    var search: String
     
     private var sheetFraction: CGFloat = 0.7
     
@@ -57,35 +44,32 @@ struct StatsView: View {
     
     var body: some View {
         NavigationView {
-            ScrollViewReader { scroll in
-                List {
-                    if search.isEmpty && !isSearching {
-                        PieChartView(
-                            filterCategories: $filterCategories,
-                            applyFilers: $applyFilters,
-                            size: size
-                        )
-                        .environmentObject(pcvm)
+            List {
+                if !isSearching {
+                    PieChartView(size: size)
                         .id(0)
-                    }
-                    
-                    StatsListView(
-                        entityToEdit: $entityToEdit,
-                        entityToAddReturn: $entityToAddReturn,
-                        edit: $edit,
-                        search: $search,
-                        applyFilters: $applyFilters,
-                        startFilterDate: $startFilterDate,
-                        endFilterDate: $endFilterDate,
-                        filterCategories: $filterCategories
-                    )
                 }
-            }
-            .onChange(of: pcvm.selection) { newValue in
-                onChangeFunc(-newValue)
+                
+                StatsListView(
+                    entityToEdit: $entityToEdit,
+                    entityToAddReturn: $entityToAddReturn,
+                    edit: $edit
+                )
             }
             .toolbar {
-                toolbar
+                trailingToolbar
+                
+                ToolbarItem(placement: .topBarLeading) {
+                    if fvm.applyFilters {
+                        Button {
+                            clearFilters()
+                        } label: {
+                            Label("Clear filters", systemImage: "xmark")
+                        }
+                        .disabled(!fvm.applyFilters)
+                        .buttonStyle(BorderedButtonStyle())
+                    }
+                }
             }
             .sheet(item: $entityToEdit) { entity in
                 SpendingCompleteView(
@@ -101,49 +85,64 @@ struct StatsView: View {
             }
             .sheet(item: $entityToAddReturn) { entity in
                 AddReturnView(spending: entity, cdm: cdm, rvm: rvm)
-                    .accentColor(colorIdentifier(color: tint))
+                    .accentColor(.accentColor)
             }
             .navigationTitle("Stats")
         }
         .navigationViewStyle(.stack)
     }
     
-    private var toolbar: ToolbarItemGroup<some View> {
+    private var trailingToolbar: ToolbarItemGroup<some View> {
         ToolbarItemGroup(placement: .topBarTrailing) {
-            HStack {
-                Button {
-                    clearFilters()
-                } label: {
-                    Label("Clear filters", systemImage: "xmark.circle")
-                }
-                .disabled(!applyFilters)
-                .opacity(applyFilters ? 1.0 : 0.0)
-                
+            if fvm.applyFilters {
                 Button {
                     showFilters.toggle()
                 } label: {
-                    Label("Filter", systemImage: applyFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
+                    HStack(spacing: 5) {
+                        let dates = formatDateForFilterButton(fvm.startFilterDate, fvm.endFilterDate)
+                        Text("\(dates.0) - \(dates.1)")
+                    }
+                    .font(.footnote)
                 }
+                .buttonStyle(BorderedButtonStyle())
+            } else {
+                Button {
+                    showFilters.toggle()
+                } label: {
+                    Label("Filter", systemImage: "line.3.horizontal.decrease")
+                }
+                .buttonStyle(BorderedButtonStyle())
             }
+            
+//            Button {
+//                showFilters.toggle()
+//            } label: {
+//                if fvm.applyFilters {
+//                    HStack {
+//                        Text(fvm.startFilterDate, format: .dateTime.day(.defaultDigits).month(.defaultDigits).year(.defaultDigits))
+//                        
+//                        Text(verbatim: "-")
+//                        
+//                        Text(fvm.endFilterDate, format: .dateTime.day(.defaultDigits).month(.defaultDigits).year(.defaultDigits))
+//                    }
+//                    .font(.footnote)
+//                } else {
+//                    Label("Filter", systemImage: "line.3.horizontal.decrease")
+//                }
+//            }
+//            .buttonStyle(BorderedButtonStyle())
         }
     }
     
     private var filters: some View {
-        FiltersView(
-            firstFilterDate: $startFilterDate,
-            secondFilterDate: $endFilterDate,
-            categories: $filterCategories,
-            applyFilters: $applyFilters
-        )
+        FiltersView()
+            .environmentObject(fvm)
+            .environmentObject(pcvm)
     }
-    
-    
 }
 
 extension StatsView {
-    init(search: Binding<String>, cdm: CoreDataModel) {
-        self._search = search
-        
+    init(entity: Binding<SpendingEntity?>, entityToAddReturn: Binding<SpendingEntity?>) {
         var size: CGFloat {
             let currentScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
             let windowBounds = currentScene?.windows.first(where: { $0.isKeyWindow })?.bounds
@@ -153,67 +152,21 @@ extension StatsView {
         }
         
         self.size = size
-        self._pcvm = .init(wrappedValue: .init(contentSize: size, cdm: cdm))
+        self._entityToEdit = entity
+        self._entityToAddReturn = entityToAddReturn
     }
     
-    private func searchFunc(_ data: StatsListData) -> StatsListData {
-        if !search.isEmpty {
-            let trimmedSearch = search.trimmingCharacters(in: .whitespacesAndNewlines)
-            
-            let result = data.mapValues { entities in
-                entities.filter { entity in
-                    entity.place?.localizedCaseInsensitiveContains(trimmedSearch) ?? false
-                    ||
-                    entity.comment?.localizedCaseInsensitiveContains(trimmedSearch) ?? false
-                }
-            }
-            .filter { !$0.value.isEmpty }
-            
-            return result
+    private func formatDateForFilterButton(_ date1: Date, _ date2: Date) -> (String, String) {
+        let formatter = DateFormatter()
+        formatter.locale = Locale.autoupdatingCurrent
+        
+        if Calendar.current.isDate(date1, equalTo: date2, toGranularity: .year) {
+            formatter.setLocalizedDateFormatFromTemplate("Md")
         } else {
-            return data
-        }
-    }
-    
-    private func filterFunc(_ data: StatsListData) -> StatsListData {
-        if applyFilters {
-            let result = data.mapValues { entities in
-                entities.filter { entity in
-                    var filter: Bool = true
-                    
-                    if !filterCategories.isEmpty, let category = entity.category {
-                        filter = filterCategories.contains(category)
-                    }
-                    
-                    if filter {
-                        filter = entity.wrappedDate >= startFilterDate && entity.wrappedDate <= endFilterDate
-                    }
-                    
-                    return filter
-                }
-            }
-            .filter { !$0.value.isEmpty }
-            
-            return result
-        } else {
-            return data
-        }
-    }
-    
-    private func onChangeFunc(_ value: Int) {
-        if value == 0 {
-            if filterCategories.isEmpty {
-                applyFilters = false
-            }
-            startFilterDate = .now.getFirstDayOfMonth()
-            endFilterDate = .now
-        } else {
-            startFilterDate = .now.getFirstDayOfMonth(value)
-            endFilterDate = .now.getFirstDayOfMonth(value + 1)
-            applyFilters = true
+            formatter.setLocalizedDateFormatFromTemplate("yM")
         }
         
-        HapticManager.shared.impact(.soft)
+        return (formatter.string(from: date1), formatter.string(from: date2))
     }
     
     private func clearFilters() {
@@ -227,22 +180,19 @@ extension StatsView {
         
         withAnimation {
             pcvm.selectedCategory = nil
-            pcvm.updateData()
-            applyFilters = false
-            startFilterDate = .now.getFirstDayOfMonth()
-            endFilterDate = .now
-            filterCategories = []
+            fvm.clearFilters()
         }
-    }
-    
-    private func scrollToTop(_ scroll: ScrollViewProxy) {
-        scroll.scrollTo(0)
+        
+        pcvm.updateData()
+        pcvm.isScrollDisabled = false
     }
 }
 
-struct StatsView_Previews: PreviewProvider {
-    static var previews: some View {
-        StatsView(search: .constant(""), cdm: .init())
-            .environmentObject(CoreDataModel())
-    }
-}
+//struct StatsView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        StatsView()
+//            .environmentObject(CoreDataModel())
+//            .environmentObject(RatesViewModel())
+//            .environmentObject(FiltersViewModel(pcvmSelectionPublisher: ))
+//    }
+//}

@@ -10,7 +10,7 @@ import SwiftUI
 struct ExportImportView: View {
     @EnvironmentObject private var cdm: CoreDataModel
     
-    @AppStorage("color") private var tint: String = "Orange"
+    @AppStorage(UDKeys.color) private var tint: String = "Orange"
     
     @State private var shareURL: URL = .init(string: "https://apple.com")!
     @State private var presentExportSheet: Bool = false
@@ -21,7 +21,7 @@ struct ExportImportView: View {
     @Binding var alertType: CustomAlertType
     
     var body: some View {
-        Form {
+        List {
             jsonSection
         }
         .sheet(isPresented: $presentExportSheet, onDismiss: deleteTempFile) {
@@ -96,6 +96,13 @@ extension ExportImportView {
                     self.alertMessage = .init("Successfully imported \(imported) expenses")
                     self.alertType = .success
                 }
+                
+                withAnimation(.bouncy) {
+                    presentAlert.toggle()
+                }
+            } else {
+                self.alertMessage = .init("Failed to import")
+                self.alertType = .failure
                 
                 withAnimation(.bouncy) {
                     presentAlert.toggle()

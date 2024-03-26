@@ -8,66 +8,46 @@
 import SwiftUI
 
 struct PieChartLegendRowView: View {
-    @AppStorage("defaultCurrency")
+    @AppStorage(UDKeys.defaultCurrency)
     private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     @EnvironmentObject
     private var cdm: CoreDataModel
     @EnvironmentObject
     private var pcvm: PieChartViewModel
+    @EnvironmentObject
+    private var fvm: FiltersViewModel
     
-    @Binding
-    var filterCategories: [CategoryEntity]
-    @Binding
-    var applyFilters: Bool
+    let category: TSCategoryEntity
     
-    let category: CategoryEntityLocal
-    
-    var isActive: Bool = true
+//    var isActive: Bool = true
     
     var body: some View {
         Button {
-            if let category = cdm.findCategory(isActive ? category.id : .init()) {
-                if filterCategories.isEmpty {
-                    withAnimation {
-                        addToFilter(category)
-                    }
-                }
-                
+            guard !pcvm.isScrollDisabled else {
+                return
+            }
+            
+            if let catId = category.id, let category = cdm.findCategory(catId) {
                 if pcvm.selectedCategory == nil {
-                    withAnimation {
-                        pcvm.selectedCategory = category
-                    }
+                    pcvm.selectedCategory = category
                 }
                 
                 pcvm.updateData()
             } else {
-                withAnimation {
-                    pcvm.selectedCategory = nil
-                    pcvm.updateData()
-                }
+                pcvm.selectedCategory = nil
                 
-                if filterCategories.count == 1 {
-                    withAnimation {
-                        filterCategories.removeAll()
-                    }
-                    
-                    if pcvm.selection == 0 {
-                        withAnimation {
-                            applyFilters = false
-                        }
-                    }
-                }
+                pcvm.updateData()
             }
         } label: {
             HStack {
-                Text(category.name)
+                Text(category.name ?? "Error")
                     .font(.system(size: 14).bold())
                     .padding(.horizontal, 6)
                     .padding(.vertical, 3)
                     .foregroundColor(.white)
                     .background {
                         RoundedRectangle(cornerRadius: 4)
-                            .fill(Color[category.color])
+                            .fill(Color[category.color ?? ""])
                     }
                 
                 Text(category.sumWithReturns.formatted(.currency(code: defaultCurrency)))
@@ -77,7 +57,7 @@ struct PieChartLegendRowView: View {
             .padding(.leading, 3)
             .background {
                 RoundedRectangle(cornerRadius: 7)
-                    .fill(Color[category.color])
+                    .fill(Color[category.color ?? ""])
                     .opacity(0.3)
             }
         }
@@ -86,16 +66,21 @@ struct PieChartLegendRowView: View {
     
     
     private func addToFilter(_ category: CategoryEntity) {
-        if !filterCategories.contains(category) {
-            filterCategories.append(category)
-            applyFilters = true
+        if let id = category.id, !fvm.filterCategories.contains(id) {
+            fvm.filterCategories.append(id)
+            fvm.startFilterDate = Date().getFirstDayOfMonth(-pcvm.selection)
+            fvm.endFilterDate = Date().getFirstDayOfMonth(-pcvm.selection + 1)
+            fvm.applyFilters = true
         } else {
-            guard let index: Int = filterCategories.firstIndex(of: category) else {
+            guard
+                let id = category.id,
+                let index: Int = fvm.filterCategories.firstIndex(of: id)
+            else {
                 return
             }
-            filterCategories.remove(at: index)
-            if filterCategories.isEmpty && pcvm.selection == 0 {
-                applyFilters = false
+            fvm.filterCategories.remove(at: index)
+            if fvm.filterCategories.isEmpty /*&& pcvm.selection == 0*/ {
+                fvm.clearFilters()
             }
         }
     }

@@ -12,14 +12,14 @@ import OSLog
 
 func launch() -> Void {
     #if DEBUG
-    let logger = Logger(subsystem: Vars.appIdentifier, category: "Launch Actions")
+    let logger = Logger(subsystem: Vars.appIdentifier, category: "\(#fileID)")
     #endif
     let dateFormatter = ISO8601DateFormatter()
     dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
     dateFormatter.timeZone = .init(identifier: "GMT")
     
     let currentDate = dateFormatter.string(from: .now)
-    let updateTime = UserDefaults.standard.string(forKey: "updateTime") ?? dateFormatter.string(from: .distantPast)
+    let updateTime = UserDefaults.standard.string(forKey: UDKeys.updateTime) ?? dateFormatter.string(from: .distantPast)
     
     if !Calendar.current.isDate(dateFormatter.date(from: updateTime) ?? .distantPast, equalTo: .now, toGranularity: .hour) {
         #if DEBUG
@@ -34,5 +34,9 @@ func launch() -> Void {
         logger.debug("Current date: \(currentDate)")
         logger.debug("Updated at: \(updateTime)")
         #endif
+    }
+    
+    if UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) == nil {
+        UserDefaults.standard.setValue(Locale.current.currencyCode ?? "USD", forKey: UDKeys.defaultCurrency)
     }
 }

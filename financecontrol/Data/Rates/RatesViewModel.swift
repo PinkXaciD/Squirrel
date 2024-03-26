@@ -17,14 +17,7 @@ final class RatesViewModel: ViewModel {
     @Published 
     var rates: [String:Double] = [:]
     
-    let manager = DataManager.shared
-    let container: NSPersistentContainer
-    let context: NSManagedObjectContext
-    
     init() {
-        self.container = manager.container
-        self.context = manager.context
-        
         insertRates()
         
         if UserDefaults.standard.bool(forKey: "updateRates") {
@@ -47,8 +40,8 @@ final class RatesViewModel: ViewModel {
                         return
                     }
                     
-                    UserDefaults.standard.set(safeRates.timestamp, forKey: "updateTime")
-                    UserDefaults.standard.set(false, forKey: "updateRates")
+                    UserDefaults.standard.set(safeRates.timestamp, forKey: UDKeys.updateTime)
+                    UserDefaults.standard.set(false, forKey: UDKeys.updateRates)
                     
                     #if DEBUG
                     let logger = Logger(subsystem: Vars.appIdentifier, category: "RatesViewModel info")
@@ -75,12 +68,12 @@ extension RatesViewModel {
     }
 }
 
-// MARK: Rates View Model CoreData
+// MARK: Rates View Model UserDefaults
 
 extension RatesViewModel {
     private func insertRates() {
         guard
-            let fetchedRates = UserDefaults.standard.dictionary(forKey: "rates") as? [String: Double]
+            let fetchedRates = UserDefaults.standard.getRates()
         else {
             rates = Rates.fallback.rates
             return
@@ -90,6 +83,6 @@ extension RatesViewModel {
     }
     
     private func addRates(_ data: [String: Double]) {
-        UserDefaults.standard.setValue(data, forKey: "rates")
+        UserDefaults.standard.setValue(data, forKey: UDKeys.rates)
     }
 }

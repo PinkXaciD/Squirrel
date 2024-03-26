@@ -12,7 +12,7 @@ struct DefaultCurrencySelectorView: View {
     
     @EnvironmentObject var cdm: CoreDataModel
     
-    @AppStorage("defaultCurrency") var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
+    @AppStorage(UDKeys.defaultCurrency) var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
     var body: some View {
         let currencies = cdm.savedCurrencies.sorted {
@@ -32,11 +32,13 @@ struct DefaultCurrencySelectorView: View {
             // Picker replaced with this cause of some iOS bug
             ForEach(currencies) { currency in
                 if let tag = currency.tag {
-                    CurrencyRow(tag: tag, currency: currency)
-                        .padding(.vertical, 1)
-                        .onTapGesture {
-                            setCurrency(tag)
-                        }
+                    Button {
+                        setCurrency(tag)
+                    } label: {
+                        CurrencyRow(code: tag, currency: currency)
+                            .padding(.vertical, 1)
+                    }
+                    .buttonStyle(.plain)
                 } else {
                     Text("Error")
                 }

@@ -15,19 +15,27 @@ final class DataManager {
 
     init() {
         self.container = NSPersistentContainer(name: "DataContainer")
+        
         container.loadPersistentStores { _, error in
             if let error = error {
                 ErrorType(error: error).publish()
             }
         }
-        self.context = container.viewContext
+        
+        let context = container.viewContext
+        context.name = "Main context"
+        context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        self.context = context
     }
     
     func save() {
-        do {
-            try context.save()
-        } catch {
-            ErrorType(error: error).publish()
+        if context.hasChanges {
+            do {
+                try context.save()
+            } catch {
+                context.rollback()
+                ErrorType(error: error).publish(file: #fileID, function: #function)
+            }
         }
     }
 }
