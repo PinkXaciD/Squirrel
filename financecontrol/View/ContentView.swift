@@ -17,6 +17,8 @@ struct ContentView: View {
     private var tint: String = "Orange"
     @AppStorage(UDKeys.theme)
     private var theme: String = "None"
+    @AppStorage(UDKeys.presentOnboarding)
+    private var presentOnboarding: Bool = true
     
     @StateObject
     private var cdm: CoreDataModel
@@ -34,12 +36,10 @@ struct ContentView: View {
     @ObservedObject 
     private var errorHandler = ErrorHandler.shared
     
-    @Binding
-    var addExpenseAction: Bool
-    @AppStorage(UDKeys.presentOnboarding)
-    private var presentOnboarding: Bool = true
+    @State
+    private var addExpenseAction: Bool = false
     
-    init(addExpenseAction: Binding<Bool>) {
+    init() {
         let coreDataModel = CoreDataModel()
         let filtersViewModel = FiltersViewModel()
         let pieChartViewModel = PieChartViewModel(cdm: coreDataModel, fvm: filtersViewModel)
@@ -50,7 +50,6 @@ struct ContentView: View {
         self._filtersViewModel = StateObject(wrappedValue: filtersViewModel)
         self._statsListViewModel = StateObject(wrappedValue: statsListViewModel)
         self._statsSearchViewModel = StateObject(wrappedValue: statsSearchViewModel)
-        self._addExpenseAction = addExpenseAction
     }
         
     var body: some View {
@@ -73,6 +72,11 @@ struct ContentView: View {
                 .tabItem {
                     Label("Settings", systemImage: "gearshape.fill")
                 }
+        }
+        .onOpenURL { url in
+            if url == URLs.addExpenseAction {
+                addExpenseAction = true
+            }
         }
         .onChange(of: scenePhase) { value in
             if value == .inactive {
@@ -113,6 +117,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(addExpenseAction: .constant(false))
+        ContentView()
     }
 }

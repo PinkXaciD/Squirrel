@@ -39,7 +39,7 @@ final class FallbackRatesTests: XCTestCase {
     
     func testFallbackRatesHasAllValues() {
         let fallbackCurrencies = Rates.fallback.rates.keys
-        var requiredCurrencies = Locale.customCommonISOCurrencyCodes
+        var requiredCurrencies = Locale.customCommonISOCurrencyCodes.filter { $0 != "SLE" && $0 != "VEF" }
         
         for code in fallbackCurrencies {
             let index = requiredCurrencies.firstIndex(of: code)

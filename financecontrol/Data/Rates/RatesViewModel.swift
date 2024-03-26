@@ -17,14 +17,7 @@ final class RatesViewModel: ViewModel {
     @Published 
     var rates: [String:Double] = [:]
     
-    let manager = DataManager.shared
-    let container: NSPersistentContainer
-    let context: NSManagedObjectContext
-    
     init() {
-        self.container = manager.container
-        self.context = manager.context
-        
         insertRates()
         
         if UserDefaults.standard.bool(forKey: "updateRates") {

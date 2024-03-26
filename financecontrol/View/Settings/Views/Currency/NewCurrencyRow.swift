@@ -35,8 +35,8 @@ struct NewCurrencyRow: View {
             Text(name.capitalized)
                 .foregroundStyle(.primary)
             
-            if let rate = rvm.rates[code], let defaultRate = rvm.rates[defaultCurrency] {
-                Text("1 \(code) = \(currencyFormatter.string(from: (1 / rate) * defaultRate as NSNumber) ?? "Error") \(defaultCurrency)")
+            if rvm.rates[code] != nil, rvm.rates[defaultCurrency] != nil {
+                getRateRepresentation()
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             } else {
@@ -52,6 +52,23 @@ struct NewCurrencyRow: View {
     private func addCurrency() {
         cdm.addCurrency(tag: code)
         dismiss()
+    }
+    
+    private func getRateRepresentation() -> Text {
+        guard
+            let rate = rvm.rates[code],
+            let defaultRate = rvm.rates[defaultCurrency]
+        else { return Text("Error") }
+        
+        func format1(_ code: String) -> String {
+            return 1.formatted(.currency(code: code).precision(.fractionLength(0)).presentation(.isoCode))
+        }
+        
+        if ((1 / rate) * defaultRate) > 1 {
+            return Text("\(format1(code)) = \(((1 / rate) * defaultRate).formatted(.currency(code: defaultCurrency).presentation(.isoCode)))")
+        } else {
+            return Text("\(format1(defaultCurrency)) = \(((1 / defaultRate) * rate).formatted(.currency(code: code).presentation(.isoCode)))")
+        }
     }
 }
 

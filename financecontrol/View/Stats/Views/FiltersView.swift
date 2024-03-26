@@ -49,27 +49,7 @@ struct FiltersView: View {
             
             secondDatePicker
             
-            HStack {
-                Button {
-                    setCurrentMonth()
-                } label: {
-                    Text("Current month")
-                        .foregroundColor(.accentColor)
-                }
-                .buttonStyle(PlainButtonStyle())
-                .frame(maxWidth: .infinity)
-                
-                Divider()
-                
-                Button {
-                    setCurrentYear()
-                } label: {
-                    Text("Current year")
-                        .foregroundColor(.accentColor)
-                }
-                .buttonStyle(PlainButtonStyle())
-                .frame(maxWidth: .infinity)
-            }
+            currentYearButton
         }
     }
     
@@ -85,6 +65,16 @@ struct FiltersView: View {
     
     private var secondDatePicker: some View {
         DatePicker("To", selection: $fvm.endFilterDate, in: fvm.startFilterDate...Date.now, displayedComponents: .date)
+    }
+    
+    private var currentYearButton: some View {
+        Button {
+            setCurrentYear()
+        } label: {
+            Text("Current year")
+                .foregroundColor(.accentColor)
+        }
+        .buttonStyle(PlainButtonStyle())
     }
     
     private var categoriesSection: some View {

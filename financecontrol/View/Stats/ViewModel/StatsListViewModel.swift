@@ -42,7 +42,7 @@ final class StatsListViewModel: ViewModel {
     }
     
     private func setData(_ data: StatsListData) {
-        self.data = data.mapValues { Array(Set($0)) }
+        self.data = data.mapValues { Array(Set($0)).sorted { $0.wrappedDate > $1.wrappedDate } }
     }
     
     private func setDefaultData() {
@@ -157,7 +157,7 @@ final class StatsListViewModel: ViewModel {
             #if DEBUG
             logger.debug("Selection != 0")
             #endif
-            var data = pcvm.data[(pcvm.selection >= pcvm.data.count || pcvm.selection < 0) ? 0 : pcvm.selection].categories.flatMap { $0.spendingsArray }.sorted { $0.wrappedDate > $1.wrappedDate }
+            var data = pcvm.data[(pcvm.selection >= pcvm.data.count || pcvm.selection < 0) ? 0 : pcvm.selection].categories.flatMap { $0.spendingsArray }
             
             if let selectedCategory = pcvm.selectedCategory, let id = selectedCategory.id {
                 data = data.filter { $0.categoryID == id }

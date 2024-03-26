@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import Combine
 @testable import Squirrel
 
 final class SpendingsCoreDataModelTests: XCTestCase {
@@ -71,6 +72,22 @@ final class SpendingsCoreDataModelTests: XCTestCase {
     }
     
     func testEditSpendingEditsSpendings() {
+        let expectation = XCTestExpectation(description: "Edit spending")
+        var cancellables = Set<AnyCancellable>()
+        
+        func waitForChartDataUpdate() {
+            cdm?.$updateCharts
+                .dropFirst(2)
+                .sink { value in
+                    if value {
+                        expectation.fulfill()
+                    }
+                }
+                .store(in: &cancellables)
+        }
+        
+        waitForChartDataUpdate()
+        
         let amount = Double.random(in: 0..<10000)
         let amountUSD = Double.random(in: 0..<10000)
         let currency: String = ["USD", "EUR", "JPY"].randomElement()!
@@ -116,6 +133,8 @@ final class SpendingsCoreDataModelTests: XCTestCase {
             cdm?.editSpending(spending: spending, newSpending: newSpending)
         }
         
+        wait(for: [expectation], timeout: 5)
+        
         guard let newSpendings = cdm?.savedSpendings else {
             XCTFail()
             return
@@ -124,12 +143,18 @@ final class SpendingsCoreDataModelTests: XCTestCase {
         XCTAssertEqual(newSpendings.count, 1)
         
         for spending in newSpendings {
-            XCTAssertEqual(spending.amount, newAmount)
-            XCTAssertEqual(spending.amountUSD, newAmountUSD)
+            XCTAssertEqual(spending.amount, newAmount, accuracy: 0.01)
+            XCTAssertEqual(spending.amountUSD, newAmountUSD, accuracy: 0.01)
             XCTAssertEqual(spending.currency, newCurrency)
             XCTAssertEqual(spending.date, newDate)
             XCTAssertEqual(spending.place, newPlace)
             XCTAssertEqual(spending.comment, newComment)
+            XCTAssertNotEqual(spending.amount, amount, accuracy: 0.01)
+            XCTAssertNotEqual(spending.amountUSD, amountUSD, accuracy: 0.01)
+            XCTAssertNotEqual(spending.currency, currency)
+            XCTAssertNotEqual(spending.date, date)
+            XCTAssertNotEqual(spending.place, place)
+            XCTAssertNotEqual(spending.comment, comment)
         }
     }
 

@@ -20,6 +20,26 @@
         }
       }
     },
+    "%@ - %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ - %2$@"
+          }
+        }
+      }
+    },
+    "%@ = %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ = %2$@"
+          }
+        }
+      }
+    },
     "%@, version %@" : {
       "localizations" : {
         "en" : {
@@ -104,16 +124,6 @@
     },
     "0.00" : {
 
-    },
-    "1 %@ = %@ %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "1 %1$@ = %2$@ %3$@"
-          }
-        }
-      }
     },
     "1 USD" : {
 
@@ -254,9 +264,6 @@
 
     },
     "Currency name or ISO Code" : {
-
-    },
-    "Current month" : {
 
     },
     "Current year" : {

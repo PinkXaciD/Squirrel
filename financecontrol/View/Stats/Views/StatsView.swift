@@ -24,10 +24,10 @@ struct StatsView: View {
 //    @EnvironmentObject
 //    private var searchModel: StatsSearchViewModel
     
-    @State
-    var entityToEdit: SpendingEntity? = nil
-    @State
-    var entityToAddReturn: SpendingEntity? = nil
+    @Binding
+    var entityToEdit: SpendingEntity?
+    @Binding
+    var entityToAddReturn: SpendingEntity?
     @State
     private var edit: Bool = false
     
@@ -47,7 +47,7 @@ struct StatsView: View {
             List {
                 if !isSearching {
                     PieChartView(size: size)
-//                        .id(0)
+                        .id(0)
                 }
                 
                 StatsListView(
@@ -99,19 +99,8 @@ struct StatsView: View {
                     showFilters.toggle()
                 } label: {
                     HStack(spacing: 5) {
-                        if Calendar.current.isDate(fvm.startFilterDate, equalTo: fvm.endFilterDate, toGranularity: .year) {
-                            Text(fvm.startFilterDate, format: .dateTime.day(.defaultDigits).month(.defaultDigits))
-                            
-                            Text(verbatim: "-")
-                            
-                            Text(fvm.endFilterDate, format: .dateTime.day(.defaultDigits).month(.defaultDigits))
-                        } else {
-                            Text(fvm.startFilterDate, format: .dateTime.month(.defaultDigits).year(.defaultDigits))
-                            
-                            Text(verbatim: "-")
-                            
-                            Text(fvm.endFilterDate, format: .dateTime.month(.defaultDigits).year(.defaultDigits))
-                        }
+                        let dates = formatDateForFilterButton(fvm.startFilterDate, fvm.endFilterDate)
+                        Text("\(dates.0) - \(dates.1)")
                     }
                     .font(.footnote)
                 }
@@ -153,7 +142,7 @@ struct StatsView: View {
 }
 
 extension StatsView {
-    init() {
+    init(entity: Binding<SpendingEntity?>, entityToAddReturn: Binding<SpendingEntity?>) {
         var size: CGFloat {
             let currentScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
             let windowBounds = currentScene?.windows.first(where: { $0.isKeyWindow })?.bounds
@@ -163,6 +152,21 @@ extension StatsView {
         }
         
         self.size = size
+        self._entityToEdit = entity
+        self._entityToAddReturn = entityToAddReturn
+    }
+    
+    private func formatDateForFilterButton(_ date1: Date, _ date2: Date) -> (String, String) {
+        let formatter = DateFormatter()
+        formatter.locale = Locale.autoupdatingCurrent
+        
+        if Calendar.current.isDate(date1, equalTo: date2, toGranularity: .year) {
+            formatter.setLocalizedDateFormatFromTemplate("Md")
+        } else {
+            formatter.setLocalizedDateFormatFromTemplate("yM")
+        }
+        
+        return (formatter.string(from: date1), formatter.string(from: date2))
     }
     
     private func clearFilters() {

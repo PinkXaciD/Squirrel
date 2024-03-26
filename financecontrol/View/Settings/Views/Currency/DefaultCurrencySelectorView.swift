@@ -32,16 +32,10 @@ struct DefaultCurrencySelectorView: View {
             // Picker replaced with this cause of some iOS bug
             ForEach(currencies) { currency in
                 if let tag = currency.tag {
-//                    CurrencyRow(tag: tag, currency: currency)
-//                        .padding(.vertical, 1)
-//                        .onTapGesture {
-//                            setCurrency(tag)
-//                        }
-                    
                     Button {
                         setCurrency(tag)
                     } label: {
-                        CurrencyRow(tag: tag, currency: currency)
+                        CurrencyRow(code: tag, currency: currency)
                             .padding(.vertical, 1)
                     }
                     .buttonStyle(.plain)
