@@ -12,13 +12,14 @@ struct ContentView: View {
     private var scenePhase
     @Environment(\.openURL)
     private var openURL
-    
-    @AppStorage(UDKeys.color)
-    private var tint: String = "Orange"
-    @AppStorage(UDKeys.theme)
-    private var theme: String = "None"
     @AppStorage(UDKeys.presentOnboarding)
     private var presentOnboarding: Bool = true
+    @AppStorage(UDKeys.color)
+    private var tint: String = "Orange"
+    @AppStorage(UDKeys.autoDarkMode)
+    private var autoDarkMode: Bool = true
+    @AppStorage(UDKeys.darkMode)
+    private var darkMode: Bool = false
     
     @StateObject
     private var cdm: CoreDataModel
@@ -93,7 +94,10 @@ struct ContentView: View {
         }
         .tint(colorIdentifier(color: tint))
         .accentColor(colorIdentifier(color: tint))
-        .preferredColorScheme(themeConvert(theme))
+        .preferredColorScheme(themeConvert(autoDarkMode: autoDarkMode, darkMode: darkMode))
+        .onAppear {
+            setColorScheme()
+        }
         .alert(
             "Something went wrong...",
             isPresented: $errorHandler.showAlert,
@@ -111,6 +115,15 @@ struct ContentView: View {
             }
         } message: { error in
             Text("\(error.errorDescription)\n\(error.recoverySuggestion)")
+        }
+    }
+    
+    private func setColorScheme() {
+        if !autoDarkMode {
+            let scenes = UIApplication.shared.connectedScenes
+            let windowScene = scenes.first as? UIWindowScene
+            let window = windowScene?.windows.first
+            window?.overrideUserInterfaceStyle = darkMode ? .dark : .light
         }
     }
 }

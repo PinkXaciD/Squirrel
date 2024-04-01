@@ -49,3 +49,13 @@ struct CustomAlertView: View {
         }
     }
 }
+
+#Preview {
+    VStack(spacing: 50) {
+        CustomAlertView(isPresented: .constant(true), type: .success, text: Text("Imported 5 spendings"))
+        CustomAlertView(isPresented: .constant(true), type: .warning, text: Text("Nothing to import"))
+        CustomAlertView(isPresented: .constant(true), type: .failure, text: Text("Import failed"))
+        CustomAlertView(isPresented: .constant(true), type: .noInternet, text: Text("Check your internet connection"))
+        CustomAlertView(isPresented: .constant(true), type: .unknown, text: Text("Something happened..."))
+    }
+}

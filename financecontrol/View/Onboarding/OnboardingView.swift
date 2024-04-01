@@ -92,9 +92,7 @@ struct OnboardingView: View {
             if screen == 1 {
                 UserDefaults.standard.setValue(selectedCurrency, forKey: UDKeys.defaultCurrency)
                 
-                if !cdm.savedCurrencies.map({ $0.tag }).contains(selectedCurrency) {
-                    cdm.addCurrency(tag: selectedCurrency, isFavorite: true)
-                }
+                UserDefaults.standard.addCurrency(selectedCurrency)
                 
                 if let defaults = UserDefaults(suiteName: Vars.groupName) {
                     defaults.set(selectedCurrency, forKey: "defaultCurrency")
@@ -119,6 +117,7 @@ struct OnboardingView: View {
                     .foregroundColor(.white)
                     .font(.body.bold())
             }
+            .hoverEffect(.highlight)
         }
     }
     

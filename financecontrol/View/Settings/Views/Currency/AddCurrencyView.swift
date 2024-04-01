@@ -8,28 +8,13 @@
 import SwiftUI
 
 struct AddCurrencyView: View {
-    
     @EnvironmentObject private var cdm: CoreDataModel
     
+    @Binding var currencies: [Currency]
+    
     @State private var search: String = ""
-    
-    var currencies = Locale.customCommonISOCurrencyCodes
-    
-    var currenciesFull: [(key: String, value: String)] {
-        let currenciesFiltered = excludeAdded()
-        var currenciesFull: [String:String] {
-            var currenciesFull = [String:String]()
-            for currency in currenciesFiltered {
-                currenciesFull.updateValue(Locale.current.localizedString(forCurrencyCode: currency) ?? "Error", forKey: currency)
-            }
-            return currenciesFull
-        }
-        
-        let sorted = currenciesFull.sorted {
-            $0.value < $1.value
-        }
-        
-        return sorted
+    let currencyCodes = Dictionary(grouping: Locale.customCommonISOCurrencyCodes) { code in
+        (Locale.current.localizedString(forCurrencyCode: code) ?? code).prefix(1).capitalized
     }
     
     var body: some View {
@@ -38,19 +23,12 @@ struct AddCurrencyView: View {
             
             if !searchResult.isEmpty {
                 List {
-//                    Section(header: Text("Tap to add")) {
-//                        ForEach(0..<searchResult.count, id: \.self) { index in
-//                            
-//                            let currency = searchResult[index]
-//                            
-//                            NewCurrencyRow(name: currency.value, code: currency.key)
-//                        }
-//                    }
                     ForEach(Array(searchResult.keys).sorted(), id: \.self) { key in
                         Section {
                             if let currencies = searchResult[key] {
-                                ForEach(currencies.sorted { (Locale.current.localizedString(forCurrencyCode: $0) ?? "") < (Locale.current.localizedString(forCurrencyCode: $1) ?? "") }, id: \.self) { currency in
-                                    NewCurrencyRow(name: Locale.current.localizedString(forCurrencyCode: currency) ?? "Error", code: currency)
+                                let mappedCurrencies = currencies.map { (code: $0, name: Locale.current.localizedString(forCurrencyCode: $0) ?? $0)}
+                                ForEach(mappedCurrencies.sorted { $0.name < $1.name }, id: \.code) { currency in
+                                    NewCurrencyRow(currencies: $currencies, name: currency.name, code: currency.code)
                                 }
                             }
                         } header: {
@@ -70,29 +48,19 @@ struct AddCurrencyView: View {
         .navigationTitle("Add Currency")
     }
     
-    private func excludeAdded() -> [String] {
-        var removeSet: Set<String> = Set()
-        for entity in cdm.savedCurrencies {
-            if let tag = entity.tag {
-                removeSet.insert(tag)
-            }
-        }
-        return currencies.filter { !removeSet.contains($0) }
+    private func excludeAdded(_ data: [String]) -> [String] {
+        let removeSet: Set<String> = Set(UserDefaults.standard.getRawCurrencies())
+        return data.filter { !removeSet.contains($0) }
     }
     
     private func searchFunc() -> [String : [String]] {
-        let dict = Dictionary(
-            grouping: Locale.customCommonISOCurrencyCodes.filter { !cdm.savedCurrencies.compactMap { $0.tag }.contains($0) },
-            by: { (Locale.current.localizedString(forCurrencyCode: $0) ?? "Error").prefix(1).capitalized }
-        )
-        
         if search.isEmpty {
-            return dict
+            return currencyCodes.mapValues { excludeAdded($0) }.filter { !$0.value.isEmpty }
         } else {
             let trimmedSearch = search.trimmingCharacters(in: .whitespacesAndNewlines)
             
-            return dict.mapValues { values in
-                values.filter { value in
+            return currencyCodes.mapValues { values in
+                excludeAdded(values).filter { value in
                     value.localizedCaseInsensitiveContains(trimmedSearch) || (Locale.current.localizedString(forCurrencyCode: value) ?? "").localizedCaseInsensitiveContains(trimmedSearch)
                 }
             }
@@ -103,7 +71,7 @@ struct AddCurrencyView: View {
 
 struct AddCurrencyView_Previews {
     static var previews: some View {
-        AddCurrencyView()
+        AddCurrencyView(currencies: .constant([]))
             .environmentObject(CoreDataModel())
     }
 }

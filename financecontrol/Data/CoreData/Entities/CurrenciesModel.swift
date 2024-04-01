@@ -11,47 +11,58 @@ import CoreData
 extension CoreDataModel {
     
     func fetchCurrencies() {
-        
         let request = CurrencyEntity.fetchRequest()
-//        let localeDefaultCurrency: String = Locale.current.currencyCode ?? "USD"
         
         do {
             savedCurrencies = try context.fetch(request)
-//            if savedCurrencies.isEmpty {
-//                addCurrency(tag: localeDefaultCurrency, isFavorite: true)
-//                UserDefaults.standard.set(localeDefaultCurrency, forKey: "defaultCurrency")
-//                UserDefaults(suiteName: Vars.groupName)?.set(localeDefaultCurrency, forKey: "defaultCurrency")
-//            }
         } catch let error {
             ErrorType(error: error).publish()
         }
     }
     
-    func addCurrency(tag: String, isFavorite: Bool = false) {
-        
-        if let description = NSEntityDescription.entity(forEntityName: "CurrencyEntity", in: context) {
+    func migrateCurrenciesToDefaults() {
+        if !savedCurrencies.isEmpty {
+            let value = Array(Set(self.savedCurrencies.compactMap { $0.tag }))
+            UserDefaults.standard.setValue(value, forKey: UDKeys.savedCurrencies)
             
-            let newCurrency = CurrencyEntity(entity: description, insertInto: context)
-            
-            newCurrency.tag = tag
-            newCurrency.isFavorite = isFavorite
-            
-            manager.save()
-            fetchCurrencies()
+            if ((UserDefaults.standard.array(forKey: UDKeys.savedCurrencies) as? [String]) ?? .init()) == savedCurrencies.compactMap({ $0.tag }) {
+                let currencies = self.savedCurrencies
+                for currency in currencies {
+                    context.delete(currency)
+                }
+                manager.save()
+                fetchCurrencies()
+            }
         }
     }
     
-    func changeFavoriteStateOfCurrency(_ currency: CurrencyEntity) {
-        
-        currency.isFavorite.toggle()
-        manager.save()
-        fetchCurrencies()
-    }
-    
     func deleteCurrency(_ currency: CurrencyEntity) {
-        
         context.delete(currency)
         manager.save()
         fetchCurrencies()
+    }
+}
+
+struct Currency: Hashable, Comparable {
+    static func < (lhs: Currency, rhs: Currency) -> Bool {
+        return (lhs.name ?? lhs.code) < (rhs.name ?? rhs.code)
+    }
+    
+    let code: String
+    
+    var name: String? {
+        Locale.current.localizedString(forCurrencyCode: code)
+    }
+    
+    static func getAll() -> [Currency] {
+        return Locale.customCommonISOCurrencyCodes.map { .init(code: $0) }
+    }
+    
+    static var localeCurrency: Currency? {
+        if let code = Locale.current.currencyCode {
+            return Currency(code: code)
+        }
+        
+        return nil
     }
 }

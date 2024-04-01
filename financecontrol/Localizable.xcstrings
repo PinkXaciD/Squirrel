@@ -155,9 +155,6 @@
     "Add new category" : {
 
     },
-    "Add new currency" : {
-
-    },
     "Add return" : {
 
     },
@@ -213,6 +210,12 @@
 
     },
     "Category" : {
+
+    },
+    "Check the spelling or try a new search." : {
+
+    },
+    "Check your internet connection" : {
 
     },
     "Clear" : {
@@ -395,6 +398,12 @@
     "Import existing data" : {
 
     },
+    "Import failed" : {
+
+    },
+    "Imported 5 spendings" : {
+
+    },
     "Indigo" : {
 
     },
@@ -446,10 +455,13 @@
     "No radar will find you now" : {
 
     },
-    "No Results for \"(vm.showedSearch)\"" : {
+    "No results" : {
 
     },
-    "No Results for These Filters" : {
+    "No results for \"%@\"" : {
+
+    },
+    "No results for these filters" : {
 
     },
     "No Shortcuts" : {
@@ -539,6 +551,9 @@
     "Search" : {
 
     },
+    "Search by name or ISO code" : {
+
+    },
     "Search by place or comment" : {
 
     },
@@ -573,6 +588,9 @@
 
     },
     "Some place" : {
+
+    },
+    "Something happened..." : {
 
     },
     "Something went wrong..." : {

@@ -34,9 +34,12 @@ struct UDKeys {
     
     static let color = "color"
     
+    @available(*, deprecated, message: "Use boolean values `autoDarkMode` and `darkMode`")
     static let theme = "theme"
     
     static let defaultCurrency = "defaultCurrency"
+    
+    static let savedCurrencies = "savedCurrencies"
     
     static let minimizeLegend = "minimizeLegend"
     
@@ -47,4 +50,8 @@ struct UDKeys {
     static let updateRates = "updateRates"
     
     static let addExpenseAction = "addExpenseAction"
+    
+    static let autoDarkMode = "autoDarkMode"
+    
+    static let darkMode = "darkMode"
 }

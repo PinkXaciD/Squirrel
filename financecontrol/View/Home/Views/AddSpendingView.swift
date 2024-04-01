@@ -66,7 +66,6 @@ struct AddSpendingView: View {
             .navigationBarTitleDisplayMode(.inline)
         }
         .navigationViewStyle(.stack)
-        .colorScheme(getColorScheme())
         .tint(colorIdentifier(color: tint))
         .accentColor(colorIdentifier(color: tint))
         .interactiveDismissDisabled(vm.categoryName != "Select Category" || !vm.amount.isEmpty)
@@ -96,7 +95,7 @@ struct AddSpendingView: View {
             
             HStack {
                 Text("Currency")
-                CurrencySelector(currency: $vm.currency, showFavorites: true)
+                CurrencySelector(currency: $vm.currency)
             }
             
             DatePicker("Date", selection: $vm.date, in: Date.init(timeIntervalSinceReferenceDate: 0)...Date.now)
@@ -117,23 +116,8 @@ struct AddSpendingView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
                         ForEach(vm.popularCategories) { category in
-                            Button {
-                                if let id = category.id {
-                                    withAnimation {
-                                        vm.categoryId = id
-                                    }
-                                }
-                            } label: {
-                                Text(category.name ?? "Error")
-                                    .font(.body)
-                                    .foregroundColor(Color[category.color ?? ""])
-                                    .padding(.vertical, 6)
-                                    .padding(.horizontal, 12)
-                                    .background {
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .fill(Color(uiColor: .secondarySystemGroupedBackground))
-                                    }
-                            }
+                            PopularCategoryButtonView(category: category)
+                                .environmentObject(vm)
                         }
                     }
                 }
@@ -270,10 +254,33 @@ extension AddSpendingView {
         vm.done()
         dismiss()
     }
+}
+
+fileprivate struct PopularCategoryButtonView: View {
+    @EnvironmentObject private var vm: AddSpendingViewModel
+    let category: CategoryEntity
     
-    private func getColorScheme() -> ColorScheme {
-        let saved = UserDefaults.standard.string(forKey: UDKeys.theme) ?? ""
-        return themeConvert(saved) ?? colorScheme
+    var body: some View {
+        Button {
+            if let id = category.id {
+                withAnimation {
+                    vm.categoryId = id
+                }
+            }
+        } label: {
+            Text(category.name ?? "Error")
+                .font(.body)
+                .fontWeight(vm.categoryId == category.id ? .semibold : .regular)
+                .foregroundColor(vm.categoryId == category.id ? Color(uiColor: .secondarySystemGroupedBackground) : Color[category.color ?? ""])
+                .padding(.vertical, 6)
+                .padding(.horizontal, 12)
+                .background {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(vm.categoryId == category.id ? Color[category.color ?? ""] : Color(uiColor: .secondarySystemGroupedBackground))
+                }
+                .animation(.default, value: vm.categoryId)
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
@@ -285,6 +292,7 @@ struct AmountInput_Previews: PreviewProvider {
     }
 }
 
+// MARK: Shortcuts
 struct AddSpendingShortcut: Identifiable {
     var id: UUID = UUID()
     var shortcutName: String
@@ -320,7 +328,7 @@ struct AddSpendingShortcutListView: View {
                 }
             }
         } else {
-            CustomContentUnavailableView(NSLocalizedString("No Shortcuts", comment: ""), imageName: "tray.fill")
+            CustomContentUnavailableView("No Shortcuts", imageName: "tray.fill")
                 .navigationTitle("Shortcuts")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
@@ -387,7 +395,7 @@ struct AddSpendingShortcutAddView: View {
                 
                 HStack {
                     Text("Currency")
-                    CurrencySelector(currency: $currency, showFavorites: true)
+                    CurrencySelector(currency: $currency)
                 }
                 
                 HStack {

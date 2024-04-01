@@ -71,8 +71,17 @@ struct FiltersView: View {
         Button {
             setCurrentYear()
         } label: {
-            Text("Current year")
-                .foregroundColor(.accentColor)
+            HStack {
+                Text("Current year")
+                
+                Spacer()
+                
+                if fvm.startFilterDate == getFirstYearDate() && Calendar.current.isDate(fvm.endFilterDate, inSameDayAs: Date()) {
+                    Image(systemName: "checkmark")
+                        .font(.body.bold())
+                }
+            }
+            .foregroundColor(.accentColor)
         }
         .buttonStyle(PlainButtonStyle())
     }
@@ -159,6 +168,19 @@ extension FiltersView {
         
         fvm.startFilterDate = startDate < firstDate ? firstDate : startDate
         fvm.endFilterDate = Date()
+    }
+    
+    private func getFirstYearDate() -> Date {
+        var components: DateComponents = Calendar.current.dateComponents([.year, .era], from: Date())
+        components.calendar = Calendar.current
+        
+        guard let startDate = components.date else {
+            return Date()
+        }
+        
+        let firstDate: Date = cdm.savedSpendings.last?.wrappedDate ?? .init(timeIntervalSinceReferenceDate: 0)
+        
+        return startDate < firstDate ? firstDate : startDate
     }
 }
 

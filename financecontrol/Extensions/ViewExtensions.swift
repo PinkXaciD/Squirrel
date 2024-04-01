@@ -34,12 +34,9 @@ extension View {
     /// - Returns: View with added custom alert overlay
     func customAlert(_ type: CustomAlertType, presenting: Binding<Bool>, message: Text = .init(verbatim: "")) -> some View {
         
-        let offset = -(
-            UIScreen.main.bounds.height / 2
-        ) + (
-//            UIApplication.shared.windows.first?.safeAreaInsets.top ?? 0
-            (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.safeAreaInsets.top ?? 0
-        )
+        let topOffset = -(UIScreen.main.bounds.height / 2)
+        let safeArea = UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0
+        let offset = topOffset + safeArea
             
         return self
             .overlay {

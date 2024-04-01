@@ -90,9 +90,9 @@ struct StatsListView: View {
             Spacer()
             
             CustomContentUnavailableView(
-                vm.showedSearch.isEmpty ? NSLocalizedString("No Results for These Filters", comment: "") : NSLocalizedString("No Results for \"\(vm.showedSearch)\"", comment: ""),
+                vm.showedSearch.isEmpty ? "No results for these filters" : "No results for \"\(vm.showedSearch)\"",
                 imageName: vm.showedSearch.isEmpty ? "tray.fill" : "magnifyingglass",
-                description: vm.showedSearch.isEmpty ? nil : NSLocalizedString("Try another search.", comment: "")
+                description: vm.showedSearch.isEmpty ? nil : "Try another search."
             )
             
             Spacer()

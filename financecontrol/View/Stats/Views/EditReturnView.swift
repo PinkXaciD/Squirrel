@@ -60,7 +60,7 @@ struct EditReturnView: View {
                     vm.amount = newValue                    ///
                 }
             
-            CurrencySelector(currency: $vm.currency, showFavorites: false, spacer: false)
+            CurrencySelector(currency: $vm.currency, spacer: false)
                 .font(.body)
         }
         .textCase(nil)

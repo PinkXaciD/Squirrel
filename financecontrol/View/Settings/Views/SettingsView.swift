@@ -12,13 +12,12 @@ struct SettingsView: View {
     var defaultColor: String = "Orange"
     @AppStorage(UDKeys.defaultCurrency)
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
-    @AppStorage(UDKeys.theme)
-    var theme: String = "None"
-    
-    @State
+    @AppStorage(UDKeys.autoDarkMode)
     private var autoDarkMode: Bool = true
-    @State
+    @AppStorage(UDKeys.darkMode)
     private var darkMode: Bool = false
+    @State
+    private var showDarkModeToggle: Bool = false
     
     @State
     private var presentCustomAlert: Bool = false
@@ -39,29 +38,6 @@ struct SettingsView: View {
                 aboutSection
                 
                 themeSection
-                    .onAppear(perform: appearActions)
-                    .onChange(of: autoDarkMode) { newValue in
-                        if newValue {
-                            theme = "auto"
-                        } else {
-                            if darkMode {
-                                theme = "dark"
-                            } else {
-                                theme = "light"
-                            }
-                        }
-                    }
-                    .onChange(of: darkMode) { newValue in
-                        if newValue {
-                            withAnimation {
-                                theme = "dark"
-                            }
-                        } else {
-                            withAnimation {
-                                theme = "light"
-                            }
-                        }
-                    }
                 
                 currencySection
                 
@@ -72,11 +48,15 @@ struct SettingsView: View {
                 exportImportSection
             }
             .listStyle(.insetGrouped)
-            .animation(.linear, value: autoDarkMode)
             .navigationTitle("Settings")
         }
         .navigationViewStyle(.stack)
         .customAlert(customAlertType, presenting: $presentCustomAlert, message: customAlertMessage)
+        .onAppear {
+            withAnimation {
+                showDarkModeToggle = !autoDarkMode
+            }
+        }
     }
     
     var aboutSection: some View {
@@ -90,7 +70,7 @@ struct SettingsView: View {
     }
     
     var themeSection: some View {
-        Section(header: Text("Appearance")) {
+        Section {
             NavigationLink {
                 ColorAndIconView()
             } label: {
@@ -104,9 +84,25 @@ struct SettingsView: View {
             
             Toggle("Automatic Dark Mode", isOn: $autoDarkMode)
             
-            if !autoDarkMode {
+            if showDarkModeToggle {
                 Toggle("Dark Mode", isOn: $darkMode)
             }
+        } header: {
+            Text("Appearance")
+        }
+        .onChange(of: autoDarkMode) { newValue in
+            withAnimation {
+                showDarkModeToggle = !newValue
+            }
+            
+            if newValue {
+                UIApplication.shared.keyWindow?.overrideUserInterfaceStyle = .unspecified
+            } else {
+                UIApplication.shared.keyWindow?.overrideUserInterfaceStyle = darkMode ? .dark : .light
+            }
+        }
+        .onChange(of: darkMode) { newValue in
+            UIApplication.shared.keyWindow?.overrideUserInterfaceStyle = newValue ? .dark : .light
         }
     }
     
@@ -168,19 +164,19 @@ struct SettingsView: View {
     }
 }
 
-extension SettingsView {
-    func appearActions() {
-        if theme == "light" {
-            autoDarkMode = false
-            darkMode = false
-        } else if theme == "dark" {
-            autoDarkMode = false
-            darkMode = true
-        } else {
-            autoDarkMode = true
-        }
-    }
-}
+//extension SettingsView {
+//    func appearActions() {
+//        if theme == "light" {
+//            autoDarkMode = false
+//            darkMode = false
+//        } else if theme == "dark" {
+//            autoDarkMode = false
+//            darkMode = true
+//        } else {
+//            autoDarkMode = true
+//        }
+//    }
+//}
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
