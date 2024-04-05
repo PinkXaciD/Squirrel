@@ -69,80 +69,80 @@ extension CategoryEntity: ToSafeObject {
     }
 }
 
-struct CategoryEntityLocal: Identifiable, Equatable, Comparable {
-    static func < (lhs: CategoryEntityLocal, rhs: CategoryEntityLocal) -> Bool {
-        let firstSum = lhs.sumUSDWithReturns
-        let secondSum = rhs.sumUSDWithReturns
-        
-        if firstSum == secondSum {
-            return lhs.name > rhs.name
-        }
-        
-        return firstSum < secondSum
-    }
-    
-    static func == (lhs: CategoryEntityLocal, rhs: CategoryEntityLocal) -> Bool {
-        return lhs.id == rhs.id
-    }
-    
-    var color: String
-    var id: UUID
-    var name: String
-    var spendings: [SpendingEntityLocal]
-    var sumUSDWithReturns: Double
-    var sumWithReturns: Double
-}
+//struct CategoryEntityLocal: Identifiable, Equatable, Comparable {
+//    static func < (lhs: CategoryEntityLocal, rhs: CategoryEntityLocal) -> Bool {
+//        let firstSum = lhs.sumUSDWithReturns
+//        let secondSum = rhs.sumUSDWithReturns
+//        
+//        if firstSum == secondSum {
+//            return lhs.name > rhs.name
+//        }
+//        
+//        return firstSum < secondSum
+//    }
+//    
+//    static func == (lhs: CategoryEntityLocal, rhs: CategoryEntityLocal) -> Bool {
+//        return lhs.id == rhs.id
+//    }
+//    
+//    var color: String
+//    var id: UUID
+//    var name: String
+//    var spendings: [SpendingEntityLocal]
+//    var sumUSDWithReturns: Double
+//    var sumWithReturns: Double
+//}
 
-extension CategoryEntityLocal {
-    init(from category: CategoryEntity) {
-        self.color = category.color ?? ""
-        self.id = category.id ?? .init()
-        self.name = category.name ?? ""
-        
-        var spendings: [SpendingEntityLocal] = []
-        var sumUSDWithReturns: Double = 0
-        var sumWithReturns: Double = 0
-        
-        if let unwrapped = category.spendings?.allObjects as? [SpendingEntity] {
-            for spending in unwrapped {
-                spendings.append(
-                    .init(
-                        amountUSD: spending.amountUSD,
-                        amount: spending.amount,
-                        amountWithReturns: spending.amountWithReturns,
-                        amountUSDWithReturns: spending.amountUSDWithReturns,
-                        comment: spending.comment ?? "",
-                        currency: spending.wrappedCurrency,
-                        date: spending.wrappedDate,
-                        place: spending.place ?? "",
-                        categoryId: category.id ?? .init()
-                    )
-                )
-                
-                sumUSDWithReturns += spending.amountUSDWithReturns
-                
-                let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD"
-                
-                if spending.wrappedCurrency == defaultCurrency {
-                    sumWithReturns += spending.amount
-                } else {
-                    guard
-                        let fetchedRates = UserDefaults.standard.getRates(),
-                        let defaultCurrencyRate = fetchedRates[defaultCurrency]
-                    else {
-                        continue
-                    }
-                    
-                    sumWithReturns += (spending.amountUSDWithReturns * defaultCurrencyRate)
-                }
-            }
-        }
-        
-        self.spendings = spendings
-        self.sumUSDWithReturns = sumUSDWithReturns
-        self.sumWithReturns = sumWithReturns
-    }
-}
+//extension CategoryEntityLocal {
+//    init(from category: CategoryEntity) {
+//        self.color = category.color ?? ""
+//        self.id = category.id ?? .init()
+//        self.name = category.name ?? ""
+//        
+//        var spendings: [SpendingEntityLocal] = []
+//        var sumUSDWithReturns: Double = 0
+//        var sumWithReturns: Double = 0
+//        
+//        if let unwrapped = category.spendings?.allObjects as? [SpendingEntity] {
+//            for spending in unwrapped {
+//                spendings.append(
+//                    .init(
+//                        amountUSD: spending.amountUSD,
+//                        amount: spending.amount,
+//                        amountWithReturns: spending.amountWithReturns,
+//                        amountUSDWithReturns: spending.amountUSDWithReturns,
+//                        comment: spending.comment ?? "",
+//                        currency: spending.wrappedCurrency,
+//                        date: spending.wrappedDate,
+//                        place: spending.place ?? "",
+//                        categoryId: category.id ?? .init()
+//                    )
+//                )
+//                
+//                sumUSDWithReturns += spending.amountUSDWithReturns
+//                
+//                let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD"
+//                
+//                if spending.wrappedCurrency == defaultCurrency {
+//                    sumWithReturns += spending.amount
+//                } else {
+//                    guard
+//                        let fetchedRates = UserDefaults.standard.getRates(),
+//                        let defaultCurrencyRate = fetchedRates[defaultCurrency]
+//                    else {
+//                        continue
+//                    }
+//                    
+//                    sumWithReturns += (spending.amountUSDWithReturns * defaultCurrencyRate)
+//                }
+//            }
+//        }
+//        
+//        self.spendings = spendings
+//        self.sumUSDWithReturns = sumUSDWithReturns
+//        self.sumWithReturns = sumWithReturns
+//    }
+//}
 
 struct TSCategoryEntity: ToUnsafeObject, Identifiable, Comparable {
     func unsafeObject(in context: NSManagedObjectContext) throws -> CategoryEntity {
@@ -215,7 +215,7 @@ struct TSCategoryEntity: ToUnsafeObject, Identifiable, Comparable {
     
     var sumWithReturns: Double {
         let rates = UserDefaults.standard.getRates() ?? [:]
-        let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD"
+        let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
         let sum = self.spendingsArray.compactMap {
             if $0.wrappedCurrency == defaultCurrency {
                 return $0.amountWithReturns

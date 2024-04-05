@@ -12,13 +12,13 @@ struct ContentView: View {
     private var scenePhase
     @Environment(\.openURL)
     private var openURL
-    @AppStorage(UDKeys.presentOnboarding)
+    @AppStorage(UDKeys.presentOnboarding.rawValue)
     private var presentOnboarding: Bool = true
-    @AppStorage(UDKeys.color)
+    @AppStorage(UDKeys.color.rawValue)
     private var tint: String = "Orange"
-    @AppStorage(UDKeys.autoDarkMode)
+    @AppStorage(UDKeys.autoDarkMode.rawValue)
     private var autoDarkMode: Bool = true
-    @AppStorage(UDKeys.darkMode)
+    @AppStorage(UDKeys.darkMode.rawValue)
     private var darkMode: Bool = false
     
     @StateObject

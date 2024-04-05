@@ -20,7 +20,7 @@ final class RatesViewModel: ViewModel {
     init() {
         insertRates()
         
-        if UserDefaults.standard.bool(forKey: "updateRates") {
+        if UserDefaults.standard.bool(forKey: UDKeys.updateRates.rawValue) {
             Task {
                 do {
                     let safeRates = try await getRates()
@@ -40,8 +40,8 @@ final class RatesViewModel: ViewModel {
                         return
                     }
                     
-                    UserDefaults.standard.set(safeRates.timestamp, forKey: UDKeys.updateTime)
-                    UserDefaults.standard.set(false, forKey: UDKeys.updateRates)
+                    UserDefaults.standard.set(safeRates.timestamp, forKey: UDKeys.updateTime.rawValue)
+                    UserDefaults.standard.set(false, forKey: UDKeys.updateRates.rawValue)
                     
                     #if DEBUG
                     let logger = Logger(subsystem: Vars.appIdentifier, category: "RatesViewModel info")
@@ -83,6 +83,6 @@ extension RatesViewModel {
     }
     
     private func addRates(_ data: [String: Double]) {
-        UserDefaults.standard.setValue(data, forKey: UDKeys.rates)
+        UserDefaults.standard.setValue(data, forKey: UDKeys.rates.rawValue)
     }
 }

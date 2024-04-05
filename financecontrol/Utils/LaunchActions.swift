@@ -20,7 +20,7 @@ func launch() -> Void {
     dateFormatter.timeZone = .init(identifier: "GMT")
     
     let currentDate = dateFormatter.string(from: .now)
-    let updateTime = UserDefaults.standard.string(forKey: UDKeys.updateTime) ?? dateFormatter.string(from: .distantPast)
+    let updateTime = UserDefaults.standard.string(forKey: UDKeys.updateTime.rawValue) ?? dateFormatter.string(from: .distantPast)
     
     if !Calendar.current.isDate(dateFormatter.date(from: updateTime) ?? .distantPast, equalTo: .now, toGranularity: .hour) {
         #if DEBUG
@@ -37,28 +37,28 @@ func launch() -> Void {
         #endif
     }
     
-    if UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) == nil {
-        UserDefaults.standard.setValue(Locale.current.currencyCode ?? "USD", forKey: UDKeys.defaultCurrency)
+    if UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) == nil {
+        UserDefaults.standard.setValue(Locale.current.currencyCode ?? "USD", forKey: UDKeys.defaultCurrency.rawValue)
     }
     
     // MARK: Theme migration
     if let theme = UserDefaults.standard.string(forKey: "theme") {
         switch theme {
         case "dark":
-            UserDefaults.standard.setValue(false, forKey: UDKeys.autoDarkMode)
-            UserDefaults.standard.setValue(true, forKey: UDKeys.darkMode)
+            UserDefaults.standard.setValue(false, forKey: UDKeys.autoDarkMode.rawValue)
+            UserDefaults.standard.setValue(true, forKey: UDKeys.darkMode.rawValue)
             #if DEBUG
             logger.debug("Dark mode was enabled, migrated")
             #endif
         case "light":
-            UserDefaults.standard.setValue(false, forKey: UDKeys.autoDarkMode)
-            UserDefaults.standard.setValue(false, forKey: UDKeys.darkMode)
+            UserDefaults.standard.setValue(false, forKey: UDKeys.autoDarkMode.rawValue)
+            UserDefaults.standard.setValue(false, forKey: UDKeys.darkMode.rawValue)
             #if DEBUG
             logger.debug("Light mode was enabled, migrated")
             #endif
         default:
-            UserDefaults.standard.setValue(true, forKey: UDKeys.autoDarkMode)
-            UserDefaults.standard.setValue(false, forKey: UDKeys.darkMode)
+            UserDefaults.standard.setValue(true, forKey: UDKeys.autoDarkMode.rawValue)
+            UserDefaults.standard.setValue(false, forKey: UDKeys.darkMode.rawValue)
             #if DEBUG
             logger.debug("Auto mode was enabled, migrated")
             #endif

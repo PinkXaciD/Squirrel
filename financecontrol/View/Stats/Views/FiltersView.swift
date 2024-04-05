@@ -16,7 +16,7 @@ struct FiltersView: View {
     private var pcvm: PieChartViewModel
     @Environment(\.dismiss)
     private var dismiss
-    @AppStorage(UDKeys.color)
+    @AppStorage(UDKeys.color.rawValue)
     private var tint: String = "Orange"
     
     @State

@@ -126,67 +126,207 @@
 
     },
     "1 USD" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 USD"
+          }
+        }
+      }
     },
     "About" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "About"
+          }
+        }
+      }
     },
     "Accent Color" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accent Color"
+          }
+        }
+      }
     },
     "Add" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add"
+          }
+        }
+      }
     },
     "Add categories" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add categories"
+          }
+        }
+      }
     },
     "Add category" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add category"
+          }
+        }
+      }
     },
     "Add Currency" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add Currency"
+          }
+        }
+      }
     },
     "Add Expense" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add Expence"
+          }
+        }
+      }
     },
     "Add new" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add new"
+          }
+        }
+      }
     },
     "Add new category" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add new category"
+          }
+        }
+      }
     },
     "Add return" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add return"
+          }
+        }
+      }
     },
     "Add to favorites" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add to favorites"
+          }
+        }
+      }
     },
     "All categories" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All categories"
+          }
+        }
+      }
     },
     "Amount" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Amount"
+          }
+        }
+      }
     },
     "An open-source spending tracker. \nDeveloped by PinkXaciD. \nExchange rates API by nulledzero." : {
 
     },
     "App of the rising sun" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App of the rising sun"
+          }
+        }
+      }
     },
     "App site" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App site"
+          }
+        }
+      }
     },
     "Appearance" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appearance"
+          }
+        }
+      }
     },
     "Apply" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apply"
+          }
+        }
+      }
     },
     "Archive" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archive"
+          }
+        }
+      }
     },
     "Archived categories" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archived categories"
+          }
+        }
+      }
     },
     "Automatic Dark Mode" : {
 
@@ -211,6 +351,17 @@
     },
     "Category" : {
 
+    },
+    "category-name-other" : {
+      "comment" : "\"Other\" category",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Other"
+          }
+        }
+      }
     },
     "Check the spelling or try a new search." : {
 
@@ -297,6 +448,9 @@
 
     },
     "Delete this expense?" : {
+
+    },
+    "Description." : {
 
     },
     "Done" : {
@@ -444,6 +598,12 @@
 
     },
     "No comment provided" : {
+
+    },
+    "No currencies" : {
+
+    },
+    "No currencies found. Maybe you added all of them?" : {
 
     },
     "No expenses" : {
@@ -639,6 +799,9 @@
     "Teal" : {
 
     },
+    "Test" : {
+
+    },
     "This will clear all settings of app. \nYou can't undo this action." : {
 
     },
@@ -678,11 +841,22 @@
     "Today" : {
 
     },
-    "Try another search." : {
+    "Tomorrow" : {
 
     },
     "Unknown" : {
       "comment" : "Unknown place"
+    },
+    "unknown-place-localized" : {
+      "comment" : "Unknown place",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown"
+          }
+        }
+      }
     },
     "Validate returns" : {
 

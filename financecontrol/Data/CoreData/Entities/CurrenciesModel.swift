@@ -23,9 +23,9 @@ extension CoreDataModel {
     func migrateCurrenciesToDefaults() {
         if !savedCurrencies.isEmpty {
             let value = Array(Set(self.savedCurrencies.compactMap { $0.tag }))
-            UserDefaults.standard.setValue(value, forKey: UDKeys.savedCurrencies)
+            UserDefaults.standard.setValue(value, forKey: UDKeys.savedCurrencies.rawValue)
             
-            if ((UserDefaults.standard.array(forKey: UDKeys.savedCurrencies) as? [String]) ?? .init()) == savedCurrencies.compactMap({ $0.tag }) {
+            if ((UserDefaults.standard.array(forKey: UDKeys.savedCurrencies.rawValue) as? [String]) ?? .init()) == savedCurrencies.compactMap({ $0.tag }) {
                 let currencies = self.savedCurrencies
                 for currency in currencies {
                     context.delete(currency)

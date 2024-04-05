@@ -13,15 +13,16 @@ import OSLog
 #endif
 
 final class PieChartViewModel: ViewModel {
-    @AppStorage(UDKeys.defaultCurrency) private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     private var cdm: CoreDataModel
     var fvm: FiltersViewModel
+    
     @Published var selection: Int = 0
-    @Published var content: [PieChartCompleteView<CenterChartView>] = []
+    var previousSelection: Int = 0
+    @Published var data: [ChartData]
     @Published var selectedCategory: CategoryEntity? = nil
     @Published var isScrollDisabled: Bool = false
-    @Published var data: [ChartData]
-    let size: CGFloat
+    @Published var showOther: Bool = false
+    
     var cancellables = Set<AnyCancellable>()
     let id = UUID()
     
@@ -29,44 +30,11 @@ final class PieChartViewModel: ViewModel {
         self.cdm = cdm
         self.fvm = fvm
         
-        let size: CGFloat = {
-            let currentScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
-            let windowBounds = currentScene?.windows.first(where: { $0.isKeyWindow })?.bounds
-            let width = windowBounds?.width ?? UIScreen.main.bounds.width
-            let height = windowBounds?.height ?? UIScreen.main.bounds.height
-            return width > height ? (height / 1.7) : (width / 1.7)
-        }()
+        self.data = cdm.getChartData()
         
-        self.size = size
-        
-        let chartData = cdm.getChartData()
-        self.data = chartData
-        
-        var data: [PieChartCompleteView<CenterChartView>] = []
-        var count = 0
-        for element in chartData {
-            data.append(
-                PieChartCompleteView(
-                    chart: APChart(
-                        separators: 0.15,
-                        innerRadius: 0.73,
-                        data: setData(element.categories)
-                    ),
-                    center: CenterChartView(
-                        selectedMonth: element.date,
-                        width: size,
-                        operationsInMonth: element.categories
-                    ),
-                    count: count,
-                    size: size
-                )
-            )
-            
-            count += 1
-        }
-        
-        self.content = data
         subscribeToUpdate()
+        subscribeToSelection()
+        
         #if DEBUG
         let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
         logger.debug("ViewModel initialized")
@@ -79,83 +47,30 @@ final class PieChartViewModel: ViewModel {
         logger.debug("ViewModel deinitialized")
         #endif
     }
-    
+}
+
+// MARK: Methods
+extension PieChartViewModel {
     func updateData() {
         let chartData: [ChartData] = {
             if fvm.applyFilters {
                 return cdm.getFilteredChartData(firstDate: fvm.startFilterDate, secondDate: fvm.endFilterDate, categories: fvm.filterCategories)
             }
             
-            return cdm.getChartData(categoryName: selectedCategory?.name)
+            return cdm.getChartData(isMinimized: showOther, categoryName: selectedCategory?.name)
         }()
         
         self.data = chartData
-        
-        var data: [PieChartCompleteView<CenterChartView>] = []
-        var count = 0
-        
-//        if let selectedCategory = selectedCategory {
-//            var places: [String:Double] = [:]
-//            
-//            for element in chartData {
-//                guard 
-//                    let index = element.categories.firstIndex(where: { $0.name == selectedCategory.name })
-//                else {
-//                    continue
-//                }
-//                
-//                for spending in element.categories[index].spendings {
-//                    let spendingName = spending.place.isEmpty ? "Unknown" : spending.place
-//                    print(spendingName)
-//                    
-//                    if let existing = places[spendingName] {
-//                        places.updateValue(existing + spending.amountUSDWithReturns, forKey: spendingName)
-//                    } else {
-//                        places.updateValue(spending.amountUSDWithReturns, forKey: spendingName)
-//                    }
-//                }
-//            }
-//            
-//            print(places)
-//        }
-            
-        for element in chartData {
-            data.append(
-                .init(
-                    chart: APChart(
-                        separators: 0.15,
-                        innerRadius: 0.73,
-                        data: setData(element.categories)
-                    ),
-                    center: CenterChartView(
-                        selectedMonth: element.date,
-                        width: size,
-                        operationsInMonth: element.categories
-                    ),
-                    count: count,
-                    size: size
-                )
-            )
-            
-            count += 1
-        }
-        
-        self.content = data
     }
     
-    private func setData(_ operations: [TSCategoryEntity]) -> [APChartSectorData] {
-        let result = operations.map { element in
-            let value = element.sumUSDWithReturns
-            return APChartSectorData(
-                value,
-                Color[element.color ?? ""],
-                id: element.id
-            )
-        }
-        
-        return result.compactMap { $0 }.filter { $0.value != 0 }.sorted(by: >)
+    func showAllCategories() {
+        let dataWithAllCategories = ChartData(date: Date().getFirstDayOfMonth(-self.selection), id: self.selection, showOther: false, cdm: self.cdm, categoryName: self.selectedCategory?.name)
+        self.data[selection] = dataWithAllCategories
     }
-    
+}
+
+// MARK: Private methods
+extension PieChartViewModel {
     private func subscribeToUpdate() {
         cdm.$updateCharts
             .receive(on: DispatchQueue.main)
@@ -167,6 +82,29 @@ final class PieChartViewModel: ViewModel {
                     }
                     self?.cdm.updateCharts = false
                 }
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func subscribeToSelection() {
+        self.$selection
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newValue in
+                guard let self else { return }
+                
+                if self.showOther {
+                    data[previousSelection] = ChartData(
+                        date: Date().getFirstDayOfMonth(-self.previousSelection),
+                        id: previousSelection,
+                        showOther: true,
+                        cdm: self.cdm,
+                        categoryName: self.selectedCategory?.name
+                    )
+                    
+                    self.showOther = false
+                }
+                
+                self.previousSelection = selection
             }
             .store(in: &cancellables)
     }

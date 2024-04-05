@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HomeView: View {
-    @AppStorage(UDKeys.addExpenseAction) private var addExpenseAction: Bool = false
+    @AppStorage(UDKeys.addExpenseAction.rawValue) private var addExpenseAction: Bool = false
     @Binding var showingSheet: Bool
     @Binding var presentOnboarding: Bool
     @State private var shortcut: AddSpendingShortcut? = nil

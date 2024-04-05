@@ -21,23 +21,28 @@ struct AddCurrencyView: View {
         Group {
             let searchResult = searchFunc()
             
-            if !searchResult.isEmpty {
-                List {
-                    ForEach(Array(searchResult.keys).sorted(), id: \.self) { key in
-                        Section {
-                            if let currencies = searchResult[key] {
-                                let mappedCurrencies = currencies.map { (code: $0, name: Locale.current.localizedString(forCurrencyCode: $0) ?? $0)}
-                                ForEach(mappedCurrencies.sorted { $0.name < $1.name }, id: \.code) { currency in
-                                    NewCurrencyRow(currencies: $currencies, name: currency.name, code: currency.code)
-                                }
+            List {
+                ForEach(Array(searchResult.keys).sorted(), id: \.self) { key in
+                    Section {
+                        if let currencies = searchResult[key] {
+                            let mappedCurrencies = currencies.map { (code: $0, name: Locale.current.localizedString(forCurrencyCode: $0) ?? $0)}
+                            ForEach(mappedCurrencies.sorted { $0.name < $1.name }, id: \.code) { currency in
+                                NewCurrencyRow(currencies: $currencies, name: currency.name, code: currency.code)
                             }
-                        } header: {
-                            Text(key)
                         }
+                    } header: {
+                        Text(key)
                     }
                 }
-            } else {
-                CustomContentUnavailableView("No results for \"\(search)\"", imageName: "magnifyingglass", description: "Try another search.")
+            }
+            .overlay {
+                if searchResult.isEmpty {
+                    if search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                        CustomContentUnavailableView("No currencies", imageName: "questionmark", description: "No currencies found. Maybe you added all of them?")
+                    } else {
+                        CustomContentUnavailableView.search(search.trimmingCharacters(in: .whitespacesAndNewlines))
+                    }
+                }
             }
         }
         .searchable(
@@ -54,11 +59,13 @@ struct AddCurrencyView: View {
     }
     
     private func searchFunc() -> [String : [String]] {
-        if search.isEmpty {
-            return currencyCodes.mapValues { excludeAdded($0) }.filter { !$0.value.isEmpty }
+        let trimmedSearch = search.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        if trimmedSearch.isEmpty {
+            return currencyCodes
+                .mapValues { excludeAdded($0) }
+                .filter { !$0.value.isEmpty }
         } else {
-            let trimmedSearch = search.trimmingCharacters(in: .whitespacesAndNewlines)
-            
             return currencyCodes.mapValues { values in
                 excludeAdded(values).filter { value in
                     value.localizedCaseInsensitiveContains(trimmedSearch) || (Locale.current.localizedString(forCurrencyCode: value) ?? "").localizedCaseInsensitiveContains(trimmedSearch)

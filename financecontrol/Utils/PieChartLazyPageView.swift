@@ -23,12 +23,23 @@ struct PieChartLazyPageView<Content: View>: View {
     var body: some View {
         ZStack {
             TabView(selection: $vm.selection) {
-                ForEach(vm.content.indices, id: \.self) { index in
-                    LazyTab(content: vm.content[index], selection: $vm.selection, count: index)
+                ForEach(vm.data.indices, id: \.self) { index in
+                    let size: CGFloat = {
+                        let currentScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+                        let windowBounds = currentScene?.windows.first(where: { $0.isKeyWindow })?.bounds
+                        let width = windowBounds?.width ?? UIScreen.main.bounds.width
+                        let height = windowBounds?.height ?? UIScreen.main.bounds.height
+                        return width > height ? (height / 1.7) : (width / 1.7)
+                    }()
+                    
+                    let chart = PieChartCompleteView(count: index, size: size)
+                    
+                    LazyTab(content: chart, selection: $vm.selection, count: index)
                         .invertLayoutDirection()
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
+            .animation(.default, value: vm.selection)
             
             buttons
         }
@@ -57,20 +68,26 @@ struct PieChartLazyPageView<Content: View>: View {
             } label: {
                 Image(systemName: isLeading ? "chevron.backward" : "chevron.forward")
             }
-            .disabled(isLeading ? vm.selection <= 0 : vm.selection >= vm.content.count - 1)
+            .disabled(isLeading ? vm.selection <= 0 : vm.selection >= vm.data.count - 1)
         }
     }
     
     private func increaseSelected() {
-        withAnimation {
-            vm.selection += 1
+        if vm.showOther {
+            vm.showOther = false
+            vm.updateData()
         }
+        
+        vm.selection += 1
     }
     
     private func decreaseSelected() {
-        withAnimation {
-            vm.selection -= 1
+        if vm.showOther {
+            vm.showOther = false
+            vm.updateData()
         }
+        
+        vm.selection -= 1
     }
     
     private func getGradient(isLeading: Bool) -> LinearGradient {

@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @AppStorage(UDKeys.color)
+    @AppStorage(UDKeys.color.rawValue)
     var defaultColor: String = "Orange"
-    @AppStorage(UDKeys.defaultCurrency)
+    @AppStorage(UDKeys.defaultCurrency.rawValue)
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
-    @AppStorage(UDKeys.autoDarkMode)
+    @AppStorage(UDKeys.autoDarkMode.rawValue)
     private var autoDarkMode: Bool = true
-    @AppStorage(UDKeys.darkMode)
+    @AppStorage(UDKeys.darkMode.rawValue)
     private var darkMode: Bool = false
     @State
     private var showDarkModeToggle: Bool = false

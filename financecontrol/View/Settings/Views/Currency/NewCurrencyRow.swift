@@ -11,7 +11,7 @@ struct NewCurrencyRow: View {
     @EnvironmentObject private var cdm: CoreDataModel
     @EnvironmentObject private var rvm: RatesViewModel
     @Environment(\.dismiss) private var dismiss
-    @AppStorage(UDKeys.defaultCurrency) private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
+    @AppStorage(UDKeys.defaultCurrency.rawValue) private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
     @Binding var currencies: [Currency]
     let name: String

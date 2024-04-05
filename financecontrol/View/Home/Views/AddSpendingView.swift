@@ -15,9 +15,9 @@ struct AddSpendingView: View {
     @StateObject
     private var vm: AddSpendingViewModel
     
-    @AppStorage(UDKeys.color)
+    @AppStorage(UDKeys.color.rawValue)
     private var tint: String = "Orange"
-    @AppStorage(UDKeys.defaultCurrency) 
+    @AppStorage(UDKeys.defaultCurrency.rawValue)
     private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
     @Environment(\.dismiss) 
@@ -351,7 +351,7 @@ struct AddSpendingShortcutAddView: View {
     
     @State private var shortcutName: String = ""
     @State private var amount: String = ""
-    @State private var currency: String = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD"
+    @State private var currency: String = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
     @State private var categoryID: UUID = .init()
     @State private var place: String = ""
     @State private var comment: String = ""
@@ -373,7 +373,7 @@ struct AddSpendingShortcutAddView: View {
                 self.amount = formatter.string(from: amount as NSNumber) ?? ""
             }
             
-            self.currency = shortcut.currency ?? UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD"
+            self.currency = shortcut.currency ?? UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
             self.categoryID = shortcut.categoryID ?? .init()
             self.place = shortcut.place ?? ""
             self.comment = shortcut.comment ?? ""

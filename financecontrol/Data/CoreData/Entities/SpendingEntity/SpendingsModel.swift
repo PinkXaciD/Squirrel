@@ -53,7 +53,7 @@ extension CoreDataModel {
         guard 
             let spendings = try? getSpendings(predicate: predicate),
             let rates = UserDefaults.standard.getRates(),
-            let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency)
+            let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue)
         else {
             return
         }
@@ -254,7 +254,7 @@ extension CoreDataModel {
     
     func operationsSumWeek(_ usdRate: Double = 1) -> Double {
         let currentCalendar = Calendar.current
-        let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency)
+        let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue)
         let currentDateComponents = currentCalendar.dateComponents([.day, .month, .year, .era], from: .now)
         let currentDate = currentCalendar.date(from: currentDateComponents) ?? .distantFuture
         let startDate = currentCalendar.date(byAdding: .day, value: -6, to: currentDate) ?? .distantFuture
@@ -412,7 +412,7 @@ extension CoreDataModel {
         
         for index in interval {
             let date = currentCalendar.date(byAdding: .month, value: -index, to: .now) ?? .now
-            chartData.append(ChartData(date: date, id: -index, withOther: isMinimized, cdm: self, categoryName: categoryName))
+            chartData.append(ChartData(date: date, id: -index, showOther: !isMinimized, cdm: self, categoryName: categoryName))
         }
         
         return chartData

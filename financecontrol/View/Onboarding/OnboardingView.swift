@@ -12,7 +12,7 @@ struct OnboardingView: View {
     @EnvironmentObject private var cdm: CoreDataModel
     
     @State private var screen: Int = 0
-    @State private var selectedCurrency: String = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD"
+    @State private var selectedCurrency: String = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
     @State private var showOverlay: Bool = true
     
     let finalScreenNumber: UInt8 = 3
@@ -90,7 +90,7 @@ struct OnboardingView: View {
     private var continueButton: some View {
         Button {
             if screen == 1 {
-                UserDefaults.standard.setValue(selectedCurrency, forKey: UDKeys.defaultCurrency)
+                UserDefaults.standard.setValue(selectedCurrency, forKey: UDKeys.defaultCurrency.rawValue)
                 
                 UserDefaults.standard.addCurrency(selectedCurrency)
                 

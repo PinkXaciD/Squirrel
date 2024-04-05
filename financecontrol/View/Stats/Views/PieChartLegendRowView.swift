@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PieChartLegendRowView: View {
-    @AppStorage(UDKeys.defaultCurrency)
+    @AppStorage(UDKeys.defaultCurrency.rawValue)
     private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     @EnvironmentObject
     private var cdm: CoreDataModel
@@ -33,6 +33,10 @@ struct PieChartLegendRowView: View {
                 }
                 
                 pcvm.updateData()
+            } else if !pcvm.showOther, category.name == NSLocalizedString("category-name-other", comment: "") {
+                pcvm.showOther = true
+                
+                pcvm.showAllCategories()
             } else {
                 pcvm.selectedCategory = nil
                 

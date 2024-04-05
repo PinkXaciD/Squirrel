@@ -10,7 +10,7 @@ import SwiftUI
 struct CurrencyRow: View {
     @EnvironmentObject private var cdm: CoreDataModel
     @EnvironmentObject private var rvm: RatesViewModel
-    @AppStorage(UDKeys.defaultCurrency) 
+    @AppStorage(UDKeys.defaultCurrency.rawValue) 
     private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
     let currency: Currency

@@ -92,7 +92,7 @@ struct OnboardingCurrencyView: View {
     
     private var recommendedSection: some View {
         Section {
-            getRow(UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD")
+            getRow(UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD")
         } header: {
             Text("Recommended")
         }

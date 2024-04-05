@@ -97,7 +97,7 @@ struct OnboardingGesturesTemplateView: View {
     
     private var spendingSection: some View {
         var sum: Double {
-            let sum = (10 * (Rates.fallback.rates[UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD"] ?? 1))
+            let sum = (10 * (Rates.fallback.rates[UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"] ?? 1))
             return sum.rounded(.toNearestOrAwayFromZero)
         }
         
@@ -119,7 +119,7 @@ struct OnboardingGesturesTemplateView: View {
                         .font(.caption)
                         .foregroundColor(Color.secondary)
                     
-                    Text(sum.formatted(.currency(code: UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD")))
+                    Text(sum.formatted(.currency(code: UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD")))
                         .foregroundColor(.primary)
                 }
             }

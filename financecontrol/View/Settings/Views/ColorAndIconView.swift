@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ColorAndIconView: View {
-    @AppStorage(UDKeys.color) 
+    @AppStorage(UDKeys.color.rawValue) 
     var defaultColor: String = "Orange"
     
     @State

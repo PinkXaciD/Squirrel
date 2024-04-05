@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SpendingCompleteView: View {
-    @AppStorage(UDKeys.color)
+    @AppStorage(UDKeys.color.rawValue)
     private var tint: String = "Orange"
     
     @Binding var edit: Bool
