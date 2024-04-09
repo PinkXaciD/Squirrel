@@ -20,6 +20,8 @@ struct ContentView: View {
     private var autoDarkMode: Bool = true
     @AppStorage(UDKeys.darkMode.rawValue)
     private var darkMode: Bool = false
+    @AppStorage(UDKeys.privacyScreen.rawValue)
+    private var privacyScreenIsEnabled: Bool = false
     
     @StateObject
     private var cdm: CoreDataModel
@@ -33,12 +35,16 @@ struct ContentView: View {
     private var statsListViewModel: StatsListViewModel
     @StateObject
     private var statsSearchViewModel: StatsSearchViewModel
+    @StateObject
+    private var privacyMonitor: PrivacyMonitor = PrivacyMonitor(privacyScreenIsEnabled: false)
     
     @ObservedObject 
     private var errorHandler = ErrorHandler.shared
     
     @State
     private var addExpenseAction: Bool = false
+    @State
+    private var hideContent: Bool = false
     
     init() {
         let coreDataModel = CoreDataModel()
@@ -65,6 +71,7 @@ struct ContentView: View {
                 .environmentObject(filtersViewModel)
                 .environmentObject(statsSearchViewModel)
                 .environmentObject(statsListViewModel)
+                .environmentObject(privacyMonitor)
                 .tabItem {
                     Label("Stats", systemImage: "chart.pie.fill")
                 }
@@ -74,6 +81,8 @@ struct ContentView: View {
                     Label("Settings", systemImage: "gearshape.fill")
                 }
         }
+        .blur(radius: hideContent ? Vars.privacyBlur : 0)
+        .ignoresSafeArea()
         .onOpenURL { url in
             if url == URLs.addExpenseAction {
                 addExpenseAction = true
@@ -83,6 +92,20 @@ struct ContentView: View {
             if value == .inactive {
                 WidgetsManager.shared.reloadSumWidgets()
             }
+            
+            if privacyScreenIsEnabled {
+                if value == .active {
+                    withAnimation(.easeOut(duration: 0.2)) {
+                        hideContent = false
+                    }
+                } else {
+                    withAnimation {
+                        hideContent = true
+                    }
+                }
+            }
+            
+            privacyMonitor.changePrivacyScreenValue(value != .active)
         }
         .environmentObject(cdm)
         .environmentObject(rvm)

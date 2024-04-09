@@ -10,6 +10,10 @@ import SwiftUI
 struct SpendingCompleteView: View {
     @AppStorage(UDKeys.color.rawValue)
     private var tint: String = "Orange"
+    @AppStorage(UDKeys.privacyScreen.rawValue)
+    private var privacyScreenIsEnabled: Bool = false
+    @EnvironmentObject
+    private var privacyMonitor: PrivacyMonitor
     
     @Binding var edit: Bool
     
@@ -18,6 +22,7 @@ struct SpendingCompleteView: View {
     @State private var entityToAddReturn: SpendingEntity? = nil
     @State private var returnToEdit: ReturnEntity? = nil
     @State private var toDismiss: Bool = false
+    @State private var hideContent: Bool = false
     
     @StateObject
     private var vm: EditSpendingViewModel
@@ -27,59 +32,73 @@ struct SpendingCompleteView: View {
     var body: some View {
         let categoryColor = CustomColor.nordAurora[entity.category?.color ?? ""] ?? .primary
         
-        if edit {
-            NavigationView {
-                EditSpendingView(
-                    vm: vm,
-                    entity: $entity,
-                    edit: $edit,
-                    categoryColor: categoryColor,
-                    focus: editFocus,
-                    entityToAddReturn: $entityToAddReturn,
-                    returnToEdit: $returnToEdit,
-                    toDismiss: $toDismiss
-                )
-                .tint(categoryColor)
-                .accentColor(categoryColor)
-                .sheet(item: $entityToAddReturn, onDismiss: dismissAction) { entity in
-                    AddReturnView(spending: entity, cdm: cdm, rvm: rvm)
-                        .accentColor(colorIdentifier(color: tint))
-                        .tint(colorIdentifier(color: tint))
+        Group {
+            if edit {
+                NavigationView {
+                    EditSpendingView(
+                        vm: vm,
+                        entity: $entity,
+                        edit: $edit,
+                        categoryColor: categoryColor,
+                        focus: editFocus,
+                        entityToAddReturn: $entityToAddReturn,
+                        returnToEdit: $returnToEdit,
+                        toDismiss: $toDismiss
+                    )
+                    .tint(categoryColor)
+                    .accentColor(categoryColor)
+                    .sheet(item: $entityToAddReturn, onDismiss: dismissAction) { entity in
+                        AddReturnView(spending: entity, cdm: cdm, rvm: rvm)
+                            .accentColor(colorIdentifier(color: tint))
+                            .tint(colorIdentifier(color: tint))
+                    }
+    // TODO: EditReturnView
+    //                .sheet(item: $returnToEdit) { returnEntity in
+    //                    EditReturnView(returnEntity: returnEntity, spending: entity, cdm: cdm, rvm: rvm)
+    //                        .smallSheet(0.5)
+    //                        .tint(colorIdentifier(color: tint))
+    //                        .accentColor(colorIdentifier(color: tint))
+    //                }
                 }
-// TODO: EditReturnView
-//                .sheet(item: $returnToEdit) { returnEntity in
-//                    EditReturnView(returnEntity: returnEntity, spending: entity, cdm: cdm, rvm: rvm)
-//                        .smallSheet(0.5)
-//                        .tint(colorIdentifier(color: tint))
-//                        .accentColor(colorIdentifier(color: tint))
-//                }
+                .navigationViewStyle(.stack)
+                .transition(.opacity)
+            } else {
+                NavigationView {
+                    SpendingView(
+                        entity: entity,
+                        edit: $edit,
+                        editFocus: $editFocus,
+                        categoryColor: categoryColor,
+                        entityToAddReturn: $entityToAddReturn,
+                        returnToEdit: $returnToEdit
+                    )
+                    .tint(categoryColor)
+                    .accentColor(categoryColor)
+                    .sheet(item: $entityToAddReturn, onDismiss: dismissAction) { entity in
+                        AddReturnView(spending: entity, cdm: cdm, rvm: rvm)
+                            .accentColor(colorIdentifier(color: tint))
+                            .tint(colorIdentifier(color: tint))
+                    }
+                    .sheet(item: $returnToEdit) { returnEntity in
+                        EditReturnView(returnEntity: returnEntity, spending: entity, cdm: cdm, rvm: rvm)
+                            .smallSheet(0.5)
+                            .tint(colorIdentifier(color: tint))
+                            .accentColor(colorIdentifier(color: tint))
+                    }
+                }
+                .navigationViewStyle(.stack)
+                .transition(.opacity)
             }
-            .navigationViewStyle(.stack)
-        } else {
-            NavigationView {
-                SpendingView(
-                    entity: entity,
-                    edit: $edit,
-                    editFocus: $editFocus,
-                    categoryColor: categoryColor,
-                    entityToAddReturn: $entityToAddReturn,
-                    returnToEdit: $returnToEdit
-                )
-                .tint(categoryColor)
-                .accentColor(categoryColor)
-                .sheet(item: $entityToAddReturn, onDismiss: dismissAction) { entity in
-                    AddReturnView(spending: entity, cdm: cdm, rvm: rvm)
-                        .accentColor(colorIdentifier(color: tint))
-                        .tint(colorIdentifier(color: tint))
-                }
-                .sheet(item: $returnToEdit) { returnEntity in
-                    EditReturnView(returnEntity: returnEntity, spending: entity, cdm: cdm, rvm: rvm)
-                        .smallSheet(0.5)
-                        .tint(colorIdentifier(color: tint))
-                        .accentColor(colorIdentifier(color: tint))
+        }
+        .blur(radius: hideContent ? Vars.privacyBlur : 0)
+        .onChange(of: privacyMonitor.privacyScreenIsEnabled) { value in
+            let animation: Animation = value ? .default : .easeOut(duration: 0.2)
+            
+            if privacyScreenIsEnabled {
+                withAnimation(animation) {
+                    hideContent = value
                 }
             }
-            .navigationViewStyle(.stack)
         }
     }
     

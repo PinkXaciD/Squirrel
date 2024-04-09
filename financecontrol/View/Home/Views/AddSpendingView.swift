@@ -19,11 +19,15 @@ struct AddSpendingView: View {
     private var tint: String = "Orange"
     @AppStorage(UDKeys.defaultCurrency.rawValue)
     private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
+    @AppStorage(UDKeys.privacyScreen.rawValue)
+    private var privacyScreenIsEnabled: Bool = false
     
     @Environment(\.dismiss) 
     private var dismiss
     @Environment(\.colorScheme)
     private var colorScheme
+    @Environment(\.scenePhase)
+    private var scenePhase
     
     private enum Field {
         case amount
@@ -45,6 +49,8 @@ struct AddSpendingView: View {
     private var amountIsFocused: Bool = true
     @State
     private var filterAmount: String = ""
+    @State
+    private var hideContent: Bool = false
 
     private let utils = InputUtils() /// For input checking
     
@@ -69,6 +75,20 @@ struct AddSpendingView: View {
         .tint(colorIdentifier(color: tint))
         .accentColor(colorIdentifier(color: tint))
         .interactiveDismissDisabled(vm.categoryName != "Select Category" || !vm.amount.isEmpty)
+        .blur(radius: hideContent ? Vars.privacyBlur : 0)
+        .onChange(of: scenePhase) { value in
+            if privacyScreenIsEnabled {
+                if value == .active {
+                    withAnimation(.easeOut(duration: 0.2)) {
+                        hideContent = false
+                    }
+                } else {
+                    withAnimation {
+                        hideContent = true
+                    }
+                }
+            }
+        }
     }
     
 // MARK: Sections

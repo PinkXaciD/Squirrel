@@ -14,13 +14,19 @@ struct FiltersView: View {
     private var fvm: FiltersViewModel
     @EnvironmentObject
     private var pcvm: PieChartViewModel
+    @EnvironmentObject
+    private var privacyMonitor: PrivacyMonitor
     @Environment(\.dismiss)
     private var dismiss
     @AppStorage(UDKeys.color.rawValue)
     private var tint: String = "Orange"
+    @AppStorage(UDKeys.privacyScreen.rawValue)
+    private var privacyScreenIsEnabled: Bool = false
     
     @State
     private var showCategoriesPicker: Bool = false
+    @State
+    private var hideContent: Bool = false
     
     var body: some View {
         NavigationView {
@@ -41,6 +47,17 @@ struct FiltersView: View {
             }
         }
         .accentColor(colorIdentifier(color: tint))
+        .blur(radius: hideContent ? Vars.privacyBlur : 0)
+        .onChange(of: privacyMonitor.privacyScreenIsEnabled) { value in
+//            print("--- \(value), privacy \(privacyScreenIsEnabled), hideContent \(hideContent)")
+            let animation: Animation = value ? .default : .easeOut(duration: 0.2)
+            
+            if privacyScreenIsEnabled {
+                withAnimation(animation) {
+                    hideContent = value
+                }
+            }
+        }
     }
     
     private var dateSection: some View {
@@ -265,5 +282,17 @@ struct FiltersCategoriesView: View {
         self._categories = categories
         self._applyFilters = applyFilters
         self.listData = (cdm.savedCategories + cdm.shadowedCategories).sorted { $0.name ?? "" < $1.name ?? "" }
+    }
+}
+
+final class PrivacyMonitor: ObservableObject {
+    @Published private(set) var privacyScreenIsEnabled: Bool
+    
+    init(privacyScreenIsEnabled: Bool) {
+        self.privacyScreenIsEnabled = privacyScreenIsEnabled
+    }
+    
+    func changePrivacyScreenValue(_ newValue: Bool) {
+        self.privacyScreenIsEnabled = newValue
     }
 }

@@ -15,6 +15,8 @@ struct Vars {
     static let appIdentifier: String = Bundle.main.bundleIdentifier ?? "dev.squirrelapp.squirrel"
     
     static let widgetIdentifier: String = appIdentifier + ".squirrelWidget"
+    
+    static let privacyBlur: CGFloat = 10
 }
 
 struct URLs {
@@ -57,5 +59,5 @@ struct URLs {
 //}
 
 enum UDKeys: String {
-    case presentOnboarding, color, defaultCurrency, savedCurrencies, minimizeLegend, rates, updateTime, updateRates, addExpenseAction, autoDarkMode, darkMode
+    case presentOnboarding, color, defaultCurrency, savedCurrencies, minimizeLegend, rates, updateTime, updateRates, autoDarkMode, darkMode, privacyScreen
 }

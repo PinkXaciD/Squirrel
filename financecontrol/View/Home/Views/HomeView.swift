@@ -8,12 +8,11 @@
 import SwiftUI
 
 struct HomeView: View {
-    @AppStorage(UDKeys.addExpenseAction.rawValue) private var addExpenseAction: Bool = false
+    @EnvironmentObject private var cdm: CoreDataModel
+    @EnvironmentObject private var rvm: RatesViewModel
     @Binding var showingSheet: Bool
     @Binding var presentOnboarding: Bool
     @State private var shortcut: AddSpendingShortcut? = nil
-    @EnvironmentObject private var cdm: CoreDataModel
-    @EnvironmentObject private var rvm: RatesViewModel
     
     var body: some View {
         NavigationView {

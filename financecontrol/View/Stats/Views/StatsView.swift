@@ -21,6 +21,8 @@ struct StatsView: View {
     private var pcvm: PieChartViewModel
     @EnvironmentObject
     private var fvm: FiltersViewModel
+    @EnvironmentObject
+    private var privacyMonitor: PrivacyMonitor
 //    @EnvironmentObject
 //    private var searchModel: StatsSearchViewModel
     
@@ -79,6 +81,7 @@ struct StatsView: View {
                     ratesViewModel: rvm
                 )
                 .smallSheet(sheetFraction)
+                .environmentObject(privacyMonitor)
             }
             .sheet(isPresented: $showFilters) {
                 filters
@@ -138,6 +141,7 @@ struct StatsView: View {
         FiltersView()
             .environmentObject(fvm)
             .environmentObject(pcvm)
+            .environmentObject(privacyMonitor)
     }
 }
 

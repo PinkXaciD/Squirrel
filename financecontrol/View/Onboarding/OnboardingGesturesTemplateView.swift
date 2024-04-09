@@ -96,9 +96,10 @@ struct OnboardingGesturesTemplateView: View {
     }
     
     private var spendingSection: some View {
-        var sum: Double {
+        var sum: Decimal {
             let sum = (10 * (Rates.fallback.rates[UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"] ?? 1))
-            return sum.rounded(.toNearestOrAwayFromZero)
+            let count = "\(Int(sum))".count
+            return pow(10, count - 1)
         }
         
         return Section {
