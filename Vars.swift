@@ -29,35 +29,6 @@ struct URLs {
     static let newGithubIssue: URL! = URL(string: "https://github.com/PinkXaciD/Squirrel/issues/new")
 }
 
-//struct UDKeys {
-//    private init() {}
-//    
-//    static let presentOnboarding = "presentOnboarding"
-//    
-//    static let color = "color"
-//    
-//    @available(*, deprecated, message: "Use boolean values `autoDarkMode` and `darkMode`")
-//    static let theme = "theme"
-//    
-//    static let defaultCurrency = "defaultCurrency"
-//    
-//    static let savedCurrencies = "savedCurrencies"
-//    
-//    static let minimizeLegend = "minimizeLegend"
-//    
-//    static let rates = "rates"
-//    
-//    static let updateTime = "updateTime"
-//    
-//    static let updateRates = "updateRates"
-//    
-//    static let addExpenseAction = "addExpenseAction"
-//    
-//    static let autoDarkMode = "autoDarkMode"
-//    
-//    static let darkMode = "darkMode"
-//}
-
 enum UDKeys: String {
     case presentOnboarding, color, defaultCurrency, savedCurrencies, minimizeLegend, rates, updateTime, updateRates, autoDarkMode, darkMode, privacyScreen
 }

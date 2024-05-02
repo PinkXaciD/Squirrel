@@ -43,6 +43,16 @@ struct PieChartView: View {
         PieChartLazyPageView<PieChartCompleteView>(viewSize: size)
             .invertLayoutDirection()
             .listRowInsets(.init(top: 20, leading: 0, bottom: 20, trailing: 0))
+//        #if DEBUG
+//            .overlay(alignment: .topLeading) {
+//                Text("\(pcvm.selection)")
+//                    .font(.largeTitle.bold())
+//                    .padding()
+//                    .background {
+//                        Color.red
+//                    }
+//            }
+//        #endif
     }
     
     private var legend: some View {

@@ -140,6 +140,20 @@ fileprivate struct LazyTab<Content: View>: View {
                 content
             }
         }
+//        #if DEBUG
+//        .overlay(alignment: .topTrailing) {
+//            HStack {
+//                Text(viewState.rawValue)
+//                
+//                Text(verbatim: "\(count)")
+//            }
+//            .font(.subheadline.bold())
+//            .padding()
+//            .background {
+//                Color.blue
+//            }
+//        }
+//        #endif
         .onAppear {
             if range.contains(selection) {
                 viewState = .active

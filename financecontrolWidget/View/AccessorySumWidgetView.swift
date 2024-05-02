@@ -24,7 +24,7 @@ struct AccessorySumWidgetView: View {
     var body: some View {
         if widgetFamily == .accessoryCircular {
             AccessoryCircularSumWidgetView(entry: entry)
-            } else {
+        } else {
             AccessoryRectangularSumWidgetView(entry: entry)
         }
     }

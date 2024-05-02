@@ -26,6 +26,7 @@ struct OnboardingCategoriesView: View {
             }
             .navigationBarHidden(true)
         }
+        .tint(.orange)
     }
     
     private var header: some View {
@@ -57,6 +58,7 @@ struct OnboardingCategoriesView: View {
                             showOverlay = true
                         }
                     }
+                    .tint(.orange)
             }
         } header: {
             header
@@ -69,6 +71,7 @@ struct OnboardingCategoriesView: View {
                 Button("Import existing data") {
                     presentImportSheet.toggle()
                 }
+                .tint(.orange)
             }
             
             ForEach(cdm.savedCategories) { category in
