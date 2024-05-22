@@ -16,7 +16,7 @@ struct OnboardingView: View {
     @State private var showOverlay: Bool = true
     
     let finalScreenNumber: Int = 3
-    let addSampleData: Bool = false
+    let addSampleData: Bool = true
     
     var body: some View {
         Group {
@@ -63,6 +63,7 @@ struct OnboardingView: View {
                 }
             }
             .animation(.smooth, value: showOverlay)
+            .ignoresSafeArea(.keyboard)
         }
         .ignoresSafeArea(.container)
     }

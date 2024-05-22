@@ -16,12 +16,49 @@ extension CoreDataModel {
             let request = SpendingEntity.fetchRequest()
             request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
             
+            var spendings = [SpendingEntity]()
+            var statsListData = StatsListData()
+//            var pieChartData = [NewPieChartData]()
+            
             do {
-                savedSpendings = try context.fetch(request)
+                spendings = try context.fetch(request)
+                savedSpendings = spendings
                 updateCharts = true
             } catch {
                 ErrorType(error: error).publish(file: #file, function: #function)
             }
+            
+            for spending in spendings {
+                let safeSpending = spending.safeObject()
+                let startOfDay = Calendar.current.startOfDay(for: safeSpending.wrappedDate)
+//                let startOfMonth = startOfDay.getFirstDayOfMonth()
+                //                var existingValue = statsListData[spending.wrappedDate] ?? []
+                //                existingValue.append(spending.safeObject())
+                
+                if statsListData[startOfDay] != nil {
+                    statsListData[startOfDay]?.append(safeSpending)
+                } else {
+                    statsListData.updateValue([safeSpending], forKey: startOfDay)
+                }
+                
+                
+                
+//                if let categoryID = safeSpending.categoryID {
+//                    if pieChartData[startOfMonth] != nil {
+//                        if let existing = pieChartData[startOfMonth]?[categoryID] {
+//                            pieChartData[startOfMonth]?[categoryID]?.append(safeSpending)
+//                        } else {
+//                            pieChartData[startOfMonth]?.updateValue([safeSpending], forKey: categoryID)
+//                        }
+//                    } else {
+//                        if let categoryID = safeSpending.categoryID {
+//                            pieChartData.updateValue([categoryID:[safeSpending]], forKey: startOfMonth)
+//                        }
+//                    }
+//                }
+            }
+            
+            self.statsListData = statsListData
         }
     }
     

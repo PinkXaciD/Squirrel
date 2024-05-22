@@ -101,9 +101,9 @@ extension View {
             .modifier(IOS15Padding())
     }
     
-    func invertLayoutDirection() -> some View {
+    func invertLayoutDirection(_ isActive: Bool = true) -> some View {
         return self
-            .modifier(InvertLayoutDirectionModifier())
+            .modifier(InvertLayoutDirectionModifier(isActive: isActive))
     }
 }
 
@@ -171,12 +171,17 @@ fileprivate struct SpendingAmountTextFieldStyleModifier: ViewModifier {
 
 fileprivate struct InvertLayoutDirectionModifier: ViewModifier {
     @Environment(\.layoutDirection) private var layoutDirection
+    let isActive: Bool
     
     func body(content: Content) -> some View {
-        if layoutDirection == .leftToRight {
-            return content.environment(\.layoutDirection, .rightToLeft)
+        if isActive {
+            if layoutDirection == .leftToRight {
+                return content.environment(\.layoutDirection, .rightToLeft)
+            } else {
+                return content.environment(\.layoutDirection, .leftToRight)
+            }
         } else {
-            return content.environment(\.layoutDirection, .leftToRight)
+            return content.environment(\.layoutDirection, layoutDirection)
         }
     }
 }

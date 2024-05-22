@@ -16,7 +16,7 @@ final class PieChartViewModel: ViewModel {
     private var cdm: CoreDataModel
     var fvm: FiltersViewModel
     
-    @Published var selection: Int = 0
+    @Published var selection: Int = 0 
     var previousSelection: Int = 0
     @Published var data: [ChartData]
     @Published var selectedCategory: CategoryEntity? = nil

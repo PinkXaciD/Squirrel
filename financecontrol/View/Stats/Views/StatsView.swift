@@ -22,9 +22,11 @@ struct StatsView: View {
     @EnvironmentObject
     private var fvm: FiltersViewModel
     @EnvironmentObject
+    private var listVM: StatsListViewModel
+    @EnvironmentObject
     private var privacyMonitor: PrivacyMonitor
-//    @EnvironmentObject
-//    private var searchModel: StatsSearchViewModel
+    @EnvironmentObject
+    private var searchModel: StatsSearchViewModel
     
     @Binding
     var entityToEdit: SpendingEntity?
@@ -91,6 +93,16 @@ struct StatsView: View {
                     .accentColor(.accentColor)
             }
             .navigationTitle("Stats")
+//            .overlay {
+//                if !searchModel.search.isEmpty {
+//                    List {
+//                        Text(searchModel.search)
+//                        Text(searchModel.search)
+//                        Text(searchModel.search)
+//                        Text(searchModel.search)
+//                    }
+//                }
+//            }
         }
         .navigationViewStyle(.stack)
     }

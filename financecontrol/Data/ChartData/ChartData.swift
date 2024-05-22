@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ChartData: Identifiable {
+struct ChartData: Identifiable, Equatable {
     let id: Int
     let date: Date
     var categories: [TSCategoryEntity]
@@ -351,6 +351,12 @@ struct ChartData: Identifiable {
         self.id = 0
     }
     
+    init(id: Int, date: Date, categories: [TSCategoryEntity]) {
+        self.id = id
+        self.date = date
+        self.categories = categories
+    }
+    
     private init() {
         self.id = 0
         self.date = Date()
@@ -359,5 +365,27 @@ struct ChartData: Identifiable {
     
     static func getEmpty() -> ChartData {
         return ChartData()
+    }
+}
+
+struct NewPieChartData: Identifiable, Equatable {
+    let id: Int
+    let sectors: [NewPieChartSectorData]
+    
+    lazy var sum: Double = {
+        sectors.reduce(0, { $1.sum })
+    }()
+}
+
+//[Int:[UUID:[NewPieChartSectorData]]]
+
+struct NewPieChartSectorData: Identifiable, Equatable {
+    let id: UUID
+    let name: String
+    let color: String
+    let sum: Double
+    
+    func addExpense(_ sum: Double) -> NewPieChartSectorData {
+        return NewPieChartSectorData(id: self.id, name: self.name, color: self.color, sum: self.sum + sum)
     }
 }

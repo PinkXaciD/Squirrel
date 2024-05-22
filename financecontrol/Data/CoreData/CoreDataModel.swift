@@ -24,6 +24,8 @@ final class CoreDataModel: ObservableObject {
     @Published
     var savedSpendings: [SpendingEntity] = []
     @Published
+    var statsListData: StatsListData = StatsListData()
+    @Published
     var savedCategories: [CategoryEntity] = []
     @Published
     var shadowedCategories: [CategoryEntity] = []
