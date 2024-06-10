@@ -12,6 +12,12 @@ extension UserDefaults {
         return self.dictionary(forKey: UDKeys.rates.rawValue) as? [String:Double]
     }
     
+    /// <#Description#>
+    /// - Returns: <#description#>
+    func getUnwrapedRates() -> [String:Double] {
+        return self.getRates() ?? Rates.fallback.rates
+    }
+    
     func getCurrencies() -> [Currency] {
         guard let value = self.array(forKey: UDKeys.savedCurrencies.rawValue) as? [String] else {
             return []

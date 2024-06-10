@@ -75,57 +75,32 @@ final class AddReturnViewModel: ViewModel {
             return
         }
         
-        if !Calendar.current.isDateInToday(date) {
-            Task {
-                let oldRates = try? await rvm.getRates(date).rates
-                
-                await MainActor.run {
-                    if let oldRates = oldRates {
-                        if countSum(doubleAmount, returns: returns) {
-                            return
-                        }
-                        
-                        cdm.addReturn(
-                            to: spending,
-                            amount: doubleAmount,
-                            amountUSD: doubleAmount / (oldRates[spending.wrappedCurrency] ?? 1),
-                            currency: spending.wrappedCurrency,
-                            date: date,
-                            name: name
-                        )
-                    } else {
-                        if countSum(doubleAmount, returns: returns) {
-                            return
-                        }
-                        
-                        cdm.addReturn(
-                            to: spending,
-                            amount: doubleAmount,
-                            amountUSD: doubleAmount / (rvm.rates[spending.wrappedCurrency] ?? 1),
-                            currency: spending.wrappedCurrency,
-                            date: date,
-                            name: name
-                        )
-                    }
-                }
-            }
-        } else {
-            if countSum(doubleAmount, returns: returns) {
-                return
-            }
-            
-            cdm.addReturn(
-                to: spending,
-                amount: doubleAmount,
-                amountUSD: doubleAmount / (rvm.rates[spending.wrappedCurrency] ?? 1),
-                currency: spending.wrappedCurrency,
-                date: date,
-                name: name
-            )
+        let currencyRate = spending.amount / spending.amountUSD
+        
+        if countSum(doubleAmount, returns: returns) {
+            return
         }
+        
+        cdm.addReturn(
+            to: spending,
+            amount: doubleAmount,
+            amountUSD: doubleAmount / currencyRate,
+            currency: spending.wrappedCurrency,
+            date: date,
+            name: name
+        )
     }
     
     func addFull() {
+//        cdm.addReturn(
+//            to: spending,
+//            amount: spending.amountWithReturns,
+//            amountUSD: spending.amountUSDWithReturns,
+//            currency: spending.wrappedCurrency,
+//            date: self.date,
+//            name: self.name
+//        )
+        
         var formatter: NumberFormatter {
             let formatter = NumberFormatter()
             formatter.maximumFractionDigits = 2
@@ -135,7 +110,6 @@ final class AddReturnViewModel: ViewModel {
         }
         
         self.currency = spending.wrappedCurrency
-        self.amount = String(spending.amountWithReturns)
         self.amount = formatter.string(from: spending.amountWithReturns as NSNumber) ?? String(spending.amountWithReturns).replacingOccurrences(of: ",", with: Locale.current.decimalSeparator ?? ".")
     }
     

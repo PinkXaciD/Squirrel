@@ -43,12 +43,16 @@ extension CoreDataModel {
     }
 }
 
-struct Currency: Hashable, Comparable {
+struct Currency: Hashable, Comparable, Identifiable {
     static func < (lhs: Currency, rhs: Currency) -> Bool {
         return (lhs.name ?? lhs.code) < (rhs.name ?? rhs.code)
     }
     
     let code: String
+    
+    var id: String {
+        self.code
+    }
     
     var name: String? {
         Locale.current.localizedString(forCurrencyCode: code)

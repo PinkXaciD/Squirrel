@@ -61,12 +61,13 @@ struct EditSpendingView: View {
             
             leadingToolbar
         }
-        .alert("Delete this expense?", isPresented: $alertIsPresented) {
-            Button("Cancel", role: .cancel) {}
+        .confirmationDialog("Delete this expense? \nYou can't undo this action.", isPresented: $alertIsPresented, titleVisibility: .visible) {
             Button("Delete", role: .destructive) {
                 dismiss()
                 vm.cdm.deleteSpending(entity)
             }
+            
+            Button("Cancel", role: .cancel) {}
         }
         .onChange(of: toDismiss) { _ in
             cancelButtonAction()

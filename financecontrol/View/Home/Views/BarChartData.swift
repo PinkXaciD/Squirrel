@@ -88,3 +88,22 @@ struct BarChartData {
         return sortedData.sorted(by: { $0.key > $1.key })
     }
 }
+
+struct NewBarChartData: Equatable {
+    let sum: Double
+    let bars: [Date:Double]
+    
+    init(sum: Double, bars: [Date:Double]) {
+        self.sum = sum
+        self.bars = bars
+    }
+    
+    init() {
+        self.sum = 0
+        self.bars = [:]
+    }
+    
+    var max: Double {
+        return bars.values.max() ?? 0
+    }
+}

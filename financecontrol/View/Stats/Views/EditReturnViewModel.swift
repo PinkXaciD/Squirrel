@@ -18,8 +18,8 @@ final class EditReturnViewModel: ViewModel {
     var oldAmount: Double
     var spending: SpendingEntity?
     var returnEntity: ReturnEntity
-    @ObservedObject private var cdm: CoreDataModel
-    @ObservedObject private var rvm: RatesViewModel
+    private var cdm: CoreDataModel
+    private var rvm: RatesViewModel
     
     init(returnEntity: ReturnEntity, cdm: CoreDataModel, rvm: RatesViewModel) {
         var formatter: NumberFormatter {
@@ -37,8 +37,8 @@ final class EditReturnViewModel: ViewModel {
         self.oldAmount = returnEntity.amount
         self.spending = returnEntity.spending
         self.returnEntity = returnEntity
-        self._cdm = .init(initialValue: cdm)
-        self._rvm = .init(initialValue: rvm)
+        self.cdm = cdm
+        self.rvm = rvm
     }
     
 //    var formatter: NumberFormatter {
@@ -59,50 +59,8 @@ final class EditReturnViewModel: ViewModel {
         }
     }
     
-    func edit() -> Bool {
-        cdm.editReturn(
-            entity: returnEntity,
-            amount: doubleAmount,
-            amountUSD: doubleAmount / (rvm.rates[spending?.wrappedCurrency ?? currency] ?? 1),
-            currency: spending?.wrappedCurrency ?? currency,
-            date: date,
-            name: name
-        )
-        
-        return true
-    }
-    
     func editFromSpending(spending: SpendingEntity) {
-        var amountUSD: Double {
-            if spending.wrappedCurrency == "USD" {
-                #if DEBUG
-                let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
-                logger.log("Currency is USD, skipping rates fetching...")
-                #endif
-                return doubleAmount
-            }
-            
-            var result: Double = 0
-            
-            if Calendar.current.isDateInToday(date) {
-                result = doubleAmount / (rvm.rates[spending.wrappedCurrency] ?? 1)
-            } else {
-                Task {
-                    let oldRates = try? await rvm.getRates(date).rates
-                    let preResult: Double = await MainActor.run {
-                        if let rate = oldRates?[spending.wrappedCurrency] {
-                            return doubleAmount / rate
-                        } else {
-                            return doubleAmount / (rvm.rates[spending.wrappedCurrency] ?? 1)
-                        }
-                    }
-                    
-                    result = preResult
-                }
-            }
-            
-            return result
-        }
+        let amountUSD: Double = doubleAmount / (spending.amount / spending.amountUSD)
         
         cdm.editRerturnFromSpending(
             spending: spending,

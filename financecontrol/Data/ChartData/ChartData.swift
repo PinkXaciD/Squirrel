@@ -254,7 +254,7 @@ struct ChartData: Identifiable, Equatable {
 //        self.categories = Array(tempCategories.values)
     }
     
-    init(firstDate: Date, secondDate: Date, cdm: CoreDataModel, categories filterCategories: [UUID]) {
+    init(firstDate: Date, secondDate: Date, cdm: CoreDataModel, categories filterCategories: [UUID], withReturns: Bool? = nil, currencies: [String]) {
         var categories: [TSCategoryEntity] = []
         
         let spendings = cdm.savedSpendings.filter { spending in
@@ -262,15 +262,21 @@ struct ChartData: Identifiable, Equatable {
                 return false
             }
             
-            if filterCategories.isEmpty {
-                return true
+            var result = true
+            
+            if let catId = spending.category?.id, !filterCategories.isEmpty {
+                result = filterCategories.contains(catId)
             }
             
-            guard let catId = spending.category?.id else {
-                return false
+            if let withReturns, result {
+                result = withReturns == !spending.returnsArr.isEmpty
             }
             
-            return filterCategories.contains(catId)
+            if !currencies.isEmpty, result {
+                result = currencies.contains(spending.wrappedCurrency)
+            }
+            
+            return result
         }
         .map { $0.safeObject() }
         

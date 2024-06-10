@@ -25,6 +25,8 @@ struct AddReturnView: View {
             List {
                 mainSection
                 
+                commentSection
+                
                 addFullButton
             }
             .toolbar {
@@ -74,7 +76,11 @@ struct AddReturnView: View {
     private var mainSection: some View {
         Section(header: header) {
             DatePicker("Date", selection: $vm.date, in: spending.wrappedDate...Date.now)
-            
+        }
+    }
+    
+    private var commentSection: some View {
+        Section {
             if #available(iOS 16.0, *) {
                 TextField("Comment", text: $vm.name, axis: .vertical)
                     .focused($focusedField, equals: .name)
@@ -82,6 +88,8 @@ struct AddReturnView: View {
                 TextField("Comment", text: $vm.name)
                     .focused($focusedField, equals: .name)
             }
+        } header: {
+            Text("Comment")
         }
     }
     
@@ -89,6 +97,7 @@ struct AddReturnView: View {
         Section {
             Button("Return full amount") {
                 vm.addFull()
+//                dismiss()
             }
             .disabled(spending.amountWithReturns == 0 || (Double(vm.amount.replacingOccurrences(of: ",", with: ".")) ?? 0) == spending.amountWithReturns)
         }

@@ -15,11 +15,8 @@ struct BarChartGenerator: View {
     @State private var itemSelected: Int = -1
     
     var body: some View {
-        let chartData = BarChartData(data: cdm.savedSpendings, usdRates: rvm.rates)
-        let data = chartData.sortData(true)
-        
         VStack(alignment: .center) {
-            BarChart(itemSelected: $itemSelected, data: data)
+            BarChart(itemSelected: $itemSelected)
             
             Divider()
                 .padding(.vertical, 5)
@@ -32,12 +29,9 @@ struct BarChartGenerator: View {
     }
     
     var legend: some View {
-        let chartData = BarChartData(data: cdm.savedSpendings, usdRates: rvm.rates)
-        let data = chartData.sortData(false)
-        
         switch itemSelected {
         case 0...6:
-            return legendGenerator(data: data, index: itemSelected)
+            return legendGenerator(data: cdm.barChartData.bars.sorted(by: { $0.key > $1.key }), index: itemSelected)
         default:
             return legendGenerator(data: nil, index: 0)
         }
@@ -45,31 +39,44 @@ struct BarChartGenerator: View {
     
     private func legendGenerator(data: [(key: Date, value: Double)]?, index: Int) -> some View {
         var date: String = ""
-        var dateFormatter: DateFormatter {
-            let formatter: DateFormatter = .init()
-            formatter.timeStyle = .none
-            formatter.dateStyle = .long
-            return formatter
-        }
         
         if let key = data?[index].key {
-            date = dateFormatter.string(from: key)
+            date = dateFormat(key)
         } else {
-            date = "Past 7 days"
+            date = NSLocalizedString("past-7-days-home", comment: "")
         }
         
         var amount: String = ""
         if let value = data?[index].value {
             amount = value.formatted(.currency(code: defaultCurrency))
         } else {
-            amount = String(cdm.operationsSumWeek(rvm.rates[defaultCurrency] ?? 1).formatted(.currency(code: defaultCurrency)))
+            amount = cdm.barChartData.sum.formatted(.currency(code: defaultCurrency))
         }
         
         return VStack {
-            Text(LocalizedStringKey(date))
+            Text(date)
             Text(amount)
                 .amountStyle()
                 .padding(-3)
+            
+//            Text(itemSelected == -1 ? "Average: \((cdm.barChartData.sum/7).formatted(.currency(code: defaultCurrency))) a day" : countAnalytics(data?[index].value ?? 0))
+        }
+    }
+    
+    private func dateFormat(_ date: Date) -> String {
+        var dateFormatter: DateFormatter {
+            let formatter: DateFormatter = .init()
+            formatter.timeStyle = .none
+            formatter.dateStyle = .medium
+            return formatter
+        }
+        
+        if Calendar.current.isDateInToday(date) {
+            return NSLocalizedString("Today", comment: "")
+        } else if Calendar.current.isDateInYesterday(date) {
+            return NSLocalizedString("Yesterday", comment: "")
+        } else {
+            return dateFormatter.string(from: date)
         }
     }
 }

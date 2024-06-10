@@ -23,7 +23,9 @@ final class FiltersViewModel: ViewModel {
     @Published
     var updateList: Bool
     @Published
-    var search: String
+    var withReturns: Bool?
+    @Published
+    var currencies: [String]
     var cancellables = Set<AnyCancellable>()
     
     init() {
@@ -31,8 +33,8 @@ final class FiltersViewModel: ViewModel {
         self.startFilterDate = .now.getFirstDayOfMonth()
         self.endFilterDate = .now
         self.filterCategories = []
+        self.currencies = []
         self.updateList = false
-        self.search = ""
         
         #if DEBUG
         let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
@@ -53,6 +55,8 @@ final class FiltersViewModel: ViewModel {
         self.endFilterDate = .now
         self.filterCategories = []
         self.updateList = true
+        self.withReturns = nil
+        self.currencies = []
     }
     
 //    private func subscribeToSelection() {

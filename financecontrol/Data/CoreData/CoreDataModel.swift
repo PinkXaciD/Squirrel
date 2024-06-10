@@ -26,6 +26,10 @@ final class CoreDataModel: ObservableObject {
     @Published
     var statsListData: StatsListData = StatsListData()
     @Published
+    var barChartData: NewBarChartData = NewBarChartData()
+    @Published
+    var usedCurrencies: Set<Currency> = .init()
+    @Published
     var savedCategories: [CategoryEntity] = []
     @Published
     var shadowedCategories: [CategoryEntity] = []

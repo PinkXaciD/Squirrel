@@ -16,7 +16,7 @@ struct OnboardingView: View {
     @State private var showOverlay: Bool = true
     
     let finalScreenNumber: Int = 3
-    let addSampleData: Bool = true
+    let addSampleData: Bool = false
     
     var body: some View {
         Group {

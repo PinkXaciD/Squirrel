@@ -183,7 +183,7 @@ struct StatsListView: View {
         
         if fvm.applyFilters {
 //            print("Apply filters") // TODO: Remove
-            return date > fvm.startFilterDate && date <= fvm.endFilterDate
+            return date >= fvm.startFilterDate && date <= fvm.endFilterDate
         }
         
         if vm.selection == 0 {
@@ -205,8 +205,18 @@ struct StatsListView: View {
         
         var result: Bool = true
         
-        if fvm.applyFilters, !fvm.filterCategories.isEmpty, let spendingCategoryID = entity.categoryID {
-            result = fvm.filterCategories.contains(spendingCategoryID)
+        if fvm.applyFilters, let spendingCategoryID = entity.categoryID {
+            if !fvm.filterCategories.isEmpty {
+                result = fvm.filterCategories.contains(spendingCategoryID)
+            }
+            
+            if let withReturns = fvm.withReturns, result {
+                result = !entity.returnsArr.isEmpty == withReturns
+            }
+            
+            if !fvm.currencies.isEmpty, result {
+                result = fvm.currencies.contains(entity.wrappedCurrency)
+            }
         }
         
         let trimmedSearch = searchModel.search.trimmingCharacters(in: .whitespacesAndNewlines)

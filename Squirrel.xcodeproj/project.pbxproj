@@ -71,6 +71,7 @@
 		8D6059E42AB87AF60043A293 /* RatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6059E32AB87AF60043A293 /* RatesView.swift */; };
 		8D64ABEB2B21D3EF008C025C /* StatsSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D64ABEA2B21D3EF008C025C /* StatsSearchView.swift */; };
 		8D65652F2B3EE981007819D3 /* CategoriesCoreDataModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D65652E2B3EE981007819D3 /* CategoriesCoreDataModelTests.swift */; };
+		8D6B3E602C0DE77D00C4A97A /* Line.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6B3E5F2C0DE77D00C4A97A /* Line.swift */; };
 		8D6E44102B18C53100FDFF9D /* ReturnEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6E440E2B18C53100FDFF9D /* ReturnEntity+CoreDataClass.swift */; };
 		8D6E44152B18C5AE00FDFF9D /* ReturnEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6E44132B18C5AE00FDFF9D /* ReturnEntity+CoreDataProperties.swift */; };
 		8D6E441B2B18C6E800FDFF9D /* ReturnsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6E441A2B18C6E800FDFF9D /* ReturnsModel.swift */; };
@@ -131,6 +132,7 @@
 		8DCB302D2A97314400DC9ABB /* StatsRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCB302C2A97314400DC9ABB /* StatsRow.swift */; };
 		8DCB302F2A97578F00DC9ABB /* ViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCB302E2A97578F00DC9ABB /* ViewExtensions.swift */; };
 		8DCB60772B6E6FAA00B94872 /* ApplePie in Frameworks */ = {isa = PBXBuildFile; productRef = 8DCB60762B6E6FAA00B94872 /* ApplePie */; };
+		8DD0526D2C133E3F002F752E /* ToSafeUnsafeObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD0526C2C133E3F002F752E /* ToSafeUnsafeObject.swift */; };
 		8DD5C38C2A603F4500FC862C /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD5C38B2A603F4500FC862C /* Formatters.swift */; };
 		8DD5C38F2A607F1C00FC862C /* CategorySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD5C38E2A607F1C00FC862C /* CategorySelector.swift */; };
 		8DDFD4742A68249100493753 /* DefaultCurrencySelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DDFD4732A68249100493753 /* DefaultCurrencySelectorView.swift */; };
@@ -243,6 +245,7 @@
 		8D6059E32AB87AF60043A293 /* RatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatesView.swift; sourceTree = "<group>"; };
 		8D64ABEA2B21D3EF008C025C /* StatsSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsSearchView.swift; sourceTree = "<group>"; };
 		8D65652E2B3EE981007819D3 /* CategoriesCoreDataModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoriesCoreDataModelTests.swift; sourceTree = "<group>"; };
+		8D6B3E5F2C0DE77D00C4A97A /* Line.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Line.swift; sourceTree = "<group>"; };
 		8D6E440E2B18C53100FDFF9D /* ReturnEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReturnEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
 		8D6E44132B18C5AE00FDFF9D /* ReturnEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReturnEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		8D6E441A2B18C6E800FDFF9D /* ReturnsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReturnsModel.swift; sourceTree = "<group>"; };
@@ -307,6 +310,7 @@
 		8DCB302A2A971C2F00DC9ABB /* OtherExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OtherExtensions.swift; path = financecontrol/Extensions/OtherExtensions.swift; sourceTree = SOURCE_ROOT; };
 		8DCB302C2A97314400DC9ABB /* StatsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = StatsRow.swift; path = financecontrol/View/Stats/Views/StatsRow.swift; sourceTree = SOURCE_ROOT; };
 		8DCB302E2A97578F00DC9ABB /* ViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ViewExtensions.swift; path = financecontrol/Extensions/ViewExtensions.swift; sourceTree = SOURCE_ROOT; };
+		8DD0526C2C133E3F002F752E /* ToSafeUnsafeObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToSafeUnsafeObject.swift; sourceTree = "<group>"; };
 		8DD5C38B2A603F4500FC862C /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
 		8DD5C38E2A607F1C00FC862C /* CategorySelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategorySelector.swift; sourceTree = "<group>"; };
 		8DDFD4732A68249100493753 /* DefaultCurrencySelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultCurrencySelectorView.swift; sourceTree = "<group>"; };
@@ -515,6 +519,7 @@
 		8D54F4F92B96331800B17886 /* Universal */ = {
 			isa = PBXGroup;
 			children = (
+				8D6B3E612C1216C900C4A97A /* Shapes */,
 				8D7710A62B60615D00D3ECF5 /* UniversalViews.swift */,
 				8D54F4FA2B96335100B17886 /* CustomContentUnavailableView.swift */,
 			);
@@ -549,6 +554,14 @@
 				8DAFF8BE2B3A11F9001D5A9D /* Rates.swift */,
 			);
 			path = Rates;
+			sourceTree = "<group>";
+		};
+		8D6B3E612C1216C900C4A97A /* Shapes */ = {
+			isa = PBXGroup;
+			children = (
+				8D6B3E5F2C0DE77D00C4A97A /* Line.swift */,
+			);
+			path = Shapes;
 			sourceTree = "<group>";
 		};
 		8D7EFB092A850934009797E8 /* Extensions */ = {
@@ -815,6 +828,7 @@
 				8D7FCA542B16A59C009AAAEB /* Localizable.xcstrings */,
 				8DBFEBF72A49ED7600165414 /* View */,
 				8D2240B92B0F947B00D5572B /* ViewModel */,
+				8DD0526B2C133E24002F752E /* Protocols */,
 				8D4E08162AAA14FA00B3544F /* Data */,
 				8D7EFB092A850934009797E8 /* Extensions */,
 				8D8EA1912B2A18A3009B8B5D /* Wrappers */,
@@ -837,6 +851,14 @@
 				8D54F4F92B96331800B17886 /* Universal */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		8DD0526B2C133E24002F752E /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				8DD0526C2C133E3F002F752E /* ToSafeUnsafeObject.swift */,
+			);
+			path = Protocols;
 			sourceTree = "<group>";
 		};
 		8DFA1EE12B4C1F6500B97113 /* ViewModel */ = {
@@ -1093,6 +1115,7 @@
 				8D6059E42AB87AF60043A293 /* RatesView.swift in Sources */,
 				8D75E5B02A67FAF9009CA5C6 /* ColorAndIconView.swift in Sources */,
 				8DEC3FF12AD580D700F5D82E /* DebugView.swift in Sources */,
+				8D6B3E602C0DE77D00C4A97A /* Line.swift in Sources */,
 				8DE80D8F2B8CF5E300B6ACA8 /* StatsListViewModel.swift in Sources */,
 				8D05C6D82AE0479E0097078A /* ExportImportView.swift in Sources */,
 				8D5CBE782B84F68300435335 /* CoreDataErrors.swift in Sources */,
@@ -1130,6 +1153,7 @@
 				8D4E081A2AAA15B900B3544F /* CategoriesModel.swift in Sources */,
 				8D2AD7D02BA1CE28001DCC61 /* OnboardingCurrencyView.swift in Sources */,
 				8D88CDC02AA0E37000668DEC /* CategoryEntity+CoreDataClass.swift in Sources */,
+				8DD0526D2C133E3F002F752E /* ToSafeUnsafeObject.swift in Sources */,
 				8DDFD4742A68249100493753 /* DefaultCurrencySelectorView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1209,7 +1233,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 19;
+				CURRENT_PROJECT_VERSION = 20;
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1248,7 +1272,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 19;
+				CURRENT_PROJECT_VERSION = 20;
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1409,7 +1433,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 19;
+				CURRENT_PROJECT_VERSION = 20;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				ENABLE_PREVIEWS = YES;
@@ -1454,7 +1478,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 19;
+				CURRENT_PROJECT_VERSION = 20;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 7C2VKHXNS9;
 				ENABLE_PREVIEWS = YES;
