@@ -14,25 +14,30 @@ struct OnboardingCurrencyView: View {
     @State private var showButton: Bool = false
     @FocusState private var searchIsFocused: Bool
     
-    var currencies: [String] {
-        var result = Locale.customCommonISOCurrencyCodes
-        result.sort { first, second in
-            let name1 = Locale.current.localizedString(forCurrencyCode: first) ?? first
-            let name2 = Locale.current.localizedString(forCurrencyCode: second) ?? second
-            return name1 < name2
-        }
-        
-        return result
-    }
-    
     var body: some View {
-        List {
-            searchSection
+        VStack(spacing: 0) {
+            header
+                .padding(.horizontal)
+                .padding(.top)
+                .padding(.top, 30)
             
-            recommendedSection
-            
-            currenciesSection
+            List {
+                if search.isEmpty {
+                    recommendedSection
+                }
+                
+                currenciesSection
+            }
+            .overlay(alignment: .top) {
+                LinearGradient(
+                    colors: [Color(uiColor: .systemGroupedBackground), Color(uiColor: .systemGroupedBackground).opacity(0)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(width: UIScreen.main.bounds.width - 20, height: 20)
+            }
         }
+        .background(Color(uiColor: .systemGroupedBackground))
         .onChange(of: search) { value in
             if value.isEmpty {
                 showButton = false
@@ -47,8 +52,19 @@ struct OnboardingCurrencyView: View {
         }
     }
     
-    private var searchSection: some View {
-        Section {
+    private var header: some View {
+        VStack(alignment: .leading, spacing: 15) {
+            VStack(alignment: .leading) {
+                Text("Select currency")
+                    .font(.system(.largeTitle).bold())
+                
+                Text("You can change default currency or add more later in settings")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+            }
+            .textCase(nil)
+            .foregroundColor(.primary)
+            
             HStack(spacing: 5) {
                 Image(systemName: "magnifyingglass")
                     .font(.body.bold())
@@ -57,6 +73,8 @@ struct OnboardingCurrencyView: View {
                 
                 TextField("Search", text: $search)
                     .focused($searchIsFocused)
+                    .tint(.orange)
+                    .accentColor(.orange)
                 
                 Button {
                     search = ""
@@ -75,38 +93,49 @@ struct OnboardingCurrencyView: View {
                 .disabled(!showButton)
                 .animation(.default, value: showButton)
             }
-        } header: {
-            VStack(alignment: .leading) {
-                Text("Select currency")
-                    .font(.system(.largeTitle).bold())
-                
-                Text("You can change default currency or add more later in settings")
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
+            .padding(9)
+            .padding(.horizontal, 3)
+            .background {
+                RoundedRectangle(cornerRadius: 15)
+                    .fill(Color(uiColor: .secondarySystemGroupedBackground))
             }
-            .textCase(nil)
-            .foregroundColor(.primary)
-            .listRowInsets(.init(top: 50, leading: 0, bottom: 20, trailing: 0))
         }
     }
     
     private var recommendedSection: some View {
         Section {
-            getRow(UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD")
+            getRow(Locale.current.currencyCode ?? "USD")
         } header: {
             Text("Recommended")
         }
     }
     
     private var currenciesSection: some View {
-        Section {
-            ForEach(searchFunc(), id: \.self) { code in
-                getRow(code)
+        let searchResult = searchFunc()
+        let sortedKeys = Array(searchResult.keys).sorted(by: <)
+        
+        return Group {
+            if !searchResult.isEmpty {
+                ForEach(sortedKeys, id: \.self) { key in
+                    Section {
+                        ForEach(searchResult[key]?.sorted(by: { Locale.current.localizedString(forCurrencyCode: $0) ?? "" < Locale.current.localizedString(forCurrencyCode: $1) ?? "" }) ?? [], id: \.self) { code in
+                            getRow(code)
+                        }
+                    } header: {
+                        Text(key)
+                    } footer: {
+                        if key == sortedKeys.last ?? "Z" {
+                            Rectangle()
+                                .fill(.clear)
+                                .frame(height: 100)
+                        }
+                    }
+                }
+            } else {
+                CustomContentUnavailableView.search(search)
+                    .listRowInsets(.init(top: 20, leading: 0, bottom: 20, trailing: 0))
+                    .frame(maxWidth: .infinity)
             }
-        } footer: {
-            Rectangle()
-                .fill(Color(uiColor: .systemGroupedBackground))
-                .frame(height: 100)
         }
     }
     
@@ -131,13 +160,19 @@ struct OnboardingCurrencyView: View {
         }
     }
     
-    private func searchFunc() -> [String] {
+    private func searchFunc() -> [String:[String]] {
         let trimmedSearch = search.trimmingCharacters(in: .whitespacesAndNewlines)
         
         if trimmedSearch.isEmpty {
-            return currencies
+            return Dictionary(grouping: Locale.customCommonISOCurrencyCodes) { code in
+                (Locale.current.localizedString(forCurrencyCode: code) ?? code).prefix(1).capitalized
+            }
         } else {
-            return currencies.filter { $0.localizedStandardContains(trimmedSearch) || (Locale.current.localizedString(forCurrencyCode: $0) ?? "").localizedCaseInsensitiveContains(trimmedSearch) }
+            let filtered = Locale.customCommonISOCurrencyCodes.filter { $0.localizedStandardContains(trimmedSearch) || (Locale.current.localizedString(forCurrencyCode: $0) ?? "").localizedCaseInsensitiveContains(trimmedSearch) }
+            
+            return Dictionary(grouping: filtered) { code in
+                (Locale.current.localizedString(forCurrencyCode: code) ?? code).prefix(1).capitalized
+            }
         }
     }
 }

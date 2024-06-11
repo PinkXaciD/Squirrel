@@ -36,6 +36,10 @@ struct FiltersView: View {
                 
                 categoriesSection
                 
+                currenciesSection
+                
+                returnsSection
+                
                 clearButton
             }
             .navigationTitle("Filters")
@@ -123,6 +127,56 @@ struct FiltersView: View {
             
             Text("\(fvm.filterCategories.count) selected")
                 .foregroundColor(.secondary)
+        }
+    }
+    
+    // MARK: Returns
+    private var returnsSection: some View {
+        Section {
+            NavigationLink {
+                FiltersReturnsView(withReturns: fvm.withReturns)
+            } label: {
+                HStack {
+                    Text("Returns")
+                    
+                    Spacer()
+                    
+                    switch fvm.withReturns {
+                    case nil:
+                        Text("Disabled")
+                            .foregroundColor(.secondary)
+                    case true:
+                        Text("With returns")
+                            .foregroundColor(.secondary)
+                    case false:
+                        Text("Without returns")
+                            .foregroundColor(.secondary)
+                    default:
+                        Text("")
+                    }
+                }
+            }
+        } header: {
+            Text("Returns")
+        }
+    }
+    
+    private var currenciesSection: some View {
+        Section {
+            NavigationLink {
+                FiltersCurrenciesView()
+            } label: {
+                HStack {
+                    Text("Currencies")
+                    
+                    Spacer()
+                    
+                    Text("\(fvm.currencies.count) selected")
+                        .foregroundColor(.secondary)
+                }
+            }
+        } header: {
+            Text("Currencies")
         }
     }
     
@@ -282,6 +336,159 @@ struct FiltersCategoriesView: View {
         self._categories = categories
         self._applyFilters = applyFilters
         self.listData = (cdm.savedCategories + cdm.shadowedCategories).sorted { $0.name ?? "" < $1.name ?? "" }
+    }
+}
+
+struct FiltersReturnsView: View {
+    @Environment(\.dismiss)
+    private var dismiss
+    
+    @EnvironmentObject
+    private var fvm: FiltersViewModel
+    
+    @State
+    var withReturns: Bool?
+    
+    var body: some View {
+        List {
+            Section {
+                Button {
+                    if fvm.withReturns != true {
+                        fvm.withReturns = true
+                    }
+                } label: {
+                    HStack {
+                        Text("With returns")
+                            .foregroundColor(.primary)
+                        
+                        Spacer()
+                        
+                        Image(systemName: "checkmark")
+                            .font(.body.bold())
+                            .opacity(fvm.withReturns == true ? 1 : 0)
+                            .animation(.default.speed(3), value: fvm.withReturns)
+                    }
+                }
+                
+                Button {
+                    if fvm.withReturns != false {
+                        fvm.withReturns = false
+                    }
+                } label: {
+                    HStack {
+                        Text("Without returns")
+                            .foregroundColor(.primary)
+                        
+                        Spacer()
+                        
+                        Image(systemName: "checkmark")
+                            .font(.body.bold())
+                            .opacity(fvm.withReturns == false ? 1 : 0)
+                            .animation(.default.speed(3), value: fvm.withReturns)
+                    }
+                }
+                
+                Button {
+                    if fvm.withReturns != nil {
+                        fvm.withReturns = nil
+                    }
+                } label: {
+                    HStack {
+                        Text("Disable")
+                            .foregroundColor(.primary)
+                        
+                        Spacer()
+                        
+                        Image(systemName: "checkmark")
+                            .font(.body.bold())
+                            .opacity(fvm.withReturns == nil ? 1 : 0)
+                            .animation(.default.speed(3), value: fvm.withReturns)
+                    }
+                }
+            }
+        }
+        .navigationTitle("Returns")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    dismiss()
+                } label: {
+                    Text("Done")
+                        .font(.body.bold())
+                }
+            }
+        }
+    }
+}
+
+struct FiltersCurrenciesView: View {
+    @Environment(\.dismiss)
+    private var dismiss
+    
+    @EnvironmentObject 
+    private var fvm: FiltersViewModel
+    @EnvironmentObject
+    private var cdm: CoreDataModel
+    
+    var body: some View {
+        List {
+            ForEach(cdm.usedCurrencies.sorted(by: <)) { currency in
+                Button {
+                    rowAction(currency.code)
+                } label: {
+                    rowLabel(currency)
+                }
+            }
+            
+            Section {
+                Button("Clear selection", role: .destructive) {
+                    fvm.currencies = []
+                }
+                .disabled(fvm.currencies.isEmpty)
+                .animation(.default.speed(3), value: fvm.currencies)
+            }
+        }
+        .navigationTitle("Currencies")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            trailingToolbar
+        }
+    }
+    
+    private var trailingToolbar: ToolbarItem<Void, some View> {
+        ToolbarItem(placement: .topBarTrailing) {
+            Button {
+                dismiss()
+            } label: {
+                Text("Done")
+                    .bold()
+            }
+
+        }
+    }
+    
+    private func rowLabel(_ currency: Currency) -> some View {
+        HStack {
+            Text(currency.name ?? currency.code)
+                .foregroundColor(.primary)
+            
+            Spacer()
+            
+            Image(systemName: "checkmark")
+                .font(.body.bold())
+                .opacity(fvm.currencies.contains(currency.code) ? 1 : 0)
+                .animation(.default.speed(3), value: fvm.currencies)
+        }
+    }
+    
+    private func rowAction(_ code: String) {
+        if let index = fvm.currencies.firstIndex(of: code) {
+            fvm.currencies.remove(at: index)
+            return
+        }
+        
+        fvm.currencies.append(code)
     }
 }
 

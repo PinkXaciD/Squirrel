@@ -63,6 +63,7 @@ struct OnboardingView: View {
                 }
             }
             .animation(.smooth, value: showOverlay)
+            .ignoresSafeArea(.keyboard)
         }
         .ignoresSafeArea(.container)
     }

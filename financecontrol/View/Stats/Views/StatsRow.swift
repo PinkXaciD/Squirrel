@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+#if DEBUG
+import OSLog
+#endif
+
 struct StatsRow: View {
     @EnvironmentObject 
     private var cdm: CoreDataModel
@@ -22,6 +26,10 @@ struct StatsRow: View {
     var entityToAddReturn: SpendingEntity?
     @Binding
     var edit: Bool
+    
+    #if DEBUG
+    let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
+    #endif
     
     var body: some View {
         Button {
@@ -117,6 +125,10 @@ struct StatsRow: View {
         self._entityToEdit = entityToEdit
         self._entityToAddReturn = entityToAddReturn
         self._edit = edit
+        
+        #if DEBUG
+//        logger.log("Sum: \(entity.amountWithReturns), date: \(entity.wrappedDate) initialized")
+        #endif
     }
     
     private func deleteSpending(_ entity: SpendingEntity) {

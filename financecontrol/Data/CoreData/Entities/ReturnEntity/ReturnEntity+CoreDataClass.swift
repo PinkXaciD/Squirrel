@@ -41,3 +41,45 @@ public final class ReturnEntity: NSManagedObject, Codable {
         try container.encode(date, forKey: .date)
     }
 }
+
+extension ReturnEntity: ToSafeObject {
+    func safeObject() throws -> TSReturnEntity {
+        TSReturnEntity(
+            amount: self.amount,
+            amountUSD: self.amountUSD,
+            currency: self.currency,
+            date: self.date,
+            id: self.id,
+            name: self.name,
+            spendingID: self.spending?.wrappedId
+        )
+    }
+}
+
+struct TSReturnEntity: ToUnsafeObject, Hashable, Identifiable {
+    let amount: Double
+    let amountUSD: Double
+    let currency: String?
+    let date: Date?
+    let id: UUID?
+    let name: String?
+    let spendingID: UUID?
+    
+    func unsafeObject(in context: NSManagedObjectContext) throws -> ReturnEntity {
+        guard let id = self.id else {
+            throw CoreDataError.failedToGetEntityDescription // TODO: Fix
+        }
+        
+        return try context.performAndWait {
+            let predicate = NSPredicate(format: "id == %@", id as NSUUID)
+            let request = ReturnEntity.fetchRequest()
+            request.predicate = predicate
+            
+            guard let unsafeEntity = try context.fetch(request).first else {
+                throw CoreDataError.failedToFindCategory // TODO: Fix
+            }
+            
+            return unsafeEntity
+        }
+    }
+}

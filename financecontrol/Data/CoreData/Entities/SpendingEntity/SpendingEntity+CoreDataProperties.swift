@@ -44,7 +44,6 @@ extension SpendingEntity {
     
     public var amountUSDWithReturns: Double {
         guard
-            let returnsArr = returns?.allObjects as? [ReturnEntity],
             !returnsArr.isEmpty
         else {
             return amountUSD
@@ -257,14 +256,4 @@ struct TSSpendingEntity: ToUnsafeObject, Hashable, Identifiable {
             return unsafeEntity
         }
     }
-}
-
-protocol ToSafeObject {
-    associatedtype SafeType
-    func safeObject() throws -> SafeType
-}
-
-protocol ToUnsafeObject {
-    associatedtype UnsafeType: NSManagedObject
-    func unsafeObject(in context: NSManagedObjectContext) throws -> UnsafeType
 }

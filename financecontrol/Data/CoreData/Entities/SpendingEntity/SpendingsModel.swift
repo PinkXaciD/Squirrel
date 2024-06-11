@@ -16,12 +16,75 @@ extension CoreDataModel {
             let request = SpendingEntity.fetchRequest()
             request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
             
+            var spendings = [SpendingEntity]()
+            var statsListData = StatsListData()
+            var barChartData = [Date:Double]()
+            var barChartSum: Double = 0
+            let weekAgo = {
+                let date = Calendar.current.startOfDay(for: Date())
+                return Calendar.current.date(byAdding: .day, value: -7, to: date) ?? Date()
+            }()
+            var currencies = Set<Currency>()
+            
             do {
-                savedSpendings = try context.fetch(request)
+                spendings = try context.fetch(request)
+                savedSpendings = spendings
                 updateCharts = true
             } catch {
                 ErrorType(error: error).publish(file: #file, function: #function)
             }
+            
+            for number in 0..<7 {
+                barChartData.updateValue(0, forKey: Calendar.current.date(byAdding: .day, value: -number, to: Calendar.current.startOfDay(for: Date())) ?? Date())
+            }
+            
+            for spending in spendings {
+                let safeSpending = spending.safeObject()
+                let startOfDay = Calendar.current.startOfDay(for: safeSpending.wrappedDate)
+//                let startOfMonth = startOfDay.getFirstDayOfMonth()
+//                var existingValue = statsListData[spending.wrappedDate] ?? []
+//                existingValue.append(spending.safeObject())
+                
+                currencies.insert(Currency(code: safeSpending.wrappedCurrency))
+                
+                // Stats list data
+                if statsListData[startOfDay] != nil {
+                    statsListData[startOfDay]?.append(safeSpending)
+                } else {
+                    statsListData.updateValue([safeSpending], forKey: startOfDay)
+                }
+                
+                // Bar chart data
+                if startOfDay > weekAgo {
+                    let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
+                    let rate = UserDefaults.standard.getRates()?[defaultCurrency] ?? 1
+                    
+                    let sum = defaultCurrency == safeSpending.wrappedCurrency ? safeSpending.amountWithReturns : (safeSpending.amountUSDWithReturns * rate)
+                    
+                    barChartData.updateValue((barChartData[startOfDay] ?? 0) + sum, forKey: startOfDay)
+                    
+                    barChartSum += sum
+                }
+                
+//                if let categoryID = safeSpending.categoryID {
+//                    if pieChartData[startOfMonth] != nil {
+//                        if let existing = pieChartData[startOfMonth]?[categoryID] {
+//                            pieChartData[startOfMonth]?[categoryID]?.append(safeSpending)
+//                        } else {
+//                            pieChartData[startOfMonth]?.updateValue([safeSpending], forKey: categoryID)
+//                        }
+//                    } else {
+//                        if let categoryID = safeSpending.categoryID {
+//                            pieChartData.updateValue([categoryID:[safeSpending]], forKey: startOfMonth)
+//                        }
+//                    }
+//                }
+            } // End of for loop
+            
+//            print(barChartData)
+            self.statsListData = statsListData
+            self.barChartData = NewBarChartData(sum: barChartSum, bars: barChartData)
+            self.usedCurrencies = currencies
         }
     }
     
@@ -345,30 +408,30 @@ extension CoreDataModel {
         return savedSpendings.compactMap { $0.amountUSD }.reduce(0, +)
     }
     
-    func operationsSumWeek(_ usdRate: Double = 1) -> Double {
-        let currentCalendar = Calendar.current
-        let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue)
-        let currentDateComponents = currentCalendar.dateComponents([.day, .month, .year, .era], from: .now)
-        let currentDate = currentCalendar.date(from: currentDateComponents) ?? .distantFuture
-        let startDate = currentCalendar.date(byAdding: .day, value: -6, to: currentDate) ?? .distantFuture
-        let predicate = NSPredicate(format: "date > %@", startDate as CVarArg)
-        
-        var spendings: [SpendingEntity] = []
-        do {
-            spendings = try getSpendings(predicate: predicate)
-        } catch {
-            ErrorType(error: error).publish()
-        }
-        
-        return spendings.map { spending in
-            if spending.currency == defaultCurrency {
-                spending.amountWithReturns
-            } else {
-                spending.amountUSDWithReturns * usdRate
-            }
-        }
-        .reduce(0, +)
-    }
+//    func operationsSumWeek(_ usdRate: Double = 1) -> Double {
+//        let currentCalendar = Calendar.current
+//        let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue)
+//        let currentDateComponents = currentCalendar.dateComponents([.day, .month, .year, .era], from: .now)
+//        let currentDate = currentCalendar.date(from: currentDateComponents) ?? .distantFuture
+//        let startDate = currentCalendar.date(byAdding: .day, value: -6, to: currentDate) ?? .distantFuture
+//        let predicate = NSPredicate(format: "date > %@", startDate as CVarArg)
+//        
+//        var spendings: [SpendingEntity] = []
+//        do {
+//            spendings = try getSpendings(predicate: predicate)
+//        } catch {
+//            ErrorType(error: error).publish()
+//        }
+//        
+//        return spendings.map { spending in
+//            if spending.currency == defaultCurrency {
+//                spending.amountWithReturns
+//            } else {
+//                spending.amountUSDWithReturns * usdRate
+//            }
+//        }
+//        .reduce(0, +)
+//    }
     
     // MARK: Operations for legend (deprecated)
 //    func operationsInMonth(startDate: Date, endDate: Date, categoryName: String?) -> [CategoryEntityLocal] {
@@ -511,7 +574,7 @@ extension CoreDataModel {
         return chartData
     }
     
-    func getFilteredChartData(firstDate: Date, secondDate: Date, categories: [UUID] = []) -> [ChartData] {
+    func getFilteredChartData(firstDate: Date, secondDate: Date, categories: [UUID] = [], withReturns: Bool? = nil, currencies: [String]) -> [ChartData] {
         var chartData: [ChartData] = []
         
         let firstSpendingDate: Date = savedSpendings.last?.date?.getFirstDayOfMonth() ?? Date()
@@ -522,7 +585,7 @@ extension CoreDataModel {
             chartData.append(ChartData.getEmpty())
         }
         
-        chartData[0] = ChartData(firstDate: firstDate, secondDate: secondDate, cdm: self, categories: categories)
+        chartData[0] = ChartData(firstDate: firstDate, secondDate: secondDate, cdm: self, categories: categories, withReturns: withReturns, currencies: currencies)
         return chartData
     }
     

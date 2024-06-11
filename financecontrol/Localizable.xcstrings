@@ -450,7 +450,13 @@
     "Delete this category?" : {
 
     },
-    "Delete this expense?" : {
+    "Delete this expense? \nYou can't undo this action." : {
+
+    },
+    "Disable" : {
+
+    },
+    "Disabled" : {
 
     },
     "Done" : {
@@ -657,6 +663,16 @@
     "Other" : {
 
     },
+    "past-7-days-home" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Past 7 days"
+          }
+        }
+      }
+    },
     "Pink" : {
 
     },
@@ -712,6 +728,9 @@
 
     },
     "Returned" : {
+
+    },
+    "Returns" : {
 
     },
     "Save" : {
@@ -884,6 +903,12 @@
 
     },
     "Winterized" : {
+
+    },
+    "With returns" : {
+
+    },
+    "Without returns" : {
 
     },
     "Yes, that's his real name" : {

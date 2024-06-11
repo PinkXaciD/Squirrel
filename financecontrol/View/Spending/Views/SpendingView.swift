@@ -50,12 +50,13 @@ struct SpendingView: View {
             debugSection
             #endif
         }
-        .alert("Delete this expense?", isPresented: $alertIsPresented) {
-            Button("Cancel", role: .cancel) {}
+        .confirmationDialog("Delete this expense? \nYou can't undo this action.", isPresented: $alertIsPresented, titleVisibility: .visible) {
             Button("Delete", role: .destructive) {
                 dismiss()
                 cdm.deleteSpending(entity)
             }
+            
+            Button("Cancel", role: .cancel) {}
         }
         .toolbar {
             closeToolbar
@@ -304,55 +305,90 @@ extension SpendingView {
     }
     
     private func returnRow(_ returnEntity: ReturnEntity) -> some View {
-        VStack(alignment: .leading) {
-            HStack {
+        HStack {
+            VStack(alignment: .leading) {
+                dateFormat(returnEntity.date ?? .distantPast)
+                    .foregroundColor(.secondary)
+                    .font(.caption)
+                
                 Text(returnEntity.amount.formatted(.currency(code: returnEntity.currency ?? entity.wrappedCurrency)))
-                
-                Spacer()
-                
-                Text(returnEntity.date?.formatted(date: .abbreviated, time: .shortened) ?? "Date error")
+                    .font(.system(.title3, design: .rounded).bold())
             }
-            
+                
             if let name = returnEntity.name, !name.isEmpty {
-                Text(name)
-                    .font(.callout)
-                    .foregroundColor(.secondary)
-            }
-            
-            #if DEBUG
-            Divider()
-            
-            HStack {
-                Text(verbatim: "Amount in USD:")
-                
                 Spacer()
                 
-                Text("\(returnEntity.amountUSD.formatted(.currency(code: "USD")))")
-                    .foregroundColor(.secondary)
+                Text(name)
+                    .lineLimit(3)
+                    .padding()
+                    .background {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color(uiColor: .tertiarySystemGroupedBackground))
+                    }
             }
-            .padding(.top, 3)
-            #endif
+                
+//            #if DEBUG
+//            Divider()
+//
+//            HStack {
+//                Text(verbatim: "Amount in USD:")
+//
+//                Spacer()
+//
+//                Text("\(returnEntity.amountUSD.formatted(.currency(code: "USD")))")
+//                    .foregroundColor(.secondary)
+//            }
+//            .padding(.top, 3)
+//            #endif
+//            }
         }
         .padding(.vertical, 1)
+        .normalizePadding()
         .foregroundColor(.primary)
         .swipeActions(edge: .leading) {
-            Button {
-                returnToEdit = returnEntity
-            } label: {
-                Label("Edit", systemImage: "pencil")
-            }
-            .tint(.yellow)
+            getEditButton(returnEntity)
         }
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-            Button(role: .destructive) {
-                withAnimation {
-                    cdm.deleteReturn(spendingReturn: returnEntity)
-                }
-            } label: {
-                Label("Delete", systemImage: "trash.fill")
-            }
-            .tint(.red)
+            getDeleteButton(returnEntity)
         }
+        .contextMenu {
+            getEditButton(returnEntity)
+            
+            getDeleteButton(returnEntity)
+        }
+        .onTapGesture {
+            returnToEdit = returnEntity
+        }
+    }
+    
+    private func getEditButton(_ entity: ReturnEntity) -> some View {
+        Button {
+            returnToEdit = entity
+        } label: {
+            Label("Edit", systemImage: "pencil")
+        }
+        .tint(.yellow)
+    }
+    
+    private func getDeleteButton(_ entity: ReturnEntity) -> some View {
+        Button(role: .destructive) {
+            withAnimation {
+                cdm.deleteReturn(spendingReturn: entity)
+            }
+        } label: {
+            Label("Delete", systemImage: "trash.fill")
+        }
+        .tint(.red)
+    }
+    
+    private func dateFormat(_ date: Date) -> Text {
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeStyle = .short
+        dateFormatter.dateStyle = .medium
+        dateFormatter.locale = Locale.current
+        dateFormatter.doesRelativeDateFormatting = true
+        
+        return Text(dateFormatter.string(from: date))
     }
 }
 

@@ -24,6 +24,8 @@ struct EditReturnView: View {
         NavigationView {
             List {
                 mainSection
+                
+                commentSection
             }
             .toolbar {
                 keyboardToolbar
@@ -71,8 +73,12 @@ struct EditReturnView: View {
     
     private var mainSection: some View {
         Section(header: header) {
-            DatePicker("Date", selection: $vm.date, in: spending.wrappedDate...Date.now)
-            
+            DatePicker("Date", selection: $vm.date, in: spending.wrappedDate...Date.now);
+        }
+    }
+    
+    private var commentSection: some View {
+        Section {
             if #available(iOS 16.0, *) {
                 TextField("Comment", text: $vm.name, axis: .vertical)
                     .focused($focusedField, equals: .name)
@@ -80,6 +86,8 @@ struct EditReturnView: View {
                 TextField("Comment", text: $vm.name)
                     .focused($focusedField, equals: .name)
             }
+        } header: {
+            Text("Comment")
         }
     }
     

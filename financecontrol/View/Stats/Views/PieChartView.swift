@@ -32,6 +32,7 @@ struct PieChartView: View {
             }
             .frame(height: size * 1.1)
             .disabled(pcvm.isScrollDisabled)
+            .listRowInsets(.init(top: 20, leading: 0, bottom: 20, trailing: 0))
             
             legend
         } footer: {
@@ -40,9 +41,10 @@ struct PieChartView: View {
     }
     
     private var chart: some View {
-        PieChartLazyPageView<PieChartCompleteView>(viewSize: size)
-            .invertLayoutDirection()
-            .listRowInsets(.init(top: 20, leading: 0, bottom: 20, trailing: 0))
+        CustomPagingScrollView(selection: $pcvm.selection, data: pcvm.data, invert: true, viewScale: 0.65)
+//        PieChartLazyPageView<PieChartCompleteView>(viewSize: size)
+//            .invertLayoutDirection()
+//            .listRowInsets(.init(top: 20, leading: 0, bottom: 20, trailing: 0))
 //        #if DEBUG
 //            .overlay(alignment: .topLeading) {
 //                Text("\(pcvm.selection)")

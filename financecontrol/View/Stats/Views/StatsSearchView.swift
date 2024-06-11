@@ -25,7 +25,12 @@ struct StatsSearchView: View {
     var body: some View {
         StatsView(entity: $entityToEdit, entityToAddReturn: $entityToAddReturn)
             .searchableWithDisable(text: $svm.search, isPresented: $isPresented, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Search by place or comment")
-            // MARK: iOS 17.4 search bar bug fix
+//            .overlay {
+//                if true {
+//                    CustomContentUnavailableView("No results for these filters", imageName: "tray.fill")
+//                }
+//            }
+            // MARK: iOS 17.4+ search bar bug fix
             .onChange(of: entityToEdit) { value in
                 if #available(iOS 17.4, *) {
                     if value != nil {
@@ -49,7 +54,7 @@ struct StatsSearchView: View {
     }
 }
 
-// MARK: iOS 17.4 search bar bug fix
+// MARK: iOS 17.4+ search bar bug fix
 fileprivate extension View {
     func searchableWithDisable(text: Binding<String>, isPresented: Binding<Bool>, placement: SearchFieldPlacement, prompt: LocalizedStringKey) -> some View {
         if #available(iOS 17.4, *) {

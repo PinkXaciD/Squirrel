@@ -7,6 +7,7 @@
 
 import CoreData
 import Foundation
+import Combine
 #if DEBUG
 import OSLog
 #endif
@@ -48,7 +49,9 @@ final class RatesViewModel: ViewModel {
                     logger.debug("Rates fetched from web")
                     #endif
                 } catch {
-                    ErrorType(error: error).publish()
+                    await MainActor.run {
+                        ErrorType(error: error).publish()
+                    }
                 }
             }
         }

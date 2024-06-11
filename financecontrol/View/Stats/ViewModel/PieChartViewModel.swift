@@ -16,7 +16,7 @@ final class PieChartViewModel: ViewModel {
     private var cdm: CoreDataModel
     var fvm: FiltersViewModel
     
-    @Published var selection: Int = 0
+    @Published var selection: Int = 0 
     var previousSelection: Int = 0
     @Published var data: [ChartData]
     @Published var selectedCategory: CategoryEntity? = nil
@@ -54,7 +54,7 @@ extension PieChartViewModel {
     func updateData() {
         let chartData: [ChartData] = {
             if fvm.applyFilters {
-                return cdm.getFilteredChartData(firstDate: fvm.startFilterDate, secondDate: fvm.endFilterDate, categories: fvm.filterCategories)
+                return cdm.getFilteredChartData(firstDate: fvm.startFilterDate, secondDate: fvm.endFilterDate, categories: fvm.filterCategories, withReturns: fvm.withReturns, currencies: fvm.currencies)
             }
             
             return cdm.getChartData(isMinimized: showOther, categoryName: selectedCategory?.name)

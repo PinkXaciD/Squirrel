@@ -15,14 +15,20 @@ struct PieChartCompleteView: View {
     let size: CGFloat
     
     var body: some View {
-        let localData = vm.data[count > vm.data.count ? 0 : count]
+        let localData = {
+            if !vm.data.isEmpty {
+                vm.data[count > vm.data.count - 1 ? 0 : count]
+            } else {
+                ChartData.getEmpty()
+            }
+        }()
         
         ZStack {
             APChart(separators: 0.15, innerRadius: 0.73) {
                 setData(localData.categories)
             }
-            .frame(width: size, height: size)
-            .rotationEffect(layoutDirection == .rightToLeft ? Angle(degrees: 180) : Angle(degrees: 0))
+//            .frame(width: size, height: size)
+//            .rotationEffect(layoutDirection == .rightToLeft ? Angle(degrees: 180) : Angle(degrees: 0))
             
             CenterChartView(
                 selectedMonth: localData.date,
