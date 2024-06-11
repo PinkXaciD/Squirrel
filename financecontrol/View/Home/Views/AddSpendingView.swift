@@ -15,15 +15,19 @@ struct AddSpendingView: View {
     @StateObject
     private var vm: AddSpendingViewModel
     
-    @AppStorage(UDKeys.color)
+    @AppStorage(UDKeys.color.rawValue)
     private var tint: String = "Orange"
-    @AppStorage(UDKeys.defaultCurrency) 
+    @AppStorage(UDKeys.defaultCurrency.rawValue)
     private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
+    @AppStorage(UDKeys.privacyScreen.rawValue)
+    private var privacyScreenIsEnabled: Bool = false
     
     @Environment(\.dismiss) 
     private var dismiss
     @Environment(\.colorScheme)
     private var colorScheme
+    @Environment(\.scenePhase)
+    private var scenePhase
     
     private enum Field {
         case amount
@@ -45,6 +49,8 @@ struct AddSpendingView: View {
     private var amountIsFocused: Bool = true
     @State
     private var filterAmount: String = ""
+    @State
+    private var hideContent: Bool = false
 
     private let utils = InputUtils() /// For input checking
     
@@ -66,10 +72,23 @@ struct AddSpendingView: View {
             .navigationBarTitleDisplayMode(.inline)
         }
         .navigationViewStyle(.stack)
-        .colorScheme(getColorScheme())
         .tint(colorIdentifier(color: tint))
         .accentColor(colorIdentifier(color: tint))
         .interactiveDismissDisabled(vm.categoryName != "Select Category" || !vm.amount.isEmpty)
+        .blur(radius: hideContent ? Vars.privacyBlur : 0)
+        .onChange(of: scenePhase) { value in
+            if privacyScreenIsEnabled {
+                if value == .active {
+                    withAnimation(.easeOut(duration: 0.2)) {
+                        hideContent = false
+                    }
+                } else {
+                    withAnimation {
+                        hideContent = true
+                    }
+                }
+            }
+        }
     }
     
 // MARK: Sections
@@ -96,7 +115,7 @@ struct AddSpendingView: View {
             
             HStack {
                 Text("Currency")
-                CurrencySelector(currency: $vm.currency, showFavorites: true)
+                CurrencySelector(currency: $vm.currency)
             }
             
             DatePicker("Date", selection: $vm.date, in: Date.init(timeIntervalSinceReferenceDate: 0)...Date.now)
@@ -117,23 +136,8 @@ struct AddSpendingView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
                         ForEach(vm.popularCategories) { category in
-                            Button {
-                                if let id = category.id {
-                                    withAnimation {
-                                        vm.categoryId = id
-                                    }
-                                }
-                            } label: {
-                                Text(category.name ?? "Error")
-                                    .font(.body)
-                                    .foregroundColor(Color[category.color ?? ""])
-                                    .padding(.vertical, 6)
-                                    .padding(.horizontal, 12)
-                                    .background {
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .fill(Color(uiColor: .secondarySystemGroupedBackground))
-                                    }
-                            }
+                            PopularCategoryButtonView(category: category)
+                                .environmentObject(vm)
                         }
                     }
                 }
@@ -270,10 +274,33 @@ extension AddSpendingView {
         vm.done()
         dismiss()
     }
+}
+
+fileprivate struct PopularCategoryButtonView: View {
+    @EnvironmentObject private var vm: AddSpendingViewModel
+    let category: CategoryEntity
     
-    private func getColorScheme() -> ColorScheme {
-        let saved = UserDefaults.standard.string(forKey: UDKeys.theme) ?? ""
-        return themeConvert(saved) ?? colorScheme
+    var body: some View {
+        Button {
+            if let id = category.id {
+                withAnimation {
+                    vm.categoryId = id
+                }
+            }
+        } label: {
+            Text(category.name ?? "Error")
+                .font(.body)
+                .fontWeight(vm.categoryId == category.id ? .semibold : .regular)
+                .foregroundColor(vm.categoryId == category.id ? Color(uiColor: .secondarySystemGroupedBackground) : Color[category.color ?? ""])
+                .padding(.vertical, 6)
+                .padding(.horizontal, 12)
+                .background {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(vm.categoryId == category.id ? Color[category.color ?? ""] : Color(uiColor: .secondarySystemGroupedBackground))
+                }
+                .animation(.default, value: vm.categoryId)
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
@@ -285,6 +312,7 @@ struct AmountInput_Previews: PreviewProvider {
     }
 }
 
+// MARK: Shortcuts
 struct AddSpendingShortcut: Identifiable {
     var id: UUID = UUID()
     var shortcutName: String
@@ -320,7 +348,7 @@ struct AddSpendingShortcutListView: View {
                 }
             }
         } else {
-            CustomContentUnavailableView(NSLocalizedString("No Shortcuts", comment: ""), imageName: "tray.fill")
+            CustomContentUnavailableView("No Shortcuts", imageName: "tray.fill")
                 .navigationTitle("Shortcuts")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
@@ -343,7 +371,7 @@ struct AddSpendingShortcutAddView: View {
     
     @State private var shortcutName: String = ""
     @State private var amount: String = ""
-    @State private var currency: String = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD"
+    @State private var currency: String = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
     @State private var categoryID: UUID = .init()
     @State private var place: String = ""
     @State private var comment: String = ""
@@ -365,7 +393,7 @@ struct AddSpendingShortcutAddView: View {
                 self.amount = formatter.string(from: amount as NSNumber) ?? ""
             }
             
-            self.currency = shortcut.currency ?? UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD"
+            self.currency = shortcut.currency ?? UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
             self.categoryID = shortcut.categoryID ?? .init()
             self.place = shortcut.place ?? ""
             self.comment = shortcut.comment ?? ""
@@ -387,7 +415,7 @@ struct AddSpendingShortcutAddView: View {
                 
                 HStack {
                     Text("Currency")
-                    CurrencySelector(currency: $currency, showFavorites: true)
+                    CurrencySelector(currency: $currency)
                 }
                 
                 HStack {

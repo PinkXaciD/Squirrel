@@ -108,7 +108,7 @@ struct EditSpendingView: View {
                 }
                 .spendingAmountTextFieldStyle()
             
-            CurrencySelector(currency: $vm.currency, showFavorites: false, spacer: false)
+            CurrencySelector(currency: $vm.currency, spacer: false)
                 .font(.body)
         }
         .textCase(nil)

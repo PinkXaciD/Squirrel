@@ -30,7 +30,8 @@ final class AddSpendingViewModel: ViewModel {
     var place: String
     @Published
     var comment: String
-    let popularCategories: [CategoryEntity]
+    @Published
+    var popularCategories: [CategoryEntity] = []
     
     #if DEBUG
     let vmStateLogger: Logger
@@ -52,7 +53,7 @@ final class AddSpendingViewModel: ViewModel {
                 self.amount = ""
             }
             
-            self.currency = shortcut.currency ?? UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD"
+            self.currency = shortcut.currency ?? UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
             self.date = Date()
             
             if let categoryID = shortcut.categoryID, let categoryName = cdm.findCategory(categoryID)?.name {
@@ -67,7 +68,7 @@ final class AddSpendingViewModel: ViewModel {
             self.comment = shortcut.comment ?? ""
         } else {
             self.amount = ""
-            self.currency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD"
+            self.currency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
             self.date = .now
             self.categoryName = "Select Category"
             self.categoryId = .init()
@@ -78,23 +79,12 @@ final class AddSpendingViewModel: ViewModel {
         self.rvm = rvm
         self.cdm = cdm
         
-        var popularCategories = [CategoryEntity]()
-        let sortedCategories = cdm.savedCategories.sorted { $0.spendings?.allObjects.count ?? 0 > $1.spendings?.allObjects.count ?? 0 }
-        let range = 0..<(sortedCategories.count > 5 ? 5 : sortedCategories.count)
-        
-        for index in range {
-            popularCategories.append(sortedCategories[index])
-            #if DEBUG
-            Logger(subsystem: Vars.appIdentifier, category: #fileID).debug("Added popular category at index: \(index)")
-            #endif
-        }
-        
-        self.popularCategories = popularCategories
-        
         #if DEBUG
         self.vmStateLogger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
         vmStateLogger.debug("\(#function) called")
         #endif
+        
+        countPopularCategories()
     }
     
     #if DEBUG
@@ -102,6 +92,20 @@ final class AddSpendingViewModel: ViewModel {
         vmStateLogger.debug("\(#function) called")
     }
     #endif
+    
+    private func countPopularCategories() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else {
+                return
+            }
+            
+            let sortedCategories = self.cdm.savedCategories.sorted { $0.spendings?.allObjects.count ?? 0 > $1.spendings?.allObjects.count ?? 0 }
+            let range = 0..<(sortedCategories.count > 5 ? 5 : sortedCategories.count)
+            withAnimation {
+                self.popularCategories.append(contentsOf: sortedCategories[range])
+            }
+        }
+    }
     
     func done() {
         DispatchQueue.global(qos: .utility).async { [weak self] in

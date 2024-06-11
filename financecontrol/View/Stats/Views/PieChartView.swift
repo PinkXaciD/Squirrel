@@ -19,11 +19,11 @@ struct PieChartView: View {
     
     let size: CGFloat
     
-    @AppStorage(UDKeys.defaultCurrency)
+    @AppStorage(UDKeys.defaultCurrency.rawValue)
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
     @State
-    private var minimizeLegend: Bool = UserDefaults.standard.bool(forKey: UDKeys.minimizeLegend)
+    private var minimizeLegend: Bool = UserDefaults.standard.bool(forKey: UDKeys.minimizeLegend.rawValue)
     
     var body: some View {
         Section {
@@ -40,9 +40,19 @@ struct PieChartView: View {
     }
     
     private var chart: some View {
-        PieChartLazyPageView<PieChartCompleteView<CenterChartView>>(viewSize: size)
+        PieChartLazyPageView<PieChartCompleteView>(viewSize: size)
             .invertLayoutDirection()
             .listRowInsets(.init(top: 20, leading: 0, bottom: 20, trailing: 0))
+//        #if DEBUG
+//            .overlay(alignment: .topLeading) {
+//                Text("\(pcvm.selection)")
+//                    .font(.largeTitle.bold())
+//                    .padding()
+//                    .background {
+//                        Color.red
+//                    }
+//            }
+//        #endif
     }
     
     private var legend: some View {
@@ -76,7 +86,7 @@ extension PieChartView {
         withAnimation {
             minimizeLegend.toggle()
         }
-        UserDefaults.standard.set(minimizeLegend, forKey: UDKeys.minimizeLegend)
+        UserDefaults.standard.set(minimizeLegend, forKey: UDKeys.minimizeLegend.rawValue)
     }
     
     private func expandButtonLabel() -> some View {

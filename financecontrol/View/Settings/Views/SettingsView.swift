@@ -8,17 +8,18 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @AppStorage(UDKeys.color)
+    @AppStorage(UDKeys.color.rawValue)
     var defaultColor: String = "Orange"
-    @AppStorage(UDKeys.defaultCurrency)
+    @AppStorage(UDKeys.defaultCurrency.rawValue)
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
-    @AppStorage(UDKeys.theme)
-    var theme: String = "None"
-    
-    @State
+    @AppStorage(UDKeys.autoDarkMode.rawValue)
     private var autoDarkMode: Bool = true
-    @State
+    @AppStorage(UDKeys.darkMode.rawValue)
     private var darkMode: Bool = false
+    @AppStorage(UDKeys.privacyScreen.rawValue)
+    private var privacyScreenIsEnabled: Bool = false
+    @State
+    private var showDarkModeToggle: Bool = false
     
     @State
     private var presentCustomAlert: Bool = false
@@ -39,29 +40,6 @@ struct SettingsView: View {
                 aboutSection
                 
                 themeSection
-                    .onAppear(perform: appearActions)
-                    .onChange(of: autoDarkMode) { newValue in
-                        if newValue {
-                            theme = "auto"
-                        } else {
-                            if darkMode {
-                                theme = "dark"
-                            } else {
-                                theme = "light"
-                            }
-                        }
-                    }
-                    .onChange(of: darkMode) { newValue in
-                        if newValue {
-                            withAnimation {
-                                theme = "dark"
-                            }
-                        } else {
-                            withAnimation {
-                                theme = "light"
-                            }
-                        }
-                    }
                 
                 currencySection
                 
@@ -69,14 +47,20 @@ struct SettingsView: View {
                 
                 categorySection
                 
+                privacySection
+                
                 exportImportSection
             }
             .listStyle(.insetGrouped)
-            .animation(.linear, value: autoDarkMode)
             .navigationTitle("Settings")
         }
         .navigationViewStyle(.stack)
         .customAlert(customAlertType, presenting: $presentCustomAlert, message: customAlertMessage)
+        .onAppear {
+            withAnimation {
+                showDarkModeToggle = !autoDarkMode
+            }
+        }
     }
     
     var aboutSection: some View {
@@ -90,7 +74,7 @@ struct SettingsView: View {
     }
     
     var themeSection: some View {
-        Section(header: Text("Appearance")) {
+        Section {
             NavigationLink {
                 ColorAndIconView()
             } label: {
@@ -104,9 +88,25 @@ struct SettingsView: View {
             
             Toggle("Automatic Dark Mode", isOn: $autoDarkMode)
             
-            if !autoDarkMode {
+            if showDarkModeToggle {
                 Toggle("Dark Mode", isOn: $darkMode)
             }
+        } header: {
+            Text("Appearance")
+        }
+        .onChange(of: autoDarkMode) { newValue in
+            withAnimation {
+                showDarkModeToggle = !newValue
+            }
+            
+            if newValue {
+                UIApplication.shared.keyWindow?.overrideUserInterfaceStyle = .unspecified
+            } else {
+                UIApplication.shared.keyWindow?.overrideUserInterfaceStyle = darkMode ? .dark : .light
+            }
+        }
+        .onChange(of: darkMode) { newValue in
+            UIApplication.shared.keyWindow?.overrideUserInterfaceStyle = newValue ? .dark : .light
         }
     }
     
@@ -114,7 +114,6 @@ struct SettingsView: View {
         Section(header: Text("Currencies")) {
             NavigationLink {
                 DefaultCurrencySelectorView()
-                
             } label: {
                 HStack {
                     Text("Currencies")
@@ -148,6 +147,26 @@ struct SettingsView: View {
         }
     }
     
+    private var privacySection: some View {
+        Section {
+            NavigationLink("Hide app content") {
+                List {
+                    Section {
+                        Toggle("Hide app content in app switcher", isOn: $privacyScreenIsEnabled)
+                    } header: {
+                        BlurContentExample()
+                    } footer: {
+                        Text("App content will be blurred when you minimize it")
+                    }
+                }
+                .navigationTitle("Hide app content")
+                .navigationBarTitleDisplayMode(.inline)
+            }
+        } header: {
+            Text("Privacy")
+        }
+    }
+    
     private var exportImportSection: some View {
         Section(header: Text("Export and Import"), footer: footer) {
             NavigationLink("Export and import data") {
@@ -168,16 +187,59 @@ struct SettingsView: View {
     }
 }
 
+//extension SettingsView {
+//    func appearActions() {
+//        if theme == "light" {
+//            autoDarkMode = false
+//            darkMode = false
+//        } else if theme == "dark" {
+//            autoDarkMode = false
+//            darkMode = true
+//        } else {
+//            autoDarkMode = true
+//        }
+//    }
+//}
+
 extension SettingsView {
-    func appearActions() {
-        if theme == "light" {
-            autoDarkMode = false
-            darkMode = false
-        } else if theme == "dark" {
-            autoDarkMode = false
-            darkMode = true
-        } else {
-            autoDarkMode = true
+    struct BlurContentExample: View {
+        @State private var blur: CGFloat = 0
+        
+        var sum: Decimal {
+            let sum = (10 * (Rates.fallback.rates[UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"] ?? 1))
+            let count = "\(Int(sum))".count
+            return pow(10, count - 1)
+        }
+        
+        let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? "USD"
+        
+        var body: some View {
+            ZStack {
+                VStack(spacing: 10) {
+                    Text("Some expense")
+                        .font(.headline)
+                    
+                    Text(sum.formatted(.currency(code: defaultCurrency)))
+                        .font(.system(.title, design: .rounded).bold())
+                }
+                .padding(.vertical, 30)
+                .padding(.horizontal, 30)
+                .foregroundColor(.primary)
+                .blur(radius: blur)
+            }
+            .background {
+                RoundedRectangle(cornerRadius: 15)
+                    .fill(Color(uiColor: .secondarySystemGroupedBackground))
+                    .shadow(radius: 5)
+            }
+            .textCase(nil)
+            .listRowInsets(.init(top: 50, leading: 0, bottom: 30, trailing: 0))
+            .frame(maxWidth: .infinity, alignment: .center)
+            .onAppear {
+                withAnimation(.easeInOut.speed(0.5).delay(2).repeatForever()) {
+                    blur = 10
+                }
+            }
         }
     }
 }

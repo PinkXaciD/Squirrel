@@ -12,10 +12,11 @@ struct OnboardingView: View {
     @EnvironmentObject private var cdm: CoreDataModel
     
     @State private var screen: Int = 0
-    @State private var selectedCurrency: String = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency) ?? Locale.current.currencyCode ?? "USD"
+    @State private var selectedCurrency: String = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
     @State private var showOverlay: Bool = true
     
-    let finalScreenNumber: UInt8 = 3
+    let finalScreenNumber: Int = 3
+    let addSampleData: Bool = false
     
     var body: some View {
         Group {
@@ -90,15 +91,19 @@ struct OnboardingView: View {
     private var continueButton: some View {
         Button {
             if screen == 1 {
-                UserDefaults.standard.setValue(selectedCurrency, forKey: UDKeys.defaultCurrency)
+                UserDefaults.standard.setValue(selectedCurrency, forKey: UDKeys.defaultCurrency.rawValue)
                 
-                if !cdm.savedCurrencies.map({ $0.tag }).contains(selectedCurrency) {
-                    cdm.addCurrency(tag: selectedCurrency, isFavorite: true)
-                }
+                UserDefaults.standard.addCurrency(selectedCurrency)
                 
                 if let defaults = UserDefaults(suiteName: Vars.groupName) {
                     defaults.set(selectedCurrency, forKey: "defaultCurrency")
                     cdm.passSpendingsToSumWidget()
+                }
+            }
+            
+            if screen == 2 && cdm.savedCategories.isEmpty && addSampleData {
+                DispatchQueue.main.async {
+                    cdm.addTemplateData()
                 }
             }
             
@@ -115,10 +120,21 @@ struct OnboardingView: View {
                     .foregroundColor(.orange)
                     .frame(maxHeight: 50)
                 
-                Text(screen == finalScreenNumber ? "Done" : "Continue")
-                    .foregroundColor(.white)
-                    .font(.body.bold())
+                HStack(spacing: 0) {
+                    Text(screen == finalScreenNumber ? "Done" : "Continue")
+                        .foregroundColor(.white)
+                        .font(.body.bold())
+                    
+                    if screen == 2 && cdm.savedCategories.isEmpty && addSampleData {
+                        Text(verbatim: " with sample data")
+                            .foregroundColor(.white)
+                            .font(.body.bold())
+                            .transition(.asymmetric(insertion: .move(edge: .trailing).combined(with: .opacity), removal: .opacity))
+                            .animation(.easeInOut.speed(1.5), value: screen)
+                    }
+                }
             }
+            .hoverEffect(.highlight)
         }
     }
     
@@ -137,6 +153,15 @@ struct OnboardingView: View {
     
     private var screen3: some View {
         OnboardingGesturesTemplateView()
+    }
+    
+    private func getButtonText() -> LocalizedStringKey {
+        switch screen {
+        case finalScreenNumber:
+            "Done"
+        default:
+            "Continue"
+        }
     }
 }
 

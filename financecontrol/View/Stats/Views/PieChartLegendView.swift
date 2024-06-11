@@ -11,13 +11,11 @@ struct PieChartLegendView: View {
     @EnvironmentObject
     private var pcvm: PieChartViewModel
     
-    @AppStorage(UDKeys.defaultCurrency)
+    @AppStorage(UDKeys.defaultCurrency.rawValue)
     private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
     @Binding
     var minimize: Bool
-    
-//    let operationsInMonthSorted: [CategoryEntityLocal]
     
     var body: some View {
         let data = pcvm.data[(pcvm.selection >= pcvm.data.count || pcvm.selection < 0) ? 0 : pcvm.selection]
@@ -25,7 +23,7 @@ struct PieChartLegendView: View {
         if minimize {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
-                    ForEach(data.categories.sorted(by: >)) { category in
+                    ForEach(data.categories) { category in
                         PieChartLegendRowView(category: category)
                     }
                 }
@@ -39,7 +37,7 @@ struct PieChartLegendView: View {
         } else {
             HStack {
                 VStack(alignment: .leading, spacing: 10) {
-                    ForEach(data.categories.sorted(by: >)) { category in
+                    ForEach(data.categories) { category in
                         PieChartLegendRowView(category: category)
                     }
                 }

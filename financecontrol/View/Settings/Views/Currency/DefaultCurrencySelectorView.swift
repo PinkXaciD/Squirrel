@@ -12,39 +12,35 @@ struct DefaultCurrencySelectorView: View {
     
     @EnvironmentObject var cdm: CoreDataModel
     
-    @AppStorage(UDKeys.defaultCurrency) var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
+    @AppStorage(UDKeys.defaultCurrency.rawValue) var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
+    
+    @State private var currencies: [Currency] = UserDefaults.standard.getCurrencies().sorted()
     
     var body: some View {
-        let currencies = cdm.savedCurrencies.sorted {
-            guard
-                let firstTag = $0.tag,
-                let secondTag = $1.tag,
-                let firstName = Locale.current.localizedString(forCurrencyCode: firstTag)?.capitalized,
-                let secondName = Locale.current.localizedString(forCurrencyCode: secondTag)?.capitalized
-            else {
-                return false
-            }
-            
-            return firstName < secondName
-        }
-        
         List {
             // Picker replaced with this cause of some iOS bug
-            ForEach(currencies) { currency in
-                if let tag = currency.tag {
-                    Button {
-                        setCurrency(tag)
-                    } label: {
-                        CurrencyRow(code: tag, currency: currency)
-                            .padding(.vertical, 1)
-                    }
-                    .buttonStyle(.plain)
-                } else {
-                    Text("Error")
+            ForEach(currencies, id: \.hashValue) { currency in
+                Button {
+                    setCurrency(currency.code)
+                } label: {
+                    CurrencyRow(currency: currency)
+                }
+                .buttonStyle(.plain)
+                .swipeActions(edge: .trailing) {
+                    deleteButton(currency)
+                }
+                .contextMenu {
+                    deleteButton(currency)
                 }
             }
             
             addNewSection
+        }
+        // TODO: Remove
+        .refreshable {
+            withAnimation {
+                currencies = UserDefaults.standard.getCurrencies().sorted()
+            }
         }
         .navigationTitle("Currencies")
         .navigationBarTitleDisplayMode(.inline)
@@ -55,22 +51,39 @@ struct DefaultCurrencySelectorView: View {
     
     private var addNewSection: some View {
         Section {
-            NavigationLink {
-                AddCurrencyView()
-            } label: {
-                Text("Add new")
-            }
+            addNewButton
+                .labelStyle(.titleOnly)
         }
     }
     
     private var trailingToolbar: ToolbarItem<Void, some View> {
         ToolbarItem(placement: .navigationBarTrailing) {
-            NavigationLink {
-                AddCurrencyView()
-            } label: {
-                Label("Add new currency", systemImage: "plus")
-            }
+            addNewButton
         }
+    }
+    
+    private var addNewButton: some View {
+        NavigationLink {
+            AddCurrencyView(currencies: $currencies)
+        } label: {
+            Label("Add new", systemImage: "plus")
+        }
+    }
+    
+    private func deleteButton(_ currency: Currency) -> some View {
+        Button(role: .destructive) {
+            withAnimation {
+                UserDefaults.standard.deleteCurrency(currency)
+                currencies.removeAll { $0 == currency }
+                
+                if currencies.isEmpty, let localeCurrency = Currency.localeCurrency {
+                    currencies.append(localeCurrency)
+                }
+            }
+        } label: {
+            Label("Delete", systemImage: "trash.fill")
+        }
+        .tint(Color.red)
     }
     
     private func setCurrency(_ tag: String) {

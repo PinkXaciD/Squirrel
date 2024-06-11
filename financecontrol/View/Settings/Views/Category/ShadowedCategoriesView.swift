@@ -25,9 +25,9 @@ struct ShadowedCategoriesView: View {
             }
         } else {
             CustomContentUnavailableView(
-                NSLocalizedString("No Archived Categories", comment: ""),
+                "No Archived Categories",
                 imageName: "archivebox.fill",
-                description: NSLocalizedString("You can archive categories in settings, they will be hidden from selection when you add new expenses, but all old expenses will be saved", comment: "")
+                description: "You can archive categories in settings, they will be hidden from selection when you add new expenses, but all old expenses will be saved"
             )
         }
     }

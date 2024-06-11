@@ -18,6 +18,7 @@ final class CoreDataModel: ObservableObject {
         fetchSpendings()
         fetchCategories()
         fetchCurrencies()
+        migrateCurrenciesToDefaults()
     }
     
     @Published

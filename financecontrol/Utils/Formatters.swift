@@ -30,13 +30,14 @@ func colorIdentifier(color: String) -> Color {
     }
 }
 
-func themeConvert(_ theme: String) -> ColorScheme? {
-    switch theme {
-    case "light":
-        return ColorScheme.light
-    case "dark":
-        return ColorScheme.dark
-    default:
+func themeConvert(autoDarkMode: Bool, darkMode: Bool) -> ColorScheme? {
+    if autoDarkMode {
         return nil
+    }
+    
+    if darkMode {
+        return .dark
+    } else {
+        return .light
     }
 }

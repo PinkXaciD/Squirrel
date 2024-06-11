@@ -36,6 +36,7 @@ struct IconRow: View {
             .frame(width: iconSize, height: iconSize)
             .cornerRadius(cornerRadius)
             .overlay(iconOverlay)
+            .hoverEffect(.lift)
     }
     
     private var iconOverlay: some View {

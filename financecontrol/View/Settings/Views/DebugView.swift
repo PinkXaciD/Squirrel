@@ -285,7 +285,7 @@ extension DebugView {
             let date: Date = isoDateFromatter.date(from: Rates.fallback.timestamp) ?? .distantPast
             return dateFormatter.string(from: date)
         case .update:
-            let ratesUpdateTime: String = UserDefaults.standard.string(forKey: UDKeys.updateTime) ?? "Error"
+            let ratesUpdateTime: String = UserDefaults.standard.string(forKey: UDKeys.updateTime.rawValue) ?? "Error"
             let date: Date = isoDateFromatter.date(from: ratesUpdateTime) ?? .distantPast
             return dateFormatter.string(from: date)
         }

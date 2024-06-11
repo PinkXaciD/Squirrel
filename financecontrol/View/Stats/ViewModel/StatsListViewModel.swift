@@ -23,7 +23,6 @@ final class StatsListViewModel: ViewModel {
     @Published var showedSearch: String
     var defaultData: StatsListData
     var cancellables = Set<AnyCancellable>()
-    let backgroundDispatchQueue: DispatchQueue
     
     init(cdm: CoreDataModel, fvm: FiltersViewModel, pcvm: PieChartViewModel, searchModel: StatsSearchViewModel) {
         self.savedSpendingsPublisher = cdm.$savedSpendings
@@ -34,7 +33,6 @@ final class StatsListViewModel: ViewModel {
         self.data = data
         self.defaultData = data
         self.showedSearch = ""
-        self.backgroundDispatchQueue = DispatchQueue.global(qos: .userInteractive)
         subscribeToData()
         subscribeToFilters()
         subscribeToSearch()
@@ -57,26 +55,20 @@ final class StatsListViewModel: ViewModel {
                 
                 self.updateDefaultData(data.flatMap { $0.categories.flatMap { $0.spendingsArray } }.sorted { $0.wrappedDate > $1.wrappedDate })
                 
-                self.update(animation: true)
+                self.update(animation: false)
             }
             .store(in: &cancellables)
     }
     
     private func updateDefaultData(_ data: [TSSpendingEntity]) {
-        var defaultData: StatsListData = [:]
-        
         #if DEBUG
         logger.debug("\(#function) called")
         #endif
         
-        for spending in data {
-            let day = Calendar.current.startOfDay(for: spending.wrappedDate)
-            var existingData = defaultData[day] ?? []
-            existingData.append(spending)
-            defaultData.updateValue(existingData, forKey: day)
+        self.defaultData = Dictionary(grouping: data) { spending in
+            Calendar.current.startOfDay(for: spending.wrappedDate)
         }
-        
-        self.defaultData = defaultData.filter { !$0.value.isEmpty }
+        .filter { !$0.value.isEmpty }
     }
     
     private func subscribeToSelection() {
@@ -84,7 +76,7 @@ final class StatsListViewModel: ViewModel {
             .receive(on: DispatchQueue.main)
             .dropFirst()
             .sink { [weak self] selection in
-                if !(self?.fvm.applyFilters ?? true) && selection == 0 {
+                if selection == 0 {
                     withAnimation {
                         self?.setDefaultData()
                     }
@@ -183,18 +175,13 @@ final class StatsListViewModel: ViewModel {
     }
     
     private func setupList(_ spendings: [TSSpendingEntity], animation: Bool = false) {
-        var data: StatsListData = [:]
+        let data: StatsListData = Dictionary(grouping: spendings) { spending in
+            Calendar.current.startOfDay(for: spending.wrappedDate)
+        }
         
         #if DEBUG
         logger.debug("\(#function) called")
         #endif
-        
-        for spending in spendings {
-            let day = Calendar.current.startOfDay(for: spending.wrappedDate)
-            var existingData = data[day] ?? []
-            existingData.append(spending)
-            data.updateValue(existingData, forKey: day)
-        }
         
         if animation {
             withAnimation(.easeIn(duration: 0.3)) {

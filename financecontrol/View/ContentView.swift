@@ -12,13 +12,16 @@ struct ContentView: View {
     private var scenePhase
     @Environment(\.openURL)
     private var openURL
-    
-    @AppStorage(UDKeys.color)
-    private var tint: String = "Orange"
-    @AppStorage(UDKeys.theme)
-    private var theme: String = "None"
-    @AppStorage(UDKeys.presentOnboarding)
+    @AppStorage(UDKeys.presentOnboarding.rawValue)
     private var presentOnboarding: Bool = true
+    @AppStorage(UDKeys.color.rawValue)
+    private var tint: String = "Orange"
+    @AppStorage(UDKeys.autoDarkMode.rawValue)
+    private var autoDarkMode: Bool = true
+    @AppStorage(UDKeys.darkMode.rawValue)
+    private var darkMode: Bool = false
+    @AppStorage(UDKeys.privacyScreen.rawValue)
+    private var privacyScreenIsEnabled: Bool = false
     
     @StateObject
     private var cdm: CoreDataModel
@@ -32,12 +35,16 @@ struct ContentView: View {
     private var statsListViewModel: StatsListViewModel
     @StateObject
     private var statsSearchViewModel: StatsSearchViewModel
+    @StateObject
+    private var privacyMonitor: PrivacyMonitor = PrivacyMonitor(privacyScreenIsEnabled: false)
     
     @ObservedObject 
     private var errorHandler = ErrorHandler.shared
     
     @State
     private var addExpenseAction: Bool = false
+    @State
+    private var hideContent: Bool = false
     
     init() {
         let coreDataModel = CoreDataModel()
@@ -64,6 +71,7 @@ struct ContentView: View {
                 .environmentObject(filtersViewModel)
                 .environmentObject(statsSearchViewModel)
                 .environmentObject(statsListViewModel)
+                .environmentObject(privacyMonitor)
                 .tabItem {
                     Label("Stats", systemImage: "chart.pie.fill")
                 }
@@ -73,6 +81,8 @@ struct ContentView: View {
                     Label("Settings", systemImage: "gearshape.fill")
                 }
         }
+        .blur(radius: hideContent ? Vars.privacyBlur : 0)
+        .ignoresSafeArea()
         .onOpenURL { url in
             if url == URLs.addExpenseAction {
                 addExpenseAction = true
@@ -82,6 +92,20 @@ struct ContentView: View {
             if value == .inactive {
                 WidgetsManager.shared.reloadSumWidgets()
             }
+            
+            if privacyScreenIsEnabled {
+                if value == .active {
+                    withAnimation(.easeOut(duration: 0.2)) {
+                        hideContent = false
+                    }
+                } else {
+                    withAnimation {
+                        hideContent = true
+                    }
+                }
+            }
+            
+            privacyMonitor.changePrivacyScreenValue(value != .active)
         }
         .environmentObject(cdm)
         .environmentObject(rvm)
@@ -93,7 +117,10 @@ struct ContentView: View {
         }
         .tint(colorIdentifier(color: tint))
         .accentColor(colorIdentifier(color: tint))
-        .preferredColorScheme(themeConvert(theme))
+        .preferredColorScheme(themeConvert(autoDarkMode: autoDarkMode, darkMode: darkMode))
+        .onAppear {
+            setColorScheme()
+        }
         .alert(
             "Something went wrong...",
             isPresented: $errorHandler.showAlert,
@@ -111,6 +138,15 @@ struct ContentView: View {
             }
         } message: { error in
             Text("\(error.errorDescription)\n\(error.recoverySuggestion)")
+        }
+    }
+    
+    private func setColorScheme() {
+        if !autoDarkMode {
+            let scenes = UIApplication.shared.connectedScenes
+            let windowScene = scenes.first as? UIWindowScene
+            let window = windowScene?.windows.first
+            window?.overrideUserInterfaceStyle = darkMode ? .dark : .light
         }
     }
 }

@@ -347,9 +347,12 @@ extension Locale {
 //    ]
 }
 
-// MARK: UserDefaults
-extension UserDefaults {
-    func getRates() -> [String:Double]? {
-        return UserDefaults.standard.dictionary(forKey: UDKeys.rates) as? [String:Double]
-    }
+extension UIApplication {
+    var keyWindow: UIWindow? {
+        return self.connectedScenes
+            .filter { $0.activationState == .foregroundActive }
+            .first(where: { $0 is UIWindowScene })
+            .flatMap({ $0 as? UIWindowScene })?.windows
+            .first(where: \.isKeyWindow)
+      }
 }

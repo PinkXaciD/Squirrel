@@ -25,6 +25,7 @@ struct OnboardingWelcomeView: View {
                                 .foregroundColor(.primary)
                                 .opacity(0.3)
                         }
+                        .hoverEffect(.lift)
                         .padding(.vertical)
                         .transition(.moveFromBottom)
                         .animation(.smooth, value: showIcon)
@@ -43,6 +44,7 @@ struct OnboardingWelcomeView: View {
                         .font(.system(size: 50, weight: .heavy))
                         .transition(.moveFromBottom)
                         .animation(.smooth, value: showUpperText)
+//                        .hoverEffect(.lift)
                 }
                 
                 if showBottomText {
@@ -52,6 +54,7 @@ struct OnboardingWelcomeView: View {
                         .padding(.vertical, -10)
                         .transition(.moveFromBottom)
                         .animation(.smooth, value: showBottomText)
+//                        .hoverEffect(.lift)
                 }
             }
             .padding(.horizontal, 30)

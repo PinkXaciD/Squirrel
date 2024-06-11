@@ -24,6 +24,9 @@ struct StatsListView: View {
             list
         } else {
             noResults
+                .listRowBackground(Color.clear)
+                .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 0))
+                .frame(maxWidth: .infinity, alignment: .center)
         }
     }
     
@@ -67,38 +70,11 @@ struct StatsListView: View {
     }
     
     private var noResults: some View {
-//        Section {
-//            HStack {
-//                Spacer()
-//                
-//                VStack(spacing: 10) {
-//                    Image(systemName: "tray.fill")
-//                        .font(.largeTitle.bold())
-//                        .opacity(0.7)
-//                    
-//                    Text("No results")
-//                        .font(.body.bold())
-//                }
-//                .padding()
-//                
-//                Spacer()
-//            }
-//            .padding(.horizontal, isSearching ? 10 : 0)
-//        }
-        
-        HStack {
-            Spacer()
-            
-            CustomContentUnavailableView(
-                vm.showedSearch.isEmpty ? NSLocalizedString("No Results for These Filters", comment: "") : NSLocalizedString("No Results for \"\(vm.showedSearch)\"", comment: ""),
-                imageName: vm.showedSearch.isEmpty ? "tray.fill" : "magnifyingglass",
-                description: vm.showedSearch.isEmpty ? nil : NSLocalizedString("Try another search.", comment: "")
-            )
-            
-            Spacer()
+        if !vm.showedSearch.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            CustomContentUnavailableView.search(vm.showedSearch.trimmingCharacters(in: .whitespacesAndNewlines))
+        } else {
+            CustomContentUnavailableView("No results for these filters", imageName: "tray.fill")
         }
-        .listRowBackground(Color.clear)
-        .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 0))
     }
     
     private func getEditButton(_ spending: SpendingEntity) -> some View {
@@ -118,7 +94,7 @@ struct StatsListView: View {
     private func getDeleteButton(_ spending: SpendingEntity, _ key: Date) -> some View {
         Button(role: .destructive) {
             withAnimation {
-                vm.data[key]?.removeAll(where: { $0.id == spending.id })
+//                vm.data[key]?.removeAll(where: { $0.id == spending.id })
                 cdm.deleteSpending(spending)
             }
         } label: {
@@ -138,7 +114,7 @@ struct StatsListView: View {
             Label("Add return", systemImage: "arrow.uturn.backward")
         }
         .tint(.yellow)
-        .disabled(spending.amountWithReturns == 0)
+        .disabled(spending.amountWithReturns.isZero)
     }
     
     private func dateFormatForList(_ date: Date) -> Text {
@@ -146,6 +122,8 @@ struct StatsListView: View {
             return Text("Today")
         } else if Calendar.current.isDateInYesterday(date) {
             return Text("Yesterday")
+        } else if Calendar.current.isDateInTomorrow(date) {
+            return Text("Tomorrow")
         } else if Calendar.current.isDate(date, equalTo: Date(), toGranularity: .year) {
             return Text(date, format: .dateTime.day().month(.wide))
         } else {

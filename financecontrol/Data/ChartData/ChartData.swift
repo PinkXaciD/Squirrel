@@ -12,7 +12,7 @@ struct ChartData: Identifiable {
     let date: Date
     var categories: [TSCategoryEntity]
     
-    init(date: Date, id: Int, withOther: Bool, cdm: CoreDataModel, categoryName: String? = nil) {
+    init(date: Date, id: Int, showOther: Bool, cdm: CoreDataModel, categoryName: String? = nil) {
         let firstDate = date.getFirstDayOfMonth()
         let secondDate = date.getFirstDayOfMonth(1)
         
@@ -24,28 +24,22 @@ struct ChartData: Identifiable {
         .map { $0.safeObject() }
         
         if categoryName != nil {
-            let unknown = NSLocalizedString("Unknown", comment: "Unknown place")
-            var dict: [String:[TSSpendingEntity]] {
-                var result = [String:[TSSpendingEntity]]()
-                
-                for spending in spendings {
-                    guard let place = spending.place else { continue }
-                    let placeName = place.isEmpty ? unknown : place
-                    var values = result[placeName] ?? []
-                    values.append(spending)
-                    result.updateValue(values, forKey: placeName)
+            let unknown = NSLocalizedString("unknown-place-localized", comment: "Unknown place")
+            
+            let dict: [String:[TSSpendingEntity]] = Dictionary(grouping: spendings) { spending in
+                guard let place = spending.place, !place.isEmpty else {
+                    return unknown
                 }
                 
-                return result
+                return place
             }
             
             let colors: [String] = Array(CustomColor.nordAurora.keys).sorted(by: <)
             var colorIndex: Int = 0
             
-            for key in dict.keys {
+            categories = dict.map { (key, value) in
                 var category = TSCategoryEntity(color: key == unknown ? "secondary" : colors[colorIndex], id: .init(), isShadowed: false, isFavorite: false, name: key)
-                category.spendings = Set(dict[key] ?? []) as NSSet
-                categories.append(category)
+                category.spendings = Set(value) as NSSet
                 
                 if key != unknown {
                     if colorIndex < colors.count - 1 {
@@ -54,26 +48,46 @@ struct ChartData: Identifiable {
                         colorIndex = 0
                     }
                 }
+                
+                return category
             }
         } else {
-            var dict: [UUID:[TSSpendingEntity]] {
-                var result = [UUID:[TSSpendingEntity]]()
-                
-                for spending in spendings {
-                    guard let categoryID = spending.categoryID else { continue }
-                    var values = (result[categoryID] ?? [])
-                    values.append(spending)
-                    result.updateValue(values, forKey: categoryID)
+            let unknownID = UUID()
+            
+            let dict = Dictionary(grouping: spendings) { spending in
+                guard let catId = spending.categoryID else {
+                    return unknownID
                 }
                 
-                return result
+                return catId
             }
             
-            for key in dict.keys {
-                guard var category = cdm.findCategory(key)?.safeObject() else { continue }
-                category.spendings = Set(dict[key] ?? []) as NSSet
-                categories.append(category)
+            categories = dict.map { (key, value) in
+                guard var category = cdm.findCategory(key)?.safeObject() else { return nil }
+                category.spendings = Set(value) as NSSet
+                return category
             }
+            .compactMap { $0 }
+        }
+        
+        if showOther {
+            let sortedCategories = categories.sorted(by: >)
+            let localCategories = sortedCategories
+            categories = Array(sortedCategories.prefix(5))
+            if localCategories.count > 5 {
+                guard let set = localCategories[5...].map({ $0.spendings?.allObjects }).compactMap({ $0 }).flatMap({ $0 }) as? [TSSpendingEntity] else {
+                    self.categories = categories
+                    self.date = firstDate
+                    self.id = id
+                    return
+                }
+                let spendings = Set(set) as NSSet
+                let otherName = NSLocalizedString("category-name-other", comment: "\"Other\" category")
+                let otherCategory = TSCategoryEntity(color: "secondary", id: .init(), isShadowed: false, isFavorite: false, name: otherName, spendings: spendings)
+                categories.append(otherCategory)
+            }
+        } else {
+            categories.sort(by: >)
         }
         
         self.categories = categories
@@ -332,7 +346,7 @@ struct ChartData: Identifiable {
             categories.append(category)
         }
         
-        self.categories = categories
+        self.categories = categories.sorted(by: >)
         self.date = firstDate
         self.id = 0
     }

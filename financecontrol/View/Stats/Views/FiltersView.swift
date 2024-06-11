@@ -14,13 +14,19 @@ struct FiltersView: View {
     private var fvm: FiltersViewModel
     @EnvironmentObject
     private var pcvm: PieChartViewModel
+    @EnvironmentObject
+    private var privacyMonitor: PrivacyMonitor
     @Environment(\.dismiss)
     private var dismiss
-    @AppStorage(UDKeys.color)
+    @AppStorage(UDKeys.color.rawValue)
     private var tint: String = "Orange"
+    @AppStorage(UDKeys.privacyScreen.rawValue)
+    private var privacyScreenIsEnabled: Bool = false
     
     @State
     private var showCategoriesPicker: Bool = false
+    @State
+    private var hideContent: Bool = false
     
     var body: some View {
         NavigationView {
@@ -41,6 +47,17 @@ struct FiltersView: View {
             }
         }
         .accentColor(colorIdentifier(color: tint))
+        .blur(radius: hideContent ? Vars.privacyBlur : 0)
+        .onChange(of: privacyMonitor.privacyScreenIsEnabled) { value in
+//            print("--- \(value), privacy \(privacyScreenIsEnabled), hideContent \(hideContent)")
+            let animation: Animation = value ? .default : .easeOut(duration: 0.2)
+            
+            if privacyScreenIsEnabled {
+                withAnimation(animation) {
+                    hideContent = value
+                }
+            }
+        }
     }
     
     private var dateSection: some View {
@@ -71,8 +88,17 @@ struct FiltersView: View {
         Button {
             setCurrentYear()
         } label: {
-            Text("Current year")
-                .foregroundColor(.accentColor)
+            HStack {
+                Text("Current year")
+                
+                Spacer()
+                
+                if fvm.startFilterDate == getFirstYearDate() && Calendar.current.isDate(fvm.endFilterDate, inSameDayAs: Date()) {
+                    Image(systemName: "checkmark")
+                        .font(.body.bold())
+                }
+            }
+            .foregroundColor(.accentColor)
         }
         .buttonStyle(PlainButtonStyle())
     }
@@ -160,6 +186,19 @@ extension FiltersView {
         fvm.startFilterDate = startDate < firstDate ? firstDate : startDate
         fvm.endFilterDate = Date()
     }
+    
+    private func getFirstYearDate() -> Date {
+        var components: DateComponents = Calendar.current.dateComponents([.year, .era], from: Date())
+        components.calendar = Calendar.current
+        
+        guard let startDate = components.date else {
+            return Date()
+        }
+        
+        let firstDate: Date = cdm.savedSpendings.last?.wrappedDate ?? .init(timeIntervalSinceReferenceDate: 0)
+        
+        return startDate < firstDate ? firstDate : startDate
+    }
 }
 
 struct FiltersCategoriesView: View {
@@ -243,5 +282,17 @@ struct FiltersCategoriesView: View {
         self._categories = categories
         self._applyFilters = applyFilters
         self.listData = (cdm.savedCategories + cdm.shadowedCategories).sorted { $0.name ?? "" < $1.name ?? "" }
+    }
+}
+
+final class PrivacyMonitor: ObservableObject {
+    @Published private(set) var privacyScreenIsEnabled: Bool
+    
+    init(privacyScreenIsEnabled: Bool) {
+        self.privacyScreenIsEnabled = privacyScreenIsEnabled
+    }
+    
+    func changePrivacyScreenValue(_ newValue: Bool) {
+        self.privacyScreenIsEnabled = newValue
     }
 }
