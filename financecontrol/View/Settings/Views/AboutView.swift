@@ -55,7 +55,6 @@ struct AboutView: View {
                 .cornerRadius(15)
                 .onTapGesture(count: 5, perform: debugToggle)
                 .overlay { iconOverlay }
-                .hoverEffect(.lift)
             
             Text("\(appName), version \(version)")
                 .font(.body.bold())

@@ -13,15 +13,28 @@ struct BarChartGenerator: View {
     @AppStorage(UDKeys.defaultCurrency.rawValue) var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
 
     @State private var itemSelected: Int = -1
+    @State private var showAverage: Bool = false
     
     var body: some View {
         VStack(alignment: .center) {
-            BarChart(itemSelected: $itemSelected)
+            BarChart(itemSelected: $itemSelected, showAverage: $showAverage)
             
             Divider()
                 .padding(.vertical, 5)
             
             legend
+                .onTapGesture {
+                    if itemSelected == -1 {
+                        withAnimation(.default.speed(3)) {
+                            showAverage.toggle()
+                        }
+                    } else {
+                        withAnimation(.default.speed(3)) {
+                            itemSelected = -1
+                        }
+                    }
+                }
+                .animation(.default.speed(3), value: cdm.barChartData)
         }
         .onDisappear {
             itemSelected = -1
@@ -43,14 +56,15 @@ struct BarChartGenerator: View {
         if let key = data?[index].key {
             date = dateFormat(key)
         } else {
-            date = NSLocalizedString("past-7-days-home", comment: "")
+            date = showAverage ? NSLocalizedString("average-home-barchart", comment: "") : NSLocalizedString("past-7-days-home", comment: "")
         }
         
         var amount: String = ""
+        
         if let value = data?[index].value {
             amount = value.formatted(.currency(code: defaultCurrency))
         } else {
-            amount = cdm.barChartData.sum.formatted(.currency(code: defaultCurrency))
+            amount = showAverage ? (cdm.barChartData.sum / 7).formatted(.currency(code: defaultCurrency)) : cdm.barChartData.sum.formatted(.currency(code: defaultCurrency))
         }
         
         return VStack {

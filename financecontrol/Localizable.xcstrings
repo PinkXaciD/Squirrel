@@ -334,6 +334,16 @@
     "Automatic Dark Mode" : {
 
     },
+    "average-home-barchart" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Average"
+          }
+        }
+      }
+    },
     "Blue" : {
 
     },
@@ -441,7 +451,10 @@
     "Debug" : {
 
     },
-    "Default: %@" : {
+    "Default" : {
+
+    },
+    "Default currency" : {
 
     },
     "Delete" : {
@@ -609,6 +622,9 @@
     "No Archived Categories" : {
 
     },
+    "No categories" : {
+
+    },
     "No comment provided" : {
 
     },
@@ -754,7 +770,16 @@
     "Selected as default" : {
 
     },
+    "Selected as display" : {
+
+    },
     "Selected category: %@" : {
+
+    },
+    "Separate default and display currencies" : {
+
+    },
+    "Set icon" : {
 
     },
     "Settings" : {
@@ -917,13 +942,22 @@
     "Yesterday" : {
 
     },
+    "You can add categories in settings." : {
+
+    },
     "You can add categories later in settings" : {
+
+    },
+    "You can add expenses from home screen." : {
 
     },
     "You can archive categories in settings, they will be hidden from selection when you add new expenses, but all old expenses will be saved" : {
 
     },
     "You can change default currency or add more later in settings" : {
+
+    },
+    "You can choose a currency to be selected by default, different from display currency" : {
 
     },
     "You can perform quick actions like editing or deleting via swipe actions or by holding row" : {

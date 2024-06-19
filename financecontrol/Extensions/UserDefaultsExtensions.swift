@@ -12,8 +12,6 @@ extension UserDefaults {
         return self.dictionary(forKey: UDKeys.rates.rawValue) as? [String:Double]
     }
     
-    /// <#Description#>
-    /// - Returns: <#description#>
     func getUnwrapedRates() -> [String:Double] {
         return self.getRates() ?? Rates.fallback.rates
     }
@@ -80,5 +78,9 @@ extension UserDefaults {
         }
         
         self.set(value, forKey: UDKeys.savedCurrencies.rawValue)
+    }
+    
+    static func defaultCurrency() -> String? {
+        return self.standard.string(forKey: UDKeys.defaultCurrency.rawValue)
     }
 }

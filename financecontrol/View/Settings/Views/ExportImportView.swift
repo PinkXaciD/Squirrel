@@ -116,6 +116,7 @@ extension ExportImportView {
     private func deleteTempFile() {
         do {
             try FileManager.default.removeItem(at: shareURL)
+            HapticManager.shared.notification(.success)
         } catch {
             ErrorType(error: error).publish()
         }

@@ -10,10 +10,10 @@ import SwiftUI
 struct CurrencyRow: View {
     @EnvironmentObject private var cdm: CoreDataModel
     @EnvironmentObject private var rvm: RatesViewModel
-    @AppStorage(UDKeys.defaultCurrency.rawValue) 
-    private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
+    @Binding var defaultCurrency: String
     
     let currency: Currency
+    let selectedText: LocalizedStringKey
     
     var body: some View {
         ZStack {
@@ -46,7 +46,7 @@ struct CurrencyRow: View {
     
     private func getRateRepresentation() -> Text {
         guard currency.code != defaultCurrency else {
-            return Text("Selected as default")
+            return Text(selectedText)
         }
         
         guard

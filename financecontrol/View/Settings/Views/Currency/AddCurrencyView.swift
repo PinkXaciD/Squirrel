@@ -10,8 +10,6 @@ import SwiftUI
 struct AddCurrencyView: View {
     @EnvironmentObject private var cdm: CoreDataModel
     
-    @Binding var currencies: [Currency]
-    
     @State private var search: String = ""
     let currencyCodes = Dictionary(grouping: Locale.customCommonISOCurrencyCodes) { code in
         (Locale.current.localizedString(forCurrencyCode: code) ?? code).prefix(1).capitalized
@@ -25,9 +23,10 @@ struct AddCurrencyView: View {
                 ForEach(Array(searchResult.keys).sorted(), id: \.self) { key in
                     Section {
                         if let currencies = searchResult[key] {
-                            let mappedCurrencies = currencies.map { (code: $0, name: Locale.current.localizedString(forCurrencyCode: $0) ?? $0)}
+                            let mappedCurrencies = currencies.map { (code: $0, name: Locale.current.localizedString(forCurrencyCode: $0) ?? $0) }
+                            
                             ForEach(mappedCurrencies.sorted { $0.name < $1.name }, id: \.code) { currency in
-                                NewCurrencyRow(currencies: $currencies, name: currency.name, code: currency.code)
+                                NewCurrencyRow(name: currency.name, code: currency.code)
                             }
                         }
                     } header: {
@@ -78,7 +77,7 @@ struct AddCurrencyView: View {
 
 struct AddCurrencyView_Previews {
     static var previews: some View {
-        AddCurrencyView(currencies: .constant([]))
+        AddCurrencyView()
             .environmentObject(CoreDataModel())
     }
 }

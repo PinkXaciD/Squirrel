@@ -36,7 +36,7 @@ struct ContentView: View {
     @StateObject
     private var statsSearchViewModel: StatsSearchViewModel
     @StateObject
-    private var privacyMonitor: PrivacyMonitor = PrivacyMonitor(privacyScreenIsEnabled: false)
+    private var privacyMonitor: PrivacyMonitor = PrivacyMonitor(privacyScreenIsEnabled: false, hideExpenseSum: false)
     
     @ObservedObject 
     private var errorHandler = ErrorHandler.shared

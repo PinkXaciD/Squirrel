@@ -30,5 +30,17 @@ struct URLs {
 }
 
 enum UDKeys: String {
-    case presentOnboarding, color, defaultCurrency, savedCurrencies, minimizeLegend, rates, updateTime, updateRates, autoDarkMode, darkMode, privacyScreen
+    case presentOnboarding
+    case color
+    case defaultCurrency
+    case defaultSelectedCurrency
+    case savedCurrencies
+    case minimizeLegend
+    case rates
+    case updateTime
+    case updateRates
+    case autoDarkMode
+    case darkMode
+    case privacyScreen
+    case separateCurrencies
 }

@@ -10,6 +10,7 @@ import SwiftUI
 struct BarChart: View {
     @EnvironmentObject private var cdm: CoreDataModel
     @Binding var itemSelected: Int
+    @Binding var showAverage: Bool
     
     var body: some View {
         GeometryReader { geometry in
@@ -17,10 +18,10 @@ struct BarChart: View {
                 // MARK: Avg dashed line
                 if !cdm.barChartData.sum.isZero {
                     Line()
-                        .stroke(style: StrokeStyle(lineWidth: 1, dash: [5]))
+                        .stroke(style: StrokeStyle(lineWidth: (showAverage ? 1.5 : 1), dash: [5]))
                         .frame(height: 2)
                         .offset(y: -(10 + countAvgBarHeight()))
-                        .foregroundColor(.secondary.opacity(0.3))
+                        .foregroundColor(.secondary.opacity(showAverage ? 0.7 : 0.3))
                         .padding(.horizontal, countDashedLinePadding(geometry.size.width))
                 }
                 
@@ -83,8 +84,9 @@ struct BarChart: View {
 struct BarChart_Previews: PreviewProvider {
     static var previews: some View {
         @State var itemSelected = -1
+        @State var showAverage = false
         
-        BarChart(itemSelected: $itemSelected)
+        BarChart(itemSelected: $itemSelected, showAverage: $showAverage)
             .environmentObject(CoreDataModel())
     }
 }

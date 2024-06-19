@@ -53,7 +53,7 @@ final class AddSpendingViewModel: ViewModel {
                 self.amount = ""
             }
             
-            self.currency = shortcut.currency ?? UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
+            self.currency = shortcut.currency ?? UserDefaults.standard.string(forKey: UDKeys.defaultSelectedCurrency.rawValue) ?? UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
             self.date = Date()
             
             if let categoryID = shortcut.categoryID, let categoryName = cdm.findCategory(categoryID)?.name {
@@ -68,7 +68,7 @@ final class AddSpendingViewModel: ViewModel {
             self.comment = shortcut.comment ?? ""
         } else {
             self.amount = ""
-            self.currency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
+            self.currency = UserDefaults.standard.string(forKey: UDKeys.defaultSelectedCurrency.rawValue) ?? UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
             self.date = .now
             self.categoryName = "Select Category"
             self.categoryId = .init()
@@ -102,7 +102,7 @@ final class AddSpendingViewModel: ViewModel {
             let sortedCategories = self.cdm.savedCategories.sorted { $0.spendings?.allObjects.count ?? 0 > $1.spendings?.allObjects.count ?? 0 }
             let range = 0..<(sortedCategories.count > 5 ? 5 : sortedCategories.count)
             withAnimation {
-                self.popularCategories.append(contentsOf: sortedCategories[range])
+                self.popularCategories = Array(sortedCategories[range])
             }
         }
     }

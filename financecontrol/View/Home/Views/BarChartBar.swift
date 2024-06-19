@@ -21,22 +21,20 @@ struct BarChartBar: View {
                     .frame(width: 30, height: screenHeight + 10)
                     .foregroundColor(Color.secondary)
                     .opacity(0.1)
-//                    .cornerRadius(5)
+                    .cornerRadius(5)
                 
-                if data.value > 0 {
-                    Rectangle()
-                        .frame(width: 30, height: countBarHeight() + 10)
-                        .foregroundColor(isActive ? Color.accentColor : Color.secondary)
-//                        .cornerRadius(5)
-                }
+                Rectangle()
+                    .frame(width: 30, height: countBarHeight() + 10)
+                    .foregroundColor(isActive ? Color.accentColor : Color.secondary)
+                    .cornerRadius(5)
                 
                 // MARK: Avg bar
 //                Rectangle()
 //                    .fill(LinearGradient(colors: [Color(uiColor: .secondarySystemGroupedBackground).opacity(0.2), Color(uiColor: .secondarySystemGroupedBackground).opacity(0)], startPoint: .top, endPoint: .bottom))
 //                    .frame(width: 30, height: countAvgBarHeight() + 10)
 //                    .foregroundColor(.secondary.opacity(0.1))
+                
             } // Column rectangle end
-            .clipShape(RoundedRectangle(cornerRadius: 5))
             .overlay(alignment: .bottom) {
                 Rectangle()
                     .frame(width: 30, height: 10)
@@ -60,6 +58,11 @@ struct BarChartBar: View {
     private func countBarHeight() -> Double {
         let max = cdm.barChartData.max
         let height = screenHeight
+        
+        if max == 0 {
+            return 0
+        }
+        
         return height / max * data.value
     }
     

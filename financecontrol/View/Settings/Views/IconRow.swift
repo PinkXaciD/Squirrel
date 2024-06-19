@@ -15,6 +15,14 @@ struct IconRow: View {
     
     var body: some View {
         Button(action: vm.setIcon, label: label)
+            .contextMenu {
+                Button {
+                    vm.setIcon()
+                } label: {
+                    Text("Set icon")
+                }
+
+            }
     }
     
     private func label() -> some View {
