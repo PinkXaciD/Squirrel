@@ -120,7 +120,7 @@ struct SettingsView: View {
                     
                     Spacer()
                     
-                    Text("\(defaultCurrency)")
+                    Text("\(Locale.current.localizedString(forCurrencyCode: defaultCurrency) ?? defaultCurrency)")
                         .foregroundColor(Color.secondary)
                 }
             }

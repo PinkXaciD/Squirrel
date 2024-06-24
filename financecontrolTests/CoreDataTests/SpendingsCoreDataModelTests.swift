@@ -237,7 +237,7 @@ final class SpendingsCoreDataModelTests: XCTestCase {
             cdm?.addSpending(spending: local)
         }
         
-        let data = cdm?.operationsForList()
+        let data = cdm?.statsListData
         
         for index in 0..<8 {
             let key = Calendar.current.startOfDay(for: Calendar.current.date(byAdding: .day, value: -index, to: .now)!)

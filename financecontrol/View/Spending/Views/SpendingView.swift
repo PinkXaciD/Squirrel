@@ -232,7 +232,7 @@ struct SpendingView: View {
     private var returnsSection: some View {
         Section {
             ForEach(entity.returnsArr.sorted { $0.date ?? .distantPast > $1.date ?? .distantPast }) { returnEntity in
-                returnRow(returnEntity)
+                ReturnRow(returnToEdit: $returnToEdit, returnEntity: returnEntity, spendingCurrency: entity.wrappedCurrency)
             }
         } header: {
             Text("\(entity.returns?.allObjects.count ?? 0) returns")
@@ -302,93 +302,6 @@ extension SpendingView {
         withAnimation {
             edit.toggle()
         }
-    }
-    
-    private func returnRow(_ returnEntity: ReturnEntity) -> some View {
-        HStack {
-            VStack(alignment: .leading) {
-                dateFormat(returnEntity.date ?? .distantPast)
-                    .foregroundColor(.secondary)
-                    .font(.caption)
-                
-                Text(returnEntity.amount.formatted(.currency(code: returnEntity.currency ?? entity.wrappedCurrency)))
-                    .font(.system(.title3, design: .rounded).bold())
-            }
-                
-            if let name = returnEntity.name, !name.isEmpty {
-                Spacer()
-                
-                Text(name)
-                    .lineLimit(3)
-                    .padding()
-                    .background {
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(Color(uiColor: .tertiarySystemGroupedBackground))
-                    }
-            }
-                
-//            #if DEBUG
-//            Divider()
-//
-//            HStack {
-//                Text(verbatim: "Amount in USD:")
-//
-//                Spacer()
-//
-//                Text("\(returnEntity.amountUSD.formatted(.currency(code: "USD")))")
-//                    .foregroundColor(.secondary)
-//            }
-//            .padding(.top, 3)
-//            #endif
-//            }
-        }
-        .padding(.vertical, 1)
-        .normalizePadding()
-        .foregroundColor(.primary)
-        .swipeActions(edge: .leading) {
-            getEditButton(returnEntity)
-        }
-        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-            getDeleteButton(returnEntity)
-        }
-        .contextMenu {
-            getEditButton(returnEntity)
-            
-            getDeleteButton(returnEntity)
-        }
-        .onTapGesture {
-            returnToEdit = returnEntity
-        }
-    }
-    
-    private func getEditButton(_ entity: ReturnEntity) -> some View {
-        Button {
-            returnToEdit = entity
-        } label: {
-            Label("Edit", systemImage: "pencil")
-        }
-        .tint(.yellow)
-    }
-    
-    private func getDeleteButton(_ entity: ReturnEntity) -> some View {
-        Button(role: .destructive) {
-            withAnimation {
-                cdm.deleteReturn(spendingReturn: entity)
-            }
-        } label: {
-            Label("Delete", systemImage: "trash.fill")
-        }
-        .tint(.red)
-    }
-    
-    private func dateFormat(_ date: Date) -> Text {
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeStyle = .short
-        dateFormatter.dateStyle = .medium
-        dateFormatter.locale = Locale.current
-        dateFormatter.doesRelativeDateFormatting = true
-        
-        return Text(dateFormatter.string(from: date))
     }
 }
 

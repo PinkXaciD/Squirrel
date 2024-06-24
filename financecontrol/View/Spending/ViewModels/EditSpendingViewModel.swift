@@ -125,6 +125,8 @@ final class EditSpendingViewModel: SpendingViewModel {
         DispatchQueue.global(qos: .utility).async { [weak self] in
             guard let self else { self?.clear(); return }
             
+            guard self.cdm.findCategory(self.categoryId) != nil else { return }
+            
             let formatter = NumberFormatter()
             
             guard let number = formatter.number(from: amount) else {

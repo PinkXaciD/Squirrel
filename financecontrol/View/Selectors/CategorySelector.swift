@@ -39,7 +39,7 @@ struct CategorySelector: View {
             }
         } label: {
             Spacer()
-            Text(LocalizedStringKey(cdm.findCategory(category)?.name ?? "Select Category"))
+            Text(cdm.findCategory(category)?.name ?? "Select Category")
         }
         .background {
             NavigationLink(isActive: $editCategories) {

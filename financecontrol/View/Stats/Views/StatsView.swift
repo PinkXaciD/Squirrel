@@ -13,6 +13,9 @@ import OSLog
 struct StatsView: View {
     @Environment(\.isSearching)
     private var isSearching
+    @AppStorage(UDKeys.color.rawValue)
+    private var tint: String = "Orange"
+    
     @EnvironmentObject
     private var cdm: CoreDataModel
     @EnvironmentObject
@@ -78,19 +81,20 @@ struct StatsView: View {
             .sheet(item: $entityToEdit) { entity in
                 SpendingCompleteView(
                     edit: $edit,
-                    entity: entity,
-                    coreDataModel: cdm,
-                    ratesViewModel: rvm
+                    entity: entity
                 )
                 .smallSheet(sheetFraction)
                 .environmentObject(privacyMonitor)
+                .environmentObject(cdm)
+                .environmentObject(rvm)
             }
             .sheet(isPresented: $showFilters) {
                 filters
             }
             .sheet(item: $entityToAddReturn) { entity in
                 AddReturnView(spending: entity, cdm: cdm, rvm: rvm)
-                    .accentColor(.accentColor)
+                    .accentColor(colorIdentifier(color: tint))
+                    .tint(colorIdentifier(color: tint))
             }
             .navigationTitle("Stats")
 //            .overlay {

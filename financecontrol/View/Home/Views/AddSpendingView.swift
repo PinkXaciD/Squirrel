@@ -38,25 +38,16 @@ struct AddSpendingView: View {
     @FocusState 
     private var focusedField: Field?
     
-    private enum ViewState {
-        case active, processing, done
-    }
-    
-    @State
-    private var viewState: ViewState = .active
-    
     @State
     private var amountIsFocused: Bool = true
     @State
-    private var filterAmount: String = ""
-    @State
     private var hideContent: Bool = false
 
-    private let utils = InputUtils() /// For input checking
+    private let utils = InputUtils() /// For input validation
     
     var body: some View {
         NavigationView {
-            Form {
+            List {
                 reqiredSection
                 
                 placeAndCommentSection
@@ -74,7 +65,7 @@ struct AddSpendingView: View {
         .navigationViewStyle(.stack)
         .tint(colorIdentifier(color: tint))
         .accentColor(colorIdentifier(color: tint))
-        .interactiveDismissDisabled(vm.categoryName != "Select Category" || !vm.amount.isEmpty)
+        .interactiveDismissDisabled(!vm.amount.isEmpty)
         .blur(radius: hideContent ? Vars.privacyBlur : 0)
         .onChange(of: scenePhase) { value in
             if privacyScreenIsEnabled {
@@ -97,16 +88,10 @@ struct AddSpendingView: View {
         Section {
             TextField("0.00", text: $vm.amount)
                 .multilineTextAlignment(.center)
-                .numbersOnly($filterAmount)
+                .numbersOnly($vm.amount)
                 .amountStyle()
                 .focused($focusedField, equals: .amount)
                 .onAppear(perform: amountFocus)
-                .onChange(of: vm.amount) { newValue in      ///
-                    filterAmount = newValue                 ///
-                }                                           /// iOS 16 fix
-                .onChange(of: filterAmount) { newValue in   ///
-                    vm.amount = newValue                    ///
-                }
                 /// For iPad or external keyboard
                 .onSubmit {
                     nextField()
@@ -126,7 +111,7 @@ struct AddSpendingView: View {
                 CategorySelector(category: $vm.categoryId)
             }
             .onChange(of: vm.categoryId) { newValue in
-                vm.categoryName = vm.cdm.findCategory(newValue)?.name ?? "Error"
+//                vm.categoryName = vm.cdm.findCategory(newValue)?.name ?? "Error"
             }
             
         } header: {
@@ -232,7 +217,7 @@ struct AddSpendingView: View {
                 Text("Done")
             }
             .font(Font.body.weight(.semibold))
-            .disabled(!utils.checkAll(amount: vm.amount, place: vm.place, category: vm.categoryName, comment: vm.comment))
+            .disabled(!utils.checkAll(amount: vm.amount, place: vm.place, comment: vm.comment) || !vm.categoryHasChanged)
         }
     }
 }
@@ -268,9 +253,6 @@ extension AddSpendingView {
     
     private func done() {
         clearFocus()
-        withAnimation {
-            viewState = .processing
-        }
         vm.done()
         dismiss()
     }

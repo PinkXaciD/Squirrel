@@ -8,10 +8,8 @@
 import SwiftUI
 
 struct InputUtils {
-    func checkAll(amount: String, place: String, category: String, comment: String) -> Bool {
+    func checkAll(amount: String, place: String, comment: String) -> Bool {
         amountCheck(amount: amount)
-        &&
-        categoryCheck(category: category)
         &&
         placeCheck(place: place)
         &&
@@ -39,16 +37,6 @@ struct InputUtils {
     func placeCheck(place: String) -> Bool {
         guard
             place.count <= 100
-        else {
-            return false
-        }
-        
-        return true
-    }
-    
-    func categoryCheck(category: String) -> Bool {
-        guard
-            category != "Select Category"
         else {
             return false
         }

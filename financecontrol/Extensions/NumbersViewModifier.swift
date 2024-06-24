@@ -12,33 +12,22 @@ struct NumbersViewModifier: ViewModifier {
     @Binding var text: String
     
     func body(content: Content) -> some View {
-            content
+        content
             .onReceive(Just(text.replacingOccurrences(of: "٫", with: Locale.current.decimalSeparator ?? "."))) { newValue in
                 let decimalSeparator: String = Locale.current.decimalSeparator ?? "."
+                var filteredText = newValue.filter { $0.isNumber || $0 == decimalSeparator.first ?? "." }
                 
-                if newValue.components(separatedBy: decimalSeparator).count - 1 > 1 {
-                    let filtered = newValue
-                    self.text = isValid(newValue: String(filtered.dropLast()), decimalSeparator: decimalSeparator)
-                } else {
-                    let filtered = newValue.filter { $0.isNumber || $0 == decimalSeparator.first! }
-                    if filtered != newValue {
-                        self.text = isValid(newValue: filtered, decimalSeparator: decimalSeparator)
-                    } else {
-                        self.text = isValid(newValue: newValue, decimalSeparator: decimalSeparator)
-                    }
+                while validate(filteredText.components(separatedBy: decimalSeparator)) {
+                    filteredText = String(filteredText.dropLast())
+                }
+                
+                if newValue != filteredText {
+                    self.text = filteredText
                 }
             }
-        }
+    }
     
-    private func isValid(newValue: String, decimalSeparator: String) -> String {
-            let components = newValue.components(separatedBy: decimalSeparator)
-            if components.count > 1 {
-                guard let last = components.last else { return newValue }
-                if last.count > 2 {
-                    let filtered = newValue
-                    return String(filtered.dropLast())
-                }
-            }
-            return newValue
-        }
+    private func validate(_ components: [String]) -> Bool {
+        return components.count > 2 || (components.count == 2 && components[1].count > 2)
+    }
 }
