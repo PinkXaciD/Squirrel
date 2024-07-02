@@ -27,8 +27,6 @@ struct PieChartCompleteView: View {
             APChart(separators: 0.15, innerRadius: 0.73) {
                 setData(localData.categories)
             }
-//            .frame(width: size, height: size)
-//            .rotationEffect(layoutDirection == .rightToLeft ? Angle(degrees: 180) : Angle(degrees: 0))
             
             CenterChartView(
                 selectedMonth: localData.date,

@@ -379,9 +379,6 @@
     "Check the spelling or try a new search." : {
 
     },
-    "Check your internet connection" : {
-
-    },
     "Clear" : {
 
     },
@@ -523,9 +520,6 @@
     "Failed to get CoreData entity description" : {
 
     },
-    "Failed to import" : {
-
-    },
     "Fallback rates timestamp:" : {
 
     },
@@ -580,8 +574,27 @@
     "Import failed" : {
 
     },
-    "Imported 5 spendings" : {
-
+    "Imported %lld expenses" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Imported %lld expense"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "new",
+                  "value" : "Imported %lld expenses"
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "Indigo" : {
 
@@ -626,6 +639,9 @@
 
     },
     "No comment provided" : {
+
+    },
+    "No connection" : {
 
     },
     "No currencies" : {
@@ -719,6 +735,9 @@
     "Rates" : {
 
     },
+    "Rates updated" : {
+
+    },
     "Rates updated at:" : {
 
     },
@@ -753,6 +772,9 @@
 
     },
     "Search" : {
+
+    },
+    "Search by name" : {
 
     },
     "Search by name or ISO code" : {
@@ -806,9 +828,6 @@
     "Some place" : {
 
     },
-    "Something happened..." : {
-
-    },
     "Something went wrong..." : {
 
     },
@@ -824,27 +843,8 @@
     "Stealth" : {
 
     },
-    "Successfully imported %lld expenses" : {
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Successfully imported %lld expense"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "new",
-                  "value" : "Successfully imported %lld expenses"
-                }
-              }
-            }
-          }
-        }
-      }
+    "Success" : {
+
     },
     "Swipe left to restore, swipe right to delete" : {
 
@@ -897,8 +897,8 @@
     "Tomorrow" : {
 
     },
-    "Unknown" : {
-      "comment" : "Unknown place"
+    "Unable to update exchange rates" : {
+
     },
     "unknown-place-localized" : {
       "comment" : "Unknown place",
@@ -910,6 +910,9 @@
           }
         }
       }
+    },
+    "Updating rates..." : {
+
     },
     "Validate returns" : {
 

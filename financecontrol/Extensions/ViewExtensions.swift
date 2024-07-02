@@ -26,51 +26,6 @@ extension View {
             .modifier(NumbersViewModifier(text: text))
     }
     
-    /// Adds Custom alert to the View
-    /// - Parameters:
-    ///   - type: Type of custom alert
-    ///   - presenting: State of presentation
-    ///   - message: Text inside an alert
-    /// - Returns: View with added custom alert overlay
-    func customAlert(_ type: CustomAlertType, presenting: Binding<Bool>, message: Text = .init(verbatim: "")) -> some View {
-        
-        let topOffset = -(UIScreen.main.bounds.height / 2)
-        let safeArea = UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0
-        let offset = topOffset + safeArea
-            
-        return self
-            .overlay {
-                CustomAlertView(
-                    isPresented: presenting,
-                    type: type,
-                    text: message
-                )
-                .scaleEffect(presenting.wrappedValue ? 1 : 0.3)
-                .offset(y:(presenting.wrappedValue ? (offset + 60) : (offset - 130)))
-                .onTapGesture {
-                    withAnimation(.bouncy) {
-                        presenting.wrappedValue = false
-                    }
-                }
-                .gesture(DragGesture(minimumDistance: 5).onChanged { value in
-                    if value.translation.height < 0 {
-                        withAnimation(.bouncy) {
-                            presenting.wrappedValue = false
-                        }
-                    }
-                })
-                .onChange(of: presenting.wrappedValue) { newValue in
-                    if newValue {
-                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 3) {
-                            withAnimation(.bouncy) {
-                                presenting.wrappedValue = false
-                            }
-                        }
-                    }
-                }
-            }
-    }
-    
     func smallSheet(_ fraction: CGFloat? = nil) -> some View {
         if #available(iOS 16.0, *) {
             return self

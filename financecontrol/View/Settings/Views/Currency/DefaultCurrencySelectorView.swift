@@ -64,7 +64,7 @@ struct DefaultCurrencySelectorView: View {
                         
                         Spacer()
                         
-                        Text(defaultSelectedCurrency)
+                        Text(Locale.current.localizedString(forCurrencyCode: defaultSelectedCurrency) ?? defaultSelectedCurrency)
                             .foregroundColor(.secondary)
                     }
                 }

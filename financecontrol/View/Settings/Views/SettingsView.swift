@@ -21,13 +21,6 @@ struct SettingsView: View {
     @State
     private var showDarkModeToggle: Bool = false
     
-    @State
-    private var presentCustomAlert: Bool = false
-    @State
-    private var customAlertMessage: Text = .init("")
-    @State
-    private var customAlertType: CustomAlertType = .unknown
-    
     @Binding
     var presentOnboarding: Bool
     
@@ -55,7 +48,6 @@ struct SettingsView: View {
             .navigationTitle("Settings")
         }
         .navigationViewStyle(.stack)
-        .customAlert(customAlertType, presenting: $presentCustomAlert, message: customAlertMessage)
         .onAppear {
             withAnimation {
                 showDarkModeToggle = !autoDarkMode
@@ -116,7 +108,7 @@ struct SettingsView: View {
                 DefaultCurrencySelectorView()
             } label: {
                 HStack {
-                    Text("Currencies")
+                    Text("Currency")
                     
                     Spacer()
                     
@@ -170,7 +162,7 @@ struct SettingsView: View {
     private var exportImportSection: some View {
         Section(header: Text("Export and Import"), footer: footer) {
             NavigationLink("Export and import data") {
-                ExportImportView(presentAlert: $presentCustomAlert, alertMessage: $customAlertMessage, alertType: $customAlertType)
+                ExportImportView()
             }
         }
     }
@@ -186,20 +178,6 @@ struct SettingsView: View {
         .frame(maxWidth: .infinity)
     }
 }
-
-//extension SettingsView {
-//    func appearActions() {
-//        if theme == "light" {
-//            autoDarkMode = false
-//            darkMode = false
-//        } else if theme == "dark" {
-//            autoDarkMode = false
-//            darkMode = true
-//        } else {
-//            autoDarkMode = true
-//        }
-//    }
-//}
 
 extension SettingsView {
     struct BlurContentExample: View {

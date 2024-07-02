@@ -14,7 +14,6 @@ struct AddCategoryView: View {
     let insert: Bool
     
     @State private var name: String = ""
-    @State private var colorSelected: Color = Color.clear
     @State private var colorSelectedDescription: String = ""
     @State private var triedToSave: Bool = false
     
@@ -51,7 +50,7 @@ struct AddCategoryView: View {
     
     private var colorSection: some View {
         Section {
-            CustomColorSelector(colorSelected: $colorSelected, colorSelectedDescription: $colorSelectedDescription)
+            CustomColorSelector(colorSelectedDescription: $colorSelectedDescription)
                 .padding(.vertical, 10)
         } footer: {
             if triedToSave && colorSelectedDescription.isEmpty {

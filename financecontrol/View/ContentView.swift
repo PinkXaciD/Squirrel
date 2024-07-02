@@ -121,6 +121,7 @@ struct ContentView: View {
         .onAppear {
             setColorScheme()
         }
+        .customAlert()
         .alert(
             "Something went wrong...",
             isPresented: $errorHandler.showAlert,

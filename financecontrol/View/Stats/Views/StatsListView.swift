@@ -11,15 +11,12 @@ struct StatsListView: View {
     @EnvironmentObject private var cdm: CoreDataModel
     @EnvironmentObject private var fvm: FiltersViewModel
     @EnvironmentObject private var vm: StatsListViewModel
-//    @EnvironmentObject private var pcvm: PieChartViewModel // TODO: Remove
     @EnvironmentObject private var searchModel: StatsSearchViewModel
     @Environment(\.isSearching) private var isSearching
     
     @Binding var entityToEdit: SpendingEntity?
     @Binding var entityToAddReturn: SpendingEntity?
     @Binding var edit: Bool
-    
-//    @State private var hasResults: Bool = false
     
     var body: some View {
         list
@@ -29,8 +26,6 @@ struct StatsListView: View {
         let data = getList()
         
         return Group {
-//            Text("\(vm.selection)")
-            
             if !data.isEmpty {
                 ForEach(Array(data.keys).sorted(by: >), id: \.self) { sectionKey in
                     if let sectionData = data[sectionKey], !sectionData.isEmpty {
@@ -104,7 +99,6 @@ struct StatsListView: View {
     private func getDeleteButton(_ spending: SpendingEntity, _ key: Date) -> some View {
         Button(role: .destructive) {
             withAnimation {
-//                vm.data[key]?.removeAll(where: { $0.id == spending.id })
                 cdm.deleteSpending(spending)
             }
         } label: {
@@ -131,29 +125,6 @@ struct StatsListView: View {
         var data = StatsListData()
         
         data = cdm.statsListData.filter { section in
-//            if checkSectionKey(section.key) {
-//                let newValue = section.value.filter { spending in
-//                    checkSectionData(spending)
-//                }
-//                
-//                if !newValue.isEmpty {
-//                    for spending in newValue {
-//                        print(spending.place)
-//                    }
-//                }
-//                
-//                if newValue.isEmpty {
-//                    return false
-//                } else {
-//                    data[section.key] = newValue
-//                }
-//                
-//                print(data[section.key])
-//                
-//                return true
-//            } else {
-//                return false
-//            }
             checkSectionKey(section.key)
         }
         
@@ -167,12 +138,6 @@ struct StatsListView: View {
             return arr
         }
         
-//        data = data.mapValues { spendings in
-//            spendings.filter { spending in
-//                checkSectionData(spending)
-//            }
-//        }
-        
         return data.filter { !$0.value.isEmpty }
     }
     
@@ -184,7 +149,6 @@ struct StatsListView: View {
 //        print("Selection date1: \(date >= Date().getFirstDayOfMonth(-pcvm.selection - 1)), selection date 2: \(date <= Date().getFirstDayOfMonth(-pcvm.selection))")
         
         if fvm.applyFilters {
-//            print("Apply filters") // TODO: Remove
             return date >= fvm.startFilterDate && date <= fvm.endFilterDate
         }
         

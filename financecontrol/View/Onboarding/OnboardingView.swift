@@ -52,10 +52,6 @@ struct OnboardingView: View {
                     VStack {
                         continueButton
                             .padding(.horizontal, 30)
-                        
-//                        if screen > 1 && screen < finalScreenNumber {
-//                            skipButton
-//                        }
                     }
                     .zIndex(1)
                     .padding(.bottom, 30)

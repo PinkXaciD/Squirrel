@@ -97,16 +97,6 @@ struct StatsView: View {
                     .tint(colorIdentifier(color: tint))
             }
             .navigationTitle("Stats")
-//            .overlay {
-//                if !searchModel.search.isEmpty {
-//                    List {
-//                        Text(searchModel.search)
-//                        Text(searchModel.search)
-//                        Text(searchModel.search)
-//                        Text(searchModel.search)
-//                    }
-//                }
-//            }
         }
         .navigationViewStyle(.stack)
     }
@@ -132,24 +122,6 @@ struct StatsView: View {
                 }
                 .buttonStyle(BorderedButtonStyle())
             }
-            
-//            Button {
-//                showFilters.toggle()
-//            } label: {
-//                if fvm.applyFilters {
-//                    HStack {
-//                        Text(fvm.startFilterDate, format: .dateTime.day(.defaultDigits).month(.defaultDigits).year(.defaultDigits))
-//                        
-//                        Text(verbatim: "-")
-//                        
-//                        Text(fvm.endFilterDate, format: .dateTime.day(.defaultDigits).month(.defaultDigits).year(.defaultDigits))
-//                    }
-//                    .font(.footnote)
-//                } else {
-//                    Label("Filter", systemImage: "line.3.horizontal.decrease")
-//                }
-//            }
-//            .buttonStyle(BorderedButtonStyle())
         }
     }
     

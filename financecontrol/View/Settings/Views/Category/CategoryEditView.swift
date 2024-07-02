@@ -31,7 +31,6 @@ struct CategoryEditSubView: View {
     @EnvironmentObject private var cdm: CoreDataModel
     
     @State private var name: String
-    @State private var colorSelected: Color
     @State private var colorSelectedDescription: String
     @State private var triedToSave: Bool = false
     
@@ -41,7 +40,6 @@ struct CategoryEditSubView: View {
         self.category = category
         self.name = category.name ?? "Error"
         self.colorSelectedDescription = category.color ?? "Error"
-        self.colorSelected = Color[category.color ?? "nil"]
         self._dismiss = dismiss
     }
     
@@ -76,7 +74,7 @@ struct CategoryEditSubView: View {
     
     private var colorSection: some View {
         Section {
-            CustomColorSelector(colorSelected: $colorSelected, colorSelectedDescription: $colorSelectedDescription)
+            CustomColorSelector(colorSelectedDescription: $colorSelectedDescription)
         } footer: {
             if triedToSave && colorSelectedDescription.isEmpty {
                 Text("Required")

@@ -57,6 +57,11 @@
 		8D4E081C2AAA163800B3544F /* CurrenciesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4E081B2AAA163800B3544F /* CurrenciesModel.swift */; };
 		8D4FE3002BA9D954001009F2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8DFF59662BA35D1F002DBB1B /* PrivacyInfo.xcprivacy */; };
 		8D4FE3022BA9DA11001009F2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8DFF59662BA35D1F002DBB1B /* PrivacyInfo.xcprivacy */; };
+		8D5176552C3300FD00141B6C /* CustomAlertManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5176542C3300FD00141B6C /* CustomAlertManager.swift */; };
+		8D5176572C33011900141B6C /* CustomAlertData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5176562C33011900141B6C /* CustomAlertData.swift */; };
+		8D5176592C33021C00141B6C /* CustomAlertViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5176582C33021C00141B6C /* CustomAlertViewModel.swift */; };
+		8D51765B2C33029000141B6C /* CustomAlertViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D51765A2C33029000141B6C /* CustomAlertViewExtension.swift */; };
+		8D51765D2C34360C00141B6C /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D51765C2C34360C00141B6C /* NetworkMonitor.swift */; };
 		8D54F4F62B96326200B17886 /* StatsSearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D54F4F52B96326200B17886 /* StatsSearchViewModel.swift */; };
 		8D54F4F82B96329800B17886 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D54F4F72B96329800B17886 /* SearchViewModel.swift */; };
 		8D54F4FB2B96335100B17886 /* CustomContentUnavailableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D54F4FA2B96335100B17886 /* CustomContentUnavailableView.swift */; };
@@ -236,6 +241,11 @@
 		8D4E08172AAA152A00B3544F /* SpendingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpendingsModel.swift; sourceTree = "<group>"; };
 		8D4E08192AAA15B900B3544F /* CategoriesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoriesModel.swift; sourceTree = "<group>"; };
 		8D4E081B2AAA163800B3544F /* CurrenciesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrenciesModel.swift; sourceTree = "<group>"; };
+		8D5176542C3300FD00141B6C /* CustomAlertManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertManager.swift; sourceTree = "<group>"; };
+		8D5176562C33011900141B6C /* CustomAlertData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertData.swift; sourceTree = "<group>"; };
+		8D5176582C33021C00141B6C /* CustomAlertViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertViewModel.swift; sourceTree = "<group>"; };
+		8D51765A2C33029000141B6C /* CustomAlertViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertViewExtension.swift; sourceTree = "<group>"; };
+		8D51765C2C34360C00141B6C /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		8D54F4F52B96326200B17886 /* StatsSearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsSearchViewModel.swift; sourceTree = "<group>"; };
 		8D54F4F72B96329800B17886 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
 		8D54F4FA2B96335100B17886 /* CustomContentUnavailableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomContentUnavailableView.swift; sourceTree = "<group>"; };
@@ -394,12 +404,12 @@
 				8D28C7EF2A73DF7000F27CD4 /* Colors.swift */,
 				8D3876622A740F960005FFAF /* InputUtils.swift */,
 				8D591EA72A93AAF700A9CD07 /* LaunchActions.swift */,
-				8D0DF54E2AE80C2400C3CC1F /* CustomAlertType.swift */,
 				8D1F51372AE927610037A4A8 /* HapticManager.swift */,
 				8DFA1EDD2B4C163100B97113 /* CustomIcon.swift */,
 				8D9F30E82B4D7C3E00A0B8C3 /* WidgetsManager.swift */,
 				8D4A7A642B6960BA0038C0FE /* PieChartLazyPageView.swift */,
 				8D6A5A1C2C18A1A100322929 /* PrivacyMonitor.swift */,
+				8D51765C2C34360C00141B6C /* NetworkMonitor.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -527,9 +537,23 @@
 			path = Data;
 			sourceTree = "<group>";
 		};
+		8D5176532C33009A00141B6C /* Custom Alert */ = {
+			isa = PBXGroup;
+			children = (
+				8D0DF5502AE80D5F00C3CC1F /* CustomAlertView.swift */,
+				8D5176542C3300FD00141B6C /* CustomAlertManager.swift */,
+				8D5176562C33011900141B6C /* CustomAlertData.swift */,
+				8D0DF54E2AE80C2400C3CC1F /* CustomAlertType.swift */,
+				8D5176582C33021C00141B6C /* CustomAlertViewModel.swift */,
+				8D51765A2C33029000141B6C /* CustomAlertViewExtension.swift */,
+			);
+			path = "Custom Alert";
+			sourceTree = "<group>";
+		};
 		8D54F4F92B96331800B17886 /* Universal */ = {
 			isa = PBXGroup;
 			children = (
+				8D5176532C33009A00141B6C /* Custom Alert */,
 				8D6B3E612C1216C900C4A97A /* Shapes */,
 				8D7710A62B60615D00D3ECF5 /* UniversalViews.swift */,
 				8D54F4FA2B96335100B17886 /* CustomContentUnavailableView.swift */,
@@ -768,7 +792,6 @@
 				8DBA96A52AD48DB800F900C4 /* AboutView.swift */,
 				8DEC3FF02AD580D700F5D82E /* DebugView.swift */,
 				8D05C6D72AE0479E0097078A /* ExportImportView.swift */,
-				8D0DF5502AE80D5F00C3CC1F /* CustomAlertView.swift */,
 				8D9E22D72AE6A1BD00801932 /* CustomShareSheet.swift */,
 				8D406EAA2A9A36EA002D3ED1 /* Category */,
 				8D406EA92A9A36C0002D3ED1 /* Currency */,
@@ -1092,7 +1115,9 @@
 				8D0763A32A4B07ED00D2C3FF /* AddSpendingView.swift in Sources */,
 				8D31CE5E2AD029EC00E8B74B /* APIURLComponents.swift in Sources */,
 				8D0763A82A4B257F00D2C3FF /* CurrencySelector.swift in Sources */,
+				8D5176552C3300FD00141B6C /* CustomAlertManager.swift in Sources */,
 				8D7710A72B60615D00D3ECF5 /* UniversalViews.swift in Sources */,
+				8D5176572C33011900141B6C /* CustomAlertData.swift in Sources */,
 				8D2AD7CC2BA1CD62001DCC61 /* OnboardingView.swift in Sources */,
 				8DAFF8A62B39CEDD001D5A9D /* CoreDataModel.swift in Sources */,
 				8DFA1EDE2B4C163100B97113 /* CustomIcon.swift in Sources */,
@@ -1143,6 +1168,7 @@
 				8D6059E42AB87AF60043A293 /* RatesView.swift in Sources */,
 				8D75E5B02A67FAF9009CA5C6 /* ColorAndIconView.swift in Sources */,
 				8DEC3FF12AD580D700F5D82E /* DebugView.swift in Sources */,
+				8D51765D2C34360C00141B6C /* NetworkMonitor.swift in Sources */,
 				8D6B3E602C0DE77D00C4A97A /* Line.swift in Sources */,
 				8DE80D8F2B8CF5E300B6ACA8 /* StatsListViewModel.swift in Sources */,
 				8D05C6D82AE0479E0097078A /* ExportImportView.swift in Sources */,
@@ -1150,6 +1176,7 @@
 				8D0429DB2A9B8D2400A09BB4 /* BarChartGenerator.swift in Sources */,
 				8D28C7F02A73DF7000F27CD4 /* Colors.swift in Sources */,
 				8D2AD7D22BA1CE6E001DCC61 /* OnboardingGesturesTemplateView.swift in Sources */,
+				8D5176592C33021C00141B6C /* CustomAlertViewModel.swift in Sources */,
 				8DBCEF2C2B762D35005F4BCC /* PieChartLegendRowView.swift in Sources */,
 				8D0DF5512AE80D5F00C3CC1F /* CustomAlertView.swift in Sources */,
 				8D406EAC2A9A386E002D3ED1 /* BarChartData.swift in Sources */,
@@ -1183,6 +1210,7 @@
 				8D88CDC02AA0E37000668DEC /* CategoryEntity+CoreDataClass.swift in Sources */,
 				8DD0526D2C133E3F002F752E /* ToSafeUnsafeObject.swift in Sources */,
 				8DDFD4742A68249100493753 /* DefaultCurrencySelectorView.swift in Sources */,
+				8D51765B2C33029000141B6C /* CustomAlertViewExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1261,7 +1289,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 22;
+				CURRENT_PROJECT_VERSION = 23;
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1300,7 +1328,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 22;
+				CURRENT_PROJECT_VERSION = 23;
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1461,7 +1489,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 22;
+				CURRENT_PROJECT_VERSION = 23;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
@@ -1506,7 +1534,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 22;
+				CURRENT_PROJECT_VERSION = 23;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;

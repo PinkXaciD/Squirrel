@@ -10,7 +10,6 @@ import SwiftUI
 
 struct CustomColorSelector: View {
     
-    @Binding var colorSelected: Color
     @Binding var colorSelectedDescription: String
     let colors = CustomColor.nordAurora
     
@@ -20,44 +19,6 @@ struct CustomColorSelector: View {
         
         LazyVGrid(columns: columns) {
             ForEach(colors.compactMap{$0.key}.sorted{$0 < $1}, id: \.self) { colorDescription in
-//                if colorDescription == colorSelectedDescription {
-//                    ZStack {
-//                        Image(systemName: "circle.fill")
-//                            .resizable()
-//                            .scaledToFit()
-//                            .foregroundColor(colors[colorDescription])
-//
-//                        Image(systemName: "circle.fill")
-//                            .resizable()
-//                            .scaledToFit()
-//                            .foregroundColor(Color(UIColor.systemGroupedBackground))
-//                            .scaleEffect(0.9)
-//
-//                        Image(systemName: "circle.fill")
-//                            .resizable()
-//                            .scaledToFit()
-//                            .foregroundColor(colors[colorDescription])
-//                            .scaleEffect(0.8)
-//                    }
-//                    .onTapGesture {
-//                        withAnimation(.linear(duration: 0.2)) {
-//                            colorSelected = Color.clear
-//                            colorSelectedDescription = ""
-//                        }
-//                    }
-//                } else {
-////                    Image(systemName: "circle.fill")
-////                        .resizable()
-////                        .scaledToFit()
-////                        .foregroundColor(colors[colorDescription])
-////                        .onTapGesture {
-////                            withAnimation(.linear(duration: 0.2)) {
-////                                colorSelected = colors[colorDescription] ?? Color.black
-////                                colorSelectedDescription = colorDescription
-////                            }
-////                        }
-//                    buttonLabel(colorDescription)
-//                }
                 Button {
                     buttonAction(colorDescription)
                 } label: {
@@ -84,7 +45,6 @@ struct CustomColorSelector: View {
     
     private func buttonAction(_ colorDescription: String) {
         withAnimation(.bouncy) {
-            colorSelected = colors[colorDescription] ?? Color.black
             colorSelectedDescription = colorDescription
         }
     }
@@ -97,12 +57,11 @@ struct CustomColorSelectorPreviews: PreviewProvider {
 }
 
 fileprivate struct CustomColorSelectorPreview: View {
-    @State var colorSelected: Color = .nordRed
     @State var colorSelectedDescription: String = "nordRed"
     
     var body: some View {
         List {
-            CustomColorSelector(colorSelected: $colorSelected, colorSelectedDescription: $colorSelectedDescription)
+            CustomColorSelector(colorSelectedDescription: $colorSelectedDescription)
         }
     }
 }

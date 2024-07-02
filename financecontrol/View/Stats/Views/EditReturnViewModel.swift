@@ -41,14 +41,6 @@ final class EditReturnViewModel: ViewModel {
         self.rvm = rvm
     }
     
-//    var formatter: NumberFormatter {
-//        let formatter = NumberFormatter()
-//        formatter.maximumFractionDigits = 2
-//        formatter.minimumFractionDigits = 0
-//        formatter.decimalSeparator = Locale.current.decimalSeparator ?? "."
-//        return formatter
-//    }
-    
     var doubleAmount: Double {
         if currency == spending?.wrappedCurrency {
             return Double(truncating: NumberFormatter().number(from: amount) ?? 0)

@@ -110,9 +110,9 @@ struct AddSpendingView: View {
                 Text("Category")
                 CategorySelector(category: $vm.categoryId)
             }
-            .onChange(of: vm.categoryId) { newValue in
+//            .onChange(of: vm.categoryId) { newValue in
 //                vm.categoryName = vm.cdm.findCategory(newValue)?.name ?? "Error"
-            }
+//            }
             
         } header: {
             Text("Required")
@@ -309,39 +309,31 @@ struct AddSpendingShortcutListView: View {
     let shortcuts = UserDefaults.standard.value(forKey: "addSpendingShortcuts") as? [UUID:AddSpendingShortcut] ?? [:]
     
     var body: some View {
-        if !shortcuts.isEmpty {
-            List {
-                ForEach(Array(shortcuts.keys), id: \.self) { key in
-                    NavigationLink {
-                        AddSpendingShortcutAddView(shortcut: shortcuts[key])
-                    } label: {
-                        Text(shortcuts[key]?.shortcutName ?? "Error")
-                    }
-                }
-            }
-            .navigationTitle("Shortcuts")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink {
-                        AddSpendingShortcutAddView()
-                    } label: {
-                        Label("Add new", systemImage: "plus")
-                    }
-                }
-            }
-        } else {
-            CustomContentUnavailableView("No Shortcuts", imageName: "tray.fill")
-                .navigationTitle("Shortcuts")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
+        Group {
+            if !shortcuts.isEmpty {
+                List {
+                    ForEach(Array(shortcuts.keys), id: \.self) { key in
                         NavigationLink {
-                            AddSpendingShortcutAddView()
+                            AddSpendingShortcutAddView(shortcut: shortcuts[key])
                         } label: {
-                            Label("Add new", systemImage: "plus")
+                            Text(shortcuts[key]?.shortcutName ?? "Error")
                         }
                     }
                 }
+            } else {
+                CustomContentUnavailableView("No Shortcuts", imageName: "tray.fill")
+            }
+        }
+        .navigationTitle("Shortcuts")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink {
+                    AddSpendingShortcutAddView()
+                } label: {
+                    Label("Add new", systemImage: "plus")
+                }
+            }
         }
     }
 }

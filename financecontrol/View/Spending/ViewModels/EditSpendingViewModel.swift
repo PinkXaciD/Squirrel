@@ -70,58 +70,6 @@ final class EditSpendingViewModel: SpendingViewModel {
     }
     
     func done() {
-//        guard let doubleAmount = Double(amount.replacingOccurrences(of: ",", with: ".")) else {
-//            ErrorType(
-//                errorDescription: "Failed to edit expence",
-//                failureReason: "Cannot convert amount to number",
-//                recoverySuggestion: "Try again"
-//            )
-//            .publish()
-//            
-//            return
-//        }
-//        
-//        var spending: SpendingEntityLocal = .init(
-//            amountUSD: 0,
-//            amount: doubleAmount,
-//            amountWithReturns: 0,
-//            amountUSDWithReturns: 0,
-//            comment: comment,
-//            currency: currency,
-//            date: date,
-//            place: place,
-//            categoryId: categoryId
-//        )
-//        
-//        if currency == "USD" {
-//            spending.amountUSD = doubleAmount
-//            cdm.editSpending(spending: entity, newSpending: spending)
-//            #if DEBUG
-//            let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
-//            logger.log("Currency is USD, skipping rates fetching...")
-//            #endif
-//            return
-//        }
-//        
-//        if !Calendar.current.isDateInToday(date) {
-//            Task {
-//                let oldRates = try? await rvm.getRates(date).rates
-//                await MainActor.run {
-//                    if let oldRates = oldRates {
-//                        spending.amountUSD = doubleAmount / (oldRates[currency] ?? 1)
-//                    } else {
-//                        spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
-//                    }
-//                    
-//                    cdm.editSpending(spending: entity, newSpending: spending)
-//                }
-//            }
-//        } else {
-//            spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
-//            
-//            cdm.editSpending(spending: entity, newSpending: spending)
-//        }
-        
         DispatchQueue.global(qos: .utility).async { [weak self] in
             guard let self else { self?.clear(); return }
             

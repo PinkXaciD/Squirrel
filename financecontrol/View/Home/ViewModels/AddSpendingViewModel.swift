@@ -23,8 +23,6 @@ final class AddSpendingViewModel: ViewModel {
     var currency: String
     @Published
     var date: Date
-//    @Published
-//    var categoryName: String
     @Published
     var categoryHasChanged: Bool
     @Published
@@ -64,11 +62,9 @@ final class AddSpendingViewModel: ViewModel {
             if let categoryID = shortcut.categoryID {
                 self.categoryId = categoryID
                 self.categoryHasChanged = true
-//                self.categoryName = categoryName
             } else {
                 self.categoryId = .init()
                 self.categoryHasChanged = false
-//                self.categoryName = "Select Category"
             }
             
             self.place = shortcut.place ?? ""
@@ -77,7 +73,6 @@ final class AddSpendingViewModel: ViewModel {
             self.amount = ""
             self.currency = UserDefaults.standard.string(forKey: UDKeys.defaultSelectedCurrency.rawValue) ?? UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
             self.date = .now
-//            self.categoryName = "Select Category"
             self.categoryId = .init()
             self.categoryHasChanged = false
             self.place = ""
