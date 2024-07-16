@@ -12,6 +12,7 @@ import OSLog
 
 final class StatsSearchViewModel: SearchViewModel {
     override init() {
+        super.init()
         #if DEBUG
         let logger = Logger(subsystem: Vars.appIdentifier, category: "StatsSearchViewModel.swift")
         logger.debug("ViewModel initialized")

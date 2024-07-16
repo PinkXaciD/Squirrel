@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22225" systemVersion="23B92" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="CategoryEntity" representedClassName="CategoryEntity" syncable="YES">
         <attribute name="color" optional="YES" attributeType="String"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
@@ -7,6 +7,9 @@
         <attribute name="isShadowed" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <relationship name="spendings" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="SpendingEntity" inverseName="category" inverseEntity="SpendingEntity"/>
+        <fetchIndex name="byShadowedState">
+            <fetchIndexElement property="isShadowed" type="Binary" order="ascending"/>
+        </fetchIndex>
     </entity>
     <entity name="CurrencyEntity" representedClassName="CurrencyEntity" syncable="YES" codeGenerationType="class">
         <attribute name="isFavorite" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>

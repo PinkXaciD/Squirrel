@@ -24,8 +24,6 @@ struct FiltersView: View {
     private var privacyScreenIsEnabled: Bool = false
     
     @State
-    private var showCategoriesPicker: Bool = false
-    @State
     private var hideContent: Bool = false
     
     var body: some View {
@@ -63,6 +61,7 @@ struct FiltersView: View {
         }
     }
     
+    // MARK: Dates
     private var dateSection: some View {
         Section(header: dateSectionHeader) {
             firstDatePicker
@@ -106,6 +105,7 @@ struct FiltersView: View {
         .buttonStyle(PlainButtonStyle())
     }
     
+    // MARK: Categories
     private var categoriesSection: some View {
         Section {
             NavigationLink {
@@ -196,12 +196,9 @@ struct FiltersView: View {
     private var trailingToolbar: ToolbarItem<(), some View> {
         ToolbarItem(placement: .topBarTrailing) {
             Button("Apply") {
-                pcvm.selection = 0
-                pcvm.isScrollDisabled = true
-                pcvm.selectedCategory = nil
                 fvm.applyFilters = true
                 fvm.updateList = true
-                pcvm.updateData()
+                pcvm.applyFilters()
                 dismiss()
             }
             .font(.body.bold())
@@ -212,10 +209,8 @@ struct FiltersView: View {
 extension FiltersView {
     private func clearFilters() {
         withAnimation {
-            pcvm.selectedCategory = nil
             fvm.clearFilters()
-            pcvm.updateData()
-            pcvm.isScrollDisabled = false
+            pcvm.disableFilters()
         }
     }
     

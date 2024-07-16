@@ -77,7 +77,7 @@ struct FiltersCategoriesView: View {
         return HStack {
             Image(systemName: "circle.fill")
                 .foregroundColor(Color[category.color ?? ""])
-                .font(.body)
+                .font(.title)
                 
             Text(category.name ?? "Error")
                 .foregroundColor(.primary)

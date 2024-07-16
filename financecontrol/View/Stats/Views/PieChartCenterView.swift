@@ -19,7 +19,7 @@ struct CenterChartView: View {
     var selectedMonth: Date
     
     let width: CGFloat
-    let operationsInMonth: [TSCategoryEntity]
+    let operationsInMonth: Double
     
     var body: some View {
         VStack(alignment: .center) {
@@ -42,7 +42,7 @@ struct CenterChartView: View {
 }
 
 extension CenterChartView {
-    internal init(selectedMonth: Date, width: CGFloat, operationsInMonth: [TSCategoryEntity]) {
+    internal init(selectedMonth: Date, width: CGFloat, operationsInMonth: Double) {
         self.selectedMonth = selectedMonth
         self.width = width
         self.operationsInMonth = operationsInMonth
@@ -61,23 +61,11 @@ extension CenterChartView {
         }
     }
     
-    private func operationsSum(operationsInMonth: [TSCategoryEntity]) -> String {
-        let values = operationsInMonth.map { $0.spendingsArray }
-        var result: Double = 0
-        for value in values {
-            for spending in value {
-                if spending.currency == defaultCurrency {
-                    result += spending.amountWithReturns
-                } else {
-                    result += spending.amountUSDWithReturns * (rvm.rates[defaultCurrency] ?? 1)
-                }
-            }
-        }
-        
+    private func operationsSum(operationsInMonth: Double) -> String {
         let currencyFormatter = NumberFormatter()
         currencyFormatter.maximumFractionDigits = 2
         currencyFormatter.minimumFractionDigits = 2
         
-        return currencyFormatter.string(from: result as NSNumber) ?? "Error"
+        return currencyFormatter.string(from: operationsInMonth as NSNumber) ?? "Error"
     }
 }

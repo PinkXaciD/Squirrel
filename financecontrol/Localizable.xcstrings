@@ -460,7 +460,10 @@
     "Delete this category?" : {
 
     },
-    "Delete this expense? \nYou can't undo this action." : {
+    "Delete this expense?" : {
+
+    },
+    "Delete this return?" : {
 
     },
     "Disable" : {
@@ -902,6 +905,7 @@
     },
     "unknown-place-localized" : {
       "comment" : "Unknown place",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -964,6 +968,9 @@
 
     },
     "You can perform quick actions like editing or deleting via swipe actions or by holding row" : {
+
+    },
+    "You can't undo this action." : {
 
     },
     "You will not be able to undo this action.\nAll expenses in this category will be permanently deleted" : {

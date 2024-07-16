@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import ApplePie
 import Combine
 #if DEBUG
 import OSLog
@@ -16,24 +15,22 @@ final class PieChartViewModel: ViewModel {
     private var cdm: CoreDataModel
     var fvm: FiltersViewModel
     
-    @Published var selection: Int = 0 
-    var previousSelection: Int = 0
+    @Published var selection: Int = 0
     @Published var data: [ChartData]
-    @Published var selectedCategory: CategoryEntity? = nil
+    @Published var selectedCategory: ChartCategory? = nil
     @Published var isScrollDisabled: Bool = false
     @Published var showOther: Bool = false
     
     var cancellables = Set<AnyCancellable>()
     let id = UUID()
     
-    init(selection: Int = 0, cdm: CoreDataModel, fvm: FiltersViewModel) {
+    init(cdm: CoreDataModel, fvm: FiltersViewModel) {
         self.cdm = cdm
         self.fvm = fvm
         
-        self.data = cdm.getChartData()
+        self.data = cdm.getNewChartData()
         
         subscribeToUpdate()
-        subscribeToSelection()
         
         #if DEBUG
         let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
@@ -52,20 +49,38 @@ final class PieChartViewModel: ViewModel {
 // MARK: Methods
 extension PieChartViewModel {
     func updateData() {
-        let chartData: [ChartData] = {
-            if fvm.applyFilters {
-                return cdm.getFilteredChartData(firstDate: fvm.startFilterDate, secondDate: fvm.endFilterDate, categories: fvm.filterCategories, withReturns: fvm.withReturns, currencies: fvm.currencies)
-            }
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
             
-            return cdm.getChartData(isMinimized: showOther, categoryName: selectedCategory?.name)
-        }()
-        
-        self.data = chartData
+            let chartData: [ChartData] = {
+                if self.fvm.applyFilters {
+                    return self.cdm.getNewFilteredChartData(
+                        firstDate: self.fvm.startFilterDate,
+                        secondDate: self.fvm.endFilterDate,
+                        categories: self.fvm.filterCategories,
+                        withReturns: self.fvm.withReturns,
+                        currencies: self.fvm.currencies
+                    )
+                }
+                
+                return self.cdm.getNewChartData()
+            }()
+            
+            self.data = chartData
+        }
     }
     
-    func showAllCategories() {
-        let dataWithAllCategories = ChartData(date: Date().getFirstDayOfMonth(-self.selection), id: self.selection, showOther: false, cdm: self.cdm, categoryName: self.selectedCategory?.name)
-        self.data[selection] = dataWithAllCategories
+    func applyFilters() {
+        self.selection = 0
+        self.isScrollDisabled = true
+        self.selectedCategory = nil
+        self.updateData()
+    }
+    
+    func disableFilters() {
+        self.selectedCategory = nil
+        self.updateData()
+        self.isScrollDisabled = false
     }
 }
 
@@ -82,29 +97,6 @@ extension PieChartViewModel {
                     }
                     self?.cdm.updateCharts = false
                 }
-            }
-            .store(in: &cancellables)
-    }
-    
-    private func subscribeToSelection() {
-        self.$selection
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] newValue in
-                guard let self else { return }
-                
-                if self.showOther {
-                    data[previousSelection] = ChartData(
-                        date: Date().getFirstDayOfMonth(-self.previousSelection),
-                        id: previousSelection,
-                        showOther: true,
-                        cdm: self.cdm,
-                        categoryName: self.selectedCategory?.name
-                    )
-                    
-                    self.showOther = false
-                }
-                
-                self.previousSelection = selection
             }
             .store(in: &cancellables)
     }

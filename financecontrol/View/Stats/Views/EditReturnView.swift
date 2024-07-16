@@ -9,9 +9,13 @@ import SwiftUI
 
 struct EditReturnView: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject
+    private var cdm: CoreDataModel
     
     var spending: SpendingEntity
     @StateObject private var vm: EditReturnViewModel
+    @State
+    private var showConfirmationDialog: Bool = false
     
     enum Field {
         case amount, name
@@ -25,6 +29,8 @@ struct EditReturnView: View {
                 mainSection
                 
                 commentSection
+                
+                deleteButton
             }
             .toolbar {
                 keyboardToolbar
@@ -34,6 +40,15 @@ struct EditReturnView: View {
                 trailingToolbar
             }
             .navigationBarTitleDisplayMode(.inline)
+            .confirmationDialog("Delete this return?", isPresented: $showConfirmationDialog, titleVisibility: .visible) {
+                Button("Delete", role: .destructive) {
+                    dismiss()
+                    cdm.deleteReturn(spendingReturn: vm.returnEntity)
+                }
+            } message: {
+                Text("You can't undo this action.")
+            }
+
         }
     }
     
@@ -84,6 +99,14 @@ struct EditReturnView: View {
         }
     }
     
+    private var deleteButton: some View {
+        Section {
+            Button("Delete", role: .destructive) {
+                showConfirmationDialog.toggle()
+            }
+        }
+    }
+    
     private var trailingToolbar: ToolbarItem<Void, some View> {
         ToolbarItem(placement: .topBarTrailing) {
             Button("Save") {
@@ -111,7 +134,7 @@ struct EditReturnView: View {
 }
 
 extension EditReturnView {
-    internal init(returnEntity: ReturnEntity, spending: SpendingEntity, cdm: CoreDataModel, rvm: RatesViewModel) {
+    init(returnEntity: ReturnEntity, spending: SpendingEntity, cdm: CoreDataModel, rvm: RatesViewModel) {
         self.spending = spending
         self._vm = .init(wrappedValue: .init(returnEntity: returnEntity, cdm: cdm, rvm: rvm))
     }

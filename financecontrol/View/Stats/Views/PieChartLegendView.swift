@@ -11,42 +11,77 @@ struct PieChartLegendView: View {
     @EnvironmentObject
     private var pcvm: PieChartViewModel
     
-    @AppStorage(UDKeys.defaultCurrency.rawValue)
-    private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
-    
     @Binding
     var minimize: Bool
+    @Binding
+    var selection: Int
     
     var body: some View {
-        let data = pcvm.data[(pcvm.selection >= pcvm.data.count || pcvm.selection < 0) ? 0 : pcvm.selection]
+        let data = pcvm.data[(selection >= pcvm.data.count || selection < 0) ? 0 : selection]
         
-        if minimize {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 10) {
-                    ForEach(data.categories) { category in
-                        PieChartLegendRowView(category: category)
+        Group {
+            if minimize {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 10) {
+                        if let selectedCategory = pcvm.selectedCategory {
+                            ForEach(data.categoriesDict[selectedCategory.id]?.places ?? []) { place in
+                                PieChartLegendRowView(category: place)
+                            }
+                        } else {
+                            ForEach(data.categories) { category in
+                                PieChartLegendRowView(category: category)
+                            }
+                            
+                            if let otherCategory = data.otherCategory, !pcvm.showOther {
+                                PieChartLegendRowView(category: otherCategory)
+                            }
+                            
+                            if pcvm.showOther {
+                                ForEach(data.otherCategories) { category in
+                                    PieChartLegendRowView(category: category)
+                                }
+                            }
+                        }
                     }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 2)
                 }
-                .padding(.horizontal, 20)
-            }
-            .font(.system(size: 14))
-            .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 0))
-            .transaction { transaction in
-                transaction.animation = nil
-            }
-        } else {
-            HStack {
-                VStack(alignment: .leading, spacing: 10) {
-                    ForEach(data.categories) { category in
-                        PieChartLegendRowView(category: category)
+                .font(.system(size: 14))
+                .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 0))
+                .transaction { transaction in
+                    transaction.animation = nil
+                }
+            } else {
+                HStack(spacing: 0) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        if let selectedCategory = pcvm.selectedCategory {
+                            ForEach(data.categoriesDict[selectedCategory.id]?.places ?? []) { place in
+                                PieChartLegendRowView(category: place)
+                            }
+                        } else {
+                            ForEach(data.categories) { category in
+                                PieChartLegendRowView(category: category)
+                            }
+                            
+                            if let otherCategory = data.otherCategory, !pcvm.showOther {
+                                PieChartLegendRowView(category: otherCategory)
+                            }
+                            
+                            if pcvm.showOther {
+                                ForEach(data.otherCategories) { category in
+                                    PieChartLegendRowView(category: category)
+                                }
+                            }
+                        }
                     }
+                    
+                    Spacer()
                 }
-                
-                Spacer()
-            }
-            .font(.system(size: 14))
-            .transaction { transaction in
-                transaction.animation = nil
+                .font(.system(size: 14))
+                .listRowInsets(.init(top: 10, leading: 20, bottom: 10, trailing: 20))
+                .transaction { transaction in
+                    transaction.animation = nil
+                }
             }
         }
     }

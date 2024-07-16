@@ -12,9 +12,9 @@ import OSLog
 #endif
 
 final class AddSpendingViewModel: ViewModel {
-    @ObservedObject 
-    internal var cdm: CoreDataModel
-    @ObservedObject
+    
+    var cdm: CoreDataModel
+    
     private var rvm: RatesViewModel
     
     @Published 
@@ -33,6 +33,8 @@ final class AddSpendingViewModel: ViewModel {
     var comment: String
     @Published
     var popularCategories: [CategoryEntity] = []
+    @Published
+    var oldRates: Rates?
     
     #if DEBUG
     let vmStateLogger: Logger
@@ -148,16 +150,17 @@ final class AddSpendingViewModel: ViewModel {
                     
                     cdm.addSpending(spending: spending)
                 } else {
-                    Task {
+                    Task { [spending] in
                         let oldRates = try? await self.rvm.getRates(self.date).rates
-                        await MainActor.run {
+                        await MainActor.run { [spending] in
+                            var spendingCopy = spending
                             if let oldRates = oldRates {
-                                spending.amountUSD = doubleAmount / (oldRates[self.currency] ?? 1)
+                                spendingCopy.amountUSD = doubleAmount / (oldRates[self.currency] ?? 1)
                             } else {
-                                spending.amountUSD = doubleAmount / (self.rvm.rates[self.currency] ?? 1)
+                                spendingCopy.amountUSD = doubleAmount / (self.rvm.rates[self.currency] ?? 1)
                             }
                             
-                            self.cdm.addSpending(spending: spending)
+                            self.cdm.addSpending(spending: spendingCopy)
                         }
                     }
                 }

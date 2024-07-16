@@ -17,6 +17,7 @@ final class RatesViewModel: ViewModel {
     @Published 
     var rates: [String:Double] = [:]
     
+    var cache = [Date:Rates]()
 //    var cancellables = Set<AnyCancellable>()
     
     init() {
@@ -84,8 +85,17 @@ final class RatesViewModel: ViewModel {
 extension RatesViewModel {
     func getRates(_ timestamp: Date? = nil) async throws -> Rates {
         do {
+            if let timestamp, let cached = cache[Calendar.current.startOfDay(for: timestamp)] {
+//                print("Get cached rates")
+                return cached
+            }
+            
             let rm: RatesModel = .init()
-            return try await rm.downloadRates(timestamp: timestamp)
+            let downloaded = try await rm.downloadRates(timestamp: timestamp)
+            if let timestamp {
+                cache.updateValue(downloaded, forKey: Calendar.current.startOfDay(for: timestamp))
+            }
+            return downloaded
         } catch {
             throw error
         }

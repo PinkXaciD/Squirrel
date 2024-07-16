@@ -106,7 +106,7 @@ extension SpendingEntity {
 
 extension SpendingEntity: ToSafeObject {
     func safeObject() -> TSSpendingEntity {
-        TSSpendingEntity(
+        return TSSpendingEntity(
             amount: amount,
             amountUSD: amountUSD,
             comment: comment,
@@ -115,8 +115,9 @@ extension SpendingEntity: ToSafeObject {
             id: id,
             place: place,
             categoryID: category?.id,
-            categoryName: categoryName,
-            returns: returns
+            categoryName: categoryName, 
+            categoryColor: category?.color,
+            returns: returnsArr.map({ $0.safeObject() })
         )
     }
 }
@@ -185,10 +186,10 @@ struct TSSpendingEntity: ToUnsafeObject, Hashable, Identifiable {
     let date: Date?
     let id: UUID?
     let place: String?
-//    let category: CategoryEntity?
     let categoryID: UUID?
     let categoryName: String
-    let returns: NSSet?
+    let categoryColor: String?
+    let returns: [TSReturnEntity]
     
     public var wrappedCurrency: String {
         currency ?? "Error"
@@ -204,13 +205,12 @@ struct TSSpendingEntity: ToUnsafeObject, Hashable, Identifiable {
     
     public var amountUSDWithReturns: Double {
         guard
-            let returnsArr = returns?.allObjects as? [ReturnEntity],
-            !returnsArr.isEmpty
+            !returns.isEmpty
         else {
             return amountUSD
         }
         
-        let result = returnsArr.map{ $0.amountUSD }.reduce(amountUSD, -)
+        let result = returns.map{ $0.amountUSD }.reduce(amountUSD, -)
         
         if result < 0 {
             return 0
@@ -219,24 +219,14 @@ struct TSSpendingEntity: ToUnsafeObject, Hashable, Identifiable {
         }
     }
     
-    public var returnsArr: [ReturnEntity] {
-        guard
-            let returns = returns?.allObjects as? [ReturnEntity]
-        else {
-            return []
-        }
-        
-        return returns.sorted { $0.date ?? Date() < $1.date ?? Date() }
-    }
-    
     public var returnsSum: Double {
         guard
-            !returnsArr.isEmpty
+            !returns.isEmpty
         else {
             return 0
         }
         
-        return returnsArr.map({ $0.amount }).reduce(0, +)
+        return returns.map({ $0.amount }).reduce(0, +)
     }
     
     public var amountWithReturns: Double {

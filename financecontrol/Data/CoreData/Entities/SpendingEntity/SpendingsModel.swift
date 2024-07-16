@@ -27,37 +27,21 @@ extension CoreDataModel {
                 return Calendar.current.date(byAdding: .day, value: -7, to: date) ?? Date()
             }()
             var currencies = Set<Currency>()
+            #if DEBUG
+            var places = [UUID:[String:Int]]()
+            #endif
             
             do {
                 spendings = try self.context.fetch(request)
                 self.savedSpendings = spendings
-                self.updateCharts = true
             } catch {
                 ErrorType(error: error).publish(file: #file, function: #function)
             }
-            
-//            var pieChartData: [Date:NewPieChartData] = {
-//                var result: [Date:NewPieChartData] = .init()
-//                let lastDate = spendings.last?.wrappedDate.getFirstDayOfMonth() ?? Date().getFirstDayOfMonth()
-//                let interval = Calendar.current.dateComponents([.month], from: lastDate, to: Date()).month ?? 1
-////                print("LAST DATE: \(lastDate)")
-////                print("INTERVAL: \(interval)")
-////                print("SPENDINGS: \(spendings.count)")
-//                
-//                for index in 0...interval {
-//                    result.updateValue(NewPieChartData(id: -index, sectors: .init(), sum: 0), forKey: Date().getFirstDayOfMonth(-index))
-//                }
-//                
-//                return result
-//            }()
             
             var pieChartData: [Date:[TSSpendingEntity]] = {
                 var result: [Date:[TSSpendingEntity]] = .init()
                 let lastDate = spendings.last?.wrappedDate.getFirstDayOfMonth() ?? Date().getFirstDayOfMonth()
                 let interval = Calendar.current.dateComponents([.month], from: lastDate, to: Date()).month ?? 1
-//                print("LAST DATE: \(lastDate)")
-//                print("INTERVAL: \(interval)")
-//                print("SPENDINGS: \(spendings.count)")
                 
                 for index in 0...interval {
                     result.updateValue([], forKey: Date().getFirstDayOfMonth(-index))
@@ -73,6 +57,7 @@ extension CoreDataModel {
             let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
             let rate = UserDefaults.standard.getRates()?[defaultCurrency] ?? 1
             
+            // MARK: Fetch for loop
             for spending in spendings {
                 let safeSpending = spending.safeObject()
                 let startOfDay = Calendar.current.startOfDay(for: safeSpending.wrappedDate)
@@ -98,12 +83,25 @@ extension CoreDataModel {
                 // Pie chart data
                 pieChartData[startOfDay.getFirstDayOfMonth()]?.append(safeSpending)
                 
+                #if DEBUG
+                // Places
+                if let place = safeSpending.place, let categoryID = safeSpending.categoryID {
+                    var value = places[categoryID] ?? [:]
+                    value.updateValue((value[place] ?? 0) + 1, forKey: place)
+                    places.updateValue(value, forKey: categoryID)
+                }
+                #endif
             } // End of for loop
             
             self.statsListData = statsListData
             self.barChartData = NewBarChartData(sum: barChartSum, bars: barChartData)
             self.usedCurrencies = currencies
             self.pieChartSpendings = pieChartData
+            self.updateCharts = true
+            
+            #if DEBUG
+            print(spendings.count)
+            #endif
         }
     }
     
@@ -236,13 +234,15 @@ extension CoreDataModel {
     }
     
     func deleteSpending(_ spending: SpendingEntity) {
-        let date = spending.date
-        context.delete(spending)
-        manager.save()
-        fetchSpendings()
-        
-        if let date, Calendar.current.isDateInToday(date) {
-            passSpendingsToSumWidget()
+        context.perform { [weak self] in
+            let date = spending.date
+            self?.context.delete(spending)
+            self?.manager.save()
+            self?.fetchSpendings()
+            
+            if let date, Calendar.current.isDateInToday(date) {
+                self?.passSpendingsToSumWidget()
+            }
         }
     }
     
@@ -316,41 +316,121 @@ extension CoreDataModel {
     }
     
     // MARK: Operations for chart
-    func getChartData(isMinimized: Bool = true, categoryName: String? = nil) -> [ChartData] {
-        let currentCalendar = Calendar.current
-        
-        var chartData: [ChartData] = []
+//    func getChartData(categoryID: UUID? = nil) -> [ChartData] {
+////        #if DEBUG
+////        Logger(subsystem: Vars.appIdentifier, category: #fileID).info("\(#function) called.")
+////        #endif
+//        let currentCalendar = Calendar.current
+//        
+//        var chartData: [ChartData] = []
+//        
+//        let firstSpendingDate: Date = savedSpendings.last?.date?.getFirstDayOfMonth() ?? Date()
+//        
+//        let interval = 0...(Calendar.current.dateComponents([.month], from: firstSpendingDate, to: Date()).month ?? 1)
+//        
+//        for index in interval {
+//            let date = currentCalendar.date(byAdding: .month, value: -index, to: .now) ?? .now
+//            var spendings = self.pieChartSpendings[date.getFirstDayOfMonth()] ?? []
+//            
+//            if let categoryID {
+//                spendings = spendings.filter { $0.categoryID == categoryID }
+//            }
+//            
+//            chartData.append(ChartData(date: date, id: -index, spendings: spendings, places: categoryID != nil))
+//        }
+//        
+//        return chartData
+//    }
+    
+    func getNewChartData() -> [ChartData] {
+        var chartData = [ChartData]()
         
         let firstSpendingDate: Date = savedSpendings.last?.date?.getFirstDayOfMonth() ?? Date()
         
         let interval = 0...(Calendar.current.dateComponents([.month], from: firstSpendingDate, to: Date()).month ?? 1)
         
         for index in interval {
-            let date = currentCalendar.date(byAdding: .month, value: -index, to: .now) ?? .now
-            var spendings = self.pieChartSpendings[date.getFirstDayOfMonth()] ?? []
-            
-            if let categoryName {
-                spendings = spendings.filter { $0.categoryName == categoryName }
-            }
-            
-            chartData.append(ChartData(date: date, id: -index, showOther: !isMinimized, spendings: spendings, categoryName: categoryName))
+            let date = Date().getFirstDayOfMonth(-index)
+            chartData.append(.init(id: -index, date: date, spendings: self.pieChartSpendings[date] ?? []))
         }
         
         return chartData
     }
     
-    func getFilteredChartData(firstDate: Date, secondDate: Date, categories: [UUID] = [], withReturns: Bool? = nil, currencies: [String]) -> [ChartData] {
-        var chartData: [ChartData] = []
+//    func getFilteredChartData(firstDate: Date, secondDate: Date, categories: [UUID] = [], withReturns: Bool? = nil, currencies: [String]) -> [ChartData] {
+//        var chartData: [ChartData] = []
+//        
+//        let firstSpendingDate: Date = savedSpendings.last?.date?.getFirstDayOfMonth() ?? Date()
+//        
+//        let interval = 0...(Calendar.current.dateComponents([.month], from: firstSpendingDate, to: Date()).month ?? 1)
+//        
+//        for _ in interval {
+//            chartData.append(ChartData.getEmpty())
+//        }
+//        
+//        chartData[0] = ChartData(
+//            firstDate: firstDate,
+//            secondDate: secondDate,
+//            spendings: self.savedSpendings,
+//            categories: categories,
+//            withReturns: withReturns,
+//            currencies: currencies
+//        )
+//        return chartData
+//    }
+    
+    func getNewFilteredChartData(
+        firstDate: Date,
+        secondDate: Date,
+        categories: [UUID],
+        withReturns: Bool?,
+        currencies: [String]
+    ) -> [ChartData] {
+        var chartData = [ChartData]()
+        
+        func filterSpendings() -> [TSSpendingEntity] {
+            var spendings = [TSSpendingEntity]()
+            
+            for spending in self.savedSpendings {
+                let safeSpending = spending.safeObject()
+                
+                guard safeSpending.wrappedDate >= firstDate, safeSpending.wrappedDate < secondDate else {
+                    continue
+                }
+                
+                var result = true
+                
+                if let withReturns {
+                    result = withReturns == !safeSpending.returns.isEmpty
+                }
+                
+                if let categoryID = safeSpending.categoryID, !categories.isEmpty, result {
+                    result = categories.contains(categoryID)
+                }
+                
+                if !currencies.isEmpty, result {
+                    result = currencies.contains(safeSpending.wrappedCurrency)
+                }
+                
+                if result {
+                    spendings.append(safeSpending)
+                }
+            }
+            
+            return spendings
+        }
         
         let firstSpendingDate: Date = savedSpendings.last?.date?.getFirstDayOfMonth() ?? Date()
         
         let interval = 0...(Calendar.current.dateComponents([.month], from: firstSpendingDate, to: Date()).month ?? 1)
         
         for _ in interval {
-            chartData.append(ChartData.getEmpty())
+//            let date = Date().getFirstDayOfMonth(-index)
+            chartData.append(.getEmpty())
         }
         
-        chartData[0] = ChartData(firstDate: firstDate, secondDate: secondDate, spendings: self.savedSpendings, categories: categories, withReturns: withReturns, currencies: currencies)
+        chartData[0] = ChartData(id: 0, date: Date(), spendings: filterSpendings())
+        
         return chartData
     }
     
@@ -409,101 +489,3 @@ extension CoreDataModel {
 }
 
 typealias StatsListData = [Date:[TSSpendingEntity]]
-
-// MARK: Template data
-extension CoreDataModel {
-    func addTemplateData() {
-        context.perform { [weak self] in
-            guard let self else { return }
-            
-            let restaurantsID = addCategory(name: "Restaurants", color: "nord1")
-            let groceriesID = addCategory(name: "Groceries", color: "nord4")
-            let subscriptionsID = addCategory(name: "Subscriptions", color: "nord6")
-            let transportID = addCategory(name: "Transport", color: "nord94")
-            let travelID = addCategory(name: "Travel", color: "nord7")
-            
-            let components = Calendar.current.dateComponents([.year, .month, .day], from: Date())
-            
-            func getDate(days: Int) -> Date {
-                var localComponents = components
-                localComponents.calendar = .current
-                localComponents.day = (localComponents.day ?? 1) - days
-                localComponents.hour = (8...23).randomElement() ?? 6
-                localComponents.minute = (0..<60).randomElement() ?? 24
-                return localComponents.date ?? Date()
-            }
-            
-            let restaurantsSpendings: [SpendingEntityLocal] = [
-                .init(amount: 15, amountUSD: 15, currency: "USD", date: getDate(days: 5), place: "McDonald's", categoryId: restaurantsID, comment: ""),
-                .init(amount: 10, amountUSD: 10, currency: "USD", date: getDate(days: 7), place: "KFC", categoryId: restaurantsID, comment: ""),
-                .init(amount: 12, amountUSD: 12, currency: "USD", date: getDate(days: 12), place: "Some Restaurant", categoryId: restaurantsID, comment: ""),
-                .init(amount: 9, amountUSD: 9, currency: "USD", date: getDate(days: 13), place: "McDonald's", categoryId: restaurantsID, comment: ""),
-                .init(amount: 22, amountUSD: 22, currency: "USD", date: getDate(days: 28), place: "Some Restaurant", categoryId: restaurantsID, comment: ""),
-                .init(amount: 15, amountUSD: 15, currency: "USD", date: getDate(days: 37), place: "Dominos", categoryId: restaurantsID, comment: "")
-            ]
-            
-            let groceriesSpendings: [SpendingEntityLocal] = [
-                .init(amount: 1500, amountUSD: 10, currency: "JPY", date: Date(), place: "7 Eleven", categoryId: groceriesID, comment: ""),
-                .init(amount: 3.90, amountUSD: 3.90, currency: "USD", date: getDate(days: 5), place: "7 Eleven", categoryId: groceriesID, comment: ""),
-                .init(amount: 25, amountUSD: 25, currency: "USD", date: getDate(days: 12), place: "Costco", categoryId: groceriesID, comment: ""),
-                .init(amount: 2.50, amountUSD: 2.50, currency: "USD", date: getDate(days: 20), place: "Walmart", categoryId: groceriesID, comment: ""),
-                .init(amount: 18, amountUSD: 18, currency: "USD", date: getDate(days: 23), place: "Walmart", categoryId: groceriesID, comment: ""),
-                .init(amount: 1.99, amountUSD: 1.99, currency: "USD", date: getDate(days: 28), place: "7 Eleven", categoryId: groceriesID, comment: ""),
-                .init(amount: 16, amountUSD: 16, currency: "USD", date: getDate(days: 35), place: "", categoryId: groceriesID, comment: ""),
-                .init(amount: 35, amountUSD: 35, currency: "USD", date: getDate(days: 44), place: "Target", categoryId: groceriesID, comment: ""),
-                .init(amount: 12, amountUSD: 12, currency: "USD", date: getDate(days: 51), place: "", categoryId: groceriesID, comment: ""),
-                .init(amount: 7.70, amountUSD: 7.70, currency: "USD", date: getDate(days: 60), place: "7 Eleven", categoryId: groceriesID, comment: ""),
-            ]
-            
-            let subscriptionsSpendings: [SpendingEntityLocal] = [
-                .init(amount: 9.99, amountUSD: 9.99, currency: "USD", date: getDate(days: 1), place: "Apple Music", categoryId: subscriptionsID, comment: ""),
-                .init(amount: 2.99, amountUSD: 2.99, currency: "USD", date: getDate(days: 11), place: "iCloud Plus", categoryId: subscriptionsID, comment: ""),
-                .init(amount: 20, amountUSD: 20, currency: "USD", date: getDate(days: 2), place: "Mobile network", categoryId: subscriptionsID, comment: ""),
-                .init(amount: 9.99, amountUSD: 9.99, currency: "USD", date: getDate(days: 31), place: "Apple Music", categoryId: subscriptionsID, comment: ""),
-                .init(amount: 2.99, amountUSD: 2.99, currency: "USD", date: getDate(days: 42), place: "iCloud Plus", categoryId: subscriptionsID, comment: ""),
-                .init(amount: 20, amountUSD: 20, currency: "USD", date: getDate(days: 33), place: "Mobile network", categoryId: subscriptionsID, comment: ""),
-                .init(amount: 9.99, amountUSD: 9.99, currency: "USD", date: getDate(days: 62), place: "Apple Music", categoryId: subscriptionsID, comment: ""),
-                .init(amount: 2.99, amountUSD: 2.99, currency: "USD", date: getDate(days: 72), place: "iCloud Plus", categoryId: subscriptionsID, comment: ""),
-                .init(amount: 20, amountUSD: 20, currency: "USD", date: getDate(days: 64), place: "Mobile network", categoryId: subscriptionsID, comment: ""),
-            ]
-            
-            let transportSpendings: [SpendingEntityLocal] = [
-                .init(amount: 1000, amountUSD: 6.30, currency: "JPY", date: getDate(days: 1), place: "Taxi", categoryId: transportID, comment: ""),
-                .init(amount: 2.90, amountUSD: 2.90, currency: "USD", date: getDate(days: 4), place: "Subway", categoryId: transportID, comment: ""),
-                .init(amount: 1.90, amountUSD: 1.90, currency: "USD", date: getDate(days: 10), place: "Bus", categoryId: transportID, comment: ""),
-                .init(amount: 2.90, amountUSD: 2.90, currency: "USD", date: getDate(days: 20), place: "Subway", categoryId: transportID, comment: ""),
-                .init(amount: 1.90, amountUSD: 1.90, currency: "USD", date: getDate(days: 25), place: "Bus", categoryId: transportID, comment: ""),
-                .init(amount: 1.90, amountUSD: 1.90, currency: "USD", date: getDate(days: 32), place: "Bus", categoryId: transportID, comment: ""),
-                .init(amount: 2.90, amountUSD: 2.90, currency: "USD", date: getDate(days: 41), place: "Subway", categoryId: transportID, comment: ""),
-                .init(amount: 2.90, amountUSD: 2.90, currency: "USD", date: getDate(days: 50), place: "Subway", categoryId: transportID, comment: ""),
-            ]
-            
-            let travelSpendings: [SpendingEntityLocal] = [
-                .init(amount: 39500, amountUSD: 150, currency: "JPY", date: getDate(days: 9), place: "Plane tickets", categoryId: travelID, comment: ""),
-                .init(amount: 130, amountUSD: 130, currency: "USD", date: getDate(days: 78), place: "Train tickets", categoryId: travelID, comment: "")
-            ]
-            
-            for spending in restaurantsSpendings {
-                addSpending(spending: spending, playHaptic: false)
-            }
-            
-            for spending in groceriesSpendings {
-                addSpending(spending: spending, playHaptic: false)
-            }
-            
-            for spending in subscriptionsSpendings {
-                addSpending(spending: spending, playHaptic: false)
-            }
-            
-            for spending in transportSpendings {
-                addSpending(spending: spending, playHaptic: false)
-            }
-            
-            for spending in travelSpendings {
-                addSpending(spending: spending, playHaptic: false)
-            }
-        }
-        
-        HapticManager.shared.notification(.success)
-    }
-}

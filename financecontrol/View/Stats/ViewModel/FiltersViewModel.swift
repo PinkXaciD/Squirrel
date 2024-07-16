@@ -5,7 +5,6 @@
 //  Created by PinkXaciD on R 6/02/27.
 //
 
-import Combine
 import SwiftUI
 #if DEBUG
 import OSLog
@@ -26,7 +25,6 @@ final class FiltersViewModel: ViewModel {
     var withReturns: Bool?
     @Published
     var currencies: [String]
-    var cancellables = Set<AnyCancellable>()
     
     init() {
         self.applyFilters = false

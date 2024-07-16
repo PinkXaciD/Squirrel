@@ -38,6 +38,11 @@ struct PieChartView: View {
         } footer: {
             footer
         }
+        .onChange(of: pcvm.selection) { _ in
+            if pcvm.showOther {
+                pcvm.showOther = false
+            }
+        }
     }
     
     private var chart: some View {
@@ -45,7 +50,7 @@ struct PieChartView: View {
     }
     
     private var legend: some View {
-        PieChartLegendView(minimize: $minimizeLegend)
+        PieChartLegendView(minimize: $minimizeLegend, selection: $pcvm.selection)
     }
     
     private var footer: some View {

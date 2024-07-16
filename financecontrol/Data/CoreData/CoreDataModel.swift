@@ -130,8 +130,6 @@ extension CoreDataModel {
                 fetchCategories()
                 fetchSpendings()
                 
-                updateCharts = true
-                
                 return importedCount
             } else {
                 return nil

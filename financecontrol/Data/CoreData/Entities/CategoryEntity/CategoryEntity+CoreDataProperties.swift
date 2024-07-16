@@ -48,14 +48,12 @@ extension CategoryEntity : Identifiable {
 
 extension CategoryEntity: ToSafeObject {
     func safeObject() -> TSCategoryEntity {
-        var safeSpendings: NSSet {
+        var safeSpendings: [TSSpendingEntity] {
             guard let spendings = self.spendings?.allObjects as? [SpendingEntity] else {
                 return []
             }
             
-            let array = spendings.map { $0.safeObject() }
-            
-            return Set(array) as NSSet
+            return spendings.map { $0.safeObject() }
         }
         
         return TSCategoryEntity(
@@ -108,16 +106,16 @@ struct TSCategoryEntity: ToUnsafeObject, Identifiable, Comparable {
     let isShadowed: Bool
     let isFavorite: Bool
     let name: String?
-    var spendings: NSSet?
+    var spendings: [TSSpendingEntity]
     
-    var spendingsArray: [TSSpendingEntity] {
-        return spendings?.allObjects as? [TSSpendingEntity] ?? []
-    }
+//    var spendingsArray: [TSSpendingEntity] {
+//        return spendings?.allObjects as? [TSSpendingEntity] ?? []
+//    }
     
     var sumWithReturns: Double {
         let rates = UserDefaults.standard.getRates() ?? [:]
         let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
-        let sum = self.spendingsArray.compactMap {
+        let sum = self.spendings.compactMap {
             if $0.wrappedCurrency == defaultCurrency {
                 return $0.amountWithReturns
             } else {
@@ -129,6 +127,6 @@ struct TSCategoryEntity: ToUnsafeObject, Identifiable, Comparable {
     }
     
     var sumUSDWithReturns: Double {
-        self.spendingsArray.compactMap { $0.amountUSDWithReturns }.reduce(0, +)
+        self.spendings.compactMap { $0.amountUSDWithReturns }.reduce(0, +)
     }
 }

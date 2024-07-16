@@ -13,7 +13,7 @@ struct EditSpendingView: View {
     
     @StateObject
     private var vm: EditSpendingViewModel
-    @Binding
+    
     var entity: SpendingEntity
     @Binding
     var edit: Bool
@@ -59,13 +59,13 @@ struct EditSpendingView: View {
             
             leadingToolbar
         }
-        .confirmationDialog("Delete this expense? \nYou can't undo this action.", isPresented: $confirmationDialogIsPresented, titleVisibility: .visible) {
+        .confirmationDialog("Delete this expense?", isPresented: $confirmationDialogIsPresented, titleVisibility: .visible) {
             Button("Delete", role: .destructive) {
                 dismiss()
                 vm.cdm.deleteSpending(entity)
             }
-            
-            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("You can't undo this action.")
         }
         .onChange(of: toDismiss) { _ in
             cancelButtonAction()
@@ -201,7 +201,7 @@ struct EditSpendingView: View {
 
 extension EditSpendingView {
     init(
-        entity: Binding<SpendingEntity>,
+        entity: SpendingEntity,
         edit: Binding<Bool>,
         categoryColor: Color,
         focus: String,
@@ -211,14 +211,14 @@ extension EditSpendingView {
         cdm: CoreDataModel,
         rvm: RatesViewModel
     ) {
-        self._entity = entity
+        self.entity = entity
         self._edit = edit
         self.categoryColor = categoryColor
         self.focus = focus
         self._entityToAddReturn = entityToAddReturn
         self._returnToEdit = returnToEdit
         self._toDismiss = toDismiss
-        self._vm = StateObject(wrappedValue: EditSpendingViewModel(ratesViewModel: rvm, coreDataModel: cdm, entity: entity.wrappedValue))
+        self._vm = StateObject(wrappedValue: EditSpendingViewModel(ratesViewModel: rvm, coreDataModel: cdm, entity: entity))
     }
     
     private func returnRow(_ returnEntity: ReturnEntity) -> some View {

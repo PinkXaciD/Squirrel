@@ -11,11 +11,8 @@ import OSLog
 #endif
 
 final class EditSpendingViewModel: SpendingViewModel {
-    @ObservedObject
     var cdm: CoreDataModel
-    @ObservedObject
     var rvm: RatesViewModel
-    
     var entity: SpendingEntity
     
     @Published 
@@ -71,7 +68,7 @@ final class EditSpendingViewModel: SpendingViewModel {
     
     func done() {
         DispatchQueue.global(qos: .utility).async { [weak self] in
-            guard let self else { self?.clear(); return }
+            guard let self else { return }
             
             guard self.cdm.findCategory(self.categoryId) != nil else { return }
             
@@ -113,16 +110,17 @@ final class EditSpendingViewModel: SpendingViewModel {
             }
             
             if !Calendar.current.isDateInToday(date) {
-                Task {
+                Task { [spending] in
                     let oldRates = try? await self.rvm.getRates(self.date).rates
-                    await MainActor.run {
+                    await MainActor.run { [spending] in
+                        var spendingCopy = spending
                         if let oldRates = oldRates {
-                            spending.amountUSD = doubleAmount / (oldRates[self.currency] ?? 1)
+                            spendingCopy.amountUSD = doubleAmount / (oldRates[self.currency] ?? 1)
                         } else {
-                            spending.amountUSD = doubleAmount / (self.rvm.rates[self.currency] ?? 1)
+                            spendingCopy.amountUSD = doubleAmount / (self.rvm.rates[self.currency] ?? 1)
                         }
                         
-                        self.cdm.editSpending(spending: self.entity, newSpending: spending)
+                        self.cdm.editSpending(spending: self.entity, newSpending: spendingCopy)
                         self.clear()
                     }
                 }

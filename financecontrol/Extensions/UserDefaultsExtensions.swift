@@ -84,7 +84,7 @@ extension UserDefaults {
         self.set(value, forKey: UDKeys.savedCurrencies.rawValue)
     }
     
-    static func defaultCurrency() -> String? {
-        return self.standard.string(forKey: UDKeys.defaultCurrency.rawValue)
+    static func defaultCurrency() -> String {
+        return self.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
     }
 }

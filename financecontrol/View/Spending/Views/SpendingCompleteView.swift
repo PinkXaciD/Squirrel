@@ -17,26 +17,24 @@ struct SpendingCompleteView: View {
     
     @Binding var edit: Bool
     
-    @State var entity: SpendingEntity
+    var entity: SpendingEntity
     @State var editFocus: String = "nil"
     @State private var entityToAddReturn: SpendingEntity? = nil
     @State private var returnToEdit: ReturnEntity? = nil
     @State private var toDismiss: Bool = false
     @State private var hideContent: Bool = false
     
-//    @StateObject
-//    private var vm: EditSpendingViewModel
     @EnvironmentObject private var cdm: CoreDataModel
     @EnvironmentObject private var rvm: RatesViewModel
     
     var body: some View {
-        let categoryColor = CustomColor.nordAurora[entity.category?.color ?? ""] ?? .primary
+        let categoryColor = CustomColor.nordAurora[entity.category?.color ?? ""] ?? .secondary.opacity(0)
         
         Group {
             if edit {
                 NavigationView {
                     EditSpendingView(
-                        entity: $entity,
+                        entity: entity,
                         edit: $edit,
                         categoryColor: categoryColor,
                         focus: editFocus,
@@ -67,6 +65,7 @@ struct SpendingCompleteView: View {
                 NavigationView {
                     SpendingView(
                         entity: entity,
+                        safeEntity: entity.safeObject(),
                         edit: $edit,
                         editFocus: $editFocus,
                         categoryColor: categoryColor,
@@ -97,9 +96,10 @@ struct SpendingCompleteView: View {
         }
         .sheet(item: $returnToEdit) { returnEntity in
             EditReturnView(returnEntity: returnEntity, spending: entity, cdm: cdm, rvm: rvm)
-                .smallSheet(0.5)
+//                .smallSheet(0.5)
                 .tint(colorIdentifier(color: tint))
                 .accentColor(colorIdentifier(color: tint))
+                .environmentObject(cdm)
         }
     }
     
