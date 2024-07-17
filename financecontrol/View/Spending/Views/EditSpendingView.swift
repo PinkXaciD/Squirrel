@@ -11,18 +11,16 @@ struct EditSpendingView: View {
     @Environment(\.dismiss)
     private var dismiss
     
-    @ObservedObject
-    var vm: EditSpendingViewModel
-    @Binding
+    @StateObject
+    private var vm: EditSpendingViewModel
+    
     var entity: SpendingEntity
     @Binding
     var edit: Bool
     var categoryColor: Color
     
     @State
-    private var alertIsPresented: Bool = false
-    @State
-    private var filterAmount: String = ""
+    private var confirmationDialogIsPresented: Bool = false
     let utils = InputUtils()
     
     enum Field {
@@ -61,13 +59,13 @@ struct EditSpendingView: View {
             
             leadingToolbar
         }
-        .confirmationDialog("Delete this expense? \nYou can't undo this action.", isPresented: $alertIsPresented, titleVisibility: .visible) {
+        .confirmationDialog("Delete this expense?", isPresented: $confirmationDialogIsPresented, titleVisibility: .visible) {
             Button("Delete", role: .destructive) {
                 dismiss()
                 vm.cdm.deleteSpending(entity)
             }
-            
-            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("You can't undo this action.")
         }
         .onChange(of: toDismiss) { _ in
             cancelButtonAction()
@@ -100,13 +98,7 @@ struct EditSpendingView: View {
             
             TextField("Amount", text: $vm.amount)
                 .focused($focusedField, equals: .amount)
-                .numbersOnly($filterAmount)
-                .onChange(of: vm.amount) { newValue in      ///
-                    filterAmount = newValue                 ///
-                }                                           /// iOS 16 fix
-                .onChange(of: filterAmount) { newValue in   ///
-                    vm.amount = newValue                    ///
-                }
+                .numbersOnly($vm.amount)
                 .spendingAmountTextFieldStyle()
             
             CurrencySelector(currency: $vm.currency, spacer: false)
@@ -150,7 +142,7 @@ struct EditSpendingView: View {
             .padding(.top, 10)
             
             Button(role: .destructive) {
-                alertIsPresented.toggle()
+                confirmationDialogIsPresented.toggle()
             } label: {
                 ZStack {
                     RoundedRectangle(cornerRadius: 10)
@@ -191,7 +183,7 @@ struct EditSpendingView: View {
                     .fontWeight(.semibold)
             }
             .disabled(
-                !utils.checkAll(amount: vm.amount, place: vm.place, category: vm.categoryName, comment: vm.comment)
+                !utils.checkAll(amount: vm.amount, place: vm.place, comment: vm.comment)
                 ||
                 entity.returnsSum > (Double(vm.amount.replacingOccurrences(of: ",", with: ".")) ?? 0)
             )
@@ -208,41 +200,29 @@ struct EditSpendingView: View {
 // MARK: Functions
 
 extension EditSpendingView {
+    init(
+        entity: SpendingEntity,
+        edit: Binding<Bool>,
+        categoryColor: Color,
+        focus: String,
+        entityToAddReturn: Binding<SpendingEntity?>,
+        returnToEdit: Binding<ReturnEntity?>,
+        toDismiss: Binding<Bool>,
+        cdm: CoreDataModel,
+        rvm: RatesViewModel
+    ) {
+        self.entity = entity
+        self._edit = edit
+        self.categoryColor = categoryColor
+        self.focus = focus
+        self._entityToAddReturn = entityToAddReturn
+        self._returnToEdit = returnToEdit
+        self._toDismiss = toDismiss
+        self._vm = StateObject(wrappedValue: EditSpendingViewModel(ratesViewModel: rvm, coreDataModel: cdm, entity: entity))
+    }
+    
     private func returnRow(_ returnEntity: ReturnEntity) -> some View {
-        VStack(alignment: .leading) {
-            HStack {
-                Text(returnEntity.amount.formatted(.currency(code: returnEntity.currency ?? entity.wrappedCurrency)))
-                
-                Spacer()
-                
-                Text(returnEntity.date?.formatted(date: .abbreviated, time: .shortened) ?? "Date error")
-            }
-            
-            if let name = returnEntity.name, !name.isEmpty {
-                Text(name)
-                    .font(.callout)
-                    .foregroundColor(.secondary)
-            }
-        }
-        .padding(.vertical, 1)
-        .foregroundColor(.primary)
-// MARK: Todo
-//                .swipeActions(edge: .leading) {
-//                    Button {
-//                        returnToEdit = returnEntity
-//                    } label: {
-//                        Label("Edit", systemImage: "pencil")
-//                    }
-//                    .tint(.yellow)
-//                }
-        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-            Button(role: .destructive) {
-                vm.removeReturn(returnEntity)
-            } label: {
-                Label("Delete", systemImage: "trash.fill")
-            }
-            .tint(.red)
-        }
+        ReturnRow(returnToEdit: $returnToEdit, returnEntity: returnEntity, spendingCurrency: entity.wrappedCurrency)
     }
     
     private func doneButtonAction() {

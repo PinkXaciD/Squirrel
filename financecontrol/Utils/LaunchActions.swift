@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import UIKit
 #if DEBUG
 import OSLog
 #endif
@@ -40,6 +39,11 @@ func launch() -> Void {
     if UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) == nil {
         UserDefaults.standard.setValue(Locale.current.currencyCode ?? "USD", forKey: UDKeys.defaultCurrency.rawValue)
     }
+    
+    // TODO: Remove
+//    #if DEBUG
+//    UserDefaults.standard.set(true, forKey: "updateRates")
+//    #endif
     
     // MARK: Theme migration
     if let theme = UserDefaults.standard.string(forKey: "theme") {

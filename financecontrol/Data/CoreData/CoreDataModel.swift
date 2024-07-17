@@ -37,6 +37,8 @@ final class CoreDataModel: ObservableObject {
     var savedCurrencies: [CurrencyEntity] = []
     @Published
     var updateCharts: Bool = false
+    @Published
+    var pieChartSpendings: [Date:[TSSpendingEntity]] = .init()
 }
 
 extension CoreDataModel {
@@ -127,8 +129,6 @@ extension CoreDataModel {
                 
                 fetchCategories()
                 fetchSpendings()
-                
-                updateCharts = true
                 
                 return importedCount
             } else {

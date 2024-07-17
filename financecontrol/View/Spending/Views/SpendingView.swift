@@ -14,9 +14,9 @@ struct SpendingView: View {
     @EnvironmentObject
     private var rvm: RatesViewModel
     
-    @State 
     var entity: SpendingEntity
-    @Binding 
+    let safeEntity: TSSpendingEntity
+    @Binding
     var edit: Bool
     @Binding
     var editFocus: String
@@ -42,7 +42,7 @@ struct SpendingView: View {
             
             commentSection
             
-            if !(entity.returns?.allObjects.isEmpty ?? true) {
+            if !safeEntity.returns.isEmpty {
                 returnsSection
             }
             
@@ -50,13 +50,13 @@ struct SpendingView: View {
             debugSection
             #endif
         }
-        .confirmationDialog("Delete this expense? \nYou can't undo this action.", isPresented: $alertIsPresented, titleVisibility: .visible) {
+        .confirmationDialog("Delete this expense?", isPresented: $alertIsPresented, titleVisibility: .visible) {
             Button("Delete", role: .destructive) {
                 dismiss()
                 cdm.deleteSpending(entity)
             }
-            
-            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("You can't undo this action.")
         }
         .toolbar {
             closeToolbar
@@ -72,7 +72,7 @@ struct SpendingView: View {
             HStack {
                 Text("Category")
                 Spacer()
-                Text(entity.categoryName)
+                Text(safeEntity.categoryName)
                     .foregroundColor(.secondary)
             }
             .onTapGesture {
@@ -82,7 +82,7 @@ struct SpendingView: View {
             HStack {
                 Text("Date")
                 Spacer()
-                Text(entity.wrappedDate, format: .dateTime.year().month(.wide).day().hour().minute())
+                Text(safeEntity.wrappedDate, format: .dateTime.year().month(.wide).day().hour().minute())
                     .foregroundColor(.secondary)
             }
             .onTapGesture {
@@ -93,7 +93,7 @@ struct SpendingView: View {
     
     private var infoHeader: some View {
         VStack(alignment: .center, spacing: 8) {
-            if let place = entity.place, !place.isEmpty {
+            if let place = safeEntity.place, !place.isEmpty {
                 Text(place)
                     .font(.title2.bold())
                     .onTapGesture {
@@ -101,7 +101,7 @@ struct SpendingView: View {
                     }
             }
             
-            if entity.returnsArr.isEmpty {
+            if safeEntity.returns.isEmpty {
                 amountWithoutReturns
                     .frame(width: UIScreen.main.bounds.width)
             } else {
@@ -110,7 +110,7 @@ struct SpendingView: View {
                     .frame(width: UIScreen.main.bounds.width)
             }
             
-            if entity.wrappedCurrency != defaultCurrency {
+            if safeEntity.wrappedCurrency != defaultCurrency {
                 Text(
                     (entity.amountUSDWithReturns * (rvm.rates[defaultCurrency] ?? 1))
                         .formatted(.currency(code: defaultCurrency))
@@ -126,7 +126,7 @@ struct SpendingView: View {
     
     private var amountWithoutReturns: some View {
         VStack {
-            Text(entity.amountWithReturns.formatted(.currency(code: entity.wrappedCurrency)))
+            Text(safeEntity.amountWithReturns.formatted(.currency(code: safeEntity.wrappedCurrency)))
                 .font(.system(.largeTitle, design: .rounded).bold())
                 .scaledToFit()
                 .minimumScaleFactor(0.01)
@@ -138,7 +138,7 @@ struct SpendingView: View {
     
     private var amountWithReturns: some View {
         VStack(alignment: .center) {
-            Text(entity.amount.formatted(.currency(code: entity.wrappedCurrency)))
+            Text(safeEntity.amount.formatted(.currency(code: safeEntity.wrappedCurrency)))
                 .font(.system(.title, design: .rounded).bold())
                 .foregroundStyle(.secondary)
                 .roundedStrikeThrough(categoryColor)
@@ -154,7 +154,7 @@ struct SpendingView: View {
                     editAction("amount")
                 }
             
-            Text(entity.amountWithReturns.formatted(.currency(code: entity.wrappedCurrency)))
+            Text(safeEntity.amountWithReturns.formatted(.currency(code: safeEntity.wrappedCurrency)))
                 .font(.system(.largeTitle, design: .rounded).bold())
                 .onTapGesture {
                     editAction("amount")
@@ -166,7 +166,7 @@ struct SpendingView: View {
     
     private var commentSection: some View {
         Section(header: Text("Comment"), footer: returnAndDeleteButtons) {
-            if let comment = entity.comment, !comment.isEmpty {
+            if let comment = safeEntity.comment, !comment.isEmpty {
                 ZStack(alignment: .leading) {
                     Rectangle()
                         .foregroundColor(.init(uiColor: .secondarySystemGroupedBackground))
@@ -232,10 +232,10 @@ struct SpendingView: View {
     private var returnsSection: some View {
         Section {
             ForEach(entity.returnsArr.sorted { $0.date ?? .distantPast > $1.date ?? .distantPast }) { returnEntity in
-                returnRow(returnEntity)
+                ReturnRow(returnToEdit: $returnToEdit, returnEntity: returnEntity, spendingCurrency: entity.wrappedCurrency)
             }
         } header: {
-            Text("\(entity.returns?.allObjects.count ?? 0) returns")
+            Text("\(safeEntity.returns.count) returns")
         }
     }
     
@@ -302,93 +302,6 @@ extension SpendingView {
         withAnimation {
             edit.toggle()
         }
-    }
-    
-    private func returnRow(_ returnEntity: ReturnEntity) -> some View {
-        HStack {
-            VStack(alignment: .leading) {
-                dateFormat(returnEntity.date ?? .distantPast)
-                    .foregroundColor(.secondary)
-                    .font(.caption)
-                
-                Text(returnEntity.amount.formatted(.currency(code: returnEntity.currency ?? entity.wrappedCurrency)))
-                    .font(.system(.title3, design: .rounded).bold())
-            }
-                
-            if let name = returnEntity.name, !name.isEmpty {
-                Spacer()
-                
-                Text(name)
-                    .lineLimit(3)
-                    .padding()
-                    .background {
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(Color(uiColor: .tertiarySystemGroupedBackground))
-                    }
-            }
-                
-//            #if DEBUG
-//            Divider()
-//
-//            HStack {
-//                Text(verbatim: "Amount in USD:")
-//
-//                Spacer()
-//
-//                Text("\(returnEntity.amountUSD.formatted(.currency(code: "USD")))")
-//                    .foregroundColor(.secondary)
-//            }
-//            .padding(.top, 3)
-//            #endif
-//            }
-        }
-        .padding(.vertical, 1)
-        .normalizePadding()
-        .foregroundColor(.primary)
-        .swipeActions(edge: .leading) {
-            getEditButton(returnEntity)
-        }
-        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-            getDeleteButton(returnEntity)
-        }
-        .contextMenu {
-            getEditButton(returnEntity)
-            
-            getDeleteButton(returnEntity)
-        }
-        .onTapGesture {
-            returnToEdit = returnEntity
-        }
-    }
-    
-    private func getEditButton(_ entity: ReturnEntity) -> some View {
-        Button {
-            returnToEdit = entity
-        } label: {
-            Label("Edit", systemImage: "pencil")
-        }
-        .tint(.yellow)
-    }
-    
-    private func getDeleteButton(_ entity: ReturnEntity) -> some View {
-        Button(role: .destructive) {
-            withAnimation {
-                cdm.deleteReturn(spendingReturn: entity)
-            }
-        } label: {
-            Label("Delete", systemImage: "trash.fill")
-        }
-        .tint(.red)
-    }
-    
-    private func dateFormat(_ date: Date) -> Text {
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeStyle = .short
-        dateFormatter.dateStyle = .medium
-        dateFormatter.locale = Locale.current
-        dateFormatter.doesRelativeDateFormatting = true
-        
-        return Text(dateFormatter.string(from: date))
     }
 }
 

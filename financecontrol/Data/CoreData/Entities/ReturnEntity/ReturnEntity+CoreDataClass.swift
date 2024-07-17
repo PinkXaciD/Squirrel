@@ -43,7 +43,7 @@ public final class ReturnEntity: NSManagedObject, Codable {
 }
 
 extension ReturnEntity: ToSafeObject {
-    func safeObject() throws -> TSReturnEntity {
+    func safeObject() -> TSReturnEntity {
         TSReturnEntity(
             amount: self.amount,
             amountUSD: self.amountUSD,

@@ -100,7 +100,13 @@ struct NewBarChartData: Equatable {
     
     init() {
         self.sum = 0
-        self.bars = [:]
+        
+        var bars: [Date:Double] = [:]
+        for number in 0..<7 {
+            bars.updateValue(0, forKey: Calendar.current.date(byAdding: .day, value: -number, to: Calendar.current.startOfDay(for: Date())) ?? Date())
+        }
+        
+        self.bars = bars
     }
     
     var max: Double {

@@ -16,10 +16,6 @@ struct ExportImportView: View {
     @State private var presentExportSheet: Bool = false
     @State private var presentImportSheet: Bool = false
     
-    @Binding var presentAlert: Bool
-    @Binding var alertMessage: Text
-    @Binding var alertType: CustomAlertType
-    
     var body: some View {
         List {
             jsonSection
@@ -90,23 +86,12 @@ extension ExportImportView {
             if let imported = cdm.importJSON(url) {
                 switch imported {
                 case 0:
-                    self.alertMessage = .init("Nothing to import")
-                    self.alertType = .warning
+                    CustomAlertManager.shared.addAlert(.init(type: .warning, title: "Nothing to import", systemImage: "exclamationmark.circle"))
                 default:
-                    self.alertMessage = .init("Successfully imported \(imported) expenses")
-                    self.alertType = .success
-                }
-                
-                withAnimation(.bouncy) {
-                    presentAlert.toggle()
+                    CustomAlertManager.shared.addAlert(.init(type: .success, title: "Success", description: "Imported \(imported) expenses", systemImage: "checkmark.circle"))
                 }
             } else {
-                self.alertMessage = .init("Failed to import")
-                self.alertType = .failure
-                
-                withAnimation(.bouncy) {
-                    presentAlert.toggle()
-                }
+                CustomAlertManager.shared.addAlert(.init(type: .error, title: "Import failed", systemImage: "xmark.circle"))
             }
         case .failure(let failure):
             ErrorType(error: failure).publish()
@@ -116,6 +101,7 @@ extension ExportImportView {
     private func deleteTempFile() {
         do {
             try FileManager.default.removeItem(at: shareURL)
+            HapticManager.shared.notification(.success)
         } catch {
             ErrorType(error: error).publish()
         }

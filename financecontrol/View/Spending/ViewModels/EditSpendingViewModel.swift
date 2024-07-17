@@ -11,11 +11,8 @@ import OSLog
 #endif
 
 final class EditSpendingViewModel: SpendingViewModel {
-    @ObservedObject
     var cdm: CoreDataModel
-    @ObservedObject
     var rvm: RatesViewModel
-    
     var entity: SpendingEntity
     
     @Published 
@@ -70,60 +67,10 @@ final class EditSpendingViewModel: SpendingViewModel {
     }
     
     func done() {
-//        guard let doubleAmount = Double(amount.replacingOccurrences(of: ",", with: ".")) else {
-//            ErrorType(
-//                errorDescription: "Failed to edit expence",
-//                failureReason: "Cannot convert amount to number",
-//                recoverySuggestion: "Try again"
-//            )
-//            .publish()
-//            
-//            return
-//        }
-//        
-//        var spending: SpendingEntityLocal = .init(
-//            amountUSD: 0,
-//            amount: doubleAmount,
-//            amountWithReturns: 0,
-//            amountUSDWithReturns: 0,
-//            comment: comment,
-//            currency: currency,
-//            date: date,
-//            place: place,
-//            categoryId: categoryId
-//        )
-//        
-//        if currency == "USD" {
-//            spending.amountUSD = doubleAmount
-//            cdm.editSpending(spending: entity, newSpending: spending)
-//            #if DEBUG
-//            let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
-//            logger.log("Currency is USD, skipping rates fetching...")
-//            #endif
-//            return
-//        }
-//        
-//        if !Calendar.current.isDateInToday(date) {
-//            Task {
-//                let oldRates = try? await rvm.getRates(date).rates
-//                await MainActor.run {
-//                    if let oldRates = oldRates {
-//                        spending.amountUSD = doubleAmount / (oldRates[currency] ?? 1)
-//                    } else {
-//                        spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
-//                    }
-//                    
-//                    cdm.editSpending(spending: entity, newSpending: spending)
-//                }
-//            }
-//        } else {
-//            spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
-//            
-//            cdm.editSpending(spending: entity, newSpending: spending)
-//        }
-        
         DispatchQueue.global(qos: .utility).async { [weak self] in
-            guard let self else { self?.clear(); return }
+            guard let self else { return }
+            
+            guard self.cdm.findCategory(self.categoryId) != nil else { return }
             
             let formatter = NumberFormatter()
             
@@ -163,16 +110,17 @@ final class EditSpendingViewModel: SpendingViewModel {
             }
             
             if !Calendar.current.isDateInToday(date) {
-                Task {
+                Task { [spending] in
                     let oldRates = try? await self.rvm.getRates(self.date).rates
-                    await MainActor.run {
+                    await MainActor.run { [spending] in
+                        var spendingCopy = spending
                         if let oldRates = oldRates {
-                            spending.amountUSD = doubleAmount / (oldRates[self.currency] ?? 1)
+                            spendingCopy.amountUSD = doubleAmount / (oldRates[self.currency] ?? 1)
                         } else {
-                            spending.amountUSD = doubleAmount / (self.rvm.rates[self.currency] ?? 1)
+                            spendingCopy.amountUSD = doubleAmount / (self.rvm.rates[self.currency] ?? 1)
                         }
                         
-                        self.cdm.editSpending(spending: self.entity, newSpending: spending)
+                        self.cdm.editSpending(spending: self.entity, newSpending: spendingCopy)
                         self.clear()
                     }
                 }

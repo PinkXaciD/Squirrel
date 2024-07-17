@@ -16,35 +16,47 @@ struct StatsRow: View {
     private var cdm: CoreDataModel
     @EnvironmentObject
     private var rvm: RatesViewModel
+    @EnvironmentObject
+    private var vm: StatsViewModel
     
-    let entity: SpendingEntity
+//    let entity: SpendingEntity?
     let localEntity: TSSpendingEntity
-    
-    @Binding 
-    var entityToEdit: SpendingEntity?
-    @Binding
-    var entityToAddReturn: SpendingEntity?
-    @Binding
-    var edit: Bool
     
     #if DEBUG
     let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
     #endif
     
     var body: some View {
-        Button {
-            if entityToEdit == nil {
-                entityToEdit = entity
-            }
-        } label: {
-            buttonLabel
-        }
+        button
     }
     
     // MARK: Variables
+    private var button: some View {
+//        print(localEntity.amount, localEntity.currency, localEntity.categoryName, "Button called")
+        return Button(action: buttonAction) {
+            buttonLabel
+        }
+        .normalizePadding()
+        .swipeActions(edge: .trailing) {
+            deleteButton
+            
+            returnButon
+        }
+        .swipeActions(edge: .leading) {
+            editButton
+        }
+        .contextMenu {
+            editButton
+            
+            returnButon
+            
+            deleteButton
+        }
+    }
     
-    var buttonLabel: some View {
-        HStack {
+    private var buttonLabel: some View {
+//        print(localEntity.amount, localEntity.currency, localEntity.categoryName, "Button called")
+        return HStack {
             VStack(alignment: .leading, spacing: 5) {
                 if let place = localEntity.place, !place.isEmpty {
                     Text(localEntity.categoryName)
@@ -67,7 +79,7 @@ struct StatsRow: View {
                     .foregroundColor(Color.secondary)
                 
                 HStack {
-                    if !localEntity.returnsArr.isEmpty {
+                    if !localEntity.returns.isEmpty {
                         Image(systemName: "arrow.uturn.backward")
                             .foregroundColor(.secondary)
                             .font(.caption.bold())
@@ -82,8 +94,10 @@ struct StatsRow: View {
     
     private var editButton: some View {
         Button {
-            edit.toggle()
-            entityToEdit = entity
+            if  let entity = try? localEntity.unsafeObject(in: cdm.context){
+                vm.edit.toggle()
+                vm.entityToEdit = entity
+            }
         } label: {
             Label {
                 Text("Edit")
@@ -96,7 +110,9 @@ struct StatsRow: View {
     
     private var deleteButton: some View {
         Button(role: .destructive) {
-            deleteSpending(entity)
+            if let entity = try? localEntity.unsafeObject(in: cdm.context) {
+                deleteSpending(entity)
+            }
         } label: {
             Label {
                 Text("Delete")
@@ -109,26 +125,31 @@ struct StatsRow: View {
     
     private var returnButon: some View {
         Button {
-            entityToAddReturn = entity
+            if let entity = try? localEntity.unsafeObject(in: cdm.context) {
+                vm.entityToAddReturn = entity
+            }
         } label: {
             Label("Add return", systemImage: "arrow.uturn.backward")
         }
         .tint(.yellow)
-        .disabled(entity.amountWithReturns == 0)
+        .disabled(localEntity.amountWithReturns == 0)
     }
     
     // MARK: Functions
     
-    init(entity: SpendingEntity, entityToEdit: Binding<SpendingEntity?>, entityToAddReturn: Binding<SpendingEntity?>, edit: Binding<Bool>) {
-        self.entity = entity
-        self.localEntity = entity.safeObject()
-        self._entityToEdit = entityToEdit
-        self._entityToAddReturn = entityToAddReturn
-        self._edit = edit
+    init(entity: TSSpendingEntity) {
+        self.localEntity = entity
         
-        #if DEBUG
+//        #if DEBUG
 //        logger.log("Sum: \(entity.amountWithReturns), date: \(entity.wrappedDate) initialized")
-        #endif
+//        print(entity.amount, entity.currency, entity.categoryName, "Initialized")
+//        #endif
+    }
+    
+    private func buttonAction() {
+        if vm.entityToEdit == nil, let entity = try? localEntity.unsafeObject(in: cdm.context) {
+            vm.entityToEdit = entity
+        }
     }
     
     private func deleteSpending(_ entity: SpendingEntity) {

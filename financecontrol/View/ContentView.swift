@@ -36,7 +36,9 @@ struct ContentView: View {
     @StateObject
     private var statsSearchViewModel: StatsSearchViewModel
     @StateObject
-    private var privacyMonitor: PrivacyMonitor = PrivacyMonitor(privacyScreenIsEnabled: false)
+    private var privacyMonitor: PrivacyMonitor = PrivacyMonitor(privacyScreenIsEnabled: false, hideExpenseSum: false)
+    @StateObject
+    private var statsViewModel: StatsViewModel = StatsViewModel()
     
     @ObservedObject 
     private var errorHandler = ErrorHandler.shared
@@ -61,25 +63,11 @@ struct ContentView: View {
         
     var body: some View {
         TabView {
-            HomeView(showingSheet: $addExpenseAction, presentOnboarding: $presentOnboarding)
-                .tabItem {
-                    Label("Home", systemImage: "house.fill")
-                }
+            homeTab
             
-            StatsSearchView()
-                .environmentObject(pieChartViewModel)
-                .environmentObject(filtersViewModel)
-                .environmentObject(statsSearchViewModel)
-                .environmentObject(statsListViewModel)
-                .environmentObject(privacyMonitor)
-                .tabItem {
-                    Label("Stats", systemImage: "chart.pie.fill")
-                }
+            statsTab
             
-            SettingsView(presentOnboarding: $presentOnboarding)
-                .tabItem {
-                    Label("Settings", systemImage: "gearshape.fill")
-                }
+            settingsTab
         }
         .blur(radius: hideContent ? Vars.privacyBlur : 0)
         .ignoresSafeArea()
@@ -121,6 +109,7 @@ struct ContentView: View {
         .onAppear {
             setColorScheme()
         }
+        .customAlert()
         .alert(
             "Something went wrong...",
             isPresented: $errorHandler.showAlert,
@@ -139,6 +128,49 @@ struct ContentView: View {
         } message: { error in
             Text("\(error.errorDescription)\n\(error.recoverySuggestion)")
         }
+    }
+    
+    private var homeTab: some View {
+        HomeView(showingSheet: $addExpenseAction, presentOnboarding: $presentOnboarding)
+            .tabItem {
+                Label("Home", systemImage: "house.fill")
+            }
+    }
+    
+    private var statsTab: some View {
+        StatsView()
+            .searchable(text: $statsSearchViewModel.input, placement: .navigationBarDrawer, prompt: "Search by place or comment")
+            .environmentObject(pieChartViewModel)
+            .environmentObject(filtersViewModel)
+            .environmentObject(statsSearchViewModel)
+            .environmentObject(statsListViewModel)
+            .environmentObject(privacyMonitor)
+            .environmentObject(statsViewModel)
+            .sheet(item: $statsViewModel.entityToEdit) { entity in
+                SpendingCompleteView(
+                    edit: $statsViewModel.edit,
+                    entity: entity
+                )
+                .smallSheet(0.7)
+                .environmentObject(privacyMonitor)
+                .environmentObject(cdm)
+                .environmentObject(rvm)
+            }
+            .sheet(item: $statsViewModel.entityToAddReturn) { entity in
+                AddReturnView(spending: entity, cdm: cdm, rvm: rvm)
+                    .accentColor(colorIdentifier(color: tint))
+                    .tint(colorIdentifier(color: tint))
+            }
+            .tabItem {
+                Label("Stats", systemImage: "chart.pie.fill")
+            }
+    }
+    
+    private var settingsTab: some View {
+        SettingsView(presentOnboarding: $presentOnboarding)
+            .tabItem {
+                Label("Settings", systemImage: "gearshape.fill")
+            }
     }
     
     private func setColorScheme() {

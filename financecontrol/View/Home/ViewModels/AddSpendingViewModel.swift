@@ -6,14 +6,15 @@
 //
 
 import SwiftUI
+import Combine
 #if DEBUG
 import OSLog
 #endif
 
 final class AddSpendingViewModel: ViewModel {
-    @ObservedObject 
-    internal var cdm: CoreDataModel
-    @ObservedObject
+    
+    var cdm: CoreDataModel
+    
     private var rvm: RatesViewModel
     
     @Published 
@@ -23,7 +24,7 @@ final class AddSpendingViewModel: ViewModel {
     @Published
     var date: Date
     @Published
-    var categoryName: String
+    var categoryHasChanged: Bool
     @Published
     var categoryId: UUID
     @Published
@@ -32,10 +33,14 @@ final class AddSpendingViewModel: ViewModel {
     var comment: String
     @Published
     var popularCategories: [CategoryEntity] = []
+    @Published
+    var oldRates: Rates?
     
     #if DEBUG
     let vmStateLogger: Logger
     #endif
+    
+    var cancellables = Set<AnyCancellable>()
     
     init(ratesViewModel rvm: RatesViewModel, coreDataModel cdm: CoreDataModel, shortcut: AddSpendingShortcut? = nil) {
         if let shortcut {
@@ -53,25 +58,25 @@ final class AddSpendingViewModel: ViewModel {
                 self.amount = ""
             }
             
-            self.currency = shortcut.currency ?? UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
+            self.currency = shortcut.currency ?? UserDefaults.standard.string(forKey: UDKeys.defaultSelectedCurrency.rawValue) ?? UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
             self.date = Date()
             
-            if let categoryID = shortcut.categoryID, let categoryName = cdm.findCategory(categoryID)?.name {
+            if let categoryID = shortcut.categoryID {
                 self.categoryId = categoryID
-                self.categoryName = categoryName
+                self.categoryHasChanged = true
             } else {
                 self.categoryId = .init()
-                self.categoryName = "Select Category"
+                self.categoryHasChanged = false
             }
             
             self.place = shortcut.place ?? ""
             self.comment = shortcut.comment ?? ""
         } else {
             self.amount = ""
-            self.currency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
+            self.currency = UserDefaults.standard.string(forKey: UDKeys.defaultSelectedCurrency.rawValue) ?? UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
             self.date = .now
-            self.categoryName = "Select Category"
             self.categoryId = .init()
+            self.categoryHasChanged = false
             self.place = ""
             self.comment = ""
         }
@@ -85,13 +90,16 @@ final class AddSpendingViewModel: ViewModel {
         #endif
         
         countPopularCategories()
+        subscribeToId()
     }
     
-    #if DEBUG
     deinit {
+        #if DEBUG
         vmStateLogger.debug("\(#function) called")
+        #endif
+        
+        cancellables.cancelAll()
     }
-    #endif
     
     private func countPopularCategories() {
         DispatchQueue.main.async { [weak self] in
@@ -102,7 +110,7 @@ final class AddSpendingViewModel: ViewModel {
             let sortedCategories = self.cdm.savedCategories.sorted { $0.spendings?.allObjects.count ?? 0 > $1.spendings?.allObjects.count ?? 0 }
             let range = 0..<(sortedCategories.count > 5 ? 5 : sortedCategories.count)
             withAnimation {
-                self.popularCategories.append(contentsOf: sortedCategories[range])
+                self.popularCategories = Array(sortedCategories[range])
             }
         }
     }
@@ -110,6 +118,8 @@ final class AddSpendingViewModel: ViewModel {
     func done() {
         DispatchQueue.global(qos: .utility).async { [weak self] in
             guard let self else { return }
+            
+            guard self.cdm.findCategory(categoryId) != nil else { return }
             
             let formatter = NumberFormatter()
             
@@ -140,16 +150,17 @@ final class AddSpendingViewModel: ViewModel {
                     
                     cdm.addSpending(spending: spending)
                 } else {
-                    Task {
+                    Task { [spending] in
                         let oldRates = try? await self.rvm.getRates(self.date).rates
-                        await MainActor.run {
+                        await MainActor.run { [spending] in
+                            var spendingCopy = spending
                             if let oldRates = oldRates {
-                                spending.amountUSD = doubleAmount / (oldRates[self.currency] ?? 1)
+                                spendingCopy.amountUSD = doubleAmount / (oldRates[self.currency] ?? 1)
                             } else {
-                                spending.amountUSD = doubleAmount / (self.rvm.rates[self.currency] ?? 1)
+                                spendingCopy.amountUSD = doubleAmount / (self.rvm.rates[self.currency] ?? 1)
                             }
                             
-                            self.cdm.addSpending(spending: spending)
+                            self.cdm.addSpending(spending: spendingCopy)
                         }
                     }
                 }
@@ -162,5 +173,17 @@ final class AddSpendingViewModel: ViewModel {
                 .publish()
             }
         }
+    }
+    
+    private func subscribeToId() {
+        self.$categoryId
+            .receive(on: DispatchQueue.main)
+            .dropFirst()
+            .sink { [weak self] _ in
+                if self?.categoryHasChanged != true {
+                    self?.categoryHasChanged = true
+                }
+            }
+            .store(in: &cancellables)
     }
 }

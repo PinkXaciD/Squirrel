@@ -7,391 +7,208 @@
 
 import Foundation
 
-struct ChartData: Identifiable, Equatable {
+struct ChartData: Equatable {
+    let sum: Double
     let id: Int
     let date: Date
-    var categories: [TSCategoryEntity]
     
-    init(date: Date, id: Int, showOther: Bool, cdm: CoreDataModel, categoryName: String? = nil) {
-        let firstDate = date.getFirstDayOfMonth()
-        let secondDate = date.getFirstDayOfMonth(1)
-        
-        var categories: [TSCategoryEntity] = []
-        
-        let spendings = cdm.savedSpendings.filter { spending in
-            spending.wrappedDate >= firstDate && spending.wrappedDate < secondDate && (categoryName != nil ? spending.categoryName == categoryName : true)
-        }
-        .map { $0.safeObject() }
-        
-        if categoryName != nil {
-            let unknown = NSLocalizedString("unknown-place-localized", comment: "Unknown place")
-            
-            let dict: [String:[TSSpendingEntity]] = Dictionary(grouping: spendings) { spending in
-                guard let place = spending.place, !place.isEmpty else {
-                    return unknown
-                }
-                
-                return place
-            }
-            
-            let colors: [String] = Array(CustomColor.nordAurora.keys).sorted(by: <)
-            var colorIndex: Int = 0
-            
-            categories = dict.map { (key, value) in
-                var category = TSCategoryEntity(color: key == unknown ? "secondary" : colors[colorIndex], id: .init(), isShadowed: false, isFavorite: false, name: key)
-                category.spendings = Set(value) as NSSet
-                
-                if key != unknown {
-                    if colorIndex < colors.count - 1 {
-                        colorIndex += 1
-                    } else {
-                        colorIndex = 0
-                    }
-                }
-                
-                return category
-            }
-        } else {
-            let unknownID = UUID()
-            
-            let dict = Dictionary(grouping: spendings) { spending in
-                guard let catId = spending.categoryID else {
-                    return unknownID
-                }
-                
-                return catId
-            }
-            
-            categories = dict.map { (key, value) in
-                guard var category = cdm.findCategory(key)?.safeObject() else { return nil }
-                category.spendings = Set(value) as NSSet
-                return category
-            }
-            .compactMap { $0 }
-        }
-        
-        if showOther {
-            let sortedCategories = categories.sorted(by: >)
-            let localCategories = sortedCategories
-            categories = Array(sortedCategories.prefix(5))
-            if localCategories.count > 5 {
-                guard let set = localCategories[5...].map({ $0.spendings?.allObjects }).compactMap({ $0 }).flatMap({ $0 }) as? [TSSpendingEntity] else {
-                    self.categories = categories
-                    self.date = firstDate
-                    self.id = id
-                    return
-                }
-                let spendings = Set(set) as NSSet
-                let otherName = NSLocalizedString("category-name-other", comment: "\"Other\" category")
-                let otherCategory = TSCategoryEntity(color: "secondary", id: .init(), isShadowed: false, isFavorite: false, name: otherName, spendings: spendings)
-                categories.append(otherCategory)
-            }
-        } else {
-            categories.sort(by: >)
-        }
-        
-        self.categories = categories
-        self.date = firstDate
-        self.id = id
-        
-//        let firstDate = date.getFirstDayOfMonth()
-//        let secondDate = date.getFirstDayOfMonth(1)
-//        
-//        self.date = firstDate
-//        self.id = id
-//        
-//        var tempCategories: [String:CategoryEntityLocal] = [:]
-//        let dateRange = firstDate..<secondDate
-//        
-//        let spendings = cdm.savedSpendings.filter {
-//            if let categoryName = categoryName {
-//                return dateRange.contains($0.wrappedDate) && $0.categoryName == categoryName
-//            } else {
-//                return dateRange.contains($0.wrappedDate)
-//            }
-//        }
-//        
-//        if categoryName != nil {
-//            let colors: [String] = Array(CustomColor.nordAurora.keys).sorted(by: <)
-//            var colorIndex: Int = 0
-//            
-//            for spending in spendings {
-//                var place: String {
-//                    guard let place = spending.place, !place.isEmpty else {
-//                        return NSLocalizedString("Unknown", comment: "")
-//                    }
-//                    
-//                    return place
-//                }
-//                
-//                var amountWithReturns: Double {
-//                    let defaultCurrency: String = UserDefaults.standard.string(forKey: "defaultCurrency") ?? Locale.current.currencyCode ?? "USD"
-//                    if spending.currency == defaultCurrency {
-//                        return spending.amount
-//                    } else {
-//                        guard
-//                            let fetchedRates = UserDefaults.standard.dictionary(forKey: "rates") as? [String:Double],
-//                            let defaultCurrencyRate = fetchedRates[defaultCurrency]
-//                        else {
-//                            return 0
-//                        }
-//                        
-//                        return spending.amountUSDWithReturns * defaultCurrencyRate
-//                    }
-//                }
-//                
-//                let localSpending = SpendingEntityLocal(
-//                    amountUSD: spending.amountUSD,
-//                    amount: spending.amount,
-//                    amountWithReturns: spending.amountWithReturns,
-//                    amountUSDWithReturns: spending.amountUSDWithReturns,
-//                    comment: spending.comment ?? "",
-//                    currency: spending.wrappedCurrency,
-//                    date: spending.wrappedDate,
-//                    place: spending.place ?? "",
-//                    categoryId: spending.wrappedId
-//                )
-//                
-//                if let existing = tempCategories[place] {
-//                    var catSpendings: [SpendingEntityLocal] = existing.spendings
-//                    catSpendings.append(localSpending)
-//                    
-//                    let updatedCategory = CategoryEntityLocal(
-//                        color: existing.color,
-//                        id: existing.id,
-//                        name: existing.name,
-//                        spendings: catSpendings, 
-//                        sumUSDWithReturns: existing.sumUSDWithReturns + localSpending.amountUSDWithReturns, 
-//                        sumWithReturns: existing.sumWithReturns + amountWithReturns
-//                    )
-//                    
-//                    tempCategories.updateValue(updatedCategory, forKey: place)
-//                } else {
-//                    let updatedCategory = CategoryEntityLocal(
-//                        color: place == NSLocalizedString("Unknown", comment: "") ? "secondary" : colors[colorIndex],
-//                        id: spending.wrappedId,
-//                        name: place,
-//                        spendings: [localSpending], 
-//                        sumUSDWithReturns: localSpending.amountUSDWithReturns,
-//                        sumWithReturns: amountWithReturns
-//                    )
-//                    
-//                    if colorIndex < colors.count - 1 {
-//                        colorIndex += 1
-//                    } else {
-//                        colorIndex = 0
-//                    }
-//                    
-//                    tempCategories.updateValue(updatedCategory, forKey: place)
-//                }
-//            }
-//        } else {
-//            for spending in spendings {
-//                guard
-//                    let category = spending.category,
-//                    let catId = category.id,
-//                    let categoryName = category.name,
-//                    let categoryColor = category.color
-//                else {
-//                    continue
-//                }
-//                
-//                var amountWithReturns: Double {
-//                    let defaultCurrency: String = UserDefaults.standard.string(forKey: "defaultCurrency") ?? Locale.current.currencyCode ?? "USD"
-//                    if spending.currency == defaultCurrency {
-//                        return spending.amount
-//                    } else {
-//                        guard
-//                            let fetchedRates = UserDefaults.standard.dictionary(forKey: "rates") as? [String:Double],
-//                            let defaultCurrencyRate = fetchedRates[defaultCurrency]
-//                        else {
-//                            return 0
-//                        }
-//                        
-//                        return spending.amountUSDWithReturns * defaultCurrencyRate
-//                    }
-//                }
-//                
-//                let localSpending = SpendingEntityLocal(
-//                    amountUSD: spending.amountUSD,
-//                    amount: spending.amount,
-//                    amountWithReturns: spending.amountWithReturns,
-//                    amountUSDWithReturns: spending.amountUSDWithReturns,
-//                    comment: spending.comment ?? "",
-//                    currency: spending.wrappedCurrency,
-//                    date: spending.wrappedDate,
-//                    place: spending.place ?? "",
-//                    categoryId: catId
-//                )
-//                        
-//                if let existing = tempCategories[catId.uuidString] {
-//                    var catSpendings: [SpendingEntityLocal] = existing.spendings
-//                    catSpendings.append(localSpending)
-//                    let updatedCategory = CategoryEntityLocal(
-//                        color: existing.color,
-//                        id: existing.id,
-//                        name: existing.name,
-//                        spendings: catSpendings, 
-//                        sumUSDWithReturns: existing.sumUSDWithReturns + localSpending.amountUSDWithReturns, 
-//                        sumWithReturns: existing.sumWithReturns + amountWithReturns
-//                    )
-//                    
-//                    tempCategories.updateValue(updatedCategory, forKey: catId.uuidString)
-//                } else {
-//                    let updatedCategory = CategoryEntityLocal(
-//                        color: categoryColor,
-//                        id: catId,
-//                        name: categoryName,
-//                        spendings: [localSpending], 
-//                        sumUSDWithReturns: localSpending.amountUSDWithReturns,
-//                        sumWithReturns: amountWithReturns
-//                    )
-//                    
-//                    tempCategories.updateValue(updatedCategory, forKey: catId.uuidString)
-//                }
-//            }
-//        }
-//        self.categories = Array(tempCategories.values)
-    }
+    let categories: [ChartCategory]
+    let otherCategory: ChartCategory?
+    let otherCategories: [ChartCategory]
+    let categoriesDict: [UUID:ChartCategory]
     
-    init(firstDate: Date, secondDate: Date, cdm: CoreDataModel, categories filterCategories: [UUID], withReturns: Bool? = nil, currencies: [String]) {
-        var categories: [TSCategoryEntity] = []
+    // MARK: Main init
+    init(id: Int, date: Date, spendings: [TSSpendingEntity]) {
+        var categoriesDict = [UUID:ChartCategory]()
+        var sum: Double = 0
+        let defaultCurrency = UserDefaults.defaultCurrency()
+        let defaultRate = UserDefaults.standard.getUnwrapedRates()[defaultCurrency] ?? 1
+        let colors: [String] = Array(CustomColor.nordAurora.keys).sorted(by: <)
+        var colorIndex: Int = 0
         
-        let spendings = cdm.savedSpendings.filter { spending in
-            guard spending.wrappedDate >= firstDate && spending.wrappedDate < secondDate else {
-                return false
+        for spending in spendings {
+            guard
+                let categoryID = spending.categoryID,
+                let categoryColor = spending.categoryColor
+            else {
+                continue
             }
             
-            var result = true
+            let amount = {
+                if spending.wrappedCurrency == defaultCurrency {
+                    return spending.amountWithReturns
+                }
+                
+                return spending.amountUSDWithReturns * defaultRate
+            }()
             
-            if let catId = spending.category?.id, !filterCategories.isEmpty {
-                result = filterCategories.contains(catId)
+            sum += amount
+            var category = categoriesDict[categoryID] ?? .init(name: spending.categoryName, color: categoryColor, id: categoryID)
+            let spendingPlace = {
+                if let place = spending.place, !place.isEmpty {
+                    return place
+                }
+                
+                return "unknown-place-localized"
+            }()
+            category.addExpense(amount: amount, place: spendingPlace)
+            categoriesDict.updateValue(category, forKey: categoryID)
+            
+            if spending.place != nil {
+                if colorIndex < colors.count - 1 {
+                    colorIndex += 1
+                } else {
+                    colorIndex = 0
+                }
             }
-            
-            if let withReturns, result {
-                result = withReturns == !spending.returnsArr.isEmpty
-            }
-            
-            if !currencies.isEmpty, result {
-                result = currencies.contains(spending.wrappedCurrency)
-            }
-            
-            return result
-        }
-        .map { $0.safeObject() }
-        
-//        if false {
-//            let unknown = NSLocalizedString("Unknown", comment: "Unknown place")
-//            var dict: [String:[TSSpendingEntity]] {
-//                var result = [String:[TSSpendingEntity]]()
-//                
-//                for spending in spendings {
-//                    guard let place = spending.place else { continue }
-//                    let placeName = place.isEmpty ? unknown : place
-//                    var values = result[placeName] ?? []
-//                    values.append(spending)
-//                    result.updateValue(values, forKey: placeName)
-//                }
-//                
-//                return result
-//            }
-//            
-//            let colors: [String] = Array(CustomColor.nordAurora.keys).sorted(by: <)
-//            var colorIndex: Int = 0
-//            
-//            for key in dict.keys {
-//                var category = TSCategoryEntity(color: key == unknown ? "secondary" : colors[colorIndex], id: .init(), isShadowed: false, isFavorite: false, name: key)
-//                category.spendings = Set(dict[key] ?? []) as NSSet
-//                categories.append(category)
-//                
-//                if key != unknown {
-//                    if colorIndex < colors.count - 1 {
-//                        colorIndex += 1
-//                    } else {
-//                        colorIndex = 0
-//                    }
-//                }
-//            }
-//        } else {
-//            var dict: [UUID:[TSSpendingEntity]] {
-//                var result = [UUID:[TSSpendingEntity]]()
-//                
-//                for spending in spendings {
-//                    guard let categoryID = spending.categoryID else { continue }
-//                    var values = (result[categoryID] ?? [])
-//                    values.append(spending)
-//                    result.updateValue(values, forKey: categoryID)
-//                }
-//                
-//                return result
-//            }
-//            
-//            for key in dict.keys {
-//                guard var category = cdm.findCategory(key)?.safeObject() else { continue }
-//                category.spendings = Set(dict[key] ?? []) as NSSet
-//                categories.append(category)
-//            }
-//        }
-        
-        var dict: [UUID:[TSSpendingEntity]] {
-            var result = [UUID:[TSSpendingEntity]]()
-            
-            for spending in spendings {
-                guard let categoryID = spending.categoryID else { continue }
-                var values = (result[categoryID] ?? [])
-                values.append(spending)
-                result.updateValue(values, forKey: categoryID)
-            }
-            
-            return result
         }
         
-        for key in dict.keys {
-            guard var category = cdm.findCategory(key)?.safeObject() else { continue }
-            category.spendings = Set(dict[key] ?? []) as NSSet
-            categories.append(category)
-        }
-        
-        self.categories = categories.sorted(by: >)
-        self.date = firstDate
-        self.id = 0
-    }
-    
-    init(id: Int, date: Date, categories: [TSCategoryEntity]) {
+        self.sum = sum
         self.id = id
         self.date = date
-        self.categories = categories
+        
+        let sortedCategories: [ChartCategory] = categoriesDict.values.sorted(by: >)
+        
+        if sortedCategories.count > 5 {
+            let prefix = Array(sortedCategories.prefix(5))
+            let otherCategories = Array(sortedCategories[5...])
+            let otherCategory: ChartCategory = {
+                var sum: Double = 0
+                for category in otherCategories {
+                    sum += category.sum
+                }
+                return .init(
+                    name: NSLocalizedString("category-name-other", comment: "\"Other\" category"),
+                    color: "secondary",
+                    id: .init(),
+                    sum: sum,
+                    isOther: true
+                )
+            }()
+            self.categories = prefix
+            self.otherCategory = otherCategory
+            self.otherCategories = otherCategories
+            self.categoriesDict = categoriesDict
+            return
+        }
+        
+        self.categories = sortedCategories
+        self.otherCategory = nil
+        self.otherCategories = []
+        self.categoriesDict = categoriesDict
     }
     
+    // MARK: Empty init
     private init() {
         self.id = 0
         self.date = Date()
+        self.sum = 0
         self.categories = []
+        self.otherCategory = nil
+        self.otherCategories = []
+        self.categoriesDict = [:]
     }
     
-    static func getEmpty() -> ChartData {
+    static func getEmpty() -> Self {
         return ChartData()
     }
 }
 
-struct NewPieChartData: Identifiable, Equatable {
-    let id: Int
-    let sectors: [NewPieChartSectorData]
-    
-    lazy var sum: Double = {
-        sectors.reduce(0, { $1.sum })
-    }()
-}
-
-//[Int:[UUID:[NewPieChartSectorData]]]
-
-struct NewPieChartSectorData: Identifiable, Equatable {
-    let id: UUID
+// MARK: ChartCategory
+struct ChartCategory: Identifiable, SuitableForChart {
+    var sum: Double
     let name: String
     let color: String
-    let sum: Double
+    let id: UUID
+    let isPlace: Bool = false
+    let isOther: Bool
     
-    func addExpense(_ sum: Double) -> NewPieChartSectorData {
-        return NewPieChartSectorData(id: self.id, name: self.name, color: self.color, sum: self.sum + sum)
+    private var placesDict: [String:ChartPlace]
+    
+    var places: [ChartPlace] {
+        return Array(placesDict.values).sorted(by: >)
     }
+    
+    init(name: String, color: String, id: UUID, sum: Double = 0, isOther: Bool = false) {
+        self.sum = sum
+        self.name = name
+        self.color = color
+        self.id = id
+        self.placesDict = .init()
+        self.isOther = isOther
+    }
+    
+    mutating private func increaseSum(_ number: Double) {
+        self.sum += number
+    }
+    
+    mutating func addExpense(amount: Double, place placeName: String) {
+        let colors: [String] = Array(CustomColor.nordAurora.keys).sorted(by: <)
+        
+        func getColorIndex() -> Int {
+            var colorIndex: Int = placesDict.count
+            while colorIndex >= colors.count {
+                colorIndex -= colors.count
+            }
+            return colorIndex
+        }
+        
+        let color = placeName == "unknown-place-localized" ? "secondary" : colors[getColorIndex()]
+        
+        var place = placesDict[placeName] ?? .init(name: placeName == "unknown-place-localized" ? NSLocalizedString(placeName, comment: "Unknown place") : placeName, color: color)
+        self.increaseSum(amount)
+        place.increaseSum(amount)
+        placesDict.updateValue(place, forKey: placeName)
+    }
+}
+
+extension ChartCategory: Comparable {
+    static func < (lhs: ChartCategory, rhs: ChartCategory) -> Bool {
+        if lhs.sum == rhs.sum {
+            return lhs.name < rhs.name
+        }
+        
+        return lhs.sum < rhs.sum
+    }
+}
+
+// MARK: ChartPlace
+struct ChartPlace: Identifiable, SuitableForChart {
+    init(name: String, sum: Double = 0, color: String = "", isOther: Bool = false) {
+        self.sum = sum
+        self.name = name
+        self.color = color
+        self.id = .init()
+        self.isOther = isOther
+    }
+    
+    var sum: Double
+    let name: String
+    let color: String
+    let id: UUID
+    let isPlace: Bool = true
+    let isOther: Bool
+    
+    mutating func increaseSum(_ number: Double) {
+        self.sum += number
+    }
+}
+
+extension ChartPlace: Comparable {
+    static func < (lhs: ChartPlace, rhs: ChartPlace) -> Bool {
+        if lhs.sum == rhs.sum {
+            return lhs.name < rhs.name
+        }
+        
+        return lhs.sum < rhs.sum
+    }
+}
+
+protocol SuitableForChart: Identifiable {
+    var sum: Double { get }
+    var name: String { get }
+    var color: String { get }
+    var id: UUID { get }
+    var isPlace: Bool { get }
+    var isOther: Bool { get }
 }

@@ -92,15 +92,6 @@ final class AddReturnViewModel: ViewModel {
     }
     
     func addFull() {
-//        cdm.addReturn(
-//            to: spending,
-//            amount: spending.amountWithReturns,
-//            amountUSD: spending.amountUSDWithReturns,
-//            currency: spending.wrappedCurrency,
-//            date: self.date,
-//            name: self.name
-//        )
-        
         var formatter: NumberFormatter {
             let formatter = NumberFormatter()
             formatter.maximumFractionDigits = 2

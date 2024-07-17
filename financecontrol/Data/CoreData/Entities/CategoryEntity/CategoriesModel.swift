@@ -31,18 +31,19 @@ extension CoreDataModel {
     }
     
     func findCategory(_ id: UUID, in context: NSManagedObjectContext = DataManager.shared.context) -> CategoryEntity? {
-        
-        let request = CategoryEntity.fetchRequest()
-        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
-        
-        do {
-            return try context.fetch(request).first
-        } catch {
-            #if DEBUG
-            let logger = Logger(subsystem: Vars.appIdentifier, category: "CoreDataModel")
-            logger.error("Error finding category: \(error)")
-            #endif
-            return nil
+        context.performAndWait {
+            let request = CategoryEntity.fetchRequest()
+            request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+            
+            do {
+                return try context.fetch(request).first
+            } catch {
+                #if DEBUG
+                let logger = Logger(subsystem: Vars.appIdentifier, category: "CoreDataModel")
+                logger.error("Error finding category: \(error)")
+                #endif
+                return nil
+            }
         }
     }
     

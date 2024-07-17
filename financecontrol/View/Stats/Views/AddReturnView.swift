@@ -12,7 +12,6 @@ struct AddReturnView: View {
     
     var spending: SpendingEntity
     @StateObject private var vm: AddReturnViewModel
-    @State private var filterAmount: String = ""
     
     enum Field {
         case amount, name
@@ -52,16 +51,10 @@ struct AddReturnView: View {
             
             TextField("Amount", text: $vm.amount)
                 .focused($focusedField, equals: .amount)
-                .numbersOnly($filterAmount)
+                .numbersOnly($vm.amount)
                 .spendingAmountTextFieldStyle()
                 .onAppear {
                     focusedField = .amount
-                }
-                .onChange(of: vm.amount) { newValue in      ///
-                    filterAmount = newValue                 ///
-                }                                           /// iOS 16 fix
-                .onChange(of: filterAmount) { newValue in   ///
-                    vm.amount = newValue                    ///
                 }
             
             CurrencySelector(currency: $vm.currency, spacer: false)
@@ -97,7 +90,6 @@ struct AddReturnView: View {
         Section {
             Button("Return full amount") {
                 vm.addFull()
-//                dismiss()
             }
             .disabled(spending.amountWithReturns == 0 || (Double(vm.amount.replacingOccurrences(of: ",", with: ".")) ?? 0) == spending.amountWithReturns)
         }

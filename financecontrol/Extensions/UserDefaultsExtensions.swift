@@ -7,17 +7,19 @@
 
 import Foundation
 
+// MARK: Rates
 extension UserDefaults {
     func getRates() -> [String:Double]? {
         return self.dictionary(forKey: UDKeys.rates.rawValue) as? [String:Double]
     }
     
-    /// <#Description#>
-    /// - Returns: <#description#>
     func getUnwrapedRates() -> [String:Double] {
         return self.getRates() ?? Rates.fallback.rates
     }
-    
+}
+
+// MARK: Currencies
+extension UserDefaults {
     func getCurrencies() -> [Currency] {
         guard let value = self.array(forKey: UDKeys.savedCurrencies.rawValue) as? [String] else {
             return []
@@ -80,5 +82,9 @@ extension UserDefaults {
         }
         
         self.set(value, forKey: UDKeys.savedCurrencies.rawValue)
+    }
+    
+    static func defaultCurrency() -> String {
+        return self.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
     }
 }

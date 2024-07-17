@@ -12,7 +12,8 @@ struct CategorySelector: View {
     @EnvironmentObject private var cdm: CoreDataModel
     @Binding var category: UUID
     
-    @State var editCategories: Bool = false
+    @State private var editCategories: Bool = false
+    @State private var showOther: Bool = false
     
     var body: some View {
         
@@ -29,8 +30,12 @@ struct CategorySelector: View {
             } else {
                 CategoryPicker(selectedCategory: $category, onlyFavorites: true)
                 
-                Menu("Other") {
-                    CategoryPicker(selectedCategory: $category, onlyFavorites: false)
+//                Menu("Other") {
+//                    CategoryPicker(selectedCategory: $category, onlyFavorites: false)
+//                }
+                
+                Section {
+                    showOtherButton
                 }
                 
                 Section {
@@ -39,16 +44,37 @@ struct CategorySelector: View {
             }
         } label: {
             Spacer()
-            Text(LocalizedStringKey(cdm.findCategory(category)?.name ?? "Select Category"))
+            Text(cdm.findCategory(category)?.name ?? "Select Category")
         }
         .background {
-            NavigationLink(isActive: $editCategories) {
-                AddCategoryView(id: $category, insert: true)
-            } label: {
-                EmptyView()
+            Group {
+                NavigationLink(isActive: $editCategories) {
+                    AddCategoryView(id: $category, insert: true)
+                } label: {
+                    EmptyView()
+                }
+                
+                NavigationLink(isActive: $showOther) {
+                    OtherCategorySelector(category: $category)
+                } label: {
+                    EmptyView()
+                }
+
             }
             .disabled(true)
             .opacity(0)
+        }
+    }
+    
+    private var showOtherButton: some View {
+        Button {
+            showOther.toggle()
+        } label: {
+            HStack {
+                Text("Other")
+                Spacer()
+                Image(systemName: "chevron.forward")
+            }
         }
     }
     
@@ -66,7 +92,6 @@ struct CategorySelector: View {
 }
 
 struct CategoryPicker: View {
-    
     @EnvironmentObject private var cdm: CoreDataModel
     
     @Binding var selectedCategory: UUID
@@ -85,6 +110,79 @@ struct CategoryPicker: View {
         }
         .pickerStyle(.inline)
         .labelsHidden()
+    }
+}
+
+fileprivate struct OtherCategorySelector: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var cdm: CoreDataModel
+    @Binding var category: UUID
+    
+    @State private var search: String = ""
+    
+    var body: some View {
+        Group {
+            let searchResult = searchFunc(search)
+            if searchResult.isEmpty {
+                CustomContentUnavailableView.search(search.trimmingCharacters(in: .whitespacesAndNewlines))
+            } else {
+                List {
+                    ForEach(searchFunc(search)) { category in
+                        makeButton(category)
+                    }
+                    
+                    addNewSection
+                }
+            }
+        }
+        .searchable(text: $search, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search by name")
+        .navigationTitle("Other")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    private var addNewSection: some View {
+        Section {
+            NavigationLink {
+                AddCategoryView(id: $category, insert: true)
+            } label: {
+                Text("Add new")
+            }
+
+        }
+    }
+    
+    private func searchFunc(_ searchString: String) -> [CategoryEntity] {
+        let trimmedSearch = searchString.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        if trimmedSearch.isEmpty {
+            return cdm.savedCategories
+        }
+        
+        return cdm.savedCategories.filter { category in
+            category.name?.localizedCaseInsensitiveContains(trimmedSearch) ?? false
+        }
+    }
+    
+    private func makeButton(_ category: CategoryEntity) -> some View {
+        Button {
+            self.category = category.id ?? .init()
+            dismiss()
+        } label: {
+            HStack {
+                Image(systemName: "circle.fill")
+                    .font(.title)
+                    .foregroundColor(Color[category.color ?? "nil"])
+                
+                Text(category.name ?? "Error")
+                    .foregroundColor(.primary)
+                
+                Spacer()
+                
+                Image(systemName: "checkmark")
+                    .font(.body.bold())
+                    .opacity(self.category == category.id ? 1 : 0)
+            }
+        }
     }
 }
 

@@ -334,6 +334,16 @@
     "Automatic Dark Mode" : {
 
     },
+    "average-home-barchart" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Average"
+          }
+        }
+      }
+    },
     "Blue" : {
 
     },
@@ -367,9 +377,6 @@
       }
     },
     "Check the spelling or try a new search." : {
-
-    },
-    "Check your internet connection" : {
 
     },
     "Clear" : {
@@ -441,7 +448,10 @@
     "Debug" : {
 
     },
-    "Default: %@" : {
+    "Default" : {
+
+    },
+    "Default currency" : {
 
     },
     "Delete" : {
@@ -450,7 +460,10 @@
     "Delete this category?" : {
 
     },
-    "Delete this expense? \nYou can't undo this action." : {
+    "Delete this expense?" : {
+
+    },
+    "Delete this return?" : {
 
     },
     "Disable" : {
@@ -510,9 +523,6 @@
     "Failed to get CoreData entity description" : {
 
     },
-    "Failed to import" : {
-
-    },
     "Fallback rates timestamp:" : {
 
     },
@@ -567,8 +577,27 @@
     "Import failed" : {
 
     },
-    "Imported 5 spendings" : {
-
+    "Imported %lld expenses" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Imported %lld expense"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "new",
+                  "value" : "Imported %lld expenses"
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "Indigo" : {
 
@@ -609,7 +638,13 @@
     "No Archived Categories" : {
 
     },
+    "No categories" : {
+
+    },
     "No comment provided" : {
+
+    },
+    "No connection" : {
 
     },
     "No currencies" : {
@@ -703,6 +738,9 @@
     "Rates" : {
 
     },
+    "Rates updated" : {
+
+    },
     "Rates updated at:" : {
 
     },
@@ -739,6 +777,9 @@
     "Search" : {
 
     },
+    "Search by name" : {
+
+    },
     "Search by name or ISO code" : {
 
     },
@@ -754,7 +795,16 @@
     "Selected as default" : {
 
     },
+    "Selected as display" : {
+
+    },
     "Selected category: %@" : {
+
+    },
+    "Separate default and display currencies" : {
+
+    },
+    "Set icon" : {
 
     },
     "Settings" : {
@@ -781,9 +831,6 @@
     "Some place" : {
 
     },
-    "Something happened..." : {
-
-    },
     "Something went wrong..." : {
 
     },
@@ -799,27 +846,8 @@
     "Stealth" : {
 
     },
-    "Successfully imported %lld expenses" : {
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Successfully imported %lld expense"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "new",
-                  "value" : "Successfully imported %lld expenses"
-                }
-              }
-            }
-          }
-        }
-      }
+    "Success" : {
+
     },
     "Swipe left to restore, swipe right to delete" : {
 
@@ -872,11 +900,12 @@
     "Tomorrow" : {
 
     },
-    "Unknown" : {
-      "comment" : "Unknown place"
+    "Unable to update exchange rates" : {
+
     },
     "unknown-place-localized" : {
       "comment" : "Unknown place",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -885,6 +914,9 @@
           }
         }
       }
+    },
+    "Updating rates..." : {
+
     },
     "Validate returns" : {
 
@@ -917,7 +949,13 @@
     "Yesterday" : {
 
     },
+    "You can add categories in settings." : {
+
+    },
     "You can add categories later in settings" : {
+
+    },
+    "You can add expenses from home screen." : {
 
     },
     "You can archive categories in settings, they will be hidden from selection when you add new expenses, but all old expenses will be saved" : {
@@ -926,7 +964,13 @@
     "You can change default currency or add more later in settings" : {
 
     },
+    "You can choose a currency to be selected by default, different from display currency" : {
+
+    },
     "You can perform quick actions like editing or deleting via swipe actions or by holding row" : {
+
+    },
+    "You can't undo this action." : {
 
     },
     "You will not be able to undo this action.\nAll expenses in this category will be permanently deleted" : {

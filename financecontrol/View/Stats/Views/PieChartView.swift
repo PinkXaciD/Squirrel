@@ -38,27 +38,19 @@ struct PieChartView: View {
         } footer: {
             footer
         }
+        .onChange(of: pcvm.selection) { _ in
+            if pcvm.showOther {
+                pcvm.showOther = false
+            }
+        }
     }
     
     private var chart: some View {
         CustomPagingScrollView(selection: $pcvm.selection, data: pcvm.data, invert: true, viewScale: 0.65)
-//        PieChartLazyPageView<PieChartCompleteView>(viewSize: size)
-//            .invertLayoutDirection()
-//            .listRowInsets(.init(top: 20, leading: 0, bottom: 20, trailing: 0))
-//        #if DEBUG
-//            .overlay(alignment: .topLeading) {
-//                Text("\(pcvm.selection)")
-//                    .font(.largeTitle.bold())
-//                    .padding()
-//                    .background {
-//                        Color.red
-//                    }
-//            }
-//        #endif
     }
     
     private var legend: some View {
-        PieChartLegendView(minimize: $minimizeLegend)
+        PieChartLegendView(minimize: $minimizeLegend, selection: $pcvm.selection)
     }
     
     private var footer: some View {

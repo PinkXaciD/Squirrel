@@ -34,6 +34,10 @@ final class RatesModel {
 
 extension RatesModel {
     func downloadRates(timestamp: Date? = nil) async throws -> Rates {
+//        guard NetworkMonitor.shared.isConnected else {
+//            throw URLError(.notConnectedToInternet)
+//        }
+        
         do {
             let apiURLComponents = try getURLComponents()
             let apiKey = try getApiKey()
@@ -76,23 +80,11 @@ extension RatesModel {
             
             throw URLError(.timedOut)
             
-        } catch {
+        } catch let error {
             await MainActor.run {
-                if let error = error as? InfoPlistError {
-                    ErrorType(error).publish()
-                } else if let error = error as? URLError {
-                    switch error {
-                    case URLError.badServerResponse, URLError.badURL:
-                        ErrorType(error).publish()
-                    default:
-                        ErrorType(
-                            errorDescription: error.localizedDescription,
-                            failureReason: error.localizedDescription,
-                            recoverySuggestion: "Check your internet connection"
-                        ).publish()
-                    }
-                }
+                handleError(error)
             }
+            
             throw error
         }
     }
@@ -109,6 +101,25 @@ extension RatesModel {
             return try JSONDecoder().decode(Rates.self, from: data)
         } catch {
             throw error
+        }
+    }
+    
+    private func handleError(_ error: Error) {
+        if let error = error as? InfoPlistError {
+            ErrorType(error).publish()
+        } else if let error = error as? URLError {
+            switch error {
+            case URLError.badServerResponse, URLError.badURL:
+                ErrorType(error).publish()
+            default:
+                ErrorType(
+                    errorDescription: error.localizedDescription,
+                    failureReason: error.localizedDescription,
+                    recoverySuggestion: "Check your internet connection"
+                ).publish()
+            }
+        } else {
+            ErrorType(error: error).publish(file: #fileID, function: #function)
         }
     }
 }

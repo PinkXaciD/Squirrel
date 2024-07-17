@@ -13,6 +13,9 @@ import OSLog
 struct StatsView: View {
     @Environment(\.isSearching)
     private var isSearching
+    @AppStorage(UDKeys.color.rawValue)
+    private var tint: String = "Orange"
+    
     @EnvironmentObject
     private var cdm: CoreDataModel
     @EnvironmentObject
@@ -27,18 +30,11 @@ struct StatsView: View {
     private var privacyMonitor: PrivacyMonitor
     @EnvironmentObject
     private var searchModel: StatsSearchViewModel
-    
-    @Binding
-    var entityToEdit: SpendingEntity?
-    @Binding
-    var entityToAddReturn: SpendingEntity?
-    @State
-    private var edit: Bool = false
+    @EnvironmentObject
+    private var vm: StatsViewModel
     
     @State
     private var showFilters: Bool = false
-    
-    private var sheetFraction: CGFloat = 0.7
     
     private var size: CGFloat
     
@@ -54,57 +50,33 @@ struct StatsView: View {
                         .id(0)
                 }
                 
-                StatsListView(
-                    entityToEdit: $entityToEdit,
-                    entityToAddReturn: $entityToAddReturn,
-                    edit: $edit
-                )
+                StatsListView()
             }
             .toolbar {
-                trailingToolbar
+                leadingToolbar
                 
-                ToolbarItem(placement: .topBarLeading) {
-                    if fvm.applyFilters {
-                        Button {
-                            clearFilters()
-                        } label: {
-                            Label("Clear filters", systemImage: "xmark")
-                        }
-                        .disabled(!fvm.applyFilters)
-                        .buttonStyle(BorderedButtonStyle())
-                    }
-                }
-            }
-            .sheet(item: $entityToEdit) { entity in
-                SpendingCompleteView(
-                    edit: $edit,
-                    entity: entity,
-                    coreDataModel: cdm,
-                    ratesViewModel: rvm
-                )
-                .smallSheet(sheetFraction)
-                .environmentObject(privacyMonitor)
+                trailingToolbar
             }
             .sheet(isPresented: $showFilters) {
                 filters
             }
-            .sheet(item: $entityToAddReturn) { entity in
-                AddReturnView(spending: entity, cdm: cdm, rvm: rvm)
-                    .accentColor(.accentColor)
-            }
             .navigationTitle("Stats")
-//            .overlay {
-//                if !searchModel.search.isEmpty {
-//                    List {
-//                        Text(searchModel.search)
-//                        Text(searchModel.search)
-//                        Text(searchModel.search)
-//                        Text(searchModel.search)
-//                    }
-//                }
-//            }
         }
         .navigationViewStyle(.stack)
+    }
+    
+    private var leadingToolbar: ToolbarItem<Void, some View> {
+        ToolbarItem(placement: .topBarLeading) {
+            if fvm.applyFilters {
+                Button {
+                    clearFilters()
+                } label: {
+                    Label("Clear filters", systemImage: "xmark")
+                }
+                .disabled(!fvm.applyFilters)
+                .buttonStyle(BorderedButtonStyle())
+            }
+        }
     }
     
     private var trailingToolbar: ToolbarItemGroup<some View> {
@@ -128,24 +100,6 @@ struct StatsView: View {
                 }
                 .buttonStyle(BorderedButtonStyle())
             }
-            
-//            Button {
-//                showFilters.toggle()
-//            } label: {
-//                if fvm.applyFilters {
-//                    HStack {
-//                        Text(fvm.startFilterDate, format: .dateTime.day(.defaultDigits).month(.defaultDigits).year(.defaultDigits))
-//                        
-//                        Text(verbatim: "-")
-//                        
-//                        Text(fvm.endFilterDate, format: .dateTime.day(.defaultDigits).month(.defaultDigits).year(.defaultDigits))
-//                    }
-//                    .font(.footnote)
-//                } else {
-//                    Label("Filter", systemImage: "line.3.horizontal.decrease")
-//                }
-//            }
-//            .buttonStyle(BorderedButtonStyle())
         }
     }
     
@@ -158,7 +112,7 @@ struct StatsView: View {
 }
 
 extension StatsView {
-    init(entity: Binding<SpendingEntity?>, entityToAddReturn: Binding<SpendingEntity?>) {
+    init() {
         var size: CGFloat {
             let currentScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
             let windowBounds = currentScene?.windows.first(where: { $0.isKeyWindow })?.bounds
@@ -168,8 +122,8 @@ extension StatsView {
         }
         
         self.size = size
-        self._entityToEdit = entity
-        self._entityToAddReturn = entityToAddReturn
+//        self._entityToEdit = entity
+//        self._entityToAddReturn = entityToAddReturn
     }
     
     private func formatDateForFilterButton(_ date1: Date, _ date2: Date) -> (String, String) {

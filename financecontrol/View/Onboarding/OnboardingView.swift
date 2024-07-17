@@ -52,10 +52,6 @@ struct OnboardingView: View {
                     VStack {
                         continueButton
                             .padding(.horizontal, 30)
-                        
-//                        if screen > 1 && screen < finalScreenNumber {
-//                            skipButton
-//                        }
                     }
                     .zIndex(1)
                     .padding(.bottom, 30)
@@ -92,9 +88,13 @@ struct OnboardingView: View {
     private var continueButton: some View {
         Button {
             if screen == 1 {
+                UserDefaults.standard.addCurrency(selectedCurrency)
+                
                 UserDefaults.standard.setValue(selectedCurrency, forKey: UDKeys.defaultCurrency.rawValue)
                 
-                UserDefaults.standard.addCurrency(selectedCurrency)
+                UserDefaults.standard.setValue(selectedCurrency, forKey: UDKeys.defaultSelectedCurrency.rawValue)
+                
+                UserDefaults.standard.setValue(false, forKey: UDKeys.separateCurrencies.rawValue)
                 
                 if let defaults = UserDefaults(suiteName: Vars.groupName) {
                     defaults.set(selectedCurrency, forKey: "defaultCurrency")

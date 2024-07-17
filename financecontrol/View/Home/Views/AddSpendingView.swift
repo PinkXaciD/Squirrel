@@ -38,25 +38,16 @@ struct AddSpendingView: View {
     @FocusState 
     private var focusedField: Field?
     
-    private enum ViewState {
-        case active, processing, done
-    }
-    
-    @State
-    private var viewState: ViewState = .active
-    
     @State
     private var amountIsFocused: Bool = true
     @State
-    private var filterAmount: String = ""
-    @State
     private var hideContent: Bool = false
 
-    private let utils = InputUtils() /// For input checking
+    private let utils = InputUtils() /// For input validation
     
     var body: some View {
         NavigationView {
-            Form {
+            List {
                 reqiredSection
                 
                 placeAndCommentSection
@@ -74,7 +65,7 @@ struct AddSpendingView: View {
         .navigationViewStyle(.stack)
         .tint(colorIdentifier(color: tint))
         .accentColor(colorIdentifier(color: tint))
-        .interactiveDismissDisabled(vm.categoryName != "Select Category" || !vm.amount.isEmpty)
+        .interactiveDismissDisabled(!vm.amount.isEmpty)
         .blur(radius: hideContent ? Vars.privacyBlur : 0)
         .onChange(of: scenePhase) { value in
             if privacyScreenIsEnabled {
@@ -97,16 +88,10 @@ struct AddSpendingView: View {
         Section {
             TextField("0.00", text: $vm.amount)
                 .multilineTextAlignment(.center)
-                .numbersOnly($filterAmount)
+                .numbersOnly($vm.amount)
                 .amountStyle()
                 .focused($focusedField, equals: .amount)
                 .onAppear(perform: amountFocus)
-                .onChange(of: vm.amount) { newValue in      ///
-                    filterAmount = newValue                 ///
-                }                                           /// iOS 16 fix
-                .onChange(of: filterAmount) { newValue in   ///
-                    vm.amount = newValue                    ///
-                }
                 /// For iPad or external keyboard
                 .onSubmit {
                     nextField()
@@ -125,9 +110,9 @@ struct AddSpendingView: View {
                 Text("Category")
                 CategorySelector(category: $vm.categoryId)
             }
-            .onChange(of: vm.categoryId) { newValue in
-                vm.categoryName = vm.cdm.findCategory(newValue)?.name ?? "Error"
-            }
+//            .onChange(of: vm.categoryId) { newValue in
+//                vm.categoryName = vm.cdm.findCategory(newValue)?.name ?? "Error"
+//            }
             
         } header: {
             Text("Required")
@@ -232,7 +217,7 @@ struct AddSpendingView: View {
                 Text("Done")
             }
             .font(Font.body.weight(.semibold))
-            .disabled(!utils.checkAll(amount: vm.amount, place: vm.place, category: vm.categoryName, comment: vm.comment))
+            .disabled(!utils.checkAll(amount: vm.amount, place: vm.place, comment: vm.comment) || !vm.categoryHasChanged)
         }
     }
 }
@@ -268,9 +253,6 @@ extension AddSpendingView {
     
     private func done() {
         clearFocus()
-        withAnimation {
-            viewState = .processing
-        }
         vm.done()
         dismiss()
     }
@@ -327,39 +309,31 @@ struct AddSpendingShortcutListView: View {
     let shortcuts = UserDefaults.standard.value(forKey: "addSpendingShortcuts") as? [UUID:AddSpendingShortcut] ?? [:]
     
     var body: some View {
-        if !shortcuts.isEmpty {
-            List {
-                ForEach(Array(shortcuts.keys), id: \.self) { key in
-                    NavigationLink {
-                        AddSpendingShortcutAddView(shortcut: shortcuts[key])
-                    } label: {
-                        Text(shortcuts[key]?.shortcutName ?? "Error")
-                    }
-                }
-            }
-            .navigationTitle("Shortcuts")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink {
-                        AddSpendingShortcutAddView()
-                    } label: {
-                        Label("Add new", systemImage: "plus")
-                    }
-                }
-            }
-        } else {
-            CustomContentUnavailableView("No Shortcuts", imageName: "tray.fill")
-                .navigationTitle("Shortcuts")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
+        Group {
+            if !shortcuts.isEmpty {
+                List {
+                    ForEach(Array(shortcuts.keys), id: \.self) { key in
                         NavigationLink {
-                            AddSpendingShortcutAddView()
+                            AddSpendingShortcutAddView(shortcut: shortcuts[key])
                         } label: {
-                            Label("Add new", systemImage: "plus")
+                            Text(shortcuts[key]?.shortcutName ?? "Error")
                         }
                     }
                 }
+            } else {
+                CustomContentUnavailableView("No Shortcuts", imageName: "tray.fill")
+            }
+        }
+        .navigationTitle("Shortcuts")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink {
+                    AddSpendingShortcutAddView()
+                } label: {
+                    Label("Add new", systemImage: "plus")
+                }
+            }
         }
     }
 }

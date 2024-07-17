@@ -5,7 +5,6 @@
 //  Created by PinkXaciD on R 6/02/27.
 //
 
-import Combine
 import SwiftUI
 #if DEBUG
 import OSLog
@@ -26,7 +25,6 @@ final class FiltersViewModel: ViewModel {
     var withReturns: Bool?
     @Published
     var currencies: [String]
-    var cancellables = Set<AnyCancellable>()
     
     init() {
         self.applyFilters = false
@@ -58,43 +56,6 @@ final class FiltersViewModel: ViewModel {
         self.withReturns = nil
         self.currencies = []
     }
-    
-//    private func subscribeToSelection() {
-//        pcvm.$selection
-////            .subscribe(on: DispatchQueue.global())
-//            .receive(on: DispatchQueue.main)
-//            .dropFirst()
-//            .sink { [weak self] value in
-//                guard let self else { return }
-//                
-//                if value == 0 {
-//                    if self.filterCategories.isEmpty {
-//                        withAnimation {
-//                            self.applyFilters = false
-//                            self.updateList = true
-//                        }
-//                    }
-//                    
-//                    withAnimation {
-//                        self.startFilterDate = .now.getFirstDayOfMonth()
-//                        self.endFilterDate = .now
-//                    }
-//                } else {
-//                    withAnimation {
-//                        self.startFilterDate = .now.getFirstDayOfMonth(-value)
-//                        self.endFilterDate = .now.getFirstDayOfMonth(-value + 1)
-//                        self.applyFilters = true
-//                        self.updateList = true
-//                    }
-//                }
-//                #if DEBUG
-//                let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
-//                logger.debug("\(#function) worked")
-//                #endif
-//                HapticManager.shared.impact(.soft)
-//            }
-//            .store(in: &cancellables)
-//    }
     
     func listUpdated() {
         self.updateList = false

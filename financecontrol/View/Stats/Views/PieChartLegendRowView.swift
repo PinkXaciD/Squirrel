@@ -17,51 +17,41 @@ struct PieChartLegendRowView: View {
     @EnvironmentObject
     private var fvm: FiltersViewModel
     
-    let category: TSCategoryEntity
-    
-//    var isActive: Bool = true
+    let category: any SuitableForChart
     
     var body: some View {
         Button {
-            guard !pcvm.isScrollDisabled else {
-                return
-            }
-            
-            if let catId = category.id, let category = cdm.findCategory(catId) {
-                if pcvm.selectedCategory == nil {
-                    pcvm.selectedCategory = category
+            if !pcvm.showOther, category.isOther {
+                DispatchQueue.main.async {
+                    pcvm.showOther = true
                 }
-                
-                pcvm.updateData()
-            } else if !pcvm.showOther, category.name == NSLocalizedString("category-name-other", comment: "") {
-                pcvm.showOther = true
-                
-                pcvm.showAllCategories()
+            } else if !category.isPlace, let trueCategory = category as? ChartCategory {
+                if pcvm.selectedCategory == nil {
+                    pcvm.selectedCategory = trueCategory
+                }
             } else {
                 pcvm.selectedCategory = nil
-                
-                pcvm.updateData()
             }
         } label: {
             HStack {
-                Text(category.name ?? "Error")
+                Text(category.name)
                     .font(.system(size: 14).bold())
                     .padding(.horizontal, 6)
                     .padding(.vertical, 3)
                     .foregroundColor(.white)
                     .background {
                         RoundedRectangle(cornerRadius: 4)
-                            .fill(Color[category.color ?? ""])
+                            .fill(Color[category.color])
                     }
                 
-                Text(category.sumWithReturns.formatted(.currency(code: defaultCurrency)))
+                Text(category.sum.formatted(.currency(code: defaultCurrency)))
             }
             .padding(.vertical, 3)
             .padding(.trailing, 6)
             .padding(.leading, 3)
             .background {
                 RoundedRectangle(cornerRadius: 7)
-                    .fill(Color[category.color ?? ""])
+                    .fill(Color[category.color])
                     .opacity(0.3)
             }
         }
