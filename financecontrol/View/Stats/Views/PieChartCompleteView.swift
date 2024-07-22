@@ -11,41 +11,44 @@ import ApplePie
 struct PieChartCompleteView: View {
     @Environment(\.layoutDirection) private var layoutDirection
     @EnvironmentObject private var vm: PieChartViewModel
-    let count: Int
+    let data: ChartData
     let size: CGFloat
+    @State private var update: Bool = false
     
     var body: some View {
-        let localData = {
-            if !vm.data.isEmpty {
-                vm.data[count > vm.data.count - 1 ? 0 : count]
-            } else {
-                ChartData.getEmpty()
-            }
-        }()
-        
         ZStack {
             if let selectedCategory = vm.selectedCategory {
-                APChart(separators: 0.15, innerRadius: 0.73) {
-                    setPlaces(localData.categoriesDict[selectedCategory.id]?.places ?? [])
+                if update {
+                    APChart(separators: 0.15, innerRadius: 0.73) {
+                        setPlaces(data.categoriesDict[selectedCategory.id]?.places ?? [])
+                    }
+                } else {
+                    APChart(separators: 0.15, innerRadius: 0.73) {
+                        setPlaces(data.categoriesDict[selectedCategory.id]?.places ?? [])
+                    }
                 }
             } else {
-                APChart(separators: 0.15, innerRadius: 0.73) {
-                    setData(vm.showOther ? (localData.categories + localData.otherCategories) : (localData.categories), otherCategory: vm.showOther ? nil : localData.otherCategory)
+                if update {
+                    APChart(separators: 0.15, innerRadius: 0.73) {
+                        setData(vm.showOther ? (data.categories + data.otherCategories) : (data.categories), otherCategory: vm.showOther ? nil : data.otherCategory)
+                    }
+                } else {
+                    APChart(separators: 0.15, innerRadius: 0.73) {
+                        setData(vm.showOther ? (data.categories + data.otherCategories) : (data.categories), otherCategory: vm.showOther ? nil : data.otherCategory)
+                    }
                 }
             }
             
             CenterChartView(
-                selectedMonth: localData.date,
+                selectedMonth: data.date,
                 width: size,
-                operationsInMonth: vm.selectedCategory == nil ? localData.sum : localData.categoriesDict[vm.selectedCategory?.id ?? .init()]?.sum ?? 0
+                operationsInMonth: vm.selectedCategory == nil ? data.sum : data.categoriesDict[vm.selectedCategory?.id ?? .init()]?.sum ?? 0
             )
-//            #if DEBUG
-//            .onTapGesture {
-//                withAnimation {
-//                    vm.selection = 0
-//                }
-//            }
-//            #endif
+        }
+        .onChange(of: data) { _ in
+            DispatchQueue.main.async {
+                update.toggle()
+            }
         }
     }
     

@@ -72,9 +72,9 @@ fileprivate struct InternalCustomPagingScrollView: View {
     var body: some View {
         VStack {
             HStack(spacing: scrollManager.geometry.size.width * scrollManager.invertedViewScale) {
-                ForEach(data.indices, id: \.self) { index in
-                    if (selection > index - 2 && selection < index + 2) {
-                        PieChartCompleteView(count: index, size: self.scrollManager.geometry.size.width * self.scrollManager.viewScale)
+                ForEach(data, id: \.id) { element in
+                    if (selection > -element.id - 2 && selection < -element.id + 2) {
+                        PieChartCompleteView(data: element, size: self.scrollManager.geometry.size.width * self.scrollManager.viewScale)
                             .frame(width: scrollManager.geometry.size.width * scrollManager.viewScale, height: scrollManager.geometry.size.height)
                             .invertLayoutDirection(scrollManager.invert)
                     } else {

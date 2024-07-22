@@ -36,8 +36,6 @@ final class CoreDataModel: ObservableObject {
     @Published
     var savedCurrencies: [CurrencyEntity] = []
     @Published
-    var updateCharts: Bool = false
-    @Published
     var pieChartSpendings: [Date:[TSSpendingEntity]] = .init()
 }
 

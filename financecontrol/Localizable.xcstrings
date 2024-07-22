@@ -861,33 +861,6 @@
     "This will clear all settings of app. \nYou can't undo this action." : {
 
     },
-    "Throw API key error" : {
-
-    },
-    "Throw bad URL error" : {
-
-    },
-    "Throw category error" : {
-
-    },
-    "Throw Empty database error" : {
-
-    },
-    "Throw entity description error" : {
-
-    },
-    "Throw Info.plist error" : {
-
-    },
-    "Throw URL bad response error" : {
-
-    },
-    "Throw URL components error" : {
-
-    },
-    "Throw URL error" : {
-
-    },
     "To" : {
 
     },

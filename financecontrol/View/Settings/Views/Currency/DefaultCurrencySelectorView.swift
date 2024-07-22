@@ -130,6 +130,7 @@ struct DefaultCurrencySelectorView: View {
         }
         
         cdm.updateBarChart()
+        NotificationCenter.default.post(name: Notification.Name("UpdatePieChart"), object: nil)
         
         if let defaults = UserDefaults(suiteName: Vars.groupName) {
             defaults.set(tag, forKey: "defaultCurrency")

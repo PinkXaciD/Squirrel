@@ -97,7 +97,7 @@ extension CoreDataModel {
             self.barChartData = NewBarChartData(sum: barChartSum, bars: barChartData)
             self.usedCurrencies = currencies
             self.pieChartSpendings = pieChartData
-            self.updateCharts = true
+            NotificationCenter.default.post(name: Notification.Name("UpdatePieChart"), object: nil)
             
             #if DEBUG
             print(spendings.count)

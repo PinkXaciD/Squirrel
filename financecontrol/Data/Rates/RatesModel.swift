@@ -40,7 +40,7 @@ extension RatesModel {
         
         do {
             let apiURLComponents = try getURLComponents()
-            let apiKey = try getApiKey()
+            let apiKey = try await getApiKey(apiURLComponents.host)
             var timestampString: String?
             
             if let timestamp = timestamp {
@@ -157,17 +157,32 @@ extension RatesModel {
         return result
     }
     
-    private func getApiKey() throws -> String {
-        guard let filePath = Bundle.main.path(forResource: "Info", ofType: "plist") else {
-            throw InfoPlistError.noInfoFound
+    private func getApiKey(_ serverURL: String) async throws -> String {
+//        guard let filePath = Bundle.main.path(forResource: "Info", ofType: "plist") else {
+//            throw InfoPlistError.noInfoFound
+//        }
+//        
+//        let plist = NSDictionary(contentsOfFile: filePath)
+//        
+//        guard let value = plist?.object(forKey: "API_KEY") as? String else {
+//            throw InfoPlistError.noAPIKeyFound
+//        }
+//        
+//        return value
+        let keychain = Keychain(serverURL)
+        
+        if let existing = try keychain.getPassword() {
+            return existing
         }
         
-        let plist = NSDictionary(contentsOfFile: filePath)
+        let ckManager = CloudKitManager()
         
-        guard let value = plist?.object(forKey: "API_KEY") as? String else {
-            throw InfoPlistError.noAPIKeyFound
+        do {
+            let result = try await ckManager.fetchAPIKey()
+            try keychain.setPassword(result)
+            return result
+        } catch {
+            throw error
         }
-        
-        return value
     }
 }
