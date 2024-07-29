@@ -44,18 +44,11 @@ public final class ReturnEntity: NSManagedObject, Codable {
 
 extension ReturnEntity: ToSafeObject {
     func safeObject() -> TSReturnEntity {
-        TSReturnEntity(
-            amount: self.amount,
-            amountUSD: self.amountUSD,
-            currency: self.currency,
-            date: self.date,
-            id: self.id,
-            name: self.name,
-            spendingID: self.spending?.wrappedId
-        )
+        return TSReturnEntity(self)
     }
 }
 
+/// Thread-safe immutable structure, mirroring `ReturnEntity` CoreData class
 struct TSReturnEntity: ToUnsafeObject, Hashable, Identifiable {
     let amount: Double
     let amountUSD: Double
@@ -81,5 +74,30 @@ struct TSReturnEntity: ToUnsafeObject, Hashable, Identifiable {
             
             return unsafeEntity
         }
+    }
+    
+    /// Memberwise initializer
+    /// - Important: You can crerate object with this initializer, but to convert created object to CoreData class you need to be sure that `id` you passed is valid and CoreData class with such id exists and can be fetched
+    init(amount: Double, amountUSD: Double, currency: String?, date: Date?, id: UUID?, name: String?, spendingID: UUID?) {
+        self.amount = amount
+        self.amountUSD = amountUSD
+        self.currency = currency
+        self.date = date
+        self.id = id
+        self.name = name
+        self.spendingID = spendingID
+    }
+    
+    /// Creates thread-safe, immutable spending object from CoreData object
+    /// - Parameter returnEntity: CoreData object
+    /// - Important: While created object is thread-safe, this method is not, and should be called only from CoreData object's context
+    init(_ returnEntity: ReturnEntity) {
+        self.amount = returnEntity.amount
+        self.amountUSD = returnEntity.amountUSD
+        self.currency = returnEntity.currency
+        self.date = returnEntity.date
+        self.id = returnEntity.id
+        self.name = returnEntity.name
+        self.spendingID = returnEntity.spending?.wrappedId
     }
 }

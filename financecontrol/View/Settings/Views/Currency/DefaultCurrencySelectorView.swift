@@ -134,7 +134,7 @@ struct DefaultCurrencySelectorView: View {
         
         if let defaults = UserDefaults(suiteName: Vars.groupName) {
             defaults.set(tag, forKey: "defaultCurrency")
-            cdm.passSpendingsToSumWidget()
+            cdm.passSpendingsToSumWidget(data: cdm.statsListData)
         }
     }
 }

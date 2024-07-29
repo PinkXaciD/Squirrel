@@ -50,7 +50,6 @@ struct Keychain {
             if status == errSecItemNotFound {
                 return nil
             }
-            print(status)
             return nil
         }
         

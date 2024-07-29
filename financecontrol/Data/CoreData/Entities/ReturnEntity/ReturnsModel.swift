@@ -29,7 +29,7 @@ extension CoreDataModel {
         fetchSpendings()
         
         if Calendar.current.isDateInToday(spending.wrappedDate) {
-            passSpendingsToSumWidget()
+//            passSpendingsToSumWidget()
         }
         
         HapticManager.shared.notification(.success)
@@ -65,7 +65,7 @@ extension CoreDataModel {
         fetchSpendings()
         
         if Calendar.current.isDateInToday(date ?? .distantPast) {
-            passSpendingsToSumWidget()
+//            passSpendingsToSumWidget()
         }
     }
     
@@ -86,7 +86,7 @@ extension CoreDataModel {
         fetchSpendings()
         
         if Calendar.current.isDateInToday(date) {
-            passSpendingsToSumWidget()
+//            passSpendingsToSumWidget()
         }
     }
     
@@ -121,7 +121,7 @@ extension CoreDataModel {
         fetchSpendings()
         
         if Calendar.current.isDateInToday(spending.wrappedDate) {
-            passSpendingsToSumWidget()
+//            passSpendingsToSumWidget()
         }
     }
 }

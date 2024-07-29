@@ -10,13 +10,15 @@ import SwiftUI
 struct ColorAndIconView: View {
     @AppStorage(UDKeys.color.rawValue) 
     var defaultColor: String = "Orange"
+    @AppStorage(UDKeys.color.rawValue, store: UserDefaults(suiteName: Vars.groupName))
+    var sharedDefaultColor: String = "Orange"
     
     @State
     private var selectedIcon: String? = UIApplication.shared.alternateIconName
     
     let colors: [(LocalizedStringKey, Color)] = [
         ("Orange", Color.orange),
-        ("Red", Color.red),
+//        ("Red", Color.red),
         ("Pink", Color.pink),
         ("Purple", Color.purple),
         ("Indigo", Color.indigo),
@@ -37,15 +39,31 @@ struct ColorAndIconView: View {
     
     private var colorSection: some View {
         Section {
-            Picker("Color", selection: $defaultColor) {
-                ForEach(colors, id: \.1) { name, color in
-                    Text(name)
-                        .tag("\(color.description.capitalized)")
-                        .foregroundColor(color)
+            ForEach(colors, id: \.1) { name, color in
+                Button {
+                    setColor(color.description.capitalized)
+                } label: {
+                    HStack {
+                        Text(name)
+                            .foregroundColor(color)
+                        
+                        Spacer()
+                        
+                        Image(systemName: "checkmark")
+                            .font(.body.bold())
+                            .opacity(defaultColor == color.description.capitalized ? 1 : 0)
+                    }
                 }
             }
-            .pickerStyle(.inline)
-            .labelsHidden()
+//            Picker("Color", selection: $defaultColor) {
+//                ForEach(colors, id: \.1) { name, color in
+//                    Text(name)
+//                        .tag("\(color.description.capitalized)")
+//                        .foregroundColor(color)
+//                }
+//            }
+//            .pickerStyle(.inline)
+//            .labelsHidden()
         } header: {
             Text("Accent Color")
         }
@@ -59,6 +77,14 @@ struct ColorAndIconView: View {
         } header: {
             Text("Icon")
         }
+    }
+    
+    private func setColor(_ color: String) {
+        withAnimation {
+            defaultColor = color
+            sharedDefaultColor = color
+        }
+        WidgetsManager.shared.accentColorChanged = true
     }
 }
 

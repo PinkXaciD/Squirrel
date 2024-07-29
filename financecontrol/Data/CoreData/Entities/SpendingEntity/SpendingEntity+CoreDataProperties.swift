@@ -106,19 +106,7 @@ extension SpendingEntity {
 
 extension SpendingEntity: ToSafeObject {
     func safeObject() -> TSSpendingEntity {
-        return TSSpendingEntity(
-            amount: amount,
-            amountUSD: amountUSD,
-            comment: comment,
-            currency: currency,
-            date: date,
-            id: id,
-            place: place,
-            categoryID: category?.id,
-            categoryName: categoryName, 
-            categoryColor: category?.color,
-            returns: returnsArr.map({ $0.safeObject() })
-        )
+        return TSSpendingEntity(self)
     }
 }
 
@@ -178,6 +166,7 @@ extension SpendingEntityLocal {
     }
 }
 
+/// Thread-safe immutable structure, mirroring `SpendingEntity` CoreData class
 struct TSSpendingEntity: ToUnsafeObject, Hashable, Identifiable {
     let amount: Double
     let amountUSD: Double
@@ -245,5 +234,38 @@ struct TSSpendingEntity: ToUnsafeObject, Hashable, Identifiable {
             
             return unsafeEntity
         }
+    }
+    
+    /// Memberwise initializer
+    /// - Important: You can crerate object with this initializer, but to convert created object to CoreData class you need to be sure that `id` you passed is valid and CoreData class with such id exists and can be fetched
+    init(amount: Double, amountUSD: Double, comment: String?, currency: String?, date: Date?, id: UUID?, place: String?, categoryID: UUID?, categoryName: String, categoryColor: String?, returns: [TSReturnEntity]) {
+        self.amount = amount
+        self.amountUSD = amountUSD
+        self.comment = comment
+        self.currency = currency
+        self.date = date
+        self.id = id
+        self.place = place
+        self.categoryID = categoryID
+        self.categoryName = categoryName
+        self.categoryColor = categoryColor
+        self.returns = returns
+    }
+    
+    /// Creates thread-safe, immutable spending object from CoreData object
+    /// - Parameter spending: CoreData object
+    /// - Important: While created object is thread-safe, this method is not, and should be called only from CoreData object's context
+    init(_ spending: SpendingEntity) {
+        self.amount = spending.amount
+        self.amountUSD = spending.amountUSD
+        self.comment = spending.comment
+        self.currency = spending.currency
+        self.date = spending.date
+        self.id = spending.id
+        self.place = spending.place
+        self.categoryID = spending.category?.id
+        self.categoryName = spending.categoryName
+        self.categoryColor = spending.category?.color
+        self.returns = spending.returnsArr.map({ $0.safeObject() })
     }
 }

@@ -44,10 +44,22 @@ extension RatesModel {
             var timestampString: String?
             
             if let timestamp = timestamp {
+                let timeZone: TimeZone = {
+                    if #available(iOS 16, *) {
+                        return .gmt
+                    } else {
+                        return .init(secondsFromGMT: 0)! // Cannot fail
+                    }
+                }()
+                
+                var calendar = Calendar(identifier: .gregorian)
+                calendar.timeZone = timeZone
                 let formatter = ISO8601DateFormatter()
-                formatter.timeZone = .init(secondsFromGMT: 0)
+                formatter.timeZone = timeZone
+                let startOfDay = calendar.startOfDay(for: timestamp)
                         
-                timestampString = "\"" + formatter.string(from: timestamp) + "\""
+                print(startOfDay.description)
+                timestampString = "\"" + formatter.string(from: startOfDay) + "\""
             }
             
             let urlComponents = apiURLComponents.createComponents(timestamp: timestampString)

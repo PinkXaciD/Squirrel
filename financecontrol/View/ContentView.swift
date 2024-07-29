@@ -79,6 +79,7 @@ struct ContentView: View {
         .onChange(of: scenePhase) { value in
             if value == .inactive {
                 WidgetsManager.shared.reloadSumWidgets()
+                WidgetsManager.shared.updateAccentColor()
             }
             
             if privacyScreenIsEnabled {

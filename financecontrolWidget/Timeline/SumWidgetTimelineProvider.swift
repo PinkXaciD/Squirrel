@@ -6,7 +6,9 @@
 //
 
 import WidgetKit
+#if DEBUG
 import OSLog
+#endif
 
 struct SumWidgetTimelineProvider: TimelineProvider {
     func placeholder(in context: Context) -> SumEntry {
@@ -28,7 +30,9 @@ struct SumWidgetTimelineProvider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<SumEntry>) -> Void) {
         var entries: [SumEntry] = []
         let defaults: UserDefaults? = .init(suiteName: Vars.groupName)
+        #if DEBUG
         let logger: Logger = .init(subsystem: Vars.widgetIdentifier, category: "Sum widget timelines")
+        #endif
 
         let currentDate = Calendar.current.startOfDay(for: .now)
         for dayOffset in 0..<2 {
@@ -36,9 +40,11 @@ struct SumWidgetTimelineProvider: TimelineProvider {
             
             let entryDate = Calendar.current.date(byAdding: .day, value: dayOffset, to: currentDate)!
             let entryExpenses = Calendar.current.isDate(amountDate ?? .distantPast, inSameDayAs: entryDate) ? (defaults?.double(forKey: "amount") ?? 0) : 0
-            let entryCurrency: String = defaults?.string(forKey: "defaultCurrency") ?? Locale.current.currencySymbol ?? "USD"
+            let entryCurrency: String = defaults?.string(forKey: "defaultCurrency") ?? Locale.current.currencyCode ?? "USD"
             
+            #if DEBUG
             logger.debug("Generating entry... Date: \(entryDate), expenses: \(entryExpenses), currency: \(entryCurrency)")
+            #endif
             
             let entry = SumEntry(date: entryDate, expenses: entryExpenses, currency: entryCurrency)
             entries.append(entry)
