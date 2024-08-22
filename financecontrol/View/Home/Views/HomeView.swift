@@ -55,8 +55,8 @@ struct HomeView: View {
             .sheet(isPresented: $showingSheet) {
                 AddSpendingView(ratesViewModel: rvm, codeDataModel: cdm, shortcut: shortcut)
             }
-            .onChange(of: updateRates) { newValue in
-                if !newValue {
+            .onChange(of: rvm.status) { newValue in
+                if newValue == .success || newValue == .failed {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                         withAnimation {
                             ratesAreFetching = false
@@ -87,7 +87,7 @@ struct HomeView: View {
             .padding()
         } footer: {
             if ratesAreFetching {
-                fetchingRates
+                ratesFetchStatus
             }
         }
     }
@@ -109,20 +109,44 @@ struct HomeView: View {
         }
     }
     
-    private var fetchingRates: some View {
+    private var ratesFetchStatus: some View {
         HStack(spacing: 10) {
-            if updateRates {
+            switch rvm.status {
+            case .downloading:
                 ProgressView()
                     .tint(.secondary)
-            } else {
+                
+                Text("Updating rates...")
+                
+            case .waitingForNetwork:
+                if #available(iOS 17.0, *) {
+                    Image(systemName: "network.slash")
+                        .font(.body.bold())
+                } else {
+                    Image(systemName: "network")
+                        .font(.body.bold())
+                }
+                
+                Text("No network")
+                
+            case .failed:
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.body.bold())
+                
+                Text("Failed to update rates")
+                
+            case .success:
                 Image(systemName: "checkmark.circle.fill")
                     .font(.body.bold())
+                
+                Text("Rates updated")
+                
+            default:
+                EmptyView()
             }
-            
-            Text(updateRates ? "Updating rates..." : "Rates updated")
         }
         .padding(.vertical, 3)
-        .animation(.default, value: updateRates)
+        .animation(.default, value: rvm.status)
     }
     
     func toggleSheet() {

@@ -14,6 +14,7 @@ import OSLog
 
 final class RatesModel {
     let errorHandler = ErrorHandler.shared
+    let networkMonitor = NetworkMonitor.shared
     
     init() {
         #if DEBUG
@@ -34,10 +35,6 @@ final class RatesModel {
 
 extension RatesModel {
     func downloadRates(timestamp: Date? = nil) async throws -> Rates {
-//        guard NetworkMonitor.shared.isConnected else {
-//            throw URLError(.notConnectedToInternet)
-//        }
-        
         do {
             let apiURLComponents = try getURLComponents()
             let apiKey = try await getApiKey(apiURLComponents.host)
@@ -77,9 +74,14 @@ extension RatesModel {
 
             for count in 0 ..< 3 {
                 do {
+//                    throw URLError(.timedOut)
                     let (data, response) = try await URLSession.shared.data(for: request)
                     return try handleResponse(data: data, response: response)
                 } catch URLError.timedOut {
+                    if !NetworkMonitor.shared.isConnected {
+                        throw URLError(.notConnectedToInternet)
+                    }
+                    
                     if count == 2 {
                         throw URLError(.timedOut)
                     } else {
@@ -90,13 +92,8 @@ extension RatesModel {
                 }
             }
             
-            throw URLError(.timedOut)
-            
+            throw URLError(.unknown)
         } catch let error {
-            await MainActor.run {
-                handleError(error)
-            }
-            
             throw error
         }
     }
@@ -113,25 +110,6 @@ extension RatesModel {
             return try JSONDecoder().decode(Rates.self, from: data)
         } catch {
             throw error
-        }
-    }
-    
-    private func handleError(_ error: Error) {
-        if let error = error as? InfoPlistError {
-            ErrorType(error).publish()
-        } else if let error = error as? URLError {
-            switch error {
-            case URLError.badServerResponse, URLError.badURL:
-                ErrorType(error).publish()
-            default:
-                ErrorType(
-                    errorDescription: error.localizedDescription,
-                    failureReason: error.localizedDescription,
-                    recoverySuggestion: "Check your internet connection"
-                ).publish()
-            }
-        } else {
-            ErrorType(error: error).publish(file: #fileID, function: #function)
         }
     }
 }

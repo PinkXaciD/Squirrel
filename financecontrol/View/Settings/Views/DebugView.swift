@@ -28,6 +28,8 @@ struct DebugView: View {
             
             bundleSection
             
+            networkSection
+            
             defaultsSection
             
             keychainSection
@@ -253,6 +255,43 @@ struct DebugView: View {
         }
     }
     
+    private var networkSection: some View {
+        Section {
+            HStack {
+                Text("Is connected", comment: "Debug view: is network available")
+                
+                Spacer()
+                
+                Image(systemName: "checkmark")
+                    .font(.body.bold())
+                    .foregroundStyle(NetworkMonitor.shared.isConnected ? Color.accentColor : .secondary)
+                    .opacity(NetworkMonitor.shared.isConnected ? 1 : 0.5)
+            }
+            
+            HStack {
+                Text("Is expensive", comment: "Debug view: is network expensive")
+                
+                Spacer()
+                
+                Image(systemName: "checkmark")
+                    .font(.body.bold())
+                    .foregroundStyle(NetworkMonitor.shared.isExpensive ? Color.accentColor : .secondary)
+                    .opacity(NetworkMonitor.shared.isExpensive ? 1 : 0.5)
+            }
+            
+            HStack {
+                Text("Status:", comment: "Debug view: network status")
+                
+                Spacer()
+                
+                Text("\(NetworkMonitor.shared.status)")
+                    .foregroundStyle(.secondary)
+            }
+        } header: {
+            Text(verbatim: "Network")
+        }
+    }
+    
     private var defaultsSection: some View {
         Section {
             #if DEBUG
@@ -267,6 +306,20 @@ struct DebugView: View {
                 defaultsConfirmationIsShowing.toggle()
             } label: {
                 Text("Clear UserDefaults")
+            }
+            
+            NavigationLink("Rates fetch queue") {
+                List {
+                    ForEach(UserDefaults.standard.getFetchQueue(), id: \.self) { id in
+                        Text(id.uuidString)
+                    }
+                }
+            }
+            
+            Button(role: .destructive) {
+                UserDefaults.standard.clearFetchQueue()
+            } label: {
+                Text("Clear fetch queue")
             }
         }
     }

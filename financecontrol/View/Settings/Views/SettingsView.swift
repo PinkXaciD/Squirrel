@@ -46,8 +46,18 @@ struct SettingsView: View {
             }
             .listStyle(.insetGrouped)
             .navigationTitle("Settings")
+            
+            if UIDevice.current.isIPad {
+                ZStack {
+                    Color(uiColor: .tertiarySystemGroupedBackground)
+                        .ignoresSafeArea()
+                        
+                    
+                    Text("Select a tab from sidebar")
+                        .foregroundStyle(.secondary)
+                }
+            }
         }
-        .navigationViewStyle(.stack)
         .onAppear {
             withAnimation {
                 showDarkModeToggle = !autoDarkMode
@@ -58,11 +68,15 @@ struct SettingsView: View {
     var aboutSection: some View {
         Section {
             NavigationLink("About") {
-                AboutView(presentOnboarding: $presentOnboarding)
-                    .navigationTitle("About")
-                    .navigationBarTitleDisplayMode(.inline)
+                aboutView
             }
         }
+    }
+    
+    var aboutView: some View {
+        AboutView(presentOnboarding: $presentOnboarding)
+            .navigationTitle("About")
+            .navigationBarTitleDisplayMode(.inline)
     }
     
     var themeSection: some View {
@@ -74,7 +88,7 @@ struct SettingsView: View {
                     Text("Color and Icon")
                     Spacer()
                     Text(LocalizedStringKey(defaultColor))
-                        .foregroundColor(Color.secondary)
+                        .foregroundStyle(.secondary)
                 }
             }
             
@@ -113,7 +127,7 @@ struct SettingsView: View {
                     Spacer()
                     
                     Text("\(Locale.current.localizedString(forCurrencyCode: defaultCurrency) ?? defaultCurrency)")
-                        .foregroundColor(Color.secondary)
+                        .foregroundStyle(.secondary)
                 }
             }
             

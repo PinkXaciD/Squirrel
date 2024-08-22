@@ -51,13 +51,6 @@ struct SpendingCompleteView: View {
                             .accentColor(colorIdentifier(color: tint))
                             .tint(colorIdentifier(color: tint))
                     }
-    // TODO: EditReturnView
-    //                .sheet(item: $returnToEdit) { returnEntity in
-    //                    EditReturnView(returnEntity: returnEntity, spending: entity, cdm: cdm, rvm: rvm)
-    //                        .smallSheet(0.5)
-    //                        .tint(colorIdentifier(color: tint))
-    //                        .accentColor(colorIdentifier(color: tint))
-    //                }
                 }
                 .navigationViewStyle(.stack)
                 .transition(.opacity)
@@ -96,17 +89,18 @@ struct SpendingCompleteView: View {
         }
         .sheet(item: $returnToEdit) { returnEntity in
             EditReturnView(returnEntity: returnEntity, spending: entity, cdm: cdm, rvm: rvm)
-//                .smallSheet(0.5)
                 .tint(colorIdentifier(color: tint))
                 .accentColor(colorIdentifier(color: tint))
                 .environmentObject(cdm)
         }
+        .animation(.default, value: edit)
+        .onReceive(NotificationCenter.default.publisher(for: Notification.Name("DismissEditSpendingView"))) { _ in
+            edit = false
+        }
     }
     
     func editToggle() {
-        withAnimation {
-            edit.toggle()
-        }
+        edit.toggle()
     }
     
     func dismissAction() {

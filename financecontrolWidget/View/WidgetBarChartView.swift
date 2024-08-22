@@ -74,13 +74,11 @@ struct WidgetBarChartView: View {
             if showWeekdays || isLarge {
                 HStack(spacing: 10) {
                     ForEach(Array(data.keys).sorted(by: <), id: \.self) { key in
-                        Text(key.formatted(Date.FormatStyle(locale: Locale.current)
-                            .weekday(.abbreviated)
-                        ).prefix(1))
-                        .font(.system(size: isLarge ? 10 : 8))
-                        .lineLimit(1)
-                        .foregroundColor(.secondary)
-                        .frame(width: width)
+                        Text(key, format: .dateTime.weekday(.narrow))
+                            .font(.system(size: isLarge ? 10 : 8))
+                            .lineLimit(1)
+                            .foregroundColor(.secondary)
+                            .frame(width: width)
                     }
                 }
             }

@@ -42,6 +42,8 @@ struct AddSpendingView: View {
     private var amountIsFocused: Bool = true
     @State
     private var hideContent: Bool = false
+    @State
+    private var isLoading: Bool = false
 
     private let utils = InputUtils() /// For input validation
     
@@ -61,6 +63,7 @@ struct AddSpendingView: View {
             }
             .navigationTitle("Add Expense")
             .navigationBarTitleDisplayMode(.inline)
+            .disabled(isLoading)
         }
         .navigationViewStyle(.stack)
         .tint(colorIdentifier(color: tint))
@@ -78,6 +81,11 @@ struct AddSpendingView: View {
                         hideContent = true
                     }
                 }
+            }
+        }
+        .onChange(of: vm.dismiss) { newValue in
+            if newValue {
+                dismiss()
             }
         }
     }
@@ -214,9 +222,15 @@ struct AddSpendingView: View {
             Button {
                 done()
             } label: {
-                Text("Done")
+                if isLoading {
+                    ProgressView()
+                        .accentColor(.secondary)
+                        .tint(.secondary)
+                } else {
+                    Text("Done")
+                        .font(Font.body.weight(.semibold))
+                }
             }
-            .font(Font.body.weight(.semibold))
             .disabled(!utils.checkAll(amount: vm.amount, place: vm.place, comment: vm.comment) || !vm.categoryHasChanged)
         }
     }
@@ -252,15 +266,17 @@ extension AddSpendingView {
     }
     
     private func done() {
+        isLoading = true
         clearFocus()
         vm.done()
-        dismiss()
+//        dismiss()
     }
 }
 
 fileprivate struct PopularCategoryButtonView: View {
     @EnvironmentObject private var vm: AddSpendingViewModel
     let category: CategoryEntity
+    @State private var isFocused: Bool = false
     
     var body: some View {
         Button {
@@ -278,11 +294,27 @@ fileprivate struct PopularCategoryButtonView: View {
                 .padding(.horizontal, 12)
                 .background {
                     RoundedRectangle(cornerRadius: 10)
-                        .fill(vm.categoryId == category.id ? Color[category.color ?? ""] : Color(uiColor: .secondarySystemGroupedBackground))
+                        .fill(getBackgroundColor())
                 }
+                .brightness(isFocused ? 0.05 : 0)
                 .animation(.default, value: vm.categoryId)
         }
         .buttonStyle(PlainButtonStyle())
+        .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 10))
+        .hoverEffect()
+        .onHover { value in
+            withAnimation {
+                isFocused = value
+            }
+        }
+    }
+    
+    private func getBackgroundColor() -> Color {
+        if vm.categoryId == category.id {
+            return Color[category.color ?? ""]
+        } else {
+            return Color(uiColor: .secondarySystemGroupedBackground)
+        }
     }
 }
 

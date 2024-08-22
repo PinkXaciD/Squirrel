@@ -27,6 +27,16 @@ extension CodingUserInfoKey {
     static let moc = CodingUserInfoKey(rawValue: "managedObjectContext")!
 }
 
+extension UIDevice {
+    var isIPad: Bool {
+        self.userInterfaceIdiom == .pad
+    }
+    
+    var isIPhone: Bool {
+        self.userInterfaceIdiom == .phone
+    }
+}
+
 extension Locale {
     static let customCommonISOCurrencyCodes: [String] = [
         "AED",

@@ -92,6 +92,8 @@ struct OnboardingCurrencyView: View {
                 .foregroundColor(.secondary)
                 .disabled(!showButton)
                 .animation(.default, value: showButton)
+                .contentShape(.hoverEffect, Circle())
+                .hoverEffect()
             }
             .padding(9)
             .padding(.horizontal, 3)

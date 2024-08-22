@@ -57,13 +57,13 @@ extension WidgetsManager {
         }
         
         #if DEBUG
-        logger.debug("\(data)")
+//        logger.debug("\(data)")
         #endif
         
         let currentDate = Calendar.current.startOfDay(for: .now)
         sharedDefaults.set(amount, forKey: "amount")
         sharedDefaults.set(currentDate, forKey: "date")
-        sharedDefaults.setValue(data, forKey: "WeeklySpendingsWidgetData")
+        sharedDefaults.set(data, forKey: "WeeklySpendingsWidgetData")
         sumWidgetsNeedsToReload = true
     }
     

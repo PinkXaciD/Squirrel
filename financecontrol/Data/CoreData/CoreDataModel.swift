@@ -18,8 +18,13 @@ final class CoreDataModel: ObservableObject {
     init() {
         self.container = manager.container
         self.context = manager.context
-        fetchSpendings()
+        fetchSpendings(updateWidgets: false)
         fetchCategories()
+        timerUpdate()
+        
+        if !UserDefaults.standard.getFetchQueue().isEmpty {
+            print("Rates fetch queue", UserDefaults.standard.getFetchQueue())
+        }
     }
     
     /// An array containing all spendings from CoreData
@@ -53,6 +58,8 @@ final class CoreDataModel: ObservableObject {
     @available(*, deprecated, renamed: "UserDefaults.standart.getCurrencies()", message: "")
     @Published
     var savedCurrencies: [CurrencyEntity] = []
+    
+    var waitingForRatesToBeAvailable: Bool = false
 }
 
 extension CoreDataModel {
@@ -160,5 +167,15 @@ extension CoreDataModel {
             ErrorType(error: error).publish()
             return nil
         }
+    }
+    
+    /// Timer that will update all data in app when date changes
+    func timerUpdate() {
+        let fireTime = Calendar.current.date(byAdding: .day, value: 1, to: Calendar.current.startOfDay(for: Date())) ?? .distantFuture
+        let timer = Timer(fire: fireTime, interval: 0, repeats: false) { [weak self] timer in
+            self?.fetchSpendings()
+        }
+        
+        RunLoop.main.add(timer, forMode: .default)
     }
 }

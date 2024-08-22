@@ -70,6 +70,7 @@ struct ContentView: View {
             settingsTab
         }
         .blur(radius: hideContent ? Vars.privacyBlur : 0)
+        .animation(.easeOut(duration: 0.1), value: hideContent)
         .ignoresSafeArea()
         .onOpenURL { url in
             if url == URLs.addExpenseAction {
@@ -83,15 +84,7 @@ struct ContentView: View {
             }
             
             if privacyScreenIsEnabled {
-                if value == .active {
-                    withAnimation(.easeOut(duration: 0.2)) {
-                        hideContent = false
-                    }
-                } else {
-                    withAnimation {
-                        hideContent = true
-                    }
-                }
+                hideContent = value != .active
             }
             
             privacyMonitor.changePrivacyScreenValue(value != .active)
@@ -140,7 +133,6 @@ struct ContentView: View {
     
     private var statsTab: some View {
         StatsView()
-            .searchable(text: $statsSearchViewModel.input, placement: .navigationBarDrawer, prompt: "Search by place or comment")
             .environmentObject(pieChartViewModel)
             .environmentObject(filtersViewModel)
             .environmentObject(statsSearchViewModel)

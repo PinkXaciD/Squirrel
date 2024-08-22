@@ -18,6 +18,7 @@ struct PieChartView: View {
     private var fvm: FiltersViewModel
     
     let size: CGFloat
+    let showMinimizeButton: Bool
     
     @AppStorage(UDKeys.defaultCurrency.rawValue)
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
@@ -36,7 +37,9 @@ struct PieChartView: View {
             
             legend
         } footer: {
-            footer
+            if showMinimizeButton {
+                footer
+            }
         }
         .onChange(of: pcvm.selection) { _ in
             if pcvm.showOther {
@@ -50,7 +53,7 @@ struct PieChartView: View {
     }
     
     private var legend: some View {
-        PieChartLegendView(minimize: $minimizeLegend, selection: $pcvm.selection)
+        PieChartLegendView(minimize: $minimizeLegend, selection: $pcvm.selection, forceExpand: !showMinimizeButton)
     }
     
     private var footer: some View {

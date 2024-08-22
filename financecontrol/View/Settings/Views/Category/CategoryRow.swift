@@ -40,7 +40,7 @@ struct CategoryRow: View {
         return HStack {
             Image(systemName: category.isFavorite ? "star.circle.fill" : "circle.fill")
                 .font(.title)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(Color[category.color ?? "nil"])
             
             VStack(alignment: .leading) {
                 Text(category.name ?? "Error")
@@ -56,7 +56,7 @@ struct CategoryRow: View {
             Text("Edit")
                 .foregroundStyle(.secondary)
         }
-        .foregroundStyle(Color.primary, Color.secondary, Color[category.color ?? "nil"])
+//        .foregroundStyle(Color.primary, Color.secondary, Color[category.color ?? "nil"])
         .padding(.vertical, 1) /// Strange behavior without padding
     }
     

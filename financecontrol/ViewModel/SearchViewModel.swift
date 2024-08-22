@@ -27,7 +27,7 @@ class SearchViewModel: ViewModel {
     
     func updateSearch() {
         self.$input
-            .debounce(for: 0.5, scheduler: DispatchQueue.main)
+            .debounce(for: 0.3, scheduler: DispatchQueue.main)
             .sink { [weak self] value in
                 withAnimation {
                     self?.search = value

@@ -43,4 +43,5 @@ enum UDKeys: String {
     case darkMode
     case privacyScreen
     case separateCurrencies
+    case ratesFetchQueue
 }

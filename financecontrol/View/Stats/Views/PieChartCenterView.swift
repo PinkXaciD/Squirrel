@@ -31,6 +31,9 @@ struct CenterChartView: View {
             Text(operationsSum(operationsInMonth: operationsInMonth))
                 .lineLimit(1)
                 .font(.system(size: 30, weight: .semibold, design: .rounded))
+                .padding(.horizontal, 6)
+                .minimumScaleFactor(0.5)
+                .scaledToFit()
             
             Text(defaultCurrency)
                 .foregroundColor(Color.secondary)

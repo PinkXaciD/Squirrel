@@ -34,7 +34,7 @@ final class AddSpendingViewModel: ViewModel {
     @Published
     var popularCategories: [CategoryEntity] = []
     @Published
-    var oldRates: Rates?
+    var dismiss: Bool = false
     
     #if DEBUG
     let vmStateLogger: Logger
@@ -123,54 +123,61 @@ final class AddSpendingViewModel: ViewModel {
             
             let formatter = NumberFormatter()
             
-            if let number = formatter.number(from: amount) {
-                let doubleAmount = Double(truncating: number)
-                
-                var spending: SpendingEntityLocal = .init(
-                    amount: doubleAmount,
-                    currency: currency,
-                    date: date,
-                    place: place.trimmingCharacters(in: .whitespacesAndNewlines),
-                    categoryId: categoryId,
-                    comment: comment
-                )
-                
-                if currency == "USD" {
-                    spending.amountUSD = doubleAmount
-                    cdm.addSpending(spending: spending)
-                    #if DEBUG
-                    let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
-                    logger.log("Currency is USD, skipping rates fetching...")
-                    #endif
-                    return
-                }
-                
-                if Calendar.current.isDateInToday(date) {
-                    spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
-                    
-                    cdm.addSpending(spending: spending)
-                } else {
-                    Task { [spending] in
-                        let oldRates = try? await self.rvm.getRates(self.date).rates
-                        await MainActor.run { [spending] in
-                            var spendingCopy = spending
-                            if let oldRates = oldRates {
-                                spendingCopy.amountUSD = doubleAmount / (oldRates[self.currency] ?? 1)
-                            } else {
-                                spendingCopy.amountUSD = doubleAmount / (self.rvm.rates[self.currency] ?? 1)
-                            }
-                            
-                            self.cdm.addSpending(spending: spendingCopy)
-                        }
-                    }
-                }
-            } else {
+            guard let number = formatter.number(from: amount) else {
                 ErrorType(
                     errorDescription: "Failed to add expence",
                     failureReason: "Cannot convert amount to number",
                     recoverySuggestion: "Try again"
                 )
                 .publish()
+                
+                return
+            }
+        
+            let doubleAmount = Double(truncating: number)
+            
+            var spending: SpendingEntityLocal = .init(
+                amount: doubleAmount,
+                currency: currency,
+                date: date,
+                place: place.trimmingCharacters(in: .whitespacesAndNewlines),
+                categoryId: categoryId,
+                comment: comment
+            )
+            
+            if self.currency == "USD" {
+                spending.amountUSD = doubleAmount
+                cdm.addSpending(spending: spending)
+                self.dismiss = true
+                #if DEBUG
+                let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
+                logger.log("Currency is USD, skipping rates fetching...")
+                #endif
+                return
+            }
+            
+            if Calendar.current.isDateInToday(date) {
+                spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
+                
+                cdm.addSpending(spending: spending)
+                self.dismiss = true
+            } else {
+                Task { [spending, self] in
+                    let oldRates = try? await self.rvm.getRates(self.date).rates
+                    await MainActor.run { [spending, self] in
+                        let isHistoricalRatesUnvailable: Bool = oldRates == nil
+                        var spendingCopy = spending
+                        
+                        if let oldRates = oldRates {
+                            spendingCopy.amountUSD = doubleAmount / (oldRates[self.currency] ?? 1)
+                        } else {
+                            spendingCopy.amountUSD = doubleAmount / (self.rvm.rates[self.currency] ?? 1)
+                        }
+                        
+                        self.cdm.addSpending(spending: spendingCopy, addToFetchQueue: isHistoricalRatesUnvailable)
+                        self.dismiss = true
+                    }
+                }
             }
         }
     }

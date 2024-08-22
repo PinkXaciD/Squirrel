@@ -382,6 +382,9 @@
     "Clear" : {
 
     },
+    "Clear fetch queue" : {
+
+    },
     "Clear filters" : {
 
     },
@@ -520,6 +523,9 @@
     "Failed to get CoreData entity description" : {
 
     },
+    "Failed to update rates" : {
+
+    },
     "Fallback rates timestamp:" : {
 
     },
@@ -565,7 +571,7 @@
     "Identifier:" : {
 
     },
-    "Import data as JSON" : {
+    "Import data from JSON" : {
 
     },
     "Import existing data" : {
@@ -598,6 +604,12 @@
     },
     "Indigo" : {
 
+    },
+    "Is connected" : {
+      "comment" : "Debug view: is network available"
+    },
+    "Is expensive" : {
+      "comment" : "Debug view: is network expensive"
     },
     "It seems some system files are corrupted" : {
 
@@ -654,6 +666,9 @@
 
     },
     "No Info file was found" : {
+
+    },
+    "No network" : {
 
     },
     "No radar will find you now" : {
@@ -735,6 +750,9 @@
     "Rates" : {
 
     },
+    "Rates fetch queue" : {
+
+    },
     "Rates updated" : {
 
     },
@@ -778,6 +796,9 @@
 
     },
     "Search by place or comment" : {
+
+    },
+    "Select a tab from sidebar" : {
 
     },
     "Select currency" : {
@@ -836,6 +857,9 @@
     },
     "Stats" : {
 
+    },
+    "Status:" : {
+      "comment" : "Debug view: network status"
     },
     "Stealth" : {
 
