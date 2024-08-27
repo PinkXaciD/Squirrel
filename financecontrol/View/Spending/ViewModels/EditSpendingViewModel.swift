@@ -116,7 +116,7 @@ final class EditSpendingViewModel: SpendingViewModel {
             }
             
             DispatchQueue.main.async {
-                if Calendar.current.isDate(self.entity.wrappedDate, inSameDayAs: self.date), self.entity.wrappedCurrency == self.currency {
+                if Calendar.gmt.isDate(self.entity.wrappedDate, inSameDayAs: self.date), self.entity.wrappedCurrency == self.currency {
                     spending.amountUSD = (spending.amount / self.entity.amount) * self.entity.amountUSD
                     self.cdm.editSpending(spending: self.entity, newSpending: spending)
                     self.end()
@@ -124,7 +124,7 @@ final class EditSpendingViewModel: SpendingViewModel {
                 }
             }
             
-            if !Calendar.current.isDateInToday(date) {
+            if !Calendar.gmt.isDateInToday(date) {
                 Task { [spending] in
                     let oldRates = try? await self.rvm.getRates(self.date).rates
                     await MainActor.run { [spending] in

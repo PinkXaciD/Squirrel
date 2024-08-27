@@ -12,14 +12,6 @@ struct WeeklySpendingsMediumTodaySumView: View {
     let avg: Double
     let currency: String
     
-    var numberFormat: FloatingPointFormatStyle<Double> {
-        if sum > 99999 {
-            return .number.notation(.compactName)
-        }
-        
-        return .number.precision(.fractionLength(0...2))
-    }
-    
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 0) {
@@ -33,7 +25,7 @@ struct WeeklySpendingsMediumTodaySumView: View {
                     Text(currency)
                         .font(.system(.title3, design: .rounded).bold())
                     
-                    Text(sum.formatted(numberFormat))
+                    Text(Locale.current.currencyNarrowFormat(sum, currency: currency, removeFractionDigigtsFrom: 1000) ?? "Error")
                         .font(.system(.title, design: .rounded).bold())
                         .scaledToFit()
                         .minimumScaleFactor(0.5)
@@ -79,11 +71,18 @@ struct WeeklySpendingsSmallTodaySumView: View {
                 .foregroundColor(.secondary)
                 .privacySensitive()
             
-            Text(sum.formatted(.currency(code: currency).precision(.fractionLength(0))))
-                .font(.system(.title3, design: .rounded).bold())
-                .scaledToFit()
-                .minimumScaleFactor(0.5)
-                .privacySensitive()
+            Text(
+                sum.formatted(
+                    .currency(code: currency)
+                    .precision(
+                        .fractionLength(sum >= 1000 ? 0 : Locale.current.currencyFractionDigits(currencyCode: currency))
+                    )
+                )
+            )
+            .font(.system(.title3, design: .rounded).bold())
+            .scaledToFit()
+            .minimumScaleFactor(0.5)
+            .privacySensitive()
         }
     }
 }

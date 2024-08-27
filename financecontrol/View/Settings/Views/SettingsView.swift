@@ -8,6 +8,11 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @EnvironmentObject
+    private var cdm: CoreDataModel
+    @EnvironmentObject
+    private var rvm: RatesViewModel
+    
     @AppStorage(UDKeys.color.rawValue)
     var defaultColor: String = "Orange"
     @AppStorage(UDKeys.defaultCurrency.rawValue)
@@ -28,41 +33,75 @@ struct SettingsView: View {
     let build: String? = Bundle.main.buildVersionNumber
     
     var body: some View {
-        NavigationView {
-            List {
-                aboutSection
-                
-                themeSection
-                
-                currencySection
-                
-//                shortcutsSection
-                
-                categorySection
-                
-                privacySection
-                
-                exportImportSection
-            }
-            .listStyle(.insetGrouped)
-            .navigationTitle("Settings")
-            
-            if UIDevice.current.isIPad {
-                ZStack {
-                    Color(uiColor: .tertiarySystemGroupedBackground)
-                        .ignoresSafeArea()
-                        
+        if UIDevice.current.isIPad {
+            if #available(iOS 16.0, *) {
+                NavigationSplitView {
+                    list
+                } detail: {
+                    NavigationStack {
+                        ZStack {
+                            Color(uiColor: .systemGroupedBackground)
+                                .ignoresSafeArea()
+                                
+                            
+                            Text("Select a tab from sidebar")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .environmentObject(rvm)
+                    .environmentObject(cdm)
+                }
+
+            } else {
+                NavigationView {
+                    list
                     
-                    Text("Select a tab from sidebar")
-                        .foregroundStyle(.secondary)
+                    ZStack {
+                        Color(uiColor: .systemGroupedBackground)
+                            .ignoresSafeArea()
+                            
+                        
+                        Text("Select a tab from sidebar")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .onAppear {
+                    withAnimation {
+                        showDarkModeToggle = !autoDarkMode
+                    }
+                }
+            }
+        } else {
+            NavigationView {
+                list
+            }
+            .navigationViewStyle(.stack)
+            .onAppear {
+                withAnimation {
+                    showDarkModeToggle = !autoDarkMode
                 }
             }
         }
-        .onAppear {
-            withAnimation {
-                showDarkModeToggle = !autoDarkMode
-            }
+    }
+    
+    private var list: some View {
+        List {
+            aboutSection
+            
+            themeSection
+            
+            currencySection
+            
+//                shortcutsSection
+            
+            categorySection
+            
+            privacySection
+            
+            exportImportSection
         }
+        .listStyle(.insetGrouped)
+        .navigationTitle("Settings")
     }
     
     var aboutSection: some View {

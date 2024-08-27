@@ -85,7 +85,7 @@ struct StatsRow: View {
                             .font(.caption.bold())
                     }
                     
-                    Text("-\((localEntity.amountWithReturns).formatted(.currency(code: localEntity.wrappedCurrency)))")
+                    Text("\((-localEntity.amountWithReturns).formatted(.currency(code: localEntity.wrappedCurrency)))")
                 }
                 .foregroundColor(localEntity.amountWithReturns != 0 ? .primary : .secondary)
             }

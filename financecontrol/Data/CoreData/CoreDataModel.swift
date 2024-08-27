@@ -21,10 +21,6 @@ final class CoreDataModel: ObservableObject {
         fetchSpendings(updateWidgets: false)
         fetchCategories()
         timerUpdate()
-        
-        if !UserDefaults.standard.getFetchQueue().isEmpty {
-            print("Rates fetch queue", UserDefaults.standard.getFetchQueue())
-        }
     }
     
     /// An array containing all spendings from CoreData

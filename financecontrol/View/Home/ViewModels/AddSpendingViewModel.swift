@@ -108,9 +108,9 @@ final class AddSpendingViewModel: ViewModel {
             }
             
             let sortedCategories = self.cdm.savedCategories.sorted { $0.spendings?.allObjects.count ?? 0 > $1.spendings?.allObjects.count ?? 0 }
-            let range = 0..<(sortedCategories.count > 5 ? 5 : sortedCategories.count)
+            
             withAnimation {
-                self.popularCategories = Array(sortedCategories[range])
+                self.popularCategories = Array(sortedCategories.prefix(5))
             }
         }
     }
@@ -124,12 +124,14 @@ final class AddSpendingViewModel: ViewModel {
             let formatter = NumberFormatter()
             
             guard let number = formatter.number(from: amount) else {
-                ErrorType(
-                    errorDescription: "Failed to add expence",
-                    failureReason: "Cannot convert amount to number",
-                    recoverySuggestion: "Try again"
-                )
-                .publish()
+                DispatchQueue.main.async {
+                    ErrorType(
+                        errorDescription: "Failed to add expense",
+                        failureReason: "Cannot convert amount to number",
+                        recoverySuggestion: "Try again"
+                    )
+                    .publish()
+                }
                 
                 return
             }
@@ -148,7 +150,9 @@ final class AddSpendingViewModel: ViewModel {
             if self.currency == "USD" {
                 spending.amountUSD = doubleAmount
                 cdm.addSpending(spending: spending)
-                self.dismiss = true
+                DispatchQueue.main.async {
+                    self.dismiss = true
+                }
                 #if DEBUG
                 let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
                 logger.log("Currency is USD, skipping rates fetching...")
@@ -156,11 +160,13 @@ final class AddSpendingViewModel: ViewModel {
                 return
             }
             
-            if Calendar.current.isDateInToday(date) {
+            if Calendar.gmt.isDateInToday(date) {
                 spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
                 
                 cdm.addSpending(spending: spending)
-                self.dismiss = true
+                DispatchQueue.main.async {
+                    self.dismiss = true
+                }
             } else {
                 Task { [spending, self] in
                     let oldRates = try? await self.rvm.getRates(self.date).rates
@@ -175,7 +181,9 @@ final class AddSpendingViewModel: ViewModel {
                         }
                         
                         self.cdm.addSpending(spending: spendingCopy, addToFetchQueue: isHistoricalRatesUnvailable)
-                        self.dismiss = true
+                        DispatchQueue.main.async {
+                            self.dismiss = true
+                        }
                     }
                 }
             }
@@ -189,6 +197,7 @@ final class AddSpendingViewModel: ViewModel {
             .sink { [weak self] _ in
                 if self?.categoryHasChanged != true {
                     self?.categoryHasChanged = true
+                    self?.cancellables.cancelAll()
                 }
             }
             .store(in: &cancellables)

@@ -63,7 +63,6 @@ struct AddSpendingView: View {
             }
             .navigationTitle("Add Expense")
             .navigationBarTitleDisplayMode(.inline)
-            .disabled(isLoading)
         }
         .navigationViewStyle(.stack)
         .tint(colorIdentifier(color: tint))
@@ -94,9 +93,9 @@ struct AddSpendingView: View {
     
     private var reqiredSection: some View {
         Section {
-            TextField("0.00", text: $vm.amount)
+            TextField(Locale.current.currencyNarrowFormat(0, currency: vm.currency) ?? "0.00", text: $vm.amount)
                 .multilineTextAlignment(.center)
-                .numbersOnly($vm.amount)
+                .currencyFormatted($vm.amount, currencyCode: vm.currency)
                 .amountStyle()
                 .focused($focusedField, equals: .amount)
                 .onAppear(perform: amountFocus)
@@ -118,9 +117,6 @@ struct AddSpendingView: View {
                 Text("Category")
                 CategorySelector(category: $vm.categoryId)
             }
-//            .onChange(of: vm.categoryId) { newValue in
-//                vm.categoryName = vm.cdm.findCategory(newValue)?.name ?? "Error"
-//            }
             
         } header: {
             Text("Required")
@@ -136,6 +132,7 @@ struct AddSpendingView: View {
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 .listRowInsets(.init(top: 10, leading: 0, bottom: 5, trailing: 0))
+                .listRowBackground(EmptyView())
             }
             
             if !Calendar.current.isDateInToday(vm.date) && vm.currency != defaultCurrency {
@@ -144,6 +141,7 @@ struct AddSpendingView: View {
                 Text("Exchange rates will be presented for the current hour")
             }
         }
+        .disabled(isLoading)
     }
     
     private var placeAndCommentSection: some View {
@@ -172,6 +170,7 @@ struct AddSpendingView: View {
                     }
             }
         }
+        .disabled(isLoading)
     }
     
     private var placeAndCommentSectionFooter: some View {
@@ -214,6 +213,7 @@ struct AddSpendingView: View {
     private var leadingToolbar: ToolbarItem<(), some View> {
         ToolbarItem(placement: .navigationBarLeading) {
             Button("Cancel", role: .cancel, action: dismissAction)
+                .disabled(isLoading)
         }
     }
     
@@ -231,7 +231,7 @@ struct AddSpendingView: View {
                         .font(Font.body.weight(.semibold))
                 }
             }
-            .disabled(!utils.checkAll(amount: vm.amount, place: vm.place, comment: vm.comment) || !vm.categoryHasChanged)
+            .disabled(!utils.checkAll(amount: vm.amount, place: vm.place, comment: vm.comment) || !vm.categoryHasChanged || isLoading)
         }
     }
 }
@@ -417,7 +417,7 @@ struct AddSpendingShortcutAddView: View {
             Section {
                 TextField("Amount", text: $amount)
                     .keyboardType(.decimalPad)
-                    .numbersOnly($amount)
+                    .currencyFormatted($amount, currencyCode: currency)
                 
                 HStack {
                     Text("Currency")

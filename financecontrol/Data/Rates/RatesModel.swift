@@ -45,17 +45,16 @@ extension RatesModel {
                     if #available(iOS 16, *) {
                         return .gmt
                     } else {
-                        return .init(secondsFromGMT: 0)! // Cannot fail
+                        return .init(secondsFromGMT: 0) ?? .current // Cannot fail
                     }
                 }()
                 
-                var calendar = Calendar(identifier: .gregorian)
-                calendar.timeZone = timeZone
+                let calendar: Calendar = .gmt
                 let formatter = ISO8601DateFormatter()
                 formatter.timeZone = timeZone
                 let startOfDay = calendar.startOfDay(for: timestamp)
                         
-                print(startOfDay.description)
+//                print(startOfDay.description)
                 timestampString = "\"" + formatter.string(from: startOfDay) + "\""
             }
             

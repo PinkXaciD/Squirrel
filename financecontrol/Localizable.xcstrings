@@ -4,9 +4,6 @@
     "" : {
 
     },
-    "-%@" : {
-
-    },
     "%@" : {
 
     },
@@ -49,9 +46,6 @@
           }
         }
       }
-    },
-    "%lld" : {
-
     },
     "%lld characters left" : {
       "localizations" : {
@@ -120,9 +114,6 @@
       }
     },
     "%lld selected" : {
-
-    },
-    "0.00" : {
 
     },
     "1 USD" : {
@@ -650,6 +641,9 @@
     "No categories" : {
 
     },
+    "No Categories" : {
+
+    },
     "No comment provided" : {
 
     },
@@ -867,7 +861,7 @@
     "Success" : {
 
     },
-    "Swipe left to restore, swipe right to delete" : {
+    "Swipe from left to restore, swipe from right to delete" : {
 
     },
     "Tap to remove selection" : {
@@ -940,6 +934,9 @@
     "Yesterday" : {
 
     },
+    "You can add categories below." : {
+
+    },
     "You can add categories in settings." : {
 
     },
@@ -949,7 +946,7 @@
     "You can add expenses from home screen." : {
 
     },
-    "You can archive categories in settings, they will be hidden from selection when you add new expenses, but all old expenses will be saved" : {
+    "You can archive categories in settings, they will be hidden from selection when you add new expenses, but all old expenses will be saved." : {
 
     },
     "You can change default currency or add more later in settings" : {
@@ -964,7 +961,7 @@
     "You can't undo this action." : {
 
     },
-    "You will not be able to undo this action.\nAll expenses in this category will be permanently deleted" : {
+    "You can't undo this action.\nAll expenses from this category would be deleted" : {
 
     }
   },

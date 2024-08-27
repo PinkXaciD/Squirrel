@@ -483,9 +483,7 @@ extension CoreDataModel {
     }
     
     func waitForRatesToBecomeAvailable() {
-        print(#function)
         if !waitingForRatesToBeAvailable {
-            print("OK")
             NotificationCenter.default.addObserver(
                 self,
                 selector: #selector(fetchSpendings),

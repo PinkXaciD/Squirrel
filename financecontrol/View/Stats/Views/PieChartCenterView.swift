@@ -65,10 +65,6 @@ extension CenterChartView {
     }
     
     private func operationsSum(operationsInMonth: Double) -> String {
-        let currencyFormatter = NumberFormatter()
-        currencyFormatter.maximumFractionDigits = 2
-        currencyFormatter.minimumFractionDigits = 2
-        
-        return currencyFormatter.string(from: operationsInMonth as NSNumber) ?? "Error"
+        return Locale.current.currencyNarrowFormat(operationsInMonth, currency: UserDefaults.defaultCurrency()) ?? "Error"
     }
 }

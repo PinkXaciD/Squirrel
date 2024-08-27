@@ -53,7 +53,7 @@ struct AccessoryCircularAddExpenseView: View {
 }
 
 #if DEBUG
-struct AccessoryCircularAddExpenceViewPreviews: PreviewProvider {
+struct AccessoryCircularAddExpenseViewPreviews: PreviewProvider {
     static var previews: some View {
         if #available(iOS 16.0, *){
             AccessoryCircularAddExpenseView(

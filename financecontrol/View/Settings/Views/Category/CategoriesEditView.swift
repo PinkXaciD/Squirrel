@@ -10,12 +10,23 @@ import SwiftUI
 struct CategoriesEditView: View {
     @EnvironmentObject var cdm: CoreDataModel
     
-    @State private var id: UUID = .init()
-    
     var body: some View {
         List {
-            ForEach(cdm.savedCategories) { entity in
-                CategoryRow(category: entity)
+            if !cdm.savedCategories.isEmpty {
+                Section {
+                    ForEach(cdm.savedCategories) { entity in
+                        CategoryRow(category: entity)
+                    }
+                }
+            } else {
+                CustomContentUnavailableView(
+                    "No Categories",
+                    imageName: "list.bullet",
+                    description: "You can add categories below."
+                )
+                .listRowInsets(.init(top: 20, leading: 0, bottom: 20, trailing: 0))
+                .frame(maxWidth: .infinity)
+                .listRowBackground(EmptyView())
             }
             
             manageCategoriesSection
@@ -31,22 +42,22 @@ struct CategoriesEditView: View {
                 addNewToolbarButton
             }
         }
+        .animation(.default, value: cdm.savedCategories)
     }
     
     private var manageCategoriesSection: some View {
         Section {
             NavigationLink("Add new") {
-                AddCategoryView(id: $id, insert: false)
+                AddCategoryView(id: .constant(.init()), insert: false)
             }
             
             NavigationLink {
                 ShadowedCategoriesView()
-                    .navigationTitle("Archived categories")
             } label: {
                 HStack {
                     Text("Archived categories")
                     Spacer()
-                    Text("\(cdm.shadowedCategories.count)")
+                    Text(cdm.shadowedCategories.count.formatted())
                         .foregroundStyle(.secondary)
                 }
             }
@@ -55,7 +66,7 @@ struct CategoriesEditView: View {
     
     private var addNewToolbarButton: some View {
         NavigationLink {
-            AddCategoryView(id: $id, insert: false)
+            AddCategoryView(id: .constant(.init()), insert: false)
         } label: {
             Label("Add new category", systemImage: "plus")
         }
@@ -64,7 +75,6 @@ struct CategoriesEditView: View {
     private var shadowedCategoriesToolbarButton: some View {
         NavigationLink {
             ShadowedCategoriesView()
-                .navigationTitle("Archived categories")
         } label: {
             Label("Archived categories", systemImage: "archivebox")
         }

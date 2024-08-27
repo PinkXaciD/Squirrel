@@ -11,6 +11,7 @@ import SwiftUI
 import WidgetKit
 #endif
 
+@available(*, deprecated, renamed: "WeeklySpendingsWidgetView", message: "This is old widget")
 struct SmallSumWidgetView: View {
     @Environment(\.colorScheme) private var colorScheme
     
@@ -85,11 +86,11 @@ struct SmallSumWidgetView: View {
     }
 }
 
-#if DEBUG
-struct WidgetPreview: PreviewProvider {
-    static var previews: some View {
-        SmallSumWidgetView(entry: .init(date: .now, expenses: 1200, currency: "JPY"))
-            .previewContext(WidgetPreviewContext(family: .systemSmall))
-    }
-}
-#endif
+//#if DEBUG
+//struct WidgetPreview: PreviewProvider {
+//    static var previews: some View {
+//        SmallSumWidgetView(entry: .init(date: .now, expenses: 1200, currency: "JPY"))
+//            .previewContext(WidgetPreviewContext(family: .systemSmall))
+//    }
+//}
+//#endif

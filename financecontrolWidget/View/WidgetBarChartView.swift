@@ -45,11 +45,12 @@ struct WidgetBarChartView: View {
             GeometryReader { geometry in
                 ZStack(alignment: .bottom) {
                     Line()
-                        .stroke(style: StrokeStyle(lineWidth: (0.5), dash: [5]))
-                        .frame(height: 2)
+                        .stroke(style: StrokeStyle(lineWidth: (1), dash: [5]))
+                        .frame(height: 1)
                         .offset(y: -countAverage(height: geometry.size.height, max: max))
                         .foregroundColor(.secondary.opacity(isAccessory ? 0.5 : 0.3))
                         .frame(width: width * 7 + 60)
+                        .opacity(max == 0 ? 0 : 1)
                     
                     HStack(alignment: .bottom, spacing: 10) {
                         ForEach(generateData(geometry.size.height, max: max), id: \.key) { key, value in

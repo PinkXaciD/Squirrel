@@ -22,6 +22,10 @@ struct Currency: Hashable, Comparable, Identifiable {
         Locale.current.localizedString(forCurrencyCode: code)
     }
     
+    var fractionDigits: Int {
+        Locale.current.currencyFractionDigits(currencyCode: self.code)
+    }
+    
     static func getAll() -> [Currency] {
         return Locale.customCommonISOCurrencyCodes.map { .init(code: $0) }
     }
@@ -36,7 +40,7 @@ struct Currency: Hashable, Comparable, Identifiable {
 }
 
 extension Locale {
-    func currency() -> Squirrel.Currency? {
+    func getCurrency() -> Squirrel.Currency? {
         let currencyCode = {
             if #available(iOS 16, *) {
                 return self.currency?.identifier

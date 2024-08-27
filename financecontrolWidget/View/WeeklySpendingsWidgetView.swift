@@ -12,13 +12,6 @@ struct WeeklySpendingsWidgetView: View {
     @Environment(\.widgetFamily) private var widgetFamily
     
     let entry: WeeklySpendingsWidgetEntry
-    var numberFormat: FloatingPointFormatStyle<Double> {
-        if entry.todaySum > 99999 {
-            return .number.notation(.compactName)
-        }
-        
-        return .number.precision(.fractionLength(0...2))
-    }
     
     var body: some View {
         if #available(iOS 17.0, *) {
@@ -90,8 +83,15 @@ struct WeeklySpendingsAccessoryWidgetView: View {
                 Text("Today: ")
                     .font(.footnote)
                 
-                Text(entry.todaySum.formatted(.currency(code: entry.currency).precision(.fractionLength(0))))
-                    .font(.system(.footnote, design: .rounded).bold())
+                Text(
+                    entry.todaySum.formatted(
+                        .currency(code: entry.currency)
+                        .precision(
+                            .fractionLength(entry.todaySum >= 1000 ? 0 : Locale.current.currencyFractionDigits(currencyCode: entry.currency))
+                        )
+                    )
+                )
+                .font(.system(.footnote, design: .rounded).bold())
                 
                 Spacer()
             }
@@ -109,8 +109,15 @@ struct WeeklySpendingsAccessoryWidgetView: View {
                 Text("Today: ")
                     .font(.footnote)
                 
-                Text(entry.todaySum.formatted(.currency(code: entry.currency).precision(.fractionLength(0))))
-                    .font(.system(.footnote, design: .rounded).bold())
+                Text(
+                    entry.todaySum.formatted(
+                        .currency(code: entry.currency)
+                        .precision(
+                            .fractionLength(entry.todaySum > 1000 ? 0 : Locale.current.currencyFractionDigits(currencyCode: entry.currency))
+                        )
+                    )
+                )
+                .font(.system(.footnote, design: .rounded).bold())
                 
                 Spacer()
             }

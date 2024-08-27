@@ -61,7 +61,6 @@ final class RatesViewModel: ViewModel {
                 
                 UserDefaults.standard.set(safeRates.timestamp, forKey: UDKeys.updateTime.rawValue)
                 UserDefaults.standard.set(false, forKey: UDKeys.updateRates.rawValue)
-                print(UserDefaults.standard.bool(forKey: UDKeys.updateRates.rawValue))
                 
                 await MainActor.run {
                     self.status = .success
@@ -128,16 +127,15 @@ extension RatesViewModel {
 //        guard self.status != .waitingForNetwork else {
 //            throw URLError(.notConnectedToInternet)
 //        }
+        if let timestamp, let cached = cache[Calendar.gmt.startOfDay(for: timestamp)] {
+            return cached
+        }
         
         do {
-            if let timestamp, let cached = cache[Calendar.current.startOfDay(for: timestamp)] {
-                return cached
-            }
-            
             let rm: RatesModel = .init()
             let downloaded = try await rm.downloadRates(timestamp: timestamp)
             if let timestamp {
-                cache.updateValue(downloaded, forKey: Calendar.current.startOfDay(for: timestamp))
+                cache.updateValue(downloaded, forKey: Calendar.gmt.startOfDay(for: timestamp))
             }
             return downloaded
         } catch {

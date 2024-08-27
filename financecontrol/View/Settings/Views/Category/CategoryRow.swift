@@ -24,12 +24,12 @@ struct CategoryRow: View {
             favoriteButton
         }
         .swipeActions(edge: .trailing) {
-            deleteButton
+            getDeleteButton(isSwipeAction: true)
         }
         .contextMenu {
             favoriteButton
             
-            deleteButton
+            getDeleteButton(isSwipeAction: false)
         }
         .normalizePadding()
     }
@@ -74,9 +74,11 @@ struct CategoryRow: View {
         .tint(.yellow)
     }
     
-    private var deleteButton: some View {
-        Button(role: .destructive) {
-            cdm.changeShadowStateOfCategory(category)
+    private func getDeleteButton(isSwipeAction: Bool) -> some View {
+        Button(role: isSwipeAction ? .destructive : nil) {
+            withAnimation {
+                cdm.changeShadowStateOfCategory(category)
+            }
         } label: {
             Label("Archive", systemImage: "archivebox.fill")
         }
