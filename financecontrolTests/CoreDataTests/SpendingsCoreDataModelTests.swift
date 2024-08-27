@@ -75,18 +75,18 @@ final class SpendingsCoreDataModelTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Edit spending")
         var cancellables = Set<AnyCancellable>()
         
-        func waitForChartDataUpdate() {
-            cdm?.$updateCharts
-                .dropFirst(2)
-                .sink { value in
-                    if value {
-                        expectation.fulfill()
-                    }
-                }
-                .store(in: &cancellables)
-        }
-        
-        waitForChartDataUpdate()
+//        func waitForChartDataUpdate() {
+//            cdm?.$updateCharts
+//                .dropFirst(2)
+//                .sink { value in
+//                    if value {
+//                        expectation.fulfill()
+//                    }
+//                }
+//                .store(in: &cancellables)
+//        }
+//        
+//        waitForChartDataUpdate()
         
         let amount = Double.random(in: 0..<10000)
         let amountUSD = Double.random(in: 0..<10000)

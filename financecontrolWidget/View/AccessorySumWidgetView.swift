@@ -14,13 +14,6 @@ struct AccessorySumWidgetView: View {
     
     let entry: SumEntry
     
-    var currencyFormatter: NumberFormatter {
-        let currencyFormatter = NumberFormatter()
-        currencyFormatter.maximumFractionDigits = 2
-        currencyFormatter.minimumFractionDigits = 0
-        return currencyFormatter
-    }
-    
     var body: some View {
         if widgetFamily == .accessoryCircular {
             AccessoryCircularSumWidgetView(entry: entry)

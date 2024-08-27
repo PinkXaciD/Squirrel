@@ -30,6 +30,9 @@ final class EditSpendingViewModel: SpendingViewModel {
     @Published
     var comment: String
     
+    @Published
+    var isLoading: Bool = false
+    
     #if DEBUG
     let vmStateLogger: Logger
     #endif
@@ -76,7 +79,7 @@ final class EditSpendingViewModel: SpendingViewModel {
             
             guard let number = formatter.number(from: amount) else {
                 ErrorType(
-                    errorDescription: "Failed to edit expence",
+                    errorDescription: "Failed to edit expense",
                     failureReason: "Cannot convert amount to number",
                     recoverySuggestion: "Try again"
                 )
@@ -102,6 +105,9 @@ final class EditSpendingViewModel: SpendingViewModel {
             if self.currency == "USD" {
                 spending.amountUSD = doubleAmount
                 cdm.editSpending(spending: entity, newSpending: spending)
+                DispatchQueue.main.async {
+                    self.end()
+                }
                 #if DEBUG
                 let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
                 logger.log("Currency is USD, skipping rates fetching...")
@@ -109,10 +115,20 @@ final class EditSpendingViewModel: SpendingViewModel {
                 return
             }
             
-            if !Calendar.current.isDateInToday(date) {
+            DispatchQueue.main.async {
+                if Calendar.gmt.isDate(self.entity.wrappedDate, inSameDayAs: self.date), self.entity.wrappedCurrency == self.currency {
+                    spending.amountUSD = (spending.amount / self.entity.amount) * self.entity.amountUSD
+                    self.cdm.editSpending(spending: self.entity, newSpending: spending)
+                    self.end()
+                    return
+                }
+            }
+            
+            if !Calendar.gmt.isDateInToday(date) {
                 Task { [spending] in
                     let oldRates = try? await self.rvm.getRates(self.date).rates
                     await MainActor.run { [spending] in
+                        let isHistoricalRatesUnavailable: Bool = oldRates == nil
                         var spendingCopy = spending
                         if let oldRates = oldRates {
                             spendingCopy.amountUSD = doubleAmount / (oldRates[self.currency] ?? 1)
@@ -120,8 +136,8 @@ final class EditSpendingViewModel: SpendingViewModel {
                             spendingCopy.amountUSD = doubleAmount / (self.rvm.rates[self.currency] ?? 1)
                         }
                         
-                        self.cdm.editSpending(spending: self.entity, newSpending: spendingCopy)
-                        self.clear()
+                        self.cdm.editSpending(spending: self.entity, newSpending: spendingCopy, addToFetchQueue: isHistoricalRatesUnavailable)
+                        self.end()
                     }
                 }
             } else {
@@ -129,10 +145,16 @@ final class EditSpendingViewModel: SpendingViewModel {
                 
                 cdm.editSpending(spending: entity, newSpending: spending)
                 DispatchQueue.main.async {
-                    self.clear()
+                    self.end()
                 }
             }
         }
+    }
+    
+    private func end() {
+        self.isLoading = false
+        
+        NotificationCenter.default.post(name: NSNotification.Name("DismissEditSpendingView"), object: nil)
     }
     
     func clear() {

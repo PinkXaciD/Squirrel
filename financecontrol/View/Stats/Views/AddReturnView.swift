@@ -51,7 +51,7 @@ struct AddReturnView: View {
             
             TextField("Amount", text: $vm.amount)
                 .focused($focusedField, equals: .amount)
-                .numbersOnly($vm.amount)
+                .currencyFormatted($vm.amount, currencyCode: vm.currency)
                 .spendingAmountTextFieldStyle()
                 .onAppear {
                     focusedField = .amount

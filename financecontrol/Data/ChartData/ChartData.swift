@@ -99,8 +99,8 @@ struct ChartData: Equatable {
     }
     
     // MARK: Empty init
-    private init() {
-        self.id = 0
+    private init(id: Int = 0) {
+        self.id = id
         self.date = Date()
         self.sum = 0
         self.categories = []
@@ -109,8 +109,8 @@ struct ChartData: Equatable {
         self.categoriesDict = [:]
     }
     
-    static func getEmpty() -> Self {
-        return ChartData()
+    static func getEmpty(id: Int = 0) -> Self {
+        return ChartData(id: id)
     }
 }
 

@@ -22,21 +22,25 @@ struct DefaultCurrencySelectorView: View {
     @State
     private var showNavLink: Bool = false
     
+    @State
+    private var update: Bool = false
+    
     var body: some View {
         List {
-            // Picker replaced with this cause of some iOS bug
-            ForEach(UserDefaults.standard.getCurrencies().sorted(), id: \.hashValue) { currency in
-                Button {
-                    setCurrency(currency.code)
-                } label: {
-                    CurrencyRow(defaultCurrency: $defaultCurrency, currency: currency, selectedText: separateCurrencies ? "Selected as display" : "Selected as default")
-                }
-                .buttonStyle(.plain)
-                .swipeActions(edge: .trailing) {
-                    deleteButton(currency)
-                }
-                .contextMenu {
-                    deleteButton(currency)
+            Section {
+                ForEach(update ? UserDefaults.standard.getCurrencies().sorted() : UserDefaults.standard.getCurrencies().sorted(), id: \.hashValue) { currency in
+                    Button {
+                        setCurrency(currency.code)
+                    } label: {
+                        CurrencyRow(defaultCurrency: $defaultCurrency, currency: currency, selectedText: separateCurrencies ? "Selected as display" : "Selected as default")
+                    }
+                    .buttonStyle(.plain)
+                    .swipeActions(edge: .trailing) {
+                        deleteButton(currency)
+                    }
+                    .contextMenu {
+                        deleteButton(currency)
+                    }
                 }
             }
             
@@ -113,6 +117,7 @@ struct DefaultCurrencySelectorView: View {
         Button(role: .destructive) {
             withAnimation {
                 UserDefaults.standard.deleteCurrency(currency)
+                update.toggle()
             }
         } label: {
             Label("Delete", systemImage: "trash.fill")
@@ -130,10 +135,11 @@ struct DefaultCurrencySelectorView: View {
         }
         
         cdm.updateBarChart()
+        NotificationCenter.default.post(name: Notification.Name("UpdatePieChart"), object: nil)
         
         if let defaults = UserDefaults(suiteName: Vars.groupName) {
-            defaults.set(tag, forKey: "defaultCurrency")
-            cdm.passSpendingsToSumWidget()
+            defaults.set(tag, forKey: UDKeys.defaultCurrency.rawValue)
+            cdm.passSpendingsToSumWidget(data: cdm.statsListData)
         }
     }
 }

@@ -34,6 +34,8 @@ struct CategoryEditSubView: View {
     @State private var colorSelectedDescription: String
     @State private var triedToSave: Bool = false
     
+    @State private var showConfirmationDialog: Bool = false
+    
     @FocusState var nameIsFocused: Bool
         
     init(category: CategoryEntity, dismiss: Binding<Bool>) {
@@ -51,6 +53,8 @@ struct CategoryEditSubView: View {
             
             favoriteSection
             
+            deleteSection
+            
             spendingsSection
         }
         .toolbar {
@@ -58,6 +62,15 @@ struct CategoryEditSubView: View {
             
             trailingToolbar
         }
+        .confirmationDialog("Delete this category?", isPresented: $showConfirmationDialog, titleVisibility: .visible) {
+            Button("Delete", role: .destructive) {
+                cdm.deleteCategory(category)
+                dismiss = true
+            }
+        } message: {
+            Text("You can't undo this action.\nAll expenses from this category would be deleted")
+        }
+
     }
     
     private var nameSection: some View {
@@ -89,6 +102,14 @@ struct CategoryEditSubView: View {
                 withAnimation {
                     cdm.changeFavoriteStateOfCategory(category)
                 }
+            }
+        }
+    }
+    
+    private var deleteSection: some View {
+        Section {
+            Button("Delete", role: .destructive) {
+                showConfirmationDialog.toggle()
             }
         }
     }

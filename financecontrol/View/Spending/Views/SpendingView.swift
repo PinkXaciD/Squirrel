@@ -256,6 +256,8 @@ struct SpendingView: View {
             .foregroundColor(entity.amountWithReturns == 0 ? .secondary : .green)
             .disabled(entity.amountWithReturns == 0)
             .frame(maxWidth: .infinity)
+            .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 10))
+            .hoverEffect()
             .padding(.top, 10)
             
             Button(role: .destructive) {
@@ -271,6 +273,8 @@ struct SpendingView: View {
                 }
             }
             .frame(maxWidth: .infinity)
+            .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 10))
+            .hoverEffect()
             .padding(.top, 10)
         }
         .listRowInsets(.init(top: 15, leading: 0, bottom: 15, trailing: 0))
@@ -299,9 +303,7 @@ struct SpendingView: View {
 extension SpendingView {
     private func editAction(_ field: String = "nil") {
         editFocus = field
-        withAnimation {
-            edit.toggle()
-        }
+        edit.toggle()
     }
 }
 

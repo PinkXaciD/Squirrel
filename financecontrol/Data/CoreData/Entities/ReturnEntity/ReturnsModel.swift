@@ -28,10 +28,6 @@ extension CoreDataModel {
         
         fetchSpendings()
         
-        if Calendar.current.isDateInToday(spending.wrappedDate) {
-            passSpendingsToSumWidget()
-        }
-        
         HapticManager.shared.notification(.success)
     }
     
@@ -59,14 +55,9 @@ extension CoreDataModel {
     }
     
     func deleteReturn(spendingReturn: ReturnEntity) {
-        let date = spendingReturn.date
         context.delete(spendingReturn)
         manager.save()
         fetchSpendings()
-        
-        if Calendar.current.isDateInToday(date ?? .distantPast) {
-            passSpendingsToSumWidget()
-        }
     }
     
     func editReturn(
@@ -84,10 +75,6 @@ extension CoreDataModel {
         returnEntity.name = name
         manager.save()
         fetchSpendings()
-        
-        if Calendar.current.isDateInToday(date) {
-            passSpendingsToSumWidget()
-        }
     }
     
     func editRerturnFromSpending(
@@ -119,9 +106,5 @@ extension CoreDataModel {
         
         manager.save()
         fetchSpendings()
-        
-        if Calendar.current.isDateInToday(spending.wrappedDate) {
-            passSpendingsToSumWidget()
-        }
     }
 }

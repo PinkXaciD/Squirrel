@@ -18,6 +18,7 @@ func launch() -> Void {
     dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
     dateFormatter.timeZone = .init(identifier: "GMT")
     
+    // MARK: Rates update scheduling
     let currentDate = dateFormatter.string(from: .now)
     let updateTime = UserDefaults.standard.string(forKey: UDKeys.updateTime.rawValue) ?? dateFormatter.string(from: .distantPast)
     
@@ -37,7 +38,12 @@ func launch() -> Void {
     }
     
     if UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) == nil {
-        UserDefaults.standard.setValue(Locale.current.currencyCode ?? "USD", forKey: UDKeys.defaultCurrency.rawValue)
+        UserDefaults.standard.set(Locale.current.currencyCode ?? "USD", forKey: UDKeys.defaultCurrency.rawValue)
+    }
+    
+    if let sharedDefaults = UserDefaults(suiteName: Vars.groupName), sharedDefaults.string(forKey: UDKeys.defaultCurrency.rawValue) == nil {
+        sharedDefaults.set(Locale.current.currencyCode ?? "USD", forKey: UDKeys.defaultCurrency.rawValue)
+        WidgetsManager.shared.reloadSumWidgets()
     }
     
     // TODO: Remove
@@ -69,9 +75,5 @@ func launch() -> Void {
         }
         
         UserDefaults.standard.setValue(nil, forKey: "theme")
-    } else {
-        #if DEBUG
-        logger.debug("Nothing to migrate")
-        #endif
     }
 }

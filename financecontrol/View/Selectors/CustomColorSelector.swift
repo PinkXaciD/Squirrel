@@ -25,6 +25,8 @@ struct CustomColorSelector: View {
                     buttonLabel(colorDescription)
                 }
                 .buttonStyle(.plain)
+                .contentShape(.hoverEffect, Circle())
+                .hoverEffect(.lift)
             }
         }
     }
@@ -40,7 +42,6 @@ struct CustomColorSelector: View {
                     .scaleEffect(colorDescription == colorSelectedDescription ? 0.8 : 1)
             }
             .frame(minWidth: 35, maxWidth: 50, minHeight: 35, maxHeight: 50)
-            .hoverEffect(.lift)
     }
     
     private func buttonAction(_ colorDescription: String) {

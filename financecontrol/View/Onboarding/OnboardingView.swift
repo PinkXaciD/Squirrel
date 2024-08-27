@@ -90,15 +90,13 @@ struct OnboardingView: View {
             if screen == 1 {
                 UserDefaults.standard.addCurrency(selectedCurrency)
                 
-                UserDefaults.standard.setValue(selectedCurrency, forKey: UDKeys.defaultCurrency.rawValue)
-                
-                UserDefaults.standard.setValue(selectedCurrency, forKey: UDKeys.defaultSelectedCurrency.rawValue)
-                
-                UserDefaults.standard.setValue(false, forKey: UDKeys.separateCurrencies.rawValue)
+                UserDefaults.standard.set(selectedCurrency, forKey: UDKeys.defaultCurrency.rawValue)
+                UserDefaults.standard.set(selectedCurrency, forKey: UDKeys.defaultSelectedCurrency.rawValue)
+                UserDefaults.standard.set(false, forKey: UDKeys.separateCurrencies.rawValue)
                 
                 if let defaults = UserDefaults(suiteName: Vars.groupName) {
                     defaults.set(selectedCurrency, forKey: "defaultCurrency")
-                    cdm.passSpendingsToSumWidget()
+                    cdm.passSpendingsToSumWidget(data: cdm.statsListData)
                 }
             }
             
@@ -135,8 +133,9 @@ struct OnboardingView: View {
                     }
                 }
             }
-            .hoverEffect(.highlight)
         }
+        .contentShape(.hoverEffect, Capsule())
+        .hoverEffect(.highlight)
     }
     
     private var screen0: some View {

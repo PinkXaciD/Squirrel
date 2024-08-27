@@ -4,9 +4,6 @@
     "" : {
 
     },
-    "-%@" : {
-
-    },
     "%@" : {
 
     },
@@ -49,9 +46,6 @@
           }
         }
       }
-    },
-    "%lld" : {
-
     },
     "%lld characters left" : {
       "localizations" : {
@@ -120,9 +114,6 @@
       }
     },
     "%lld selected" : {
-
-    },
-    "0.00" : {
 
     },
     "1 USD" : {
@@ -382,6 +373,9 @@
     "Clear" : {
 
     },
+    "Clear fetch queue" : {
+
+    },
     "Clear filters" : {
 
     },
@@ -398,9 +392,6 @@
 
     },
     "Close" : {
-
-    },
-    "Color" : {
 
     },
     "Color and Icon" : {
@@ -523,6 +514,9 @@
     "Failed to get CoreData entity description" : {
 
     },
+    "Failed to update rates" : {
+
+    },
     "Fallback rates timestamp:" : {
 
     },
@@ -568,7 +562,7 @@
     "Identifier:" : {
 
     },
-    "Import data as JSON" : {
+    "Import data from JSON" : {
 
     },
     "Import existing data" : {
@@ -601,6 +595,12 @@
     },
     "Indigo" : {
 
+    },
+    "Is connected" : {
+      "comment" : "Debug view: is network available"
+    },
+    "Is expensive" : {
+      "comment" : "Debug view: is network expensive"
     },
     "It seems some system files are corrupted" : {
 
@@ -641,6 +641,9 @@
     "No categories" : {
 
     },
+    "No Categories" : {
+
+    },
     "No comment provided" : {
 
     },
@@ -657,6 +660,9 @@
 
     },
     "No Info file was found" : {
+
+    },
+    "No network" : {
 
     },
     "No radar will find you now" : {
@@ -738,6 +744,9 @@
     "Rates" : {
 
     },
+    "Rates fetch queue" : {
+
+    },
     "Rates updated" : {
 
     },
@@ -745,9 +754,6 @@
 
     },
     "Recommended" : {
-
-    },
-    "Red" : {
 
     },
     "Reload all widget timelines" : {
@@ -784,6 +790,9 @@
 
     },
     "Search by place or comment" : {
+
+    },
+    "Select a tab from sidebar" : {
 
     },
     "Select currency" : {
@@ -843,13 +852,16 @@
     "Stats" : {
 
     },
+    "Status:" : {
+      "comment" : "Debug view: network status"
+    },
     "Stealth" : {
 
     },
     "Success" : {
 
     },
-    "Swipe left to restore, swipe right to delete" : {
+    "Swipe from left to restore, swipe from right to delete" : {
 
     },
     "Tap to remove selection" : {
@@ -859,33 +871,6 @@
 
     },
     "This will clear all settings of app. \nYou can't undo this action." : {
-
-    },
-    "Throw API key error" : {
-
-    },
-    "Throw bad URL error" : {
-
-    },
-    "Throw category error" : {
-
-    },
-    "Throw Empty database error" : {
-
-    },
-    "Throw entity description error" : {
-
-    },
-    "Throw Info.plist error" : {
-
-    },
-    "Throw URL bad response error" : {
-
-    },
-    "Throw URL components error" : {
-
-    },
-    "Throw URL error" : {
 
     },
     "To" : {
@@ -949,6 +934,9 @@
     "Yesterday" : {
 
     },
+    "You can add categories below." : {
+
+    },
     "You can add categories in settings." : {
 
     },
@@ -958,7 +946,7 @@
     "You can add expenses from home screen." : {
 
     },
-    "You can archive categories in settings, they will be hidden from selection when you add new expenses, but all old expenses will be saved" : {
+    "You can archive categories in settings, they will be hidden from selection when you add new expenses, but all old expenses will be saved." : {
 
     },
     "You can change default currency or add more later in settings" : {
@@ -973,7 +961,7 @@
     "You can't undo this action." : {
 
     },
-    "You will not be able to undo this action.\nAll expenses in this category will be permanently deleted" : {
+    "You can't undo this action.\nAll expenses from this category would be deleted" : {
 
     }
   },

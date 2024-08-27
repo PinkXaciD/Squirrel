@@ -67,6 +67,7 @@ extension CategoryEntity: ToSafeObject {
     }
 }
 
+/// Thread-safe immutable structure, mirroring `CategoryEntity` CoreData class
 struct TSCategoryEntity: ToUnsafeObject, Identifiable, Comparable {
     func unsafeObject(in context: NSManagedObjectContext) throws -> CategoryEntity {
         try context.performAndWait {
@@ -128,5 +129,37 @@ struct TSCategoryEntity: ToUnsafeObject, Identifiable, Comparable {
     
     var sumUSDWithReturns: Double {
         self.spendings.compactMap { $0.amountUSDWithReturns }.reduce(0, +)
+    }
+    
+    /// Memberwise initializer
+    /// - Important: You can crerate object with this initializer, but to convert created object to CoreData class you need to be sure that `id` you passed is valid and CoreData class with such id exists and can be fetched
+    init(color: String?, id: UUID?, isShadowed: Bool, isFavorite: Bool, name: String?, spendings: [TSSpendingEntity]) {
+        self.color = color
+        self.id = id
+        self.isShadowed = isShadowed
+        self.isFavorite = isFavorite
+        self.name = name
+        self.spendings = spendings
+    }
+    
+    /// Creates thread-safe, immutable spending object from CoreData object
+    /// - Parameter category: CoreData object
+    /// - Important: While created object is thread-safe, this method is not, and should be called only from CoreData object's context
+    init(_ category: CategoryEntity) {
+        self.color = category.color
+        self.id = category.id
+        self.isShadowed = category.isShadowed
+        self.isFavorite = category.isFavorite
+        self.name = category.name
+        
+        var safeSpendings: [TSSpendingEntity] {
+            guard let spendings = category.spendings?.allObjects as? [SpendingEntity] else {
+                return []
+            }
+            
+            return spendings.map { $0.safeObject() }
+        }
+        
+        self.spendings = safeSpendings
     }
 }

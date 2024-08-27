@@ -10,6 +10,7 @@ import Combine
 
 struct NumbersViewModifier: ViewModifier {
     @Binding var text: String
+    let currency: Currency
     
     func body(content: Content) -> some View {
         content
@@ -28,6 +29,10 @@ struct NumbersViewModifier: ViewModifier {
     }
     
     private func validate(_ components: [String]) -> Bool {
-        return components.count > 2 || (components.count == 2 && components[1].count > 2)
+        if currency.fractionDigits == 0 {
+            return components.count > 1
+        }
+        
+        return components.count > 2 || (components.count == 2 && components[1].count > currency.fractionDigits)
     }
 }

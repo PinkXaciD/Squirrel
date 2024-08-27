@@ -19,13 +19,16 @@ struct financecontrolWidgetBundle: WidgetBundle {
     private func getWidgets() -> some Widget {
         if #available(iOS 16.0, *) {
             return WidgetBundleBuilder.buildBlock(
-                SmallSumWidget(),
+//                SmallSumWidget(),
+                WeeklySpendingsAccessoryWidget(),
                 AccessorySumWidget(),
-                AccessoryCircularAddExpenseWidget()
+                AccessoryCircularAddExpenseWidget(),
+                WeeklySpendingsWidget()
             )
         } else {
             return WidgetBundleBuilder.buildBlock(
-                SmallSumWidget()
+//                SmallSumWidget(),
+                WeeklySpendingsWidget()
             )
         }
     }

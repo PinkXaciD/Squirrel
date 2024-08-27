@@ -7,7 +7,9 @@
 
 import WidgetKit
 import SwiftUI
+#if DEBUG
 import OSLog
+#endif
 
 struct AddExpenseWidgetProvider: TimelineProvider {
     func placeholder(in context: Context) -> AddExpenseEntry {
@@ -21,7 +23,9 @@ struct AddExpenseWidgetProvider: TimelineProvider {
     
     func getTimeline(in context: Context, completion: @escaping (Timeline<AddExpenseEntry>) -> Void) {
         var entries: [AddExpenseEntry] = []
-        let logger: Logger = .init(subsystem: Vars.widgetIdentifier, category: "Add expence timeline")
+        #if DEBUG
+        let logger: Logger = .init(subsystem: Vars.widgetIdentifier, category: "Add expense timeline")
+        #endif
         
         for _ in 0..<2 {
             let entryDate = Calendar.current.startOfDay(for: .init())
@@ -29,7 +33,9 @@ struct AddExpenseWidgetProvider: TimelineProvider {
             let entryURL = URLs.addExpenseAction
             let entry = AddExpenseEntry(date: entryDate, image: { entryImage }, url: entryURL)
             entries.append(entry)
+            #if DEBUG
             logger.debug("Generating entry... Date: \(entryDate), image name: \("squirrelLogo"), URL: \(entryURL?.absoluteString ?? "No URL")")
+            #endif
         }
         
         let timeline = Timeline(entries: entries, policy: .never)

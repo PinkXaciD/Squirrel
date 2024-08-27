@@ -18,12 +18,13 @@ extension View {
             .font(.system(size: 30, weight: .semibold, design: .rounded))
     }
     
-    /// Allows user to input only numbers with up to 2 numbers after decimal separator
+    /// Allows user to input only numbers with up to n numbers after decimal separator
     /// - Parameter text: Text to be formatted
+    /// - Parameter currencyCode
     /// - Returns: Formatted text
-    func numbersOnly(_ text: Binding<String>) -> some View {
+    func currencyFormatted(_ text: Binding<String>, currencyCode: String) -> some View {
         self
-            .modifier(NumbersViewModifier(text: text))
+            .modifier(NumbersViewModifier(text: text, currency: Currency(code: currencyCode)))
     }
     
     func smallSheet(_ fraction: CGFloat? = nil) -> some View {

@@ -56,6 +56,7 @@ struct PieChartLegendRowView: View {
             }
         }
         .buttonStyle(.plain)
+        .hoverEffect()
     }
     
     

@@ -28,7 +28,11 @@ struct DebugView: View {
             
             bundleSection
             
+            networkSection
+            
             defaultsSection
+            
+            keychainSection
             
             reloadWidgetsSection
             
@@ -62,6 +66,10 @@ struct DebugView: View {
                     urlErrorSection
                     
                     coreDataErrorSection
+                    
+                    keyChainErrorsSection
+                    
+                    cloudKitErrorsSection
                 }
                 .navigationTitle("Errors")
             }
@@ -72,20 +80,28 @@ struct DebugView: View {
     
     private var infoPlistSection: some View {
         Section {
-            Button("Throw Info.plist error") {
+            Button {
                 ErrorType(InfoPlistError.noInfoFound).publish()
+            } label: {
+                Text(verbatim: "Info.plist error")
             }
             
-            Button("Throw URL error") {
+            Button {
                 ErrorType(InfoPlistError.noURLFound).publish()
+            } label: {
+                Text(verbatim: "URL error")
             }
             
-            Button("Throw URL components error") {
+            Button {
                 ErrorType(InfoPlistError.failedToReadURLComponents).publish()
+            } label: {
+                Text(verbatim: "URL components error")
             }
             
-            Button("Throw API key error") {
+            Button {
                 ErrorType(InfoPlistError.noAPIKeyFound).publish()
+            } label: {
+                Text(verbatim: "API key error")
             }
         } header: {
             Text(verbatim: "Info.plist error")
@@ -94,8 +110,10 @@ struct DebugView: View {
     
     private var ratesFetchErrorSection: some View {
         Section {
-            Button("Throw Empty database error") {
+            Button {
                 ErrorType(RatesFetchError.emptyDatabase).publish()
+            } label: {
+                Text(verbatim: "Empty database error")
             }
         } header: {
             Text(verbatim: "Rates fetch errors")
@@ -104,12 +122,16 @@ struct DebugView: View {
     
     private var urlErrorSection: some View {
         Section {
-            Button("Throw URL bad response error") {
+            Button {
                 ErrorType(URLError(.badServerResponse)).publish()
+            } label: {
+                Text(verbatim: "URL bad response error")
             }
             
-            Button("Throw bad URL error") {
+            Button {
                 ErrorType(URLError(.badURL)).publish()
+            } label: {
+                Text(verbatim: "Bad URL error")
             }
         } header: {
             Text(verbatim: "URL errors")
@@ -118,15 +140,68 @@ struct DebugView: View {
     
     private var coreDataErrorSection: some View {
         Section {
-            Button("Throw entity description error") {
+            Button {
                 ErrorType(CoreDataError.failedToGetEntityDescription).publish()
+            } label: {
+                Text(verbatim: "Entity description error")
             }
             
-            Button("Throw category error") {
+            Button {
                 ErrorType(CoreDataError.failedToFindCategory).publish()
+            } label: {
+                Text(verbatim: "Category error")
             }
         } header: {
             Text(verbatim: "CoreData errors")
+        }
+    }
+    
+    private var keyChainErrorsSection: some View {
+        Section {
+            Button {
+                ErrorType(KeychainError.failedToSetValue).publish()
+            } label: {
+                Text(verbatim: "Failed to set value")
+            }
+            
+            Button {
+                ErrorType(KeychainError.failedToRemoveValue).publish()
+            } label: {
+                Text(verbatim: "Failed to remove value")
+            }
+            
+            Button {
+                ErrorType(KeychainError.failedToEncodeURL).publish()
+            } label: {
+                Text(verbatim: "Failed to encode URL")
+            }
+            
+            Button {
+                ErrorType(KeychainError.failedToUnwrapValue).publish()
+            } label: {
+                Text(verbatim: "Failed to unwrap")
+            }
+        } header: {
+            Text(verbatim: "Keychain errors")
+        }
+    }
+    
+    private var cloudKitErrorsSection: some View {
+        Section {
+            Button {
+                ErrorType(CloudKitManager.CloudKitError.failedToDecodeResult).publish()
+            } label: {
+                Text(verbatim: "Failed to decode result")
+            }
+            
+            Button {
+                ErrorType(CloudKitManager.CloudKitError.failedToGetResult).publish()
+            } label: {
+                Text(verbatim: "Failed to get result")
+            }
+            
+        } header: {
+            Text(verbatim: "cloudkit errors")
         }
     }
     
@@ -180,6 +255,43 @@ struct DebugView: View {
         }
     }
     
+    private var networkSection: some View {
+        Section {
+            HStack {
+                Text("Is connected", comment: "Debug view: is network available")
+                
+                Spacer()
+                
+                Image(systemName: "checkmark")
+                    .font(.body.bold())
+                    .foregroundStyle(NetworkMonitor.shared.isConnected ? Color.accentColor : .secondary)
+                    .opacity(NetworkMonitor.shared.isConnected ? 1 : 0.5)
+            }
+            
+            HStack {
+                Text("Is expensive", comment: "Debug view: is network expensive")
+                
+                Spacer()
+                
+                Image(systemName: "checkmark")
+                    .font(.body.bold())
+                    .foregroundStyle(NetworkMonitor.shared.isExpensive ? Color.accentColor : .secondary)
+                    .opacity(NetworkMonitor.shared.isExpensive ? 1 : 0.5)
+            }
+            
+            HStack {
+                Text("Status:", comment: "Debug view: network status")
+                
+                Spacer()
+                
+                Text("\(NetworkMonitor.shared.status)")
+                    .foregroundStyle(.secondary)
+            }
+        } header: {
+            Text(verbatim: "Network")
+        }
+    }
+    
     private var defaultsSection: some View {
         Section {
             #if DEBUG
@@ -195,6 +307,20 @@ struct DebugView: View {
             } label: {
                 Text("Clear UserDefaults")
             }
+            
+            NavigationLink("Rates fetch queue") {
+                List {
+                    ForEach(UserDefaults.standard.getFetchQueue(), id: \.self) { id in
+                        Text(id.uuidString)
+                    }
+                }
+            }
+            
+            Button(role: .destructive) {
+                UserDefaults.standard.clearFetchQueue()
+            } label: {
+                Text("Clear fetch queue")
+            }
         }
     }
     
@@ -206,6 +332,18 @@ struct DebugView: View {
                 Text("Validate returns")
             }
 
+        }
+    }
+    
+    private var keychainSection: some View {
+        Section {
+            Button(role: .destructive) {
+                try? Keychain("api.squirrelapp.dev").removePassword()
+            } label: {
+                Text(verbatim: "Remove API key from keychain")
+            }
+        } header: {
+            Text(verbatim: "Keychain")
         }
     }
     

@@ -31,6 +31,9 @@ struct CenterChartView: View {
             Text(operationsSum(operationsInMonth: operationsInMonth))
                 .lineLimit(1)
                 .font(.system(size: 30, weight: .semibold, design: .rounded))
+                .padding(.horizontal, 6)
+                .minimumScaleFactor(0.5)
+                .scaledToFit()
             
             Text(defaultCurrency)
                 .foregroundColor(Color.secondary)
@@ -62,10 +65,6 @@ extension CenterChartView {
     }
     
     private func operationsSum(operationsInMonth: Double) -> String {
-        let currencyFormatter = NumberFormatter()
-        currencyFormatter.maximumFractionDigits = 2
-        currencyFormatter.minimumFractionDigits = 2
-        
-        return currencyFormatter.string(from: operationsInMonth as NSNumber) ?? "Error"
+        return Locale.current.currencyNarrowFormat(operationsInMonth, currency: UserDefaults.defaultCurrency()) ?? "Error"
     }
 }

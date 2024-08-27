@@ -19,15 +19,15 @@ struct ShadowedCategoriesRow: View {
     var body: some View {
         categoryInfo
             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                deleteButton
+                getDeleteButton(isSwipeAction: true)
             }
             .swipeActions(edge: .leading) {
-                restoreButton
+                getRestoreButton(isSwipeAction: true)
             }
             .contextMenu {
-                restoreButton
+                getRestoreButton(isSwipeAction: false)
                 
-                deleteButton
+                getDeleteButton(isSwipeAction: false)
             }
             .alert("Delete this category?", isPresented: $alertIsPresented) {
                 Button("Delete", role: .destructive) {
@@ -38,7 +38,7 @@ struct ShadowedCategoriesRow: View {
                 
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("You will not be able to undo this action.\nAll expenses in this category will be permanently deleted")
+                Text("You can't undo this action.\nAll expenses from this category would be deleted")
             }
             .normalizePadding()
     }
@@ -58,8 +58,8 @@ struct ShadowedCategoriesRow: View {
         .foregroundStyle(Color.primary, Color.secondary, Color[category.color ?? "nil"])
     }
     
-    private var deleteButton: some View {
-        Button {
+    private func getDeleteButton(isSwipeAction: Bool) -> some View {
+        Button(role: isSwipeAction ? nil : .destructive) {
             alertIsPresented.toggle()
         } label: {
             Label("Delete", systemImage: "trash.fill")
@@ -67,8 +67,8 @@ struct ShadowedCategoriesRow: View {
         .tint(Color.red)
     }
     
-    private var restoreButton: some View {
-        Button {
+    private func getRestoreButton(isSwipeAction: Bool) -> some View {
+        Button(role: isSwipeAction ? .destructive : nil) {
             withAnimation {
                 cdm.changeShadowStateOfCategory(category)
             }
@@ -76,10 +76,5 @@ struct ShadowedCategoriesRow: View {
             Label("Restore", systemImage: "arrow.uturn.backward")
         }
         .tint(Color.green)
-    }
-    
-    init(category: CategoryEntity) {
-        self.category = category
-        self.safeCategory = category.safeObject()
     }
 }

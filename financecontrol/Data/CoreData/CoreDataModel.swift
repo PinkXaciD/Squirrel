@@ -7,6 +7,9 @@
 
 import CoreData
 
+/// Main class for interacting with CoreData within the app
+///
+/// It contains data for all charts, lists and views and serves as source of truth for them
 final class CoreDataModel: ObservableObject {
     let container: NSPersistentContainer
     let context: NSManagedObjectContext
@@ -15,33 +18,50 @@ final class CoreDataModel: ObservableObject {
     init() {
         self.container = manager.container
         self.context = manager.context
-        fetchSpendings()
+        fetchSpendings(updateWidgets: false)
         fetchCategories()
-        fetchCurrencies()
-        migrateCurrenciesToDefaults()
+        timerUpdate()
     }
     
+    /// An array containing all spendings from CoreData
     @Published
     var savedSpendings: [SpendingEntity] = []
+    
+    /// Data for spendings list in `StatsView`
     @Published
     var statsListData: StatsListData = StatsListData()
+    
+    /// Data for bar chart in `HomeView`
     @Published
     var barChartData: NewBarChartData = NewBarChartData()
-    @Published
-    var usedCurrencies: Set<Currency> = .init()
-    @Published
-    var savedCategories: [CategoryEntity] = []
-    @Published
-    var shadowedCategories: [CategoryEntity] = []
-    @Published
-    var savedCurrencies: [CurrencyEntity] = []
-    @Published
-    var updateCharts: Bool = false
+    
+    /// Data for pie chart in `StatsView`
     @Published
     var pieChartSpendings: [Date:[TSSpendingEntity]] = .init()
+    
+    /// All currencies used by user
+    @Published
+    var usedCurrencies: Set<Currency> = .init()
+    
+    /// An array containing not shadowed categories from CoreData
+    @Published
+    var savedCategories: [CategoryEntity] = []
+    
+    /// An array containing shadowed categories from CoreData
+    @Published
+    var shadowedCategories: [CategoryEntity] = []
+    
+    @available(*, deprecated, renamed: "UserDefaults.standart.getCurrencies()", message: "")
+    @Published
+    var savedCurrencies: [CurrencyEntity] = []
+    
+    var waitingForRatesToBeAvailable: Bool = false
 }
 
 extension CoreDataModel {
+    /// Exports all data in JSON file
+    /// - Returns: URL to saved temporary file if save was successful
+    /// - Important: This method is not thread-safe
     func exportJSON() throws -> URL? {
         do {
             let encoder = JSONEncoder()
@@ -76,6 +96,9 @@ extension CoreDataModel {
         }
     }
     
+    /// Imports data from JSON file
+    /// - Parameter url: Path to file
+    /// - Returns: Count of imported spendings if succeeds, otherwise `nil`
     func importJSON(_ url: URL) -> Int? {
         var importedCount = 0
         
@@ -135,9 +158,20 @@ extension CoreDataModel {
                 return nil
             }
         } catch {
+            url.stopAccessingSecurityScopedResource()
             context.rollback()
             ErrorType(error: error).publish()
             return nil
         }
+    }
+    
+    /// Timer that will update all data in app when date changes
+    func timerUpdate() {
+        let fireTime = Calendar.current.date(byAdding: .day, value: 1, to: Calendar.current.startOfDay(for: Date())) ?? .distantFuture
+        let timer = Timer(fire: fireTime, interval: 0, repeats: false) { [weak self] timer in
+            self?.fetchSpendings()
+        }
+        
+        RunLoop.main.add(timer, forMode: .default)
     }
 }

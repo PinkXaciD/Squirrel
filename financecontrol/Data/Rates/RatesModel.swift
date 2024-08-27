@@ -14,6 +14,7 @@ import OSLog
 
 final class RatesModel {
     let errorHandler = ErrorHandler.shared
+    let networkMonitor = NetworkMonitor.shared
     
     init() {
         #if DEBUG
@@ -34,20 +35,27 @@ final class RatesModel {
 
 extension RatesModel {
     func downloadRates(timestamp: Date? = nil) async throws -> Rates {
-//        guard NetworkMonitor.shared.isConnected else {
-//            throw URLError(.notConnectedToInternet)
-//        }
-        
         do {
             let apiURLComponents = try getURLComponents()
-            let apiKey = try getApiKey()
+            let apiKey = try await getApiKey(apiURLComponents.host)
             var timestampString: String?
             
             if let timestamp = timestamp {
+                let timeZone: TimeZone = {
+                    if #available(iOS 16, *) {
+                        return .gmt
+                    } else {
+                        return .init(secondsFromGMT: 0) ?? .current // Cannot fail
+                    }
+                }()
+                
+                let calendar: Calendar = .gmt
                 let formatter = ISO8601DateFormatter()
-                formatter.timeZone = .init(secondsFromGMT: 0)
+                formatter.timeZone = timeZone
+                let startOfDay = calendar.startOfDay(for: timestamp)
                         
-                timestampString = "\"" + formatter.string(from: timestamp) + "\""
+//                print(startOfDay.description)
+                timestampString = "\"" + formatter.string(from: startOfDay) + "\""
             }
             
             let urlComponents = apiURLComponents.createComponents(timestamp: timestampString)
@@ -65,9 +73,14 @@ extension RatesModel {
 
             for count in 0 ..< 3 {
                 do {
+//                    throw URLError(.timedOut)
                     let (data, response) = try await URLSession.shared.data(for: request)
                     return try handleResponse(data: data, response: response)
                 } catch URLError.timedOut {
+                    if !NetworkMonitor.shared.isConnected {
+                        throw URLError(.notConnectedToInternet)
+                    }
+                    
                     if count == 2 {
                         throw URLError(.timedOut)
                     } else {
@@ -78,13 +91,8 @@ extension RatesModel {
                 }
             }
             
-            throw URLError(.timedOut)
-            
+            throw URLError(.unknown)
         } catch let error {
-            await MainActor.run {
-                handleError(error)
-            }
-            
             throw error
         }
     }
@@ -101,25 +109,6 @@ extension RatesModel {
             return try JSONDecoder().decode(Rates.self, from: data)
         } catch {
             throw error
-        }
-    }
-    
-    private func handleError(_ error: Error) {
-        if let error = error as? InfoPlistError {
-            ErrorType(error).publish()
-        } else if let error = error as? URLError {
-            switch error {
-            case URLError.badServerResponse, URLError.badURL:
-                ErrorType(error).publish()
-            default:
-                ErrorType(
-                    errorDescription: error.localizedDescription,
-                    failureReason: error.localizedDescription,
-                    recoverySuggestion: "Check your internet connection"
-                ).publish()
-            }
-        } else {
-            ErrorType(error: error).publish(file: #fileID, function: #function)
         }
     }
 }
@@ -157,17 +146,32 @@ extension RatesModel {
         return result
     }
     
-    private func getApiKey() throws -> String {
-        guard let filePath = Bundle.main.path(forResource: "Info", ofType: "plist") else {
-            throw InfoPlistError.noInfoFound
+    private func getApiKey(_ serverURL: String) async throws -> String {
+//        guard let filePath = Bundle.main.path(forResource: "Info", ofType: "plist") else {
+//            throw InfoPlistError.noInfoFound
+//        }
+//        
+//        let plist = NSDictionary(contentsOfFile: filePath)
+//        
+//        guard let value = plist?.object(forKey: "API_KEY") as? String else {
+//            throw InfoPlistError.noAPIKeyFound
+//        }
+//        
+//        return value
+        let keychain = Keychain(serverURL)
+        
+        if let existing = try keychain.getPassword() {
+            return existing
         }
         
-        let plist = NSDictionary(contentsOfFile: filePath)
+        let ckManager = CloudKitManager()
         
-        guard let value = plist?.object(forKey: "API_KEY") as? String else {
-            throw InfoPlistError.noAPIKeyFound
+        do {
+            let result = try await ckManager.fetchAPIKey()
+            try keychain.setPassword(result)
+            return result
+        } catch {
+            throw error
         }
-        
-        return value
     }
 }

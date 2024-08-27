@@ -16,11 +16,13 @@ struct PieChartLegendView: View {
     @Binding
     var selection: Int
     
+    let forceExpand: Bool
+    
     var body: some View {
         let data = pcvm.data[(selection >= pcvm.data.count || selection < 0) ? 0 : selection]
         
         Group {
-            if minimize {
+            if minimize, !forceExpand {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 10) {
                         if let selectedCategory = pcvm.selectedCategory {

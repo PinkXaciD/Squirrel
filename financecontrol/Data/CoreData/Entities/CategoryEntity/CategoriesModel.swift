@@ -79,6 +79,7 @@ extension CoreDataModel {
         category.color = color
         manager.save()
         fetchCategories()
+        fetchSpendings()
     }
     
     func changeShadowStateOfCategory(_ category: CategoryEntity) {

@@ -12,13 +12,14 @@ import OSLog
 
 final class WidgetsManager {
     static let shared: WidgetsManager = .init()
-    let sumWidgets: [Widgets] = [.smallSum, .accessorySum]
+    let sumWidgets: [Widgets] = [.smallSum, .accessorySum, .weeklySpendings, .weeklySpendingsAccessory]
     
     #if DEBUG
     let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
     #endif
     
     var sumWidgetsNeedsToReload: Bool = false
+    var accentColorChanged: Bool = false
     
     private let sharedDefaults = UserDefaults(suiteName: Vars.groupName)
     
@@ -33,6 +34,7 @@ extension WidgetsManager {
         if sumWidgetsNeedsToReload {
             for widget in sumWidgets {
                 WidgetCenter.shared.reloadTimelines(ofKind: widget.kind)
+//                print(widget.kind)
             }
             sumWidgetsNeedsToReload = false
             
@@ -46,27 +48,38 @@ extension WidgetsManager {
         }
     }
     
-    func passAmountToSumWidgets(_ amount: Double) {
-        #if DEBUG
-        logger.debug("\(#function) called")
-        #endif
-        
-        guard let sharedDefaults = sharedDefaults else {
+    func updateSpendingsWidgets(data: [String:Double], amount: Double) {
+        guard let sharedDefaults else {
             #if DEBUG
             logger.error("Failed to initialize UserDefaults")
             #endif
             return
         }
         
+        #if DEBUG
+//        logger.debug("\(data)")
+        #endif
+        
         let currentDate = Calendar.current.startOfDay(for: .now)
         sharedDefaults.set(amount, forKey: "amount")
         sharedDefaults.set(currentDate, forKey: "date")
+        sharedDefaults.set(data, forKey: "WeeklySpendingsWidgetData")
         sumWidgetsNeedsToReload = true
+    }
+    
+    func updateAccentColor() {
+        if accentColorChanged {
+            let widgetsWithAccentColor: [Widgets] = [.weeklySpendings]
+            
+            for widget in widgetsWithAccentColor {
+                WidgetCenter.shared.reloadTimelines(ofKind: widget.kind)
+            }
+        }
     }
 }
 
 enum Widgets {
-    case smallSum, accessorySum, accessoryCircularAddExpense
+    case smallSum, accessorySum, accessoryCircularAddExpense, weeklySpendings, weeklySpendingsAccessory
 }
 
 extension Widgets {
@@ -78,6 +91,11 @@ extension Widgets {
             "AccessorySumWidget"
         case .accessoryCircularAddExpense:
             "AccessoryCircularAddExpense"
+        case .weeklySpendings:
+            "WeeklySpendingsWidget"
+        case .weeklySpendingsAccessory:
+            "WeeklySpendingsAccessoryWidget"
         }
     }
 }
+// WeeklySpendingsAccessoryWidget, WeeklySpendingsWidget

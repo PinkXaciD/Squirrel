@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct BarChart: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @EnvironmentObject private var cdm: CoreDataModel
     @Binding var itemSelected: Int
     @Binding var showAverage: Bool
@@ -22,27 +23,39 @@ struct BarChart: View {
                         .frame(height: 2)
                         .offset(y: -(10 + countAvgBarHeight()))
                         .foregroundColor(.secondary.opacity(showAverage ? 0.7 : 0.3))
-                        .padding(.horizontal, countDashedLinePadding(geometry.size.width))
+//                        .padding(.horizontal, countDashedLinePadding(geometry.size.width))
                 }
                 
-                HStack(alignment: .bottom) {
-                    ForEach(cdm.barChartData.bars.sorted(by: { $0.key < $1.key }), id: \.key) { data in
-                        HStack {
-                            Spacer()
-                            
-                            BarChartBar(index: countIndex(data.key), data: (key: data.key, value: data.value), isActive: isActive(index: countIndex(data.key)))
-                            
-                            Spacer()
+                VStack {
+                    HStack(alignment: .bottom, spacing: 18) {
+                        ForEach(cdm.barChartData.bars.sorted(by: { $0.key < $1.key }), id: \.key) { data in
+                            BarChartBar(
+                                index: countIndex(data.key),
+                                data: (key: data.key, value: countBarHeight(maxHeight: geometry.size.height - 25, value: data.value)),
+                                isActive: isActive(index: countIndex(data.key)),
+                                maxHeight: geometry.size.height - 25
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 5.01))
+                            .onTapGesture {
+                                tapActions(index: countIndex(data.key))
+                            }
                         }
-                        .onTapGesture {
-                            tapActions(index: countIndex(data.key))
+                    }
+                    
+                    HStack(spacing: 18) {
+                        ForEach(cdm.barChartData.bars.keys.sorted(by: <), id: \.self) { date in
+                            Text(date, format: .dateTime.weekday(horizontalSizeClass == .compact ? .abbreviated : .wide))
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity)
                         }
                     }
                 }
             }
             .animation(.smooth, value: cdm.barChartData)
+            .padding(.horizontal, 10)
         }
-        .frame(height: UIScreen.main.bounds.height / 5 + 20)
+        .frame(height: max(UIScreen.main.bounds.height, UIScreen.main.bounds.width) / 5 + 25)
     }
     
     private func tapActions(index: Int) {
@@ -55,6 +68,17 @@ struct BarChart: View {
                 itemSelected = index
             }
         }
+    }
+    
+    private func countBarHeight(maxHeight: CGFloat, value: Double) -> Double {
+        let max = cdm.barChartData.max
+        let height = maxHeight
+        
+        if max == 0 {
+            return 0
+        }
+        
+        return height / max * value
     }
     
     private func countDashedLinePadding(_ width: CGFloat) -> CGFloat {
@@ -77,7 +101,8 @@ struct BarChart: View {
     
     private func countAvgBarHeight() -> Double {
         let avg = cdm.barChartData.sum/7
-        return (UIScreen.main.bounds.height / 5 + 10) / cdm.barChartData.max * avg
+        let height = max(UIScreen.main.bounds.height, UIScreen.main.bounds.width)
+        return (height / 5 + 10) / cdm.barChartData.max * avg
     }
 }
 

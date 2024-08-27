@@ -72,6 +72,7 @@ struct EditSpendingView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .onAppear(perform: appearActions)
+        .disabled(vm.isLoading)
         .interactiveDismissDisabled()
     }
     
@@ -98,7 +99,7 @@ struct EditSpendingView: View {
             
             TextField("Amount", text: $vm.amount)
                 .focused($focusedField, equals: .amount)
-                .numbersOnly($vm.amount)
+                .currencyFormatted($vm.amount, currencyCode: vm.currency)
                 .spendingAmountTextFieldStyle()
             
             CurrencySelector(currency: $vm.currency, spacer: false)
@@ -139,6 +140,8 @@ struct EditSpendingView: View {
             .foregroundColor(entity.amountWithReturns == 0 ? .secondary : .green)
             .disabled(entity.amountWithReturns == 0)
             .frame(maxWidth: .infinity)
+            .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 10))
+            .hoverEffect()
             .padding(.top, 10)
             
             Button(role: .destructive) {
@@ -154,6 +157,8 @@ struct EditSpendingView: View {
                 }
             }
             .frame(maxWidth: .infinity)
+            .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 10))
+            .hoverEffect()
             .padding(.top, 10)
         }
         .listRowInsets(.init(top: 15, leading: 0, bottom: 15, trailing: 0))
@@ -179,8 +184,14 @@ struct EditSpendingView: View {
     private var trailingToolbar: ToolbarItem<Void, some View> {
         ToolbarItem(placement: .navigationBarTrailing) {
             Button(action: doneButtonAction) {
-                Text("Save")
-                    .fontWeight(.semibold)
+                if vm.isLoading {
+                    ProgressView()
+                        .tint(.secondary)
+                        .accentColor(.secondary)
+                } else {
+                    Text("Save")
+                        .fontWeight(.semibold)
+                }
             }
             .disabled(
                 !utils.checkAll(amount: vm.amount, place: vm.place, comment: vm.comment)
@@ -226,18 +237,14 @@ extension EditSpendingView {
     }
     
     private func doneButtonAction() {
+        vm.isLoading = true
         vm.done()
         clearFocus()
-        withAnimation {
-            edit.toggle()
-        }
     }
     
     private func cancelButtonAction() {
-        withAnimation {
-            edit.toggle()
-            vm.clear()
-        }
+        edit.toggle()
+        vm.clear()
     }
     
     private func appearActions() {

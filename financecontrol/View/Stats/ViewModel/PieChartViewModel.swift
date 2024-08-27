@@ -30,7 +30,8 @@ final class PieChartViewModel: ViewModel {
         
         self.data = cdm.getNewChartData()
         
-        subscribeToUpdate()
+//        subscribeToUpdate()
+        observeUpdateNotification()
         
         #if DEBUG
         let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
@@ -48,7 +49,7 @@ final class PieChartViewModel: ViewModel {
 
 // MARK: Methods
 extension PieChartViewModel {
-    func updateData() {
+    @objc func updateData() {
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
             
@@ -86,18 +87,7 @@ extension PieChartViewModel {
 
 // MARK: Private methods
 extension PieChartViewModel {
-    private func subscribeToUpdate() {
-        cdm.$updateCharts
-            .receive(on: DispatchQueue.main)
-            .filter { $0 == true }
-            .sink { [weak self] value in
-                if value {
-                    withAnimation {
-                        self?.updateData()
-                    }
-                    self?.cdm.updateCharts = false
-                }
-            }
-            .store(in: &cancellables)
+    private func observeUpdateNotification() {
+        NotificationCenter.default.addObserver(self, selector: #selector(updateData), name: Notification.Name("UpdatePieChart"), object: nil)
     }
 }

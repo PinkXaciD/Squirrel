@@ -8,6 +8,11 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @EnvironmentObject
+    private var cdm: CoreDataModel
+    @EnvironmentObject
+    private var rvm: RatesViewModel
+    
     @AppStorage(UDKeys.color.rawValue)
     var defaultColor: String = "Orange"
     @AppStorage(UDKeys.defaultCurrency.rawValue)
@@ -28,41 +33,89 @@ struct SettingsView: View {
     let build: String? = Bundle.main.buildVersionNumber
     
     var body: some View {
-        NavigationView {
-            List {
-                aboutSection
-                
-                themeSection
-                
-                currencySection
-                
+        if UIDevice.current.isIPad {
+            if #available(iOS 16.0, *) {
+                NavigationSplitView {
+                    list
+                } detail: {
+                    NavigationStack {
+                        ZStack {
+                            Color(uiColor: .systemGroupedBackground)
+                                .ignoresSafeArea()
+                                
+                            
+                            Text("Select a tab from sidebar")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .environmentObject(rvm)
+                    .environmentObject(cdm)
+                }
+
+            } else {
+                NavigationView {
+                    list
+                    
+                    ZStack {
+                        Color(uiColor: .systemGroupedBackground)
+                            .ignoresSafeArea()
+                            
+                        
+                        Text("Select a tab from sidebar")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .onAppear {
+                    withAnimation {
+                        showDarkModeToggle = !autoDarkMode
+                    }
+                }
+            }
+        } else {
+            NavigationView {
+                list
+            }
+            .navigationViewStyle(.stack)
+            .onAppear {
+                withAnimation {
+                    showDarkModeToggle = !autoDarkMode
+                }
+            }
+        }
+    }
+    
+    private var list: some View {
+        List {
+            aboutSection
+            
+            themeSection
+            
+            currencySection
+            
 //                shortcutsSection
-                
-                categorySection
-                
-                privacySection
-                
-                exportImportSection
-            }
-            .listStyle(.insetGrouped)
-            .navigationTitle("Settings")
+            
+            categorySection
+            
+            privacySection
+            
+            exportImportSection
         }
-        .navigationViewStyle(.stack)
-        .onAppear {
-            withAnimation {
-                showDarkModeToggle = !autoDarkMode
-            }
-        }
+        .listStyle(.insetGrouped)
+        .navigationTitle("Settings")
     }
     
     var aboutSection: some View {
         Section {
             NavigationLink("About") {
-                AboutView(presentOnboarding: $presentOnboarding)
-                    .navigationTitle("About")
-                    .navigationBarTitleDisplayMode(.inline)
+                aboutView
             }
         }
+    }
+    
+    var aboutView: some View {
+        AboutView(presentOnboarding: $presentOnboarding)
+            .navigationTitle("About")
+            .navigationBarTitleDisplayMode(.inline)
     }
     
     var themeSection: some View {
@@ -74,7 +127,7 @@ struct SettingsView: View {
                     Text("Color and Icon")
                     Spacer()
                     Text(LocalizedStringKey(defaultColor))
-                        .foregroundColor(Color.secondary)
+                        .foregroundStyle(.secondary)
                 }
             }
             
@@ -113,7 +166,7 @@ struct SettingsView: View {
                     Spacer()
                     
                     Text("\(Locale.current.localizedString(forCurrencyCode: defaultCurrency) ?? defaultCurrency)")
-                        .foregroundColor(Color.secondary)
+                        .foregroundStyle(.secondary)
                 }
             }
             

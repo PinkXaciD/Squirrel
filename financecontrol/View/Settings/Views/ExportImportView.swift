@@ -62,7 +62,7 @@ struct ExportImportView: View {
     }
     
     private var importJSONButton: some View {
-        Button("Import data as JSON") {
+        Button("Import data from JSON") {
             presentImportSheet.toggle()
         }
     }
