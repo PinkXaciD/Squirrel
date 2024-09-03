@@ -8,6 +8,9 @@
 
 import Foundation
 import CoreData
+#if DEBUG
+import OSLog
+#endif
 
 @objc(ReturnEntity)
 public final class ReturnEntity: NSManagedObject, Codable {
@@ -22,13 +25,25 @@ public final class ReturnEntity: NSManagedObject, Codable {
         
         self.init(context: context)
         
+        // Required fields
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decode(UUID.self, forKey: .id)
         self.amount = try container.decode(Double.self, forKey: .amount)
         self.amountUSD = try container.decode(Double.self, forKey: .amountUSD)
-        self.name = try container.decode(String.self, forKey: .name)
         self.currency = try container.decode(String.self, forKey: .currency)
         self.date = try container.decode(Date.self, forKey: .date)
+        
+        // Optional fields
+        do {
+            self.name = try container.decode(String.self, forKey: .name)
+        } catch let DecodingError.keyNotFound(_, context) {
+            self.name = ""
+            
+            #if DEBUG
+            let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
+            logger.debug("\(context.debugDescription)")
+            #endif
+        }
     }
     
     public func encode(to encoder: Encoder) throws {

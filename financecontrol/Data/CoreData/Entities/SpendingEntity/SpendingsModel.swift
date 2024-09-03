@@ -202,6 +202,7 @@ extension CoreDataModel {
             newSpending.amountUSD = spending.amountUSD
             newSpending.currency = spending.currency
             newSpending.date = spending.date
+            newSpending.timeZoneIdentifier = TimeZone.autoupdatingCurrent.identifier
             newSpending.place = spending.place
             newSpending.comment = spending.comment
             
@@ -310,6 +311,7 @@ extension CoreDataModel {
         newSpending.date = spending.wrappedDate
         newSpending.place = spending.place ?? ""
         newSpending.comment = spending.comment ?? ""
+        newSpending.timeZoneIdentifier = spending.timeZoneIdentifier
         
         for returnEntity in spending.returnsArr {
             importReturn(to: newSpending, returnEntity: returnEntity)

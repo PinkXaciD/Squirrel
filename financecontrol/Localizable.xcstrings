@@ -246,6 +246,9 @@
         }
       }
     },
+    "Always format without timezones" : {
+
+    },
     "Amount" : {
       "localizations" : {
         "en" : {
@@ -535,6 +538,9 @@
     "First Flight" : {
 
     },
+    "Formatting" : {
+
+    },
     "From" : {
 
     },
@@ -560,6 +566,9 @@
 
     },
     "Identifier:" : {
+
+    },
+    "If the time zone of the expense differs from the current one, the date will be formatted with the time zone of the expense. You can change this behavior by enabling this option." : {
 
     },
     "Import data from JSON" : {

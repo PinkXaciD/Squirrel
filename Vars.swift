@@ -16,6 +16,8 @@ struct Vars {
     
     static let widgetIdentifier: String = appIdentifier + ".squirrelWidget"
     
+    static let iCloudContainerIdentifier: String = "iCloud.dev.squirrelapp.squirrel"
+    
     static let privacyBlur: CGFloat = 10
 }
 
@@ -44,4 +46,5 @@ enum UDKeys: String {
     case privacyScreen
     case separateCurrencies
     case ratesFetchQueue
+    case formatWithoutTimeZones
 }

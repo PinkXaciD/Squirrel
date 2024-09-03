@@ -12,7 +12,7 @@ import OSLog
 
 final class CloudKitManager {
     enum CloudKitError: String, LocalizedError {
-        case failedToDecodeResult, failedToGetResult
+        case failedToDecodeResult, failedToGetResult, noValueFound
         
         var errorDescription: String? {
             "CloudKit error \(self.rawValue)"
@@ -55,6 +55,39 @@ final class CloudKitManager {
         } catch {
             throw error
         }
+    }
+    
+    func fetchRates(timestamp recordName: String) async throws -> Rates {
+        let publicDB = container.publicCloudDatabase
+        
+        let result = try await publicDB.record(for: CKRecord.ID(recordName: recordName))
+        
+        guard let rawRates = result.value(forKey: "rates") as? String else {
+            throw CloudKitError.noValueFound
+        }
+        
+        guard let ratesData = rawRates.data(using: .utf8) else {
+            throw CloudKitError.failedToDecodeResult
+        }
+        
+        let decoder = JSONDecoder()
+        
+        let rates = try decoder.decode([String : Double].self, from: ratesData)
+        
+        if recordName == "latest" {
+            let isoDateFormatter = ISO8601DateFormatter()
+            isoDateFormatter.timeZone = .init(secondsFromGMT: 0) ?? .current
+            
+            let gmtCalendar = Calendar.gmt
+            let currentHour = gmtCalendar.component(.hour, from: .now)
+            let currentTime = gmtCalendar.date(bySettingHour: currentHour, minute: 0, second: 0, of: .now) ?? gmtCalendar.startOfDay(for: .now)
+            
+            let currentTimeString = isoDateFormatter.string(from: currentTime)
+            
+            return Rates(timestamp: currentTimeString, rates: rates)
+        }
+        
+        return Rates(timestamp: result.recordID.recordName, rates: rates)
     }
     
     private func completionHandler(

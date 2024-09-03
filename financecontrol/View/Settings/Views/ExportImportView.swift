@@ -45,7 +45,7 @@ struct ExportImportView: View {
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 100)
             
-            Text(verbatim: "SquirrelExport.json")
+            Text(verbatim: "\(Bundle.main.displayName ?? "Squirrel")_Export.json")
                 .font(.body)
         }
         .foregroundColor(.secondary)

@@ -52,28 +52,28 @@ func launch() -> Void {
 //    #endif
     
     // MARK: Theme migration
-    if let theme = UserDefaults.standard.string(forKey: "theme") {
-        switch theme {
-        case "dark":
-            UserDefaults.standard.setValue(false, forKey: UDKeys.autoDarkMode.rawValue)
-            UserDefaults.standard.setValue(true, forKey: UDKeys.darkMode.rawValue)
-            #if DEBUG
-            logger.debug("Dark mode was enabled, migrated")
-            #endif
-        case "light":
-            UserDefaults.standard.setValue(false, forKey: UDKeys.autoDarkMode.rawValue)
-            UserDefaults.standard.setValue(false, forKey: UDKeys.darkMode.rawValue)
-            #if DEBUG
-            logger.debug("Light mode was enabled, migrated")
-            #endif
-        default:
-            UserDefaults.standard.setValue(true, forKey: UDKeys.autoDarkMode.rawValue)
-            UserDefaults.standard.setValue(false, forKey: UDKeys.darkMode.rawValue)
-            #if DEBUG
-            logger.debug("Auto mode was enabled, migrated")
-            #endif
-        }
-        
-        UserDefaults.standard.setValue(nil, forKey: "theme")
-    }
+//    if let theme = UserDefaults.standard.string(forKey: "theme") {
+//        switch theme {
+//        case "dark":
+//            UserDefaults.standard.setValue(false, forKey: UDKeys.autoDarkMode.rawValue)
+//            UserDefaults.standard.setValue(true, forKey: UDKeys.darkMode.rawValue)
+//            #if DEBUG
+//            logger.debug("Dark mode was enabled, migrated")
+//            #endif
+//        case "light":
+//            UserDefaults.standard.setValue(false, forKey: UDKeys.autoDarkMode.rawValue)
+//            UserDefaults.standard.setValue(false, forKey: UDKeys.darkMode.rawValue)
+//            #if DEBUG
+//            logger.debug("Light mode was enabled, migrated")
+//            #endif
+//        default:
+//            UserDefaults.standard.setValue(true, forKey: UDKeys.autoDarkMode.rawValue)
+//            UserDefaults.standard.setValue(false, forKey: UDKeys.darkMode.rawValue)
+//            #if DEBUG
+//            logger.debug("Auto mode was enabled, migrated")
+//            #endif
+//        }
+//        
+//        UserDefaults.standard.setValue(nil, forKey: "theme")
+//    }
 }

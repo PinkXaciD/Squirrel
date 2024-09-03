@@ -84,7 +84,7 @@ extension CoreDataModel {
                     return dateFormatter
                 }
                 
-                let pathURL = tempURL.appendingPathComponent("SquirrelExport_\(dateFormatter.string(from: Date()))", conformingTo: .json)
+                let pathURL = tempURL.appendingPathComponent("\(Bundle.main.displayName ?? "Squirrel")_Export_\(dateFormatter.string(from: Date()))", conformingTo: .json)
                 try jsonString.write(to: pathURL, atomically: true, encoding: .utf8)
                 
                 return pathURL
@@ -117,8 +117,8 @@ extension CoreDataModel {
                 try privateContext.performAndWait {
                     let tempData = try decoder.decode([CategoryEntity].self, from: jsonData)
                     
-                    let existingCategoryIds = (savedCategories + shadowedCategories).map { $0.id }
-                    let existingSpendingsIds = savedSpendings.map { $0.id }
+                    let existingCategoryIds = Set((savedCategories + shadowedCategories).map { $0.id })
+                    let existingSpendingsIds = Set(savedSpendings.map { $0.id })
                     
                     for category in tempData {
                         if let spendings = category.spendings?.allObjects as? [SpendingEntity], !spendings.isEmpty {
@@ -140,12 +140,8 @@ extension CoreDataModel {
                         }
                     }
                     
-                    do {
-                        try privateContext.save()
-                        privateContext.reset()
-                    } catch {
-                        ErrorType(error: error).publish()
-                    }
+                    try privateContext.save()
+                    privateContext.reset()
                 }
                 
                 manager.save()

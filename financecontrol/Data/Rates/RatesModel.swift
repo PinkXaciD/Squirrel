@@ -34,8 +34,29 @@ final class RatesModel {
 // MARK: Rates Model networking
 
 extension RatesModel {
-    func downloadRates(timestamp: Date? = nil) async throws -> Rates {
+    func downloadRates(timestamp: Date? = nil, useCloudKit: Bool = false) async throws -> Rates {
         do {
+            if useCloudKit {
+                var timestampString: String {
+                    if let timestamp {
+                        let isoDateFormatter = ISO8601DateFormatter()
+                        return isoDateFormatter.string(from: Calendar.gmt.startOfDay(for: timestamp))
+                    }
+                    
+                    return "latest"
+                }
+                
+                let ckManager = CloudKitManager()
+                
+                let result = try await ckManager.fetchRates(timestamp: timestampString)
+                
+                guard result.timestamp == timestampString else {
+                    throw RatesModelError.wrongTimestampFromCloudKit
+                }
+                
+                return result
+            }
+            
             let apiURLComponents = try getURLComponents()
             let apiKey = try await getApiKey(apiURLComponents.host)
             var timestampString: String?
@@ -53,8 +74,6 @@ extension RatesModel {
                 let formatter = ISO8601DateFormatter()
                 formatter.timeZone = timeZone
                 let startOfDay = calendar.startOfDay(for: timestamp)
-                        
-//                print(startOfDay.description)
                 timestampString = "\"" + formatter.string(from: startOfDay) + "\""
             }
             
@@ -73,7 +92,6 @@ extension RatesModel {
 
             for count in 0 ..< 3 {
                 do {
-//                    throw URLError(.timedOut)
                     let (data, response) = try await URLSession.shared.data(for: request)
                     return try handleResponse(data: data, response: response)
                 } catch URLError.timedOut {
@@ -172,6 +190,27 @@ extension RatesModel {
             return result
         } catch {
             throw error
+        }
+    }
+}
+
+extension RatesModel {
+    enum RatesModelError: LocalizedError {
+        case wrongTimestampFromCloudKit
+        
+        var errorDescription: String? {
+            switch self {
+            case .wrongTimestampFromCloudKit:
+                "Unable to get latest exchange rates"
+            }
+        }
+        
+        var failureReason: String? {
+            return "Wrong or invalid timestamp"
+        }
+        
+        var recoverySuggestion: String? {
+            return "Try to restart the app"
         }
     }
 }

@@ -62,3 +62,9 @@ extension Calendar {
         return calendar
     }()
 }
+
+extension TimeZone {
+    func hoursFromGMT() -> Double {
+        return Double(self.secondsFromGMT() / 3600)
+    }
+}
