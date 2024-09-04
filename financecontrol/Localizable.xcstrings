@@ -259,7 +259,7 @@
         }
       }
     },
-    "An open-source spending tracker. \nDeveloped by PinkXaciD. \nExchange rates API by nulledzero." : {
+    "An open-source expense tracker." : {
 
     },
     "App content will be blurred when you minimize it" : {
@@ -345,9 +345,6 @@
 
     },
     "Bundle" : {
-
-    },
-    "Buy me some noodles" : {
 
     },
     "Cancel" : {
@@ -460,6 +457,9 @@
     "Delete this return?" : {
 
     },
+    "Developed by PinkXaciD." : {
+
+    },
     "Disable" : {
 
     },
@@ -488,6 +488,9 @@
 
     },
     "Everything that lives is designed to end. We are perpetually trapped in a never-ending spiral..." : {
+
+    },
+    "Exchange rates API by nulledzero." : {
 
     },
     "Exchange rates will be presented for the current hour" : {
@@ -575,9 +578,6 @@
 
     },
     "Import existing data" : {
-
-    },
-    "Import failed" : {
 
     },
     "Imported %lld expenses" : {
@@ -702,6 +702,9 @@
 
     },
     "OK" : {
+
+    },
+    "Open in browser" : {
 
     },
     "Optional" : {
@@ -892,6 +895,9 @@
 
     },
     "Tomorrow" : {
+
+    },
+    "Trying again..." : {
 
     },
     "Unable to update exchange rates" : {

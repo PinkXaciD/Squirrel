@@ -100,7 +100,6 @@ struct SettingsView: View {
             
             exportImportSection
         }
-        .listStyle(.insetGrouped)
         .navigationTitle("Settings")
     }
     

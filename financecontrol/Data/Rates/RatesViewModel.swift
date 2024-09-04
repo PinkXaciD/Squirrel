@@ -15,7 +15,7 @@ import OSLog
 
 final class RatesViewModel: ViewModel {
     enum RatesDownloadStatus {
-        case none, downloading, waitingForNetwork, failed, success
+        case none, downloading, waitingForNetwork, failed, success, tryingAgain
     }
     
     @Published
@@ -28,21 +28,22 @@ final class RatesViewModel: ViewModel {
     init() {
         insertRates()
         
+        hourlyUpdate()
+        
         if UserDefaults.standard.bool(forKey: UDKeys.updateRates.rawValue) {
-            self.status = .downloading
             updateRates()
         }
     }
     
     private func updateRates() {
-        Task {
+        let isTryingAgain = self.status == .tryingAgain
+        self.status = .downloading
+        
+        Task { [weak self, isTryingAgain] in
+            guard let self else { return }
+            
             do {
                 let safeRates = try await getRates()
-                
-                await MainActor.run {
-                    rates = safeRates.rates
-                    addRates(safeRates.rates)
-                }
                 
                 let formatter = ISO8601DateFormatter()
                 formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -52,6 +53,13 @@ final class RatesViewModel: ViewModel {
                     let date = formatter.date(from: safeRates.timestamp),
                     Calendar.current.isDate(date, equalTo: .now, toGranularity: .hour)
                 else {
+                    // Try again
+                    if !isTryingAgain {
+                        await self.tryAgain()
+                        
+                        return
+                    }
+                    
                     await MainActor.run {
                         self.status = .failed
                     }
@@ -59,10 +67,11 @@ final class RatesViewModel: ViewModel {
                     return
                 }
                 
-                UserDefaults.standard.set(safeRates.timestamp, forKey: UDKeys.updateTime.rawValue)
-                UserDefaults.standard.set(false, forKey: UDKeys.updateRates.rawValue)
-                
                 await MainActor.run {
+                    self.rates = safeRates.rates
+                    self.addRates(safeRates.rates)
+                    UserDefaults.standard.set(safeRates.timestamp, forKey: UDKeys.updateTime.rawValue)
+                    UserDefaults.standard.set(false, forKey: UDKeys.updateRates.rawValue)
                     self.status = .success
                 }
                 
@@ -73,7 +82,7 @@ final class RatesViewModel: ViewModel {
             } catch URLError.notConnectedToInternet, URLError.timedOut {
                 await MainActor.run {
                     CustomAlertManager.shared.addAlert(.noConnection("Unable to update exchange rates"))
-                    waitForConnectionToEstablish()
+                    self.waitForConnectionToEstablish()
                 }
             } catch {
                 print(error)
@@ -82,6 +91,18 @@ final class RatesViewModel: ViewModel {
                     self.status = .failed
                 }
             }
+        }
+    }
+    
+    private func tryAgain() async {
+        await MainActor.run {
+            self.status = .tryingAgain
+        }
+        
+        try? await Task.sleep(nanoseconds: 10_000_000_000)
+        
+        await MainActor.run {
+            self.updateRates()
         }
     }
     
@@ -117,6 +138,21 @@ final class RatesViewModel: ViewModel {
         #endif
         
         self.status = .success
+    }
+    
+    /// Will update exchange rates automatically every hour
+    func hourlyUpdate() {
+        let currentHour = Calendar.current.component(.hour, from: .now)
+        
+        let fireTime = Calendar.current.date(byAdding: .hour, value: currentHour + 1, to: Calendar.current.startOfDay(for: Date())) ?? Calendar.current.startOfDay(for: Date())
+        
+        let timer = Timer(fire: fireTime, interval: .hour, repeats: true) { [weak self] timer in
+            if self?.status != .downloading && self?.status != .waitingForNetwork {
+                self?.updateRates()
+            }
+        }
+        
+        RunLoop.main.add(timer, forMode: .default)
     }
 }
 

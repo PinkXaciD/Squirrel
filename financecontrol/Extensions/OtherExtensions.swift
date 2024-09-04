@@ -68,3 +68,9 @@ extension TimeZone {
         return Double(self.secondsFromGMT() / 3600)
     }
 }
+
+extension TimeInterval {
+    static let hour: Self = 3600
+    
+    static let day: Self = 86_400
+}

@@ -61,6 +61,11 @@ extension View {
         return self
             .modifier(InvertLayoutDirectionModifier(isActive: isActive))
     }
+    
+    func styleListsToDynamicType() -> some View {
+        return self
+            .modifier(DynamicTypeListStylingViewModifier())
+    }
 }
 
 extension Text {
@@ -138,6 +143,23 @@ fileprivate struct InvertLayoutDirectionModifier: ViewModifier {
             }
         } else {
             return content.environment(\.layoutDirection, layoutDirection)
+        }
+    }
+}
+
+fileprivate struct DynamicTypeListStylingViewModifier: ViewModifier {
+    @Environment(\.sizeCategory) private var sizeCategory
+    
+    func body(content: Content) -> some View {
+        return styleList(content: content)
+    }
+    
+    @ViewBuilder
+    func styleList(content: some View) -> some View {
+        if sizeCategory > .extraLarge {
+            content.listStyle(.grouped)
+        } else {
+            content.listStyle(.insetGrouped)
         }
     }
 }

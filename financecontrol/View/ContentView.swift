@@ -12,6 +12,7 @@ struct ContentView: View {
     private var scenePhase
     @Environment(\.openURL)
     private var openURL
+    
     @AppStorage(UDKeys.presentOnboarding.rawValue)
     private var presentOnboarding: Bool = true
     @AppStorage(UDKeys.color.rawValue)
@@ -122,6 +123,7 @@ struct ContentView: View {
         } message: { error in
             Text("\(error.errorDescription)\n\(error.recoverySuggestion)")
         }
+        .styleListsToDynamicType()
     }
     
     private var homeTab: some View {

@@ -17,8 +17,13 @@ struct AboutView: View {
     @Binding
     var presentOnboarding: Bool
     
+    @State
+    private var showConfirmationDialog: Bool = false
+    @State
+    private var urlToOpen: URL? = nil
+    
     var body: some View {
-        Form {
+        List {
             aboutSection
             
             onboardingSection
@@ -29,17 +34,28 @@ struct AboutView: View {
                 debugSection
             }
         }
+        .confirmationDialog("", isPresented: $showConfirmationDialog, titleVisibility: .hidden, presenting: urlToOpen) { url in
+            Button("Open in browser") {
+                openURL(url)
+            }
+        }
     }
     
     private var aboutSection: some View {
         Section(header: aboutHeader) {
-            Text("An open-source spending tracker. \nDeveloped by PinkXaciD. \nExchange rates API by nulledzero.")
-                .normalizePadding()
+            VStack(alignment: .leading) {
+                Text("An open-source expense tracker.")
+                Text("Developed by PinkXaciD.")
+                Text("Exchange rates API by nulledzero.")
+            }
+            .normalizePadding()
             
-            Button("App site") {}
+            Button("App site") {
+                openURLButtonAction(URLs.appSite)
+            }
             
             Button {
-                openURL(URLs.github)
+                openURLButtonAction(URLs.github)
             } label: {
                 Text(verbatim: "GitHub")
             }
@@ -89,10 +105,8 @@ struct AboutView: View {
     private var githubSection: some View {
         Section {
             Button("Create an issue on GitHub") {
-                openURL(URLs.newGithubIssue)
+                openURLButtonAction(URLs.newGithubIssue)
             }
-            
-            Button("Buy me some noodles") {}
         }
     }
     
@@ -115,6 +129,11 @@ struct AboutView: View {
             showDebug.toggle()
         }
         HapticManager.shared.impact(.rigid)
+    }
+    
+    private func openURLButtonAction(_ url: URL) {
+        urlToOpen = url
+        showConfirmationDialog.toggle()
     }
 }
 

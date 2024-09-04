@@ -21,7 +21,7 @@ struct DebugView: View {
     private var validateConfirmationIsShowing: Bool = false
     
     var body: some View {
-        Form {
+        List {
             errorsSection
             
             ratesSection

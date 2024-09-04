@@ -46,7 +46,7 @@ struct CategoryEditSubView: View {
     }
     
     var body: some View {
-        Form {
+        List {
             nameSection
             
             colorSection

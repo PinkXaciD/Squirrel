@@ -164,7 +164,8 @@ extension CoreDataModel {
     /// Timer that will update all data in app when date changes
     func timerUpdate() {
         let fireTime = Calendar.current.date(byAdding: .day, value: 1, to: Calendar.current.startOfDay(for: Date())) ?? .distantFuture
-        let timer = Timer(fire: fireTime, interval: 0, repeats: false) { [weak self] timer in
+        
+        let timer = Timer(fire: fireTime, interval: .day, repeats: true) { [weak self] timer in
             self?.fetchSpendings()
         }
         

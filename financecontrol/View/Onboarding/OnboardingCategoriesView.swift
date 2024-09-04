@@ -16,28 +16,55 @@ struct OnboardingCategoriesView: View {
     
     var body: some View {
         NavigationView {
-            List {
-                addSection
+            VStack(spacing: 0) {
+                header
+                    .padding(.horizontal)
+                    .padding(.top)
+                    .padding(.top, 30)
+                    .padding(.bottom, 10)
                 
-                categoriesSection
+                List {
+                    addSection
+                    
+                    categoriesSection
+                }
+                .fileImporter(isPresented: $presentImportSheet, allowedContentTypes: [.json]) { result in
+                    importJSON(result)
+                }
+                .navigationBarHidden(true)
+                .overlay(alignment: .top) {
+                    LinearGradient(
+                        colors: [Color(uiColor: .systemGroupedBackground), Color(uiColor: .systemGroupedBackground).opacity(0)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .frame(width: UIScreen.main.bounds.width - 20, height: 20)
+                }
+                .safeAreaInset(edge: .bottom) {
+                    EmptyView()
+                        .frame(height: 60)
+                }
             }
-            .fileImporter(isPresented: $presentImportSheet, allowedContentTypes: [.json]) { result in
-                importJSON(result)
+            .background {
+                Color(uiColor: .systemGroupedBackground)
             }
-            .navigationBarHidden(true)
         }
         .tint(.orange)
     }
     
     private var header: some View {
-        VStack(alignment: .leading) {
-            Text("Add categories")
-                .font(.largeTitle.bold())
+        HStack {
+            VStack(alignment: .leading) {
+                Text("Add categories")
+                    .font(.largeTitle.bold())
+                
+                Text("You can add categories later in settings")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+                    .lineLimit(3)
+            }
             
-            Text("You can add categories later in settings")
-                .font(.footnote)
-                .foregroundColor(.secondary)
-                .lineLimit(3)
+            Spacer()
         }
         .textCase(nil)
         .foregroundColor(.primary)
@@ -60,8 +87,6 @@ struct OnboardingCategoriesView: View {
                     }
                     .tint(.orange)
             }
-        } header: {
-            header
         }
     }
     
@@ -84,26 +109,7 @@ struct OnboardingCategoriesView: View {
                         .padding(.vertical)
                 }
             }
-        } footer: {
-            Rectangle()
-                .fill(Color(uiColor: .systemGroupedBackground))
-                .frame(height: 80)
         }
-    }
-    
-    private func getRow(name: String) -> some View {
-        let colors: [Color] = [.red, .orange, .yellow, .green, .blue, .purple]
-        
-        return HStack {
-            Image(systemName: "circle.fill")
-                .font(.title)
-                .foregroundStyle(.tertiary)
-            
-            Text(name)
-                .foregroundStyle(.primary)
-                .padding(.vertical)
-        }
-        .foregroundStyle(Color.primary, Color.secondary, colors.randomElement()!)
     }
     
     private func importJSON(_ result: Result<URL, Error>) {

@@ -91,38 +91,6 @@ struct SpendingView: View {
             .onTapGesture {
                 editAction()
             }
-            
-//            if let timeZone = safeEntity.timeZone, timeZone.secondsFromGMT() != TimeZone.autoupdatingCurrent.secondsFromGMT() {
-//                HStack {
-//                    Text("Absolute date")
-//                    
-//                    Spacer()
-//                    
-//                    Text(safeEntity.wrappedDate, format: .dateTime.year().month(.wide).day().hour().minute())
-//                        .foregroundStyle(.secondary)
-//                }
-//                
-//                let formattedOffset: String = {
-//                    let spendingTimeZoneSeconds = timeZone.secondsFromGMT()
-//                    let currentTimeZoneSeconds = TimeZone.autoupdatingCurrent.secondsFromGMT()
-//                    let interval = spendingTimeZoneSeconds - currentTimeZoneSeconds
-//                    
-//                    let formatter = DateComponentsFormatter()
-//                    formatter.allowedUnits = [.hour]
-//                    formatter.unitsStyle = .full
-//                    
-//                    return formatter.string(from: TimeInterval(interval)) ?? ""
-//                }()
-//                
-//                HStack {
-//                    Text("Time zone")
-//                    
-//                    Spacer()
-//                    
-//                    Text("\(timeZone.localizedName(for: .standard, locale: .current) ?? timeZone.identifier) (\(formattedOffset))")
-//                        .foregroundStyle(.secondary)
-//                }
-//            }
         }
     }
     

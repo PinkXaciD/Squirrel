@@ -29,6 +29,8 @@ struct URLs {
     static let github: URL! = URL(string: "https://github.com/PinkXaciD/Squirrel")
     
     static let newGithubIssue: URL! = URL(string: "https://github.com/PinkXaciD/Squirrel/issues/new")
+    
+    static let appSite: URL! = URL(string: "https://squirrelapp.dev")
 }
 
 enum UDKeys: String {

@@ -36,6 +36,10 @@ struct OnboardingCurrencyView: View {
                 )
                 .frame(width: UIScreen.main.bounds.width - 20, height: 20)
             }
+            .safeAreaInset(edge: .bottom) {
+                EmptyView()
+                    .frame(height: 100)
+            }
         }
         .background(Color(uiColor: .systemGroupedBackground))
         .onChange(of: search) { value in
@@ -125,12 +129,6 @@ struct OnboardingCurrencyView: View {
                         }
                     } header: {
                         Text(key)
-                    } footer: {
-                        if key == sortedKeys.last ?? "Z" {
-                            Rectangle()
-                                .fill(.clear)
-                                .frame(height: 100)
-                        }
                     }
                 }
             } else {
