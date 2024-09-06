@@ -65,7 +65,7 @@ struct PieChartView: View {
                     VStack(alignment: .leading) {
                         Text("Selected category: \(name)")
                         
-                        Text("Tap to remove selection")
+                        Text("Tap here to remove selection")
                     }
                 }
                 .buttonStyle(.plain)

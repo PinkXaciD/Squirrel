@@ -28,7 +28,6 @@ struct OnboardingWelcomeView: View {
                         .hoverEffect(.lift)
                         .padding(.vertical)
                         .transition(.moveFromBottom)
-                        .animation(.smooth, value: showIcon)
                         .rotationEffect(.degrees(rotateIcon ? 720 : 0), anchor: .center)
                         .onTapGesture(count: 3) {
                             withAnimation(.bouncy(duration: 1)) {
@@ -43,7 +42,6 @@ struct OnboardingWelcomeView: View {
                     Text("Welcome to")
                         .font(.system(size: 50, weight: .heavy))
                         .transition(.moveFromBottom)
-                        .animation(.smooth, value: showUpperText)
                 }
                 
                 if showBottomText {
@@ -52,7 +50,6 @@ struct OnboardingWelcomeView: View {
                         .font(.system(size: 60, weight: .black))
                         .padding(.vertical, -10)
                         .transition(.moveFromBottom)
-                        .animation(.smooth, value: showBottomText)
                 }
             }
             .padding(.horizontal, 30)
@@ -74,22 +71,25 @@ struct OnboardingWelcomeView: View {
     }
     
     private func playAnimation() {
-        withAnimation {
+        withAnimation(.smooth) {
             showIcon = true
         }
+        
+        withAnimation(.smooth.delay(0.5)) {
+            showUpperText = true
+        }
+            
+        withAnimation(.smooth.delay(0.6)) {
+            showBottomText = true
+        }
+        
         HapticManager.shared.impact(.light)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            withAnimation {
-                showUpperText = true
-            }
             HapticManager.shared.impact(.light)
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-            withAnimation {
-                showBottomText = true
-            }
             HapticManager.shared.impact(.light)
         }
     }

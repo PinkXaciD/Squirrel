@@ -29,10 +29,14 @@ struct AboutView: View {
             onboardingSection
             
             githubSection
-                                                
+              
+            #if DEBUG
+            debugSection
+            #else
             if showDebug {
                 debugSection
             }
+            #endif
         }
         .confirmationDialog("", isPresented: $showConfirmationDialog, titleVisibility: .hidden, presenting: urlToOpen) { url in
             Button("Open in browser") {

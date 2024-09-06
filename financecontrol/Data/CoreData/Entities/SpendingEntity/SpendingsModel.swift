@@ -39,6 +39,7 @@ extension CoreDataModel {
             do {
                 spendings = try self.context.fetch(request)
                 self.savedSpendings = spendings
+                lastFetchDate = Date()
             } catch {
                 ErrorType(error: error).publish(file: #file, function: #function)
             }
@@ -108,6 +109,7 @@ extension CoreDataModel {
             self.usedCurrencies = currencies
             self.pieChartSpendings = pieChartData
             NotificationCenter.default.post(name: Notification.Name("UpdatePieChart"), object: nil)
+            lastFetchDate = Date()
             
             if !ratesFetchSpendings.isEmpty {
                 updateRatesFromQueue(ratesFetchSpendings)

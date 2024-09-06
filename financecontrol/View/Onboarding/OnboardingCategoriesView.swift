@@ -15,60 +15,47 @@ struct OnboardingCategoriesView: View {
     @State private var presentImportSheet: Bool = false
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                header
-                    .padding(.horizontal)
-                    .padding(.top)
-                    .padding(.top, 30)
-                    .padding(.bottom, 10)
-                
-                List {
-                    addSection
+        GeometryReader { geometry in
+            NavigationView {
+                VStack(spacing: 0) {
+                    header
+                        .padding(.horizontal)
+                        .padding(.top)
+                        .padding(.top, 40)
+                        .padding(.bottom, 10)
                     
-                    categoriesSection
+                    List {
+                        addSection
+                        
+                        categoriesSection
+                    }
+                    .fileImporter(isPresented: $presentImportSheet, allowedContentTypes: [.json]) { result in
+                        importJSON(result)
+                    }
+                    .navigationBarHidden(true)
+                    .overlay(alignment: .top) {
+                        LinearGradient(
+                            colors: [Color(uiColor: .systemGroupedBackground), Color(uiColor: .systemGroupedBackground).opacity(0)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                        .frame(width: geometry.size.width - 20, height: 20)
+                    }
+                    .safeAreaInset(edge: .bottom) {
+                        EmptyView()
+                            .frame(height: 60)
+                    }
                 }
-                .fileImporter(isPresented: $presentImportSheet, allowedContentTypes: [.json]) { result in
-                    importJSON(result)
-                }
-                .navigationBarHidden(true)
-                .overlay(alignment: .top) {
-                    LinearGradient(
-                        colors: [Color(uiColor: .systemGroupedBackground), Color(uiColor: .systemGroupedBackground).opacity(0)],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                    .frame(width: UIScreen.main.bounds.width - 20, height: 20)
-                }
-                .safeAreaInset(edge: .bottom) {
-                    EmptyView()
-                        .frame(height: 60)
+                .background {
+                    Color(uiColor: .systemGroupedBackground)
                 }
             }
-            .background {
-                Color(uiColor: .systemGroupedBackground)
-            }
+            .tint(.orange)
         }
-        .tint(.orange)
     }
     
     private var header: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text("Add categories")
-                    .font(.largeTitle.bold())
-                
-                Text("You can add categories later in settings")
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
-                    .lineLimit(3)
-            }
-            
-            Spacer()
-        }
-        .textCase(nil)
-        .foregroundColor(.primary)
-        .listRowInsets(.init(top: 50, leading: 0, bottom: 20, trailing: 0))
+        OnboardingHeaderView(header: "Add categories", description: "You can add categories later in settings")
     }
     
     private var addSection: some View {

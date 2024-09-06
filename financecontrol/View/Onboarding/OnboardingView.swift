@@ -13,32 +13,50 @@ struct OnboardingView: View {
     
     @State private var screen: Int = 0
     @State private var selectedCurrency: String = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
-    @State private var showOverlay: Bool = true
+    @State private var showOverlay: Bool = false
+    @State private var transition: AnyTransition = .horizontalMoveForward
     
     let finalScreenNumber: Int = 3
     let addSampleData: Bool = false
+    
+    var continueButtonText: LocalizedStringKey {
+        if screen == finalScreenNumber {
+            return "Done"
+        }
+        
+        if screen ==   2 && cdm.savedCategories.isEmpty && addSampleData {
+            return "Continue with sample data"
+        }
+        
+        return "Continue"
+    }
     
     var body: some View {
         Group {
             switch screen {
             case 0:
                 screen0
-                    .transition(.horizontalMove)
+                    .transition(transition)
                     .animation(.smooth, value: screen)
             case 1:
                 screen1
-                    .transition(.horizontalMove)
+                    .transition(transition)
                     .animation(.smooth, value: screen)
             case 2:
                 screen2
-                    .transition(.horizontalMove)
+                    .transition(transition)
                     .animation(.smooth, value: screen)
             case 3:
                 screen3
-                    .transition(.horizontalMove)
+                    .transition(transition)
                     .animation(.smooth, value: screen)
             default:
                 EmptyView()
+            }
+        }
+        .overlay(alignment:.topLeading) {
+            if screen > 1, showOverlay {
+                backButton
             }
         }
         .overlay(alignment: .bottom) {
@@ -49,19 +67,22 @@ struct OnboardingView: View {
                         .transition(.move(edge: .bottom))
                         .zIndex(0)
                     
-                    VStack {
-                        continueButton
-                            .padding(.horizontal, 30)
-                    }
-                    .zIndex(1)
-                    .padding(.bottom, 30)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    continueButton
+                        .padding(.horizontal, 30)
+                        .zIndex(1)
+                        .padding(.bottom, 30)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
             .animation(.smooth, value: showOverlay)
             .ignoresSafeArea(.keyboard)
         }
         .ignoresSafeArea(.container)
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+                showOverlay = true
+            }
+        }
     }
     
     private var gradient: LinearGradient {
@@ -85,57 +106,82 @@ struct OnboardingView: View {
         .padding(.vertical, 5)
     }
     
+    private var backButton: some View {
+        Button("Back") {
+            backButtonAction()
+        }
+        .tint(.orange)
+        .accentColor(.orange)
+        .transition(.opacity)
+        .padding(.vertical, 9)
+        .padding(.horizontal, 10)
+        .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 5))
+        .hoverEffect(.automatic)
+        .background(Color(uiColor: .systemGroupedBackground).opacity(0.0001))
+        .padding(8)
+    }
+    
     private var continueButton: some View {
         Button {
-            if screen == 1 {
-                UserDefaults.standard.addCurrency(selectedCurrency)
-                
-                UserDefaults.standard.set(selectedCurrency, forKey: UDKeys.defaultCurrency.rawValue)
-                UserDefaults.standard.set(selectedCurrency, forKey: UDKeys.defaultSelectedCurrency.rawValue)
-                UserDefaults.standard.set(false, forKey: UDKeys.separateCurrencies.rawValue)
-                
-                if let defaults = UserDefaults(suiteName: Vars.groupName) {
-                    defaults.set(selectedCurrency, forKey: "defaultCurrency")
-                    cdm.passSpendingsToSumWidget(data: cdm.statsListData)
-                }
-            }
-            
-            if screen == 2 && cdm.savedCategories.isEmpty && addSampleData {
-                DispatchQueue.main.async {
-                    cdm.addTemplateData()
-                }
-            }
-            
-            if screen < finalScreenNumber {
-                withAnimation {
-                    screen += 1
-                }
-            } else {
-                dismiss()
-            }
+            continueButtonAction()
         } label: {
-            ZStack {
-                Capsule()
-                    .foregroundColor(.orange)
-                    .frame(maxHeight: 50)
-                
-                HStack(spacing: 0) {
-                    Text(screen == finalScreenNumber ? "Done" : "Continue")
-                        .foregroundColor(.white)
-                        .font(.body.bold())
-                    
-                    if screen == 2 && cdm.savedCategories.isEmpty && addSampleData {
-                        Text(verbatim: " with sample data")
-                            .foregroundColor(.white)
-                            .font(.body.bold())
-                            .transition(.asymmetric(insertion: .move(edge: .trailing).combined(with: .opacity), removal: .opacity))
-                            .animation(.easeInOut.speed(1.5), value: screen)
-                    }
-                }
+            continueButtonLabel
+        }
+        .frame(maxHeight: 50)
+        .contentShape(.hoverEffect, Capsule())
+        .hoverEffect(.automatic)
+    }
+    
+    private var continueButtonLabel: some View {
+        ZStack {
+            Capsule()
+                .foregroundColor(.orange)
+            
+            Text(continueButtonText)
+                .foregroundColor(.white)
+                .font(.body.bold())
+        }
+    }
+    
+    private func continueButtonAction() {
+        transition = .horizontalMoveForward
+        
+        if screen == 1 {
+            UserDefaults.standard.addCurrency(selectedCurrency)
+            
+            UserDefaults.standard.set(selectedCurrency, forKey: UDKeys.defaultCurrency.rawValue)
+            UserDefaults.standard.set(selectedCurrency, forKey: UDKeys.defaultSelectedCurrency.rawValue)
+            UserDefaults.standard.set(false, forKey: UDKeys.separateCurrencies.rawValue)
+            
+            if let defaults = UserDefaults(suiteName: Vars.groupName) {
+                defaults.set(selectedCurrency, forKey: "defaultCurrency")
+                cdm.passSpendingsToSumWidget(data: cdm.statsListData)
             }
         }
-        .contentShape(.hoverEffect, Capsule())
-        .hoverEffect(.highlight)
+        
+        if screen == 2 && cdm.savedCategories.isEmpty && addSampleData {
+            DispatchQueue.main.async {
+                cdm.addTemplateData()
+            }
+        }
+        
+        if screen < finalScreenNumber {
+            withAnimation {
+                screen += 1
+            }
+        } else {
+            dismiss()
+        }
+    }
+    
+    private func backButtonAction() {
+        if screen > 1 {
+            transition = .horizontalMoveBackward
+            
+            withAnimation {
+                screen -= 1
+            }
+        }
     }
     
     private var screen0: some View {
@@ -153,15 +199,6 @@ struct OnboardingView: View {
     
     private var screen3: some View {
         OnboardingGesturesTemplateView()
-    }
-    
-    private func getButtonText() -> LocalizedStringKey {
-        switch screen {
-        case finalScreenNumber:
-            "Done"
-        default:
-            "Continue"
-        }
     }
 }
 

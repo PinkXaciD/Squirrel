@@ -338,6 +338,9 @@
         }
       }
     },
+    "Back" : {
+
+    },
     "Blue" : {
 
     },
@@ -388,9 +391,6 @@
     "Clear standart UserDefaults" : {
 
     },
-    "Clear UserDefaults" : {
-
-    },
     "Close" : {
 
     },
@@ -407,6 +407,9 @@
 
     },
     "Continue" : {
+
+    },
+    "Continue with sample data" : {
 
     },
     "Create an issue on GitHub" : {
@@ -876,7 +879,7 @@
     "Swipe from left to restore, swipe from right to delete" : {
 
     },
-    "Tap to remove selection" : {
+    "Tap here to remove selection" : {
 
     },
     "Teal" : {

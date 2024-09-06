@@ -39,8 +39,11 @@ extension RatesModel {
             if useCloudKit {
                 var timestampString: String {
                     if let timestamp {
-                        let isoDateFormatter = ISO8601DateFormatter()
-                        return isoDateFormatter.string(from: Calendar.gmt.startOfDay(for: timestamp))
+                        let dateFormatter = DateFormatter()
+                        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+                        dateFormatter.timeZone = .init(secondsFromGMT: 0)
+                        dateFormatter.dateFormat = "yyyy-MM-dd"
+                        return dateFormatter.string(from: Calendar.gmt.startOfDay(for: timestamp))
                     }
                     
                     return "latest"

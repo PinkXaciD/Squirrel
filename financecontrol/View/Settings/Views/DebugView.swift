@@ -22,13 +22,17 @@ struct DebugView: View {
     
     var body: some View {
         List {
+            #if DEBUG
             errorsSection
+            #endif
             
             ratesSection
             
             bundleSection
             
+            #if DEBUG
             networkSection
+            #endif
             
             defaultsSection
             
@@ -300,13 +304,13 @@ struct DebugView: View {
             } label: {
                 Text(verbatim: "UserDefaults values")
             }
-            #endif
             
             Button(role: .destructive) {
                 defaultsConfirmationIsShowing.toggle()
             } label: {
                 Text("Clear UserDefaults")
             }
+            #endif
             
             NavigationLink("Rates fetch queue") {
                 List {

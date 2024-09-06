@@ -19,11 +19,12 @@ final class RatesViewModel: ViewModel {
     }
     
     @Published
-    var rates: [String:Double] = [:]
+    private(set) var rates: [String:Double] = [:]
     @Published
-    var status: RatesDownloadStatus = .none
+    private(set) var status: RatesDownloadStatus = .none
     
-    var cache = [Date:Rates]()
+    private(set) var cache = [Date:Rates]()
+    private var updateTime: Date = .distantPast
     
     init() {
         insertRates()
@@ -71,6 +72,7 @@ final class RatesViewModel: ViewModel {
                     self.rates = safeRates.rates
                     self.addRates(safeRates.rates)
                     UserDefaults.standard.set(safeRates.timestamp, forKey: UDKeys.updateTime.rawValue)
+                    self.updateTime = Date()
                     UserDefaults.standard.set(false, forKey: UDKeys.updateRates.rawValue)
                     self.status = .success
                 }
@@ -140,14 +142,20 @@ final class RatesViewModel: ViewModel {
         self.status = .success
     }
     
+    func checkForUpdate() {
+        if !Calendar.current.isDate(updateTime, equalTo: Date(), toGranularity: .hour) {
+            updateRates()
+        }
+    }
+    
     /// Will update exchange rates automatically every hour
-    func hourlyUpdate() {
+    private func hourlyUpdate() {
         let currentHour = Calendar.current.component(.hour, from: .now)
         
         let fireTime = Calendar.current.date(byAdding: .hour, value: currentHour + 1, to: Calendar.current.startOfDay(for: Date())) ?? Calendar.current.startOfDay(for: Date())
         
         let timer = Timer(fire: fireTime, interval: .hour, repeats: true) { [weak self] timer in
-            if self?.status != .downloading && self?.status != .waitingForNetwork {
+            if (self?.status != .downloading && self?.status != .waitingForNetwork), !Calendar.current.isDate(self?.updateTime ?? .distantPast, equalTo: Date(), toGranularity: .hour) {
                 self?.updateRates()
             }
         }

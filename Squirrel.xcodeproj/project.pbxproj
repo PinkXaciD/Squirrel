@@ -74,6 +74,7 @@
 		8D5894982A829E3D00A6DB65 /* BarChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5894972A829E3D00A6DB65 /* BarChart.swift */; };
 		8D591EA82A93AAF700A9CD07 /* LaunchActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D591EA72A93AAF700A9CD07 /* LaunchActions.swift */; };
 		8D59A2512C860D0B007E40E9 /* SettingsFormattingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D59A2502C860D0B007E40E9 /* SettingsFormattingView.swift */; };
+		8D59A2532C8A0DEF007E40E9 /* OnboardingHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D59A2522C8A0DEF007E40E9 /* OnboardingHeaderView.swift */; };
 		8D5B961A2B62944700715C3F /* AccessoryCircularSumWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5B96192B62944700715C3F /* AccessoryCircularSumWidgetView.swift */; };
 		8D5B961C2B6294A300715C3F /* AccessoryRectangularSumWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5B961B2B6294A300715C3F /* AccessoryRectangularSumWidgetView.swift */; };
 		8D5CBE782B84F68300435335 /* CoreDataErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5CBE772B84F68300435335 /* CoreDataErrors.swift */; };
@@ -268,6 +269,7 @@
 		8D5894972A829E3D00A6DB65 /* BarChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarChart.swift; sourceTree = "<group>"; };
 		8D591EA72A93AAF700A9CD07 /* LaunchActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchActions.swift; sourceTree = "<group>"; };
 		8D59A2502C860D0B007E40E9 /* SettingsFormattingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsFormattingView.swift; sourceTree = "<group>"; };
+		8D59A2522C8A0DEF007E40E9 /* OnboardingHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingHeaderView.swift; sourceTree = "<group>"; };
 		8D5B96192B62944700715C3F /* AccessoryCircularSumWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessoryCircularSumWidgetView.swift; sourceTree = "<group>"; };
 		8D5B961B2B6294A300715C3F /* AccessoryRectangularSumWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessoryRectangularSumWidgetView.swift; sourceTree = "<group>"; };
 		8D5CBE772B84F68300435335 /* CoreDataErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataErrors.swift; sourceTree = "<group>"; };
@@ -478,6 +480,7 @@
 				8D2AD7CF2BA1CE28001DCC61 /* OnboardingCurrencyView.swift */,
 				8D2AD7D12BA1CE6E001DCC61 /* OnboardingGesturesTemplateView.swift */,
 				8D2AD7D32BA1CEA6001DCC61 /* OnboardingCategoriesView.swift */,
+				8D59A2522C8A0DEF007E40E9 /* OnboardingHeaderView.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -1162,6 +1165,7 @@
 				8D0DF54F2AE80C2400C3CC1F /* CustomAlertType.swift in Sources */,
 				8D1E71E52AAF1C1A004A17B4 /* CategoryEditView.swift in Sources */,
 				8DB9F9B92BB6F811000AF853 /* UserDefaultsExtensions.swift in Sources */,
+				8D59A2532C8A0DEF007E40E9 /* OnboardingHeaderView.swift in Sources */,
 				8DBEF1352ADD6D4F005D683D /* CategoryRow.swift in Sources */,
 				8D78BB8A2A9A1B570075DC70 /* PieChartView.swift in Sources */,
 				8D6A5A1D2C18A1A100322929 /* PrivacyMonitor.swift in Sources */,
@@ -1327,7 +1331,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 33;
+				CURRENT_PROJECT_VERSION = 34;
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1366,7 +1370,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 33;
+				CURRENT_PROJECT_VERSION = 34;
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1527,7 +1531,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 33;
+				CURRENT_PROJECT_VERSION = 34;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
@@ -1572,7 +1576,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 33;
+				CURRENT_PROJECT_VERSION = 34;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;

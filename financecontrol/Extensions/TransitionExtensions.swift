@@ -8,8 +8,12 @@
 import SwiftUI
 
 extension AnyTransition {
-    static var horizontalMove: AnyTransition {
+    static var horizontalMoveForward: AnyTransition {
         AnyTransition.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading))
+    }
+    
+    static var horizontalMoveBackward: AnyTransition {
+        AnyTransition.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .trailing))
     }
     
     static var moveFromBottom: AnyTransition {
