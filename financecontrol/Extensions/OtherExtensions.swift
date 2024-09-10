@@ -74,3 +74,13 @@ extension TimeInterval {
     
     static let day: Self = 86_400
 }
+
+extension DateFormatter {
+    static let forRatesTimestamp: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = .init(secondsFromGMT: 0)
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
+}

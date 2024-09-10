@@ -110,7 +110,7 @@ struct AddSpendingView: View {
                 CurrencySelector(currency: $vm.currency)
             }
             
-            DatePicker("Date", selection: $vm.date, in: Date.init(timeIntervalSinceReferenceDate: 0)...Date.now)
+            DatePicker("Date", selection: $vm.date, in: Vars.firstAvailableDate...Date.now)
                 .datePickerStyle(.compact)
             
             HStack {

@@ -13,9 +13,7 @@ extension View {
     /// - Returns: Few modifiers
     func amountStyle() -> some View {
         self
-            .padding(.vertical, 2)
-            .keyboardType(.decimalPad)
-            .font(.system(size: 30, weight: .semibold, design: .rounded))
+            .modifier(AmountStyleViewModifier())
     }
     
     /// Allows user to input only numbers with up to n numbers after decimal separator
@@ -85,6 +83,17 @@ fileprivate struct IOS15Padding: ViewModifier {
     }
 }
 
+fileprivate struct AmountStyleViewModifier: ViewModifier {
+    @ScaledMetric private var fontSize: CGFloat = 30
+    
+    func body(content: Content) -> some View {
+        content
+            .padding(.vertical, 2)
+            .keyboardType(.decimalPad)
+            .font(.system(size: fontSize, weight: .semibold, design: .rounded))
+    }
+}
+
 fileprivate struct RoundedStrikeThroughModifier: ViewModifier {
     let color: Color
     let thickness: CGFloat
@@ -148,7 +157,8 @@ fileprivate struct InvertLayoutDirectionModifier: ViewModifier {
 }
 
 fileprivate struct DynamicTypeListStylingViewModifier: ViewModifier {
-    @Environment(\.sizeCategory) private var sizeCategory
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     
     func body(content: Content) -> some View {
         return styleList(content: content)
@@ -156,7 +166,7 @@ fileprivate struct DynamicTypeListStylingViewModifier: ViewModifier {
     
     @ViewBuilder
     func styleList(content: some View) -> some View {
-        if sizeCategory > .extraLarge {
+        if dynamicTypeSize > .xLarge, horizontalSizeClass == .compact {
             content.listStyle(.grouped)
         } else {
             content.listStyle(.insetGrouped)

@@ -19,6 +19,8 @@ struct Vars {
     static let iCloudContainerIdentifier: String = "iCloud.dev.squirrelapp.squirrel"
     
     static let privacyBlur: CGFloat = 10
+    
+    static let firstAvailableDate: Date = Date(timeIntervalSinceReferenceDate: 599_529_600) // 2020/01/01, 0:00 GMT
 }
 
 struct URLs {
@@ -28,9 +30,11 @@ struct URLs {
     
     static let github: URL! = URL(string: "https://github.com/PinkXaciD/Squirrel")
     
-    static let newGithubIssue: URL! = URL(string: "https://github.com/PinkXaciD/Squirrel/issues/new")
+    static let newGithubIssue: URL! = URL(string: "\(github.absoluteString)/issues/new")
     
     static let appSite: URL! = URL(string: "https://squirrelapp.dev")
+    
+    static let privacyPolicy: URL! = URL(string: "\(appSite.absoluteString)/privacy")
 }
 
 enum UDKeys: String {

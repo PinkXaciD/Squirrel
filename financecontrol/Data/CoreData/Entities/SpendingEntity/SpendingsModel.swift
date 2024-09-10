@@ -502,13 +502,15 @@ extension CoreDataModel {
     func updateRatesFromQueue(_ spendings: [SpendingEntity]) {
         context.perform {
             for spending in spendings {
-                let rm = RatesModel()
                 let safeSpending = spending.safeObject()
                 
                 // Goes away from safe thread
                 Task { [weak self, spending, safeSpending] in
                     do {
-                        let rate = try await rm.downloadRates(timestamp: safeSpending.wrappedDate).rates[safeSpending.wrappedCurrency] ?? 1
+                        let ckManager = CloudKitManager()
+                        let formattedDate = DateFormatter.forRatesTimestamp.string(from: safeSpending.wrappedDate)
+                        let rate = try await ckManager.fetchRates(timestamp: formattedDate).rates.rates[safeSpending.wrappedCurrency] ?? 1
+                        
                         let localSpending = SpendingEntityLocal(
                             amount: safeSpending.amount,
                             amountUSD: safeSpending.amount / rate,
@@ -528,7 +530,7 @@ extension CoreDataModel {
                         #endif
                         
                         UserDefaults.standard.removeFromFetchQueue(safeSpending.wrappedId)
-                    } catch URLError.notConnectedToInternet {
+                    } catch CloudKitManager.CloudKitError.networkUnavailable {
                         self?.waitForRatesToBecomeAvailable()
                     } catch {
                         ErrorType(error: error).publish(file: #fileID, function: #function)

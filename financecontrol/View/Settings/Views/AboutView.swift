@@ -38,9 +38,13 @@ struct AboutView: View {
             }
             #endif
         }
-        .confirmationDialog("", isPresented: $showConfirmationDialog, titleVisibility: .hidden, presenting: urlToOpen) { url in
+        .confirmationDialog("Open \"\(urlToOpen?.absoluteString ?? "URL")\"?", isPresented: $showConfirmationDialog, titleVisibility: .visible, presenting: urlToOpen) { url in
             Button("Open in browser") {
                 openURL(url)
+            }
+            
+            Button("Copy to clipboard") {
+                UIPasteboard.general.url = url
             }
         }
     }
@@ -49,8 +53,9 @@ struct AboutView: View {
         Section(header: aboutHeader) {
             VStack(alignment: .leading) {
                 Text("An open-source expense tracker.")
-                Text("Developed by PinkXaciD.")
-                Text("Exchange rates API by nulledzero.")
+//                Text("Developed by PinkXaciD.")
+//                Text("Exchange rates API by nulledzero.")
+                Text("Exchange rates are provided for reference purposes only.")
             }
             .normalizePadding()
             
@@ -62,6 +67,10 @@ struct AboutView: View {
                 openURLButtonAction(URLs.github)
             } label: {
                 Text(verbatim: "GitHub")
+            }
+            
+            Button("Privacy policy") {
+                openURLButtonAction(URLs.privacyPolicy)
             }
         }
     }

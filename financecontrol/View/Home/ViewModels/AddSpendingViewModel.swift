@@ -169,7 +169,8 @@ final class AddSpendingViewModel: ViewModel {
                 }
             } else {
                 Task { [spending, self] in
-                    let oldRates = try? await self.rvm.getRates(self.date).rates
+                    let oldRates = try? await self.rvm.getRates(self.date).rates.rates
+                    
                     await MainActor.run { [spending, self] in
                         let isHistoricalRatesUnvailable: Bool = oldRates == nil
                         var spendingCopy = spending

@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import UIKit
+import SwiftUI
 #if DEBUG
 import OSLog
 #endif
@@ -24,7 +24,7 @@ final class RatesViewModel: ViewModel {
     private(set) var status: RatesDownloadStatus = .none
     
     private(set) var cache = [Date:Rates]()
-    private var updateTime: Date = .distantPast
+    private var updateTime: Date = Date()
     
     init() {
         insertRates()
@@ -44,15 +44,11 @@ final class RatesViewModel: ViewModel {
             guard let self else { return }
             
             do {
-                let safeRates = try await getRates()
-                
-                let formatter = ISO8601DateFormatter()
-                formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+                let (cloudKitUpdateDate, safeRates) = try await getRates()
                 
                 // MARK: Is latest check
                 guard
-                    let date = formatter.date(from: safeRates.timestamp),
-                    Calendar.current.isDate(date, equalTo: .now, toGranularity: .hour)
+                    Calendar.gmt.isDate(cloudKitUpdateDate, equalTo: Date(), toGranularity: .hour)
                 else {
                     // Try again
                     if !isTryingAgain {
@@ -69,11 +65,15 @@ final class RatesViewModel: ViewModel {
                 }
                 
                 await MainActor.run {
+                    let isoFormatter = ISO8601DateFormatter()
+                    
                     self.rates = safeRates.rates
                     self.addRates(safeRates.rates)
-                    UserDefaults.standard.set(safeRates.timestamp, forKey: UDKeys.updateTime.rawValue)
-                    self.updateTime = Date()
+                    
+                    UserDefaults.standard.set(isoFormatter.string(from: cloudKitUpdateDate), forKey: UDKeys.updateTime.rawValue)
                     UserDefaults.standard.set(false, forKey: UDKeys.updateRates.rawValue)
+                    
+                    self.updateTime = Date()
                     self.status = .success
                 }
                 
@@ -81,13 +81,14 @@ final class RatesViewModel: ViewModel {
                 let logger = Logger(subsystem: Vars.appIdentifier, category: "RatesViewModel info")
                 logger.debug("Rates fetched from web")
                 #endif
-            } catch URLError.notConnectedToInternet, URLError.timedOut {
+                
+            } catch CloudKitManager.CloudKitError.networkUnavailable {
                 await MainActor.run {
                     CustomAlertManager.shared.addAlert(.noConnection("Unable to update exchange rates"))
                     self.waitForConnectionToEstablish()
                 }
             } catch {
-                print(error)
+//                print(error)
                 await MainActor.run {
                     ErrorType(error: error).publish()
                     self.status = .failed
@@ -101,7 +102,7 @@ final class RatesViewModel: ViewModel {
             self.status = .tryingAgain
         }
         
-        try? await Task.sleep(nanoseconds: 10_000_000_000)
+        try? await Task.sleep(nanoseconds: 10_000_000_000) // 10 sec.
         
         await MainActor.run {
             self.updateRates()
@@ -167,24 +168,25 @@ final class RatesViewModel: ViewModel {
 // MARK: Rates View Model networking
 
 extension RatesViewModel {
-    func getRates(_ timestamp: Date? = nil) async throws -> Rates {
-//        guard self.status != .waitingForNetwork else {
-//            throw URLError(.notConnectedToInternet)
-//        }
+    func getRates(_ timestamp: Date? = nil) async throws -> (editDate: Date, rates: Rates) {
         if let timestamp, let cached = cache[Calendar.gmt.startOfDay(for: timestamp)] {
-            return cached
+            return (timestamp, cached)
         }
         
-        do {
-            let rm: RatesModel = .init()
-            let downloaded = try await rm.downloadRates(timestamp: timestamp)
+        var timestampString: String? {
             if let timestamp {
-                cache.updateValue(downloaded, forKey: Calendar.gmt.startOfDay(for: timestamp))
+                let dateFormatter = DateFormatter.forRatesTimestamp
+                return dateFormatter.string(from: Calendar.gmt.startOfDay(for: timestamp))
             }
-            return downloaded
-        } catch {
-            throw error
+            
+            return nil
         }
+        
+        let ckManager = CloudKitManager()
+        
+        let result = try await ckManager.fetchRates(timestamp: timestampString ?? "latest")
+        
+        return result
     }
 }
 
@@ -202,7 +204,7 @@ extension RatesViewModel {
         rates = fetchedRates
     }
     
-    private func addRates(_ data: [String: Double]) {
+    private func addRates(_ data: [String : Double]) {
         UserDefaults.standard.set(data, forKey: UDKeys.rates.rawValue)
     }
 }

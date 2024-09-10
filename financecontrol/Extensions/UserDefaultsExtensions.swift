@@ -25,7 +25,9 @@ extension UserDefaults {
         let isoDateFormatter = ISO8601DateFormatter()
         isoDateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         
-        guard let result = isoDateFormatter.date(from: timestampString) else {
+        let newDateFormatter: DateFormatter = .forRatesTimestamp
+        
+        guard let result = (isoDateFormatter.date(from: timestampString) ?? newDateFormatter.date(from: timestampString)) else {
             return nil
         }
         

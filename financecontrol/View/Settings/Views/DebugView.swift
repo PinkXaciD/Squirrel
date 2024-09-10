@@ -229,12 +229,9 @@ struct DebugView: View {
             
             #if DEBUG
             Button(role: .destructive) {
-                let rm = RatesModel()
-                Task {
-                    try await rm.downloadRates(timestamp: Date())
-                }
+                rvm.checkForUpdate()
             } label: {
-                Text(verbatim: "Fetch rates")
+                Text(verbatim: "Update rates")
             }
             #endif
         } header: {
@@ -415,20 +412,15 @@ extension DebugView {
             return f
         }
         
-        var isoDateFromatter: ISO8601DateFormatter {
-            let f = ISO8601DateFormatter()
-            f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-            f.timeZone = .init(secondsFromGMT: 0)
-            return f
-        }
+        let isoDateFromatter = ISO8601DateFormatter()
         
         switch type {
         case .fallback:
-            let date: Date = isoDateFromatter.date(from: Rates.fallback.timestamp) ?? .distantPast
+            let date: Date = isoDateFromatter.date(from: Rates.fallback.timestamp) ?? DateFormatter.forRatesTimestamp.date(from: Rates.fallback.timestamp) ?? .distantPast
             return dateFormatter.string(from: date)
         case .update:
             let ratesUpdateTime: String = UserDefaults.standard.string(forKey: UDKeys.updateTime.rawValue) ?? "Error"
-            let date: Date = isoDateFromatter.date(from: ratesUpdateTime) ?? .distantPast
+            let date: Date = isoDateFromatter.date(from: ratesUpdateTime) ?? DateFormatter.forRatesTimestamp.date(from: ratesUpdateTime) ?? .distantPast
             return dateFormatter.string(from: date)
         }
     }

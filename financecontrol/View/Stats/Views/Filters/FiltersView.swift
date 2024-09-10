@@ -77,7 +77,7 @@ struct FiltersView: View {
     }
     
     private var firstDatePicker: some View {
-        let firstDate: Date = cdm.savedSpendings.last?.wrappedDate ?? .init(timeIntervalSinceReferenceDate: 0)
+        let firstDate: Date = cdm.savedSpendings.last?.wrappedDate ?? Vars.firstAvailableDate
         
         return DatePicker("From", selection: $fvm.startFilterDate, in: firstDate...fvm.endFilterDate, displayedComponents: .date)
     }
@@ -215,7 +215,7 @@ extension FiltersView {
     }
     
     private func setCurrentMonth() {
-        let firstDate: Date = cdm.savedSpendings.last?.wrappedDate ?? .init(timeIntervalSinceReferenceDate: 0)
+        let firstDate: Date = cdm.savedSpendings.last?.wrappedDate ?? Vars.firstAvailableDate
         
         fvm.startFilterDate = Date().getFirstDayOfMonth() < firstDate ? firstDate : Date().getFirstDayOfMonth()
         fvm.endFilterDate = Date()
@@ -229,7 +229,7 @@ extension FiltersView {
             return
         }
         
-        let firstDate: Date = cdm.savedSpendings.last?.wrappedDate ?? .init(timeIntervalSinceReferenceDate: 0)
+        let firstDate: Date = cdm.savedSpendings.last?.wrappedDate ?? Vars.firstAvailableDate
         
         fvm.startFilterDate = startDate < firstDate ? firstDate : startDate
         fvm.endFilterDate = Date()
@@ -243,7 +243,7 @@ extension FiltersView {
             return Date()
         }
         
-        let firstDate: Date = cdm.savedSpendings.last?.wrappedDate ?? .init(timeIntervalSinceReferenceDate: 0)
+        let firstDate: Date = cdm.savedSpendings.last?.wrappedDate ?? Vars.firstAvailableDate
         
         return startDate < firstDate ? firstDate : startDate
     }

@@ -17,7 +17,7 @@ struct OnboardingView: View {
     @State private var transition: AnyTransition = .horizontalMoveForward
     
     let finalScreenNumber: Int = 3
-    let addSampleData: Bool = false
+    let addSampleData: Bool = true
     
     var continueButtonText: LocalizedStringKey {
         if screen == finalScreenNumber {
