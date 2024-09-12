@@ -12,7 +12,7 @@ import OSLog
 
 final class CloudKitManager {
     enum CloudKitError: String, LocalizedError {
-        case failedToDecodeResult, failedToGetResult
+        case failedToDecodeResult, failedToGetResult, noValueFound, noEditDateFound, noRecordFound, networkUnavailable
         
         var errorDescription: String? {
             "CloudKit error \(self.rawValue)"
@@ -45,35 +45,49 @@ final class CloudKitManager {
         #endif
     }
     
-    func fetchAPIKey() async throws -> String {
-        let publicDb = container.publicCloudDatabase
-        let predicate = NSPredicate(format: "APIName == %@", "Rates" as CVarArg)
-        let query = CKQuery(recordType: "APIKey", predicate: predicate)
+    func fetchRates(timestamp recordName: String) async throws -> (editDate: Date, rates: Rates) {
+        func getRatesRecord(recordName: CKRecord.ID) async throws -> CKRecord {
+            do {
+                return try await container.publicCloudDatabase.record(for: recordName)
+            } catch CKError.unknownItem {
+                #if DEBUG
+                await MainActor.run {
+                    CustomAlertManager.shared.addAlert(.init(type: .error, title: "No rates found", description: "\(recordName)", systemImage: "exclamationmark.circle"))
+                }
+                #endif
+                
+                return try await container.publicCloudDatabase.record(for: CKRecord.ID(recordName: "latest"))
+            } catch CKError.networkUnavailable {
+                throw CloudKitError.networkUnavailable
+            }
+        }
         
-        do {
-            return try completionHandler(try await publicDb.records(matching: query))
-        } catch {
-            throw error
+        let record = try await getRatesRecord(recordName: CKRecord.ID(recordName: recordName))
+        
+        guard let rawRates = record.value(forKey: "rates") as? String else {
+            throw CloudKitError.noValueFound
         }
-    }
-    
-    private func completionHandler(
-        _ input: (matchResults: [(CKRecord.ID, Result<CKRecord, any Error>)], queryCursor: CKQueryOperation.Cursor?)
-    ) throws -> String {
-        do {
-            let result = input.matchResults.first
-            
-            guard let result else {
-                throw CloudKitError.failedToGetResult
-            }
-            
-            guard let value = try result.1.get().value(forKey: "Value") as? String else {
-                throw CloudKitError.failedToDecodeResult
-            }
-            
-            return value
-        } catch {
-            throw error
+        
+        guard let ratesData = rawRates.data(using: .utf8) else {
+            throw CloudKitError.failedToDecodeResult
         }
+        
+        guard let editDate = record.modificationDate else {
+            throw CloudKitError.noEditDateFound
+        }
+        
+        let decoder = JSONDecoder()
+        
+        let rates = try decoder.decode([String : Double].self, from: ratesData)
+        
+        if recordName == "latest" {
+            let dateFormatter = DateFormatter.forRatesTimestamp
+            
+            let editDateString = dateFormatter.string(from: editDate)
+            
+            return (editDate, Rates(timestamp: editDateString, rates: rates))
+        }
+        
+        return (editDate, Rates(timestamp: record.recordID.recordName, rates: rates))
     }
 }

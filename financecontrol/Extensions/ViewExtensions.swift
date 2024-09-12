@@ -13,9 +13,7 @@ extension View {
     /// - Returns: Few modifiers
     func amountStyle() -> some View {
         self
-            .padding(.vertical, 2)
-            .keyboardType(.decimalPad)
-            .font(.system(size: 30, weight: .semibold, design: .rounded))
+            .modifier(AmountStyleViewModifier())
     }
     
     /// Allows user to input only numbers with up to n numbers after decimal separator
@@ -61,6 +59,11 @@ extension View {
         return self
             .modifier(InvertLayoutDirectionModifier(isActive: isActive))
     }
+    
+    func styleListsToDynamicType() -> some View {
+        return self
+            .modifier(DynamicTypeListStylingViewModifier())
+    }
 }
 
 extension Text {
@@ -77,6 +80,17 @@ fileprivate struct IOS15Padding: ViewModifier {
         } else {
             return content.padding(.vertical, 5)
         }
+    }
+}
+
+fileprivate struct AmountStyleViewModifier: ViewModifier {
+    @ScaledMetric private var fontSize: CGFloat = 30
+    
+    func body(content: Content) -> some View {
+        content
+            .padding(.vertical, 2)
+            .keyboardType(.decimalPad)
+            .font(.system(size: fontSize, weight: .semibold, design: .rounded))
     }
 }
 
@@ -138,6 +152,24 @@ fileprivate struct InvertLayoutDirectionModifier: ViewModifier {
             }
         } else {
             return content.environment(\.layoutDirection, layoutDirection)
+        }
+    }
+}
+
+fileprivate struct DynamicTypeListStylingViewModifier: ViewModifier {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    
+    func body(content: Content) -> some View {
+        return styleList(content: content)
+    }
+    
+    @ViewBuilder
+    func styleList(content: some View) -> some View {
+        if dynamicTypeSize > .xLarge, horizontalSizeClass == .compact {
+            content.listStyle(.grouped)
+        } else {
+            content.listStyle(.insetGrouped)
         }
     }
 }

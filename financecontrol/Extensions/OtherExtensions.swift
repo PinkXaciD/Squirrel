@@ -62,3 +62,25 @@ extension Calendar {
         return calendar
     }()
 }
+
+extension TimeZone {
+    func hoursFromGMT() -> Double {
+        return Double(self.secondsFromGMT() / 3600)
+    }
+}
+
+extension TimeInterval {
+    static let hour: Self = 3600
+    
+    static let day: Self = 86_400
+}
+
+extension DateFormatter {
+    static let forRatesTimestamp: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = .init(secondsFromGMT: 0)
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
+}

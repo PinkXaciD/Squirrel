@@ -6,12 +6,16 @@
 //
 
 import SwiftUI
+#if DEBUG
+import OSLog
+#endif
 
 struct ContentView: View {
     @Environment(\.scenePhase) 
     private var scenePhase
     @Environment(\.openURL)
     private var openURL
+    
     @AppStorage(UDKeys.presentOnboarding.rawValue)
     private var presentOnboarding: Bool = true
     @AppStorage(UDKeys.color.rawValue)
@@ -78,16 +82,7 @@ struct ContentView: View {
             }
         }
         .onChange(of: scenePhase) { value in
-            if value == .inactive {
-                WidgetsManager.shared.reloadSumWidgets()
-                WidgetsManager.shared.updateAccentColor()
-            }
-            
-            if privacyScreenIsEnabled {
-                hideContent = value != .active
-            }
-            
-            privacyMonitor.changePrivacyScreenValue(value != .active)
+            scenePhaseChange(value)
         }
         .environmentObject(cdm)
         .environmentObject(rvm)
@@ -122,6 +117,7 @@ struct ContentView: View {
         } message: { error in
             Text("\(error.errorDescription)\n\(error.recoverySuggestion)")
         }
+        .styleListsToDynamicType()
     }
     
     private var homeTab: some View {
@@ -172,6 +168,31 @@ struct ContentView: View {
             let windowScene = scenes.first as? UIWindowScene
             let window = windowScene?.windows.first
             window?.overrideUserInterfaceStyle = darkMode ? .dark : .light
+        }
+    }
+    
+    private func scenePhaseChange(_ value: ScenePhase) {
+        if value == .inactive {
+            WidgetsManager.shared.reloadSumWidgets()
+            WidgetsManager.shared.updateAccentColor()
+        }
+        
+        if privacyScreenIsEnabled {
+            hideContent = value != .active
+        }
+        
+        privacyMonitor.changePrivacyScreenValue(value != .active)
+        
+        if value == .active {
+            rvm.checkForUpdate()
+            
+            if !Calendar.current.isDateInToday(cdm.lastFetchDate) {
+                cdm.fetchSpendings(updateWidgets: false)
+            }
+            
+            #if DEBUG
+            Logger(subsystem: Vars.appIdentifier, category: #fileID).log("Moved to foreground, CD last fetch: \(cdm.lastFetchDate.formatted())")
+            #endif
         }
     }
 }

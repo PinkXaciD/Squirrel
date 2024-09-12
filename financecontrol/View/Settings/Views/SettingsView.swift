@@ -88,7 +88,7 @@ struct SettingsView: View {
         List {
             aboutSection
             
-            themeSection
+            appearanceSection
             
             currencySection
             
@@ -100,7 +100,6 @@ struct SettingsView: View {
             
             exportImportSection
         }
-        .listStyle(.insetGrouped)
         .navigationTitle("Settings")
     }
     
@@ -118,7 +117,7 @@ struct SettingsView: View {
             .navigationBarTitleDisplayMode(.inline)
     }
     
-    var themeSection: some View {
+    var appearanceSection: some View {
         Section {
             NavigationLink {
                 ColorAndIconView()
@@ -135,7 +134,13 @@ struct SettingsView: View {
             
             if showDarkModeToggle {
                 Toggle("Dark Mode", isOn: $darkMode)
+                    .zIndex(0)
             }
+            
+            NavigationLink("Formatting") {
+                SettingsFormattingView()
+            }
+            .zIndex(1)
         } header: {
             Text("Appearance")
         }

@@ -19,7 +19,9 @@ struct StatsRow: View {
     @EnvironmentObject
     private var vm: StatsViewModel
     
-//    let entity: SpendingEntity?
+    @AppStorage(UDKeys.formatWithoutTimeZones.rawValue)
+    private var formatWithoutTimeZones: Bool = false
+    
     let localEntity: TSSpendingEntity
     
     #if DEBUG
@@ -32,7 +34,6 @@ struct StatsRow: View {
     
     // MARK: Variables
     private var button: some View {
-//        print(localEntity.amount, localEntity.currency, localEntity.categoryName, "Button called")
         return Button(action: buttonAction) {
             buttonLabel
         }
@@ -55,7 +56,6 @@ struct StatsRow: View {
     }
     
     private var buttonLabel: some View {
-//        print(localEntity.amount, localEntity.currency, localEntity.categoryName, "Button called")
         return HStack {
             VStack(alignment: .leading, spacing: 5) {
                 if let place = localEntity.place, !place.isEmpty {
@@ -74,9 +74,17 @@ struct StatsRow: View {
             Spacer()
             
             VStack(alignment: .trailing, spacing: 5) {
-                Text(localEntity.wrappedDate, format: .dateTime.hour().minute())
-                    .font(.caption)
-                    .foregroundColor(Color.secondary)
+                HStack(spacing: 3) {
+                    if !formatWithoutTimeZones, let timeZone = localEntity.timeZone, timeZone.secondsFromGMT() != TimeZone.autoupdatingCurrent.secondsFromGMT() {
+                        Image(systemName: "clock")
+                            .foregroundColor(.secondary)
+                            .font(.caption2)
+                    }
+                    
+                    Text(localEntity.wrappedDate, format: localEntity.dateFormat(forRow: true).hour().minute())
+                        .font(.caption)
+                        .foregroundColor(Color.secondary)
+                }
                 
                 HStack {
                     if !localEntity.returns.isEmpty {
@@ -159,9 +167,25 @@ struct StatsRow: View {
     }
 }
 
-//struct StatsRow_Previews: PreviewProvider {
-//    static var previews: some View {
-//        StatsRow(entity: SpendingEntity(), entityToEdit: .constant(.init(context: DataManager.shared.context)), vm: .init(ratesViewModel: <#T##RatesViewModel#>, coreDataModel: <#T##CoreDataModel#>, entity: <#T##Binding<SpendingEntity?>#>))
-//            .environmentObject(CoreDataModel())
-//    }
-//}
+#Preview {
+    let row = StatsRow(
+        entity: .init(
+            amount: 1000,
+            amountUSD: 6.87,
+            comment: "",
+            currency: "JPY",
+            date: .now,
+            timeZoneIdentifier: "Asia/Tokyo",
+            id: .init(),
+            place: "Some place",
+            categoryID: .init(),
+            categoryName: "Category",
+            categoryColor: "",
+            returns: []
+        )
+    )
+    
+    return List {
+        row
+    }
+}

@@ -95,10 +95,10 @@ final class EditSpendingViewModel: SpendingViewModel {
                 amount: doubleAmount,
                 amountWithReturns: 0,
                 amountUSDWithReturns: 0,
-                comment: self.comment,
+                comment: self.comment.trimmingCharacters(in: .whitespacesAndNewlines),
                 currency: self.currency,
                 date: self.date,
-                place: self.place.trimmingCharacters(in: .whitespaces),
+                place: self.place.trimmingCharacters(in: .whitespacesAndNewlines),
                 categoryId: self.categoryId
             )
             
@@ -108,10 +108,12 @@ final class EditSpendingViewModel: SpendingViewModel {
                 DispatchQueue.main.async {
                     self.end()
                 }
+                
                 #if DEBUG
                 let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
                 logger.log("Currency is USD, skipping rates fetching...")
                 #endif
+                
                 return
             }
             
@@ -126,7 +128,8 @@ final class EditSpendingViewModel: SpendingViewModel {
             
             if !Calendar.gmt.isDateInToday(date) {
                 Task { [spending] in
-                    let oldRates = try? await self.rvm.getRates(self.date).rates
+                    let oldRates = try? await self.rvm.getRates(self.date).rates.rates
+                    
                     await MainActor.run { [spending] in
                         let isHistoricalRatesUnavailable: Bool = oldRates == nil
                         var spendingCopy = spending

@@ -50,14 +50,6 @@ final class NetworkMonitor: ObservableObject {
                 self.isConnected = path.status == .satisfied
                 self.isExpensive = path.isExpensive
                 self.status = path.status
-                
-//                if path.status == .satisfied {
-//                    NotificationCenter.default.post(name: NSNotification.Name("ConnectionEstablished"), object: self)
-//                }
-                
-//                #if DEBUG
-//                CustomAlertManager.shared.addAlert(.init(type: .info, title: "Path update handler", description: "\(path.status.description)", systemImage: "info.circle"))
-//                #endif
             }
         }
         

@@ -62,6 +62,10 @@ struct HomeView: View {
                             ratesAreFetching = false
                         }
                     }
+                } else if newValue == .downloading {
+                    withAnimation {
+                        ratesAreFetching = true
+                    }
                 }
             }
         }
@@ -140,6 +144,12 @@ struct HomeView: View {
                     .font(.body.bold())
                 
                 Text("Rates updated")
+                
+            case .tryingAgain:
+                ProgressView()
+                    .tint(.secondary)
+                
+                Text("Trying again...")
                 
             default:
                 EmptyView()

@@ -8,7 +8,7 @@
 
 import Foundation
 import CoreData
-
+import SwiftUI
 
 extension SpendingEntity {
 
@@ -23,9 +23,34 @@ extension SpendingEntity {
     @NSManaged public var date: Date?
     @NSManaged public var id: UUID?
     @NSManaged public var place: String?
+    @NSManaged public var timeZoneIdentifier: String?
     @NSManaged public var category: CategoryEntity?
     @NSManaged public var returns: NSSet?
-    
+
+}
+
+// MARK: Generated accessors for returns
+extension SpendingEntity {
+
+    @objc(addReturnsObject:)
+    @NSManaged public func addToReturns(_ value: ReturnEntity)
+
+    @objc(removeReturnsObject:)
+    @NSManaged public func removeFromReturns(_ value: ReturnEntity)
+
+    @objc(addReturns:)
+    @NSManaged public func addToReturns(_ values: NSSet)
+
+    @objc(removeReturns:)
+    @NSManaged public func removeFromReturns(_ values: NSSet)
+
+}
+
+extension SpendingEntity : Identifiable {
+
+}
+
+extension SpendingEntity {
     public var wrappedCurrency: String {
         currency ?? "Error"
     }
@@ -81,27 +106,6 @@ extension SpendingEntity {
     public var amountWithReturns: Double {
         return amount - returnsSum
     }
-}
-
-extension SpendingEntity : Identifiable {
-
-}
-
-// MARK: Generated accessors for returns
-extension SpendingEntity {
-
-    @objc(addReturnsObject:)
-    @NSManaged public func addToReturns(_ value: ReturnEntity)
-
-    @objc(removeReturnsObject:)
-    @NSManaged public func removeFromReturns(_ value: ReturnEntity)
-
-    @objc(addReturns:)
-    @NSManaged public func addToReturns(_ values: NSSet)
-
-    @objc(removeReturns:)
-    @NSManaged public func removeFromReturns(_ values: NSSet)
-
 }
 
 extension SpendingEntity: ToSafeObject {
@@ -166,6 +170,7 @@ extension SpendingEntityLocal {
     }
 }
 
+// MARK: Thread-safe SpendingEntity
 /// Thread-safe immutable structure, mirroring `SpendingEntity` CoreData class
 struct TSSpendingEntity: ToUnsafeObject, Hashable, Identifiable {
     let amount: Double
@@ -173,6 +178,7 @@ struct TSSpendingEntity: ToUnsafeObject, Hashable, Identifiable {
     let comment: String?
     let currency: String?
     let date: Date?
+    let timeZoneIdentifier: String?
     let id: UUID?
     let place: String?
     let categoryID: UUID?
@@ -180,19 +186,19 @@ struct TSSpendingEntity: ToUnsafeObject, Hashable, Identifiable {
     let categoryColor: String?
     let returns: [TSReturnEntity]
     
-    public var wrappedCurrency: String {
+    var wrappedCurrency: String {
         currency ?? "Error"
     }
     
-    public var wrappedDate: Date {
+    var wrappedDate: Date {
         date ?? Date()
     }
     
-    public var wrappedId: UUID {
+    var wrappedId: UUID {
         id ?? UUID()
     }
     
-    public var amountUSDWithReturns: Double {
+    var amountUSDWithReturns: Double {
         guard
             !returns.isEmpty
         else {
@@ -208,7 +214,7 @@ struct TSSpendingEntity: ToUnsafeObject, Hashable, Identifiable {
         }
     }
     
-    public var returnsSum: Double {
+    var returnsSum: Double {
         guard
             !returns.isEmpty
         else {
@@ -218,8 +224,32 @@ struct TSSpendingEntity: ToUnsafeObject, Hashable, Identifiable {
         return returns.map({ $0.amount }).reduce(0, +)
     }
     
-    public var amountWithReturns: Double {
+    var amountWithReturns: Double {
         return amount - returnsSum
+    }
+    
+    var timeZone: TimeZone? {
+        guard
+            let timeZoneIdentifier,
+            let timeZone = TimeZone(identifier: timeZoneIdentifier)
+        else {
+            return nil
+        }
+        
+        return timeZone
+    }
+    
+    func dateFormat(forRow: Bool = false) -> Date.FormatStyle {
+        let formatWithoutTimeZones: Bool = UserDefaults.standard.bool(forKey: UDKeys.formatWithoutTimeZones.rawValue)
+        var formatStyle = Date.FormatStyle.dateTime
+        formatStyle.timeZone = formatWithoutTimeZones ? .autoupdatingCurrent : (self.timeZone ?? .autoupdatingCurrent)
+        formatStyle.locale = .autoupdatingCurrent
+        
+        if !forRow, !formatWithoutTimeZones, let timeZone, timeZone.secondsFromGMT() != TimeZone.autoupdatingCurrent.secondsFromGMT() {
+            formatStyle = formatStyle.timeZone(.localizedGMT(.short))
+        }
+        
+        return formatStyle
     }
     
     func unsafeObject(in context: NSManagedObjectContext) throws -> SpendingEntity {
@@ -238,12 +268,13 @@ struct TSSpendingEntity: ToUnsafeObject, Hashable, Identifiable {
     
     /// Memberwise initializer
     /// - Important: You can crerate object with this initializer, but to convert created object to CoreData class you need to be sure that `id` you passed is valid and CoreData class with such id exists and can be fetched
-    init(amount: Double, amountUSD: Double, comment: String?, currency: String?, date: Date?, id: UUID?, place: String?, categoryID: UUID?, categoryName: String, categoryColor: String?, returns: [TSReturnEntity]) {
+    init(amount: Double, amountUSD: Double, comment: String?, currency: String?, date: Date?, timeZoneIdentifier: String?, id: UUID?, place: String?, categoryID: UUID?, categoryName: String, categoryColor: String?, returns: [TSReturnEntity]) {
         self.amount = amount
         self.amountUSD = amountUSD
         self.comment = comment
         self.currency = currency
         self.date = date
+        self.timeZoneIdentifier = timeZoneIdentifier
         self.id = id
         self.place = place
         self.categoryID = categoryID
@@ -261,6 +292,7 @@ struct TSSpendingEntity: ToUnsafeObject, Hashable, Identifiable {
         self.comment = spending.comment
         self.currency = spending.currency
         self.date = spending.date
+        self.timeZoneIdentifier = spending.timeZoneIdentifier
         self.id = spending.id
         self.place = spending.place
         self.categoryID = spending.category?.id

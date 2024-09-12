@@ -15,92 +15,93 @@ struct OnboardingCurrencyView: View {
     @FocusState private var searchIsFocused: Bool
     
     var body: some View {
-        VStack(spacing: 0) {
-            header
-                .padding(.horizontal)
-                .padding(.top)
-                .padding(.top, 30)
-            
-            List {
-                if search.isEmpty {
-                    recommendedSection
-                }
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                header
+                    .padding(.horizontal)
+                    .padding(.top)
+                    .padding(.top, 40)
                 
-                currenciesSection
+                List {
+                    if search.isEmpty {
+                        recommendedSection
+                    }
+                    
+                    currenciesSection
+                }
+                .overlay(alignment: .top) {
+                    LinearGradient(
+                        colors: [Color(uiColor: .systemGroupedBackground), Color(uiColor: .systemGroupedBackground).opacity(0)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .frame(width: geometry.size.width - 20, height: 20)
+                }
+                .safeAreaInset(edge: .bottom) {
+                    EmptyView()
+                        .frame(height: 100)
+                }
             }
-            .overlay(alignment: .top) {
-                LinearGradient(
-                    colors: [Color(uiColor: .systemGroupedBackground), Color(uiColor: .systemGroupedBackground).opacity(0)],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .frame(width: UIScreen.main.bounds.width - 20, height: 20)
+            .background(Color(uiColor: .systemGroupedBackground))
+            .onChange(of: search) { value in
+                if value.isEmpty {
+                    showButton = false
+                } else {
+                    showButton = true
+                }
             }
-        }
-        .background(Color(uiColor: .systemGroupedBackground))
-        .onChange(of: search) { value in
-            if value.isEmpty {
-                showButton = false
-            } else {
-                showButton = true
-            }
-        }
-        .onChange(of: searchIsFocused) { value in
-            withAnimation {
-                showOverlay = !value
+            .onChange(of: searchIsFocused) { value in
+                withAnimation {
+                    showOverlay = !value
+                }
             }
         }
     }
     
     private var header: some View {
         VStack(alignment: .leading, spacing: 15) {
-            VStack(alignment: .leading) {
-                Text("Select currency")
-                    .font(.system(.largeTitle).bold())
-                
-                Text("You can change default currency or add more later in settings")
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
-            }
-            .textCase(nil)
-            .foregroundColor(.primary)
+            OnboardingHeaderView(header: "Select currency", description: "You can change default currency or add more later in settings")
             
-            HStack(spacing: 5) {
-                Image(systemName: "magnifyingglass")
-                    .font(.body.bold())
-                    .foregroundColor(.secondary.opacity(0.5))
-                    .animation(.default, value: showButton)
-                
-                TextField("Search", text: $search)
-                    .focused($searchIsFocused)
-                    .tint(.orange)
-                    .accentColor(.orange)
-                
-                Button {
-                    search = ""
-                    withAnimation {
-                        searchIsFocused = false
-                    }
-                } label: {
-                    Label("Cancel", systemImage: "xmark.circle.fill")
-                        .labelStyle(.iconOnly)
-                        .font(.body)
-                        .foregroundColor(.secondary.opacity(0.5))
-                }
-                .opacity(showButton ? 1 : 0)
-                .offset(x: showButton ? 0 : 20, y: 0)
-                .foregroundColor(.secondary)
-                .disabled(!showButton)
+            searchBar
+        }
+    }
+    
+    private var searchBar: some View {
+        HStack(spacing: 5) {
+            Image(systemName: "magnifyingglass")
+                .font(.body.bold())
+                .foregroundColor(.secondary.opacity(0.5))
                 .animation(.default, value: showButton)
-                .contentShape(.hoverEffect, Circle())
-                .hoverEffect()
+            
+            TextField("Search", text: $search)
+                .focused($searchIsFocused)
+                .tint(.orange)
+                .accentColor(.orange)
+            
+            Button {
+                search = ""
+                withAnimation {
+                    searchIsFocused = false
+                }
+            } label: {
+                Label("Cancel", systemImage: "xmark.circle.fill")
+                    .labelStyle(.iconOnly)
+                    .font(.body)
+                    .foregroundColor(.secondary.opacity(0.5))
             }
-            .padding(9)
-            .padding(.horizontal, 3)
-            .background {
-                RoundedRectangle(cornerRadius: 15)
-                    .fill(Color(uiColor: .secondarySystemGroupedBackground))
-            }
+            .opacity(showButton ? 1 : 0)
+            .offset(x: showButton ? 0 : 20, y: 0)
+            .foregroundColor(.secondary)
+            .disabled(!showButton)
+            .animation(.default, value: showButton)
+            .contentShape(.hoverEffect, Circle())
+            .hoverEffect()
+        }
+        .padding(9)
+        .padding(.horizontal, 3)
+        .background {
+            RoundedRectangle(cornerRadius: 15)
+                .fill(Color(uiColor: .secondarySystemGroupedBackground))
         }
     }
     
@@ -125,12 +126,6 @@ struct OnboardingCurrencyView: View {
                         }
                     } header: {
                         Text(key)
-                    } footer: {
-                        if key == sortedKeys.last ?? "Z" {
-                            Rectangle()
-                                .fill(.clear)
-                                .frame(height: 100)
-                        }
                     }
                 }
             } else {

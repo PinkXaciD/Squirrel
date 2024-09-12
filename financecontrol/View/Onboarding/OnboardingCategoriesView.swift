@@ -15,33 +15,47 @@ struct OnboardingCategoriesView: View {
     @State private var presentImportSheet: Bool = false
     
     var body: some View {
-        NavigationView {
-            List {
-                addSection
-                
-                categoriesSection
+        GeometryReader { geometry in
+            NavigationView {
+                VStack(spacing: 0) {
+                    header
+                        .padding(.horizontal)
+                        .padding(.top)
+                        .padding(.top, 40)
+                        .padding(.bottom, 10)
+                    
+                    List {
+                        addSection
+                        
+                        categoriesSection
+                    }
+                    .fileImporter(isPresented: $presentImportSheet, allowedContentTypes: [.json]) { result in
+                        importJSON(result)
+                    }
+                    .navigationBarHidden(true)
+                    .overlay(alignment: .top) {
+                        LinearGradient(
+                            colors: [Color(uiColor: .systemGroupedBackground), Color(uiColor: .systemGroupedBackground).opacity(0)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                        .frame(width: geometry.size.width - 20, height: 20)
+                    }
+                    .safeAreaInset(edge: .bottom) {
+                        EmptyView()
+                            .frame(height: 60)
+                    }
+                }
+                .background {
+                    Color(uiColor: .systemGroupedBackground)
+                }
             }
-            .fileImporter(isPresented: $presentImportSheet, allowedContentTypes: [.json]) { result in
-                importJSON(result)
-            }
-            .navigationBarHidden(true)
+            .tint(.orange)
         }
-        .tint(.orange)
     }
     
     private var header: some View {
-        VStack(alignment: .leading) {
-            Text("Add categories")
-                .font(.largeTitle.bold())
-            
-            Text("You can add categories later in settings")
-                .font(.footnote)
-                .foregroundColor(.secondary)
-                .lineLimit(3)
-        }
-        .textCase(nil)
-        .foregroundColor(.primary)
-        .listRowInsets(.init(top: 50, leading: 0, bottom: 20, trailing: 0))
+        OnboardingHeaderView(header: "Add categories", description: "You can add categories later in settings")
     }
     
     private var addSection: some View {
@@ -60,8 +74,6 @@ struct OnboardingCategoriesView: View {
                     }
                     .tint(.orange)
             }
-        } header: {
-            header
         }
     }
     
@@ -84,26 +96,7 @@ struct OnboardingCategoriesView: View {
                         .padding(.vertical)
                 }
             }
-        } footer: {
-            Rectangle()
-                .fill(Color(uiColor: .systemGroupedBackground))
-                .frame(height: 80)
         }
-    }
-    
-    private func getRow(name: String) -> some View {
-        let colors: [Color] = [.red, .orange, .yellow, .green, .blue, .purple]
-        
-        return HStack {
-            Image(systemName: "circle.fill")
-                .font(.title)
-                .foregroundStyle(.tertiary)
-            
-            Text(name)
-                .foregroundStyle(.primary)
-                .padding(.vertical)
-        }
-        .foregroundStyle(Color.primary, Color.secondary, colors.randomElement()!)
     }
     
     private func importJSON(_ result: Result<URL, Error>) {

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct BarChart: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @EnvironmentObject private var cdm: CoreDataModel
     @Binding var itemSelected: Int
     @Binding var showAverage: Bool
@@ -44,7 +45,7 @@ struct BarChart: View {
                     
                     HStack(spacing: 18) {
                         ForEach(cdm.barChartData.bars.keys.sorted(by: <), id: \.self) { date in
-                            Text(date, format: .dateTime.weekday(horizontalSizeClass == .compact ? .abbreviated : .wide))
+                            Text(date, format: weekdayFormat)
                                 .font(.footnote)
                                 .foregroundStyle(.secondary)
                                 .frame(maxWidth: .infinity)
@@ -56,6 +57,15 @@ struct BarChart: View {
             .padding(.horizontal, 10)
         }
         .frame(height: max(UIScreen.main.bounds.height, UIScreen.main.bounds.width) / 5 + 25)
+    }
+    
+    private var weekdayFormat: Date.FormatStyle {
+        if horizontalSizeClass == .compact {
+            return dynamicTypeSize > .large ? .dateTime.weekday(.narrow) : .dateTime.weekday(.abbreviated)
+        } else {
+            return dynamicTypeSize > .accessibility1 ? .dateTime.weekday(.abbreviated) : .dateTime.weekday(.wide)
+        }
+        
     }
     
     private func tapActions(index: Int) {

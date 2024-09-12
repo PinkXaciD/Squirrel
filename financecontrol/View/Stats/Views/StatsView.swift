@@ -52,28 +52,32 @@ struct StatsView: View {
         if UIDevice.current.isIPad {
             IPadStatsView(size: size)
         } else {
-            NavigationView {
-                List {
-                    if !isSearching, searchModel.input.isEmpty {
-                        PieChartView(size: size, showMinimizeButton: true)
-                            .id(0)
-                    }
-                    
-                    StatsListView()
-                }
-                .toolbar {
-                    leadingToolbar
-                    
-                    trailingToolbar
-                }
-                .sheet(isPresented: $showFilters) {
-                    filters
-                }
-                .navigationTitle("Stats")
-            }
-            .navigationViewStyle(.stack)
-            .searchable(text: $searchModel.input, placement: .automatic, prompt: "Search by place or comment")
+            iPhoneStatsView
         }
+    }
+    
+    private var iPhoneStatsView: some View {
+        NavigationView {
+            List {
+                if !isSearching, searchModel.input.isEmpty {
+                    PieChartView(size: size, showMinimizeButton: true)
+                        .id(0)
+                }
+                
+                StatsListView()
+            }
+            .toolbar {
+                leadingToolbar
+                
+                trailingToolbar
+            }
+            .sheet(isPresented: $showFilters) {
+                filters
+            }
+            .navigationTitle("Stats")
+        }
+        .navigationViewStyle(.stack)
+        .searchable(text: $searchModel.input, placement: .automatic, prompt: "Search by place or comment")
     }
     
     private var leadingToolbar: ToolbarItem<Void, some View> {

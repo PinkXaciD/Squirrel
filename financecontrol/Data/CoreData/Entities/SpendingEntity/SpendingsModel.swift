@@ -39,6 +39,7 @@ extension CoreDataModel {
             do {
                 spendings = try self.context.fetch(request)
                 self.savedSpendings = spendings
+                lastFetchDate = Date()
             } catch {
                 ErrorType(error: error).publish(file: #file, function: #function)
             }
@@ -108,6 +109,7 @@ extension CoreDataModel {
             self.usedCurrencies = currencies
             self.pieChartSpendings = pieChartData
             NotificationCenter.default.post(name: Notification.Name("UpdatePieChart"), object: nil)
+            lastFetchDate = Date()
             
             if !ratesFetchSpendings.isEmpty {
                 updateRatesFromQueue(ratesFetchSpendings)
@@ -202,6 +204,7 @@ extension CoreDataModel {
             newSpending.amountUSD = spending.amountUSD
             newSpending.currency = spending.currency
             newSpending.date = spending.date
+            newSpending.timeZoneIdentifier = TimeZone.autoupdatingCurrent.identifier
             newSpending.place = spending.place
             newSpending.comment = spending.comment
             
@@ -310,6 +313,7 @@ extension CoreDataModel {
         newSpending.date = spending.wrappedDate
         newSpending.place = spending.place ?? ""
         newSpending.comment = spending.comment ?? ""
+        newSpending.timeZoneIdentifier = spending.timeZoneIdentifier
         
         for returnEntity in spending.returnsArr {
             importReturn(to: newSpending, returnEntity: returnEntity)
@@ -419,7 +423,6 @@ extension CoreDataModel {
         let interval = 0...(Calendar.current.dateComponents([.month], from: firstSpendingDate, to: Date()).month ?? 1)
         
         for number in interval {
-//            let date = Date().getFirstDayOfMonth(-index)
             chartData.append(.getEmpty(id: -number))
         }
         
@@ -498,13 +501,15 @@ extension CoreDataModel {
     func updateRatesFromQueue(_ spendings: [SpendingEntity]) {
         context.perform {
             for spending in spendings {
-                let rm = RatesModel()
                 let safeSpending = spending.safeObject()
                 
                 // Goes away from safe thread
                 Task { [weak self, spending, safeSpending] in
                     do {
-                        let rate = try await rm.downloadRates(timestamp: safeSpending.wrappedDate).rates[safeSpending.wrappedCurrency] ?? 1
+                        let ckManager = CloudKitManager()
+                        let formattedDate = DateFormatter.forRatesTimestamp.string(from: safeSpending.wrappedDate)
+                        let rate = try await ckManager.fetchRates(timestamp: formattedDate).rates.rates[safeSpending.wrappedCurrency] ?? 1
+                        
                         let localSpending = SpendingEntityLocal(
                             amount: safeSpending.amount,
                             amountUSD: safeSpending.amount / rate,
@@ -524,7 +529,7 @@ extension CoreDataModel {
                         #endif
                         
                         UserDefaults.standard.removeFromFetchQueue(safeSpending.wrappedId)
-                    } catch URLError.notConnectedToInternet {
+                    } catch CloudKitManager.CloudKitError.networkUnavailable {
                         self?.waitForRatesToBecomeAvailable()
                     } catch {
                         ErrorType(error: error).publish(file: #fileID, function: #function)

@@ -45,7 +45,7 @@ struct ExportImportView: View {
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 100)
             
-            Text(verbatim: "SquirrelExport.json")
+            Text(verbatim: "\(Bundle.main.displayName ?? "Squirrel")_Export.json")
                 .font(.body)
         }
         .foregroundColor(.secondary)
@@ -81,20 +81,17 @@ extension ExportImportView {
     }
     
     private func importJSON(_ result: Result<URL, Error>) {
-        switch result {
-        case .success(let url):
-            if let imported = cdm.importJSON(url) {
+        do {
+            if let imported = cdm.importJSON(try result.get()) {
                 switch imported {
                 case 0:
                     CustomAlertManager.shared.addAlert(.init(type: .warning, title: "Nothing to import", systemImage: "exclamationmark.circle"))
                 default:
                     CustomAlertManager.shared.addAlert(.init(type: .success, title: "Success", description: "Imported \(imported) expenses", systemImage: "checkmark.circle"))
                 }
-            } else {
-                CustomAlertManager.shared.addAlert(.init(type: .error, title: "Import failed", systemImage: "xmark.circle"))
             }
-        case .failure(let failure):
-            ErrorType(error: failure).publish()
+        } catch {
+            ErrorType(error: error).publish()
         }
     }
     

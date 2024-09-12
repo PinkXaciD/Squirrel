@@ -5,6 +5,7 @@
 //  Created by PinkXaciD on R 5/10/10.
 //
 
+#if DEBUG
 import SwiftUI
 
 struct DebugView: View {
@@ -21,7 +22,7 @@ struct DebugView: View {
     private var validateConfirmationIsShowing: Bool = false
     
     var body: some View {
-        Form {
+        List {
             errorsSection
             
             ratesSection
@@ -223,16 +224,11 @@ struct DebugView: View {
             }
             .normalizePadding()
             
-            #if DEBUG
             Button(role: .destructive) {
-                let rm = RatesModel()
-                Task {
-                    try await rm.downloadRates(timestamp: Date())
-                }
+                rvm.checkForUpdate()
             } label: {
-                Text(verbatim: "Fetch rates")
+                Text(verbatim: "Update rates")
             }
-            #endif
         } header: {
             Text("Rates")
         }
@@ -294,13 +290,11 @@ struct DebugView: View {
     
     private var defaultsSection: some View {
         Section {
-            #if DEBUG
             NavigationLink {
                 UserDefaultsValuesView(defaults: .standard)
             } label: {
                 Text(verbatim: "UserDefaults values")
             }
-            #endif
             
             Button(role: .destructive) {
                 defaultsConfirmationIsShowing.toggle()
@@ -411,26 +405,20 @@ extension DebugView {
             return f
         }
         
-        var isoDateFromatter: ISO8601DateFormatter {
-            let f = ISO8601DateFormatter()
-            f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-            f.timeZone = .init(secondsFromGMT: 0)
-            return f
-        }
+        let isoDateFromatter = ISO8601DateFormatter()
         
         switch type {
         case .fallback:
-            let date: Date = isoDateFromatter.date(from: Rates.fallback.timestamp) ?? .distantPast
+            let date: Date = isoDateFromatter.date(from: Rates.fallback.timestamp) ?? DateFormatter.forRatesTimestamp.date(from: Rates.fallback.timestamp) ?? .distantPast
             return dateFormatter.string(from: date)
         case .update:
             let ratesUpdateTime: String = UserDefaults.standard.string(forKey: UDKeys.updateTime.rawValue) ?? "Error"
-            let date: Date = isoDateFromatter.date(from: ratesUpdateTime) ?? .distantPast
+            let date: Date = isoDateFromatter.date(from: ratesUpdateTime) ?? DateFormatter.forRatesTimestamp.date(from: ratesUpdateTime) ?? .distantPast
             return dateFormatter.string(from: date)
         }
     }
 }
 
-#if DEBUG
 struct UserDefaultsValuesView: View {
     let defaults: [String:Any]
     

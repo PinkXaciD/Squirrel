@@ -12,32 +12,39 @@ struct OnboardingGesturesTemplateView: View {
     @State private var spendingDeleted: Bool = false
     
     var body: some View {
-        List {
-            categorySection
-                .normalizePadding()
-                .padding(.vertical, 1)
-            
-            if !spendingDeleted {
-                spendingSection
-                    .normalizePadding()
-                    .padding(.vertical, 1)
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                header
+                    .padding(.horizontal)
+                    .padding(.top)
+                    .padding(.top, 40)
+                
+                List {
+                    categorySection
+                        .normalizePadding()
+                        .padding(.vertical, 1)
+                    
+                    if !spendingDeleted {
+                        spendingSection
+                            .normalizePadding()
+                            .padding(.vertical, 1)
+                    }
+                }
+                .overlay(alignment: .top) {
+                    LinearGradient(
+                        colors: [Color(uiColor: .systemGroupedBackground), Color(uiColor: .systemGroupedBackground).opacity(0)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .frame(width: geometry.size.width, height: 20)
+                }
             }
+            .background(Color(uiColor: .systemGroupedBackground), ignoresSafeAreaEdges: .all)
         }
     }
     
-    private var categorySectionHeader: some View {
-        VStack(alignment: .leading) {
-            Text("Gestures")
-                .font(.system(.largeTitle).bold())
-                .foregroundColor(.primary)
-            
-            Text("You can perform quick actions like editing or deleting via swipe actions or by holding row")
-                .font(.footnote)
-                .foregroundColor(.secondary)
-                .lineLimit(3)
-        }
-        .textCase(nil)
-        .listRowInsets(.init(top: 50, leading: 0, bottom: 70, trailing: 0))
+    private var header: some View {
+        OnboardingHeaderView(header: "Gestures", description: "You can perform quick actions like editing or deleting via swipe actions or by holding row")
     }
     
     private var categorySection: some View {
@@ -69,8 +76,6 @@ struct OnboardingGesturesTemplateView: View {
                 
                 archiveButton
             }
-        } header: {
-            categorySectionHeader
         }
     }
     
@@ -139,10 +144,6 @@ struct OnboardingGesturesTemplateView: View {
                 
                 deleteButtonWithAnimation
             }
-        } header: {
-            Rectangle()
-                .fill(Color(uiColor: .systemGroupedBackground))
-                .frame(height: 30)
         }
     }
     
@@ -216,6 +217,7 @@ fileprivate struct OnboardingPreview: View {
             OnboardingView()
                 .environmentObject(CoreDataModel())
                 .accentColor(.orange)
+                .interactiveDismissDisabled()
         }
     }
 }

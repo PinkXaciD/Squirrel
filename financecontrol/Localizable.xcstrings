@@ -246,6 +246,12 @@
         }
       }
     },
+    "All expenses, settings and any other data are stored locally." : {
+
+    },
+    "Always format without timezones" : {
+
+    },
     "Amount" : {
       "localizations" : {
         "en" : {
@@ -256,7 +262,7 @@
         }
       }
     },
-    "An open-source spending tracker. \nDeveloped by PinkXaciD. \nExchange rates API by nulledzero." : {
+    "An open-source expense tracker." : {
 
     },
     "App content will be blurred when you minimize it" : {
@@ -335,16 +341,13 @@
         }
       }
     },
+    "Back" : {
+
+    },
     "Blue" : {
 
     },
     "Build: %@" : {
-
-    },
-    "Bundle" : {
-
-    },
-    "Buy me some noodles" : {
 
     },
     "Cancel" : {
@@ -373,22 +376,10 @@
     "Clear" : {
 
     },
-    "Clear fetch queue" : {
-
-    },
     "Clear filters" : {
 
     },
     "Clear selection" : {
-
-    },
-    "Clear shared UserDefaults" : {
-
-    },
-    "Clear standart UserDefaults" : {
-
-    },
-    "Clear UserDefaults" : {
 
     },
     "Close" : {
@@ -407,6 +398,12 @@
 
     },
     "Continue" : {
+
+    },
+    "Continue with sample data" : {
+
+    },
+    "Copy to clipboard" : {
 
     },
     "Create an issue on GitHub" : {
@@ -434,9 +431,6 @@
 
     },
     "Dawn of Squipan" : {
-
-    },
-    "Debug" : {
 
     },
     "Default" : {
@@ -478,13 +472,13 @@
     "Error" : {
 
     },
-    "Errors" : {
-
-    },
     "Even a squirrel needs a hat in winter" : {
 
     },
     "Everything that lives is designed to end. We are perpetually trapped in a never-ending spiral..." : {
+
+    },
+    "Exchange rates are provided for reference purposes only." : {
 
     },
     "Exchange rates will be presented for the current hour" : {
@@ -517,9 +511,6 @@
     "Failed to update rates" : {
 
     },
-    "Fallback rates timestamp:" : {
-
-    },
     "Filter" : {
 
     },
@@ -533,6 +524,9 @@
 
     },
     "First Flight" : {
+
+    },
+    "Formatting" : {
 
     },
     "From" : {
@@ -559,16 +553,16 @@
     "Icon" : {
 
     },
-    "Identifier:" : {
+    "If the time zone of the expense differs from the current one, the date will be formatted with the time zone of the expense. You can change this behavior by enabling this option." : {
+
+    },
+    "If you believe this policy has been violated in any way, please [create an issue on GitHub.](%@)" : {
 
     },
     "Import data from JSON" : {
 
     },
     "Import existing data" : {
-
-    },
-    "Import failed" : {
 
     },
     "Imported %lld expenses" : {
@@ -596,25 +590,25 @@
     "Indigo" : {
 
     },
-    "Is connected" : {
-      "comment" : "Debug view: is network available"
-    },
-    "Is expensive" : {
-      "comment" : "Debug view: is network expensive"
-    },
     "It seems some system files are corrupted" : {
 
     },
     "It seems some system files are missing or corrupted" : {
 
     },
-    "Like neon glow at night" : {
+    "It's probably all LED's nowadays" : {
 
     },
     "Minimize" : {
 
     },
     "Mint" : {
+
+    },
+    "More about policy changes" : {
+
+    },
+    "More..." : {
 
     },
     "N:A" : {
@@ -695,6 +689,12 @@
     "OK" : {
 
     },
+    "Open \"%@\"?" : {
+
+    },
+    "Open in browser" : {
+
+    },
     "Optional" : {
 
     },
@@ -738,25 +738,19 @@
     "Privacy" : {
 
     },
+    "Privacy Policy" : {
+
+    },
     "Purple" : {
 
     },
     "Rates" : {
 
     },
-    "Rates fetch queue" : {
-
-    },
     "Rates updated" : {
 
     },
-    "Rates updated at:" : {
-
-    },
     "Recommended" : {
-
-    },
-    "Reload all widget timelines" : {
 
     },
     "Remove from favorites" : {
@@ -846,14 +840,14 @@
     "Squirrel" : {
 
     },
+    "Squirrel does not send any data or identifiers from your device." : {
+
+    },
     "Sqwoorl" : {
 
     },
     "Stats" : {
 
-    },
-    "Status:" : {
-      "comment" : "Debug view: network status"
     },
     "Stealth" : {
 
@@ -864,13 +858,16 @@
     "Swipe from left to restore, swipe from right to delete" : {
 
     },
-    "Tap to remove selection" : {
+    "Tap here to remove selection" : {
 
     },
     "Teal" : {
 
     },
-    "This will clear all settings of app. \nYou can't undo this action." : {
+    "This policy is also available on [our website.](%@)" : {
+
+    },
+    "This policy is valid to this version of the app." : {
 
     },
     "To" : {
@@ -883,6 +880,9 @@
 
     },
     "Tomorrow" : {
+
+    },
+    "Trying again..." : {
 
     },
     "Unable to update exchange rates" : {
@@ -903,9 +903,6 @@
     "Updating rates..." : {
 
     },
-    "Validate returns" : {
-
-    },
     "Ver. %@ (%@)" : {
       "localizations" : {
         "en" : {
@@ -915,6 +912,9 @@
           }
         }
       }
+    },
+    "We respect your privacy and will not change our stance on tracking or storing data locally. This clarification is here so that if we add any opt-in features, such as cloud sync, this policy will be updated to reflect that." : {
+
     },
     "Welcome to" : {
 

@@ -16,6 +16,23 @@ extension UserDefaults {
     func getUnwrapedRates() -> [String:Double] {
         return self.getRates() ?? Rates.fallback.rates
     }
+    
+    func getRatesUpdateTimestamp() -> Date? {
+        guard let timestampString = self.string(forKey: UDKeys.updateTime.rawValue) else {
+            return nil
+        }
+        
+        let isoDateFormatter = ISO8601DateFormatter()
+        isoDateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        
+        let newDateFormatter: DateFormatter = .forRatesTimestamp
+        
+        guard let result = (isoDateFormatter.date(from: timestampString) ?? newDateFormatter.date(from: timestampString)) else {
+            return nil
+        }
+        
+        return result
+    }
 }
 
 // MARK: Currencies

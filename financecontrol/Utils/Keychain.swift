@@ -72,8 +72,11 @@ struct Keychain {
         let status = SecItemDelete(query as CFDictionary)
         
         guard status == errSecSuccess else {
+            HapticManager.shared.notification(.error)
             throw KeychainError.failedToRemoveValue
         }
+        
+        HapticManager.shared.notification(.success)
     }
 }
 
