@@ -5,6 +5,7 @@
 //  Created by PinkXaciD on R 5/10/10.
 //
 
+#if DEBUG
 import SwiftUI
 
 struct DebugView: View {
@@ -22,17 +23,13 @@ struct DebugView: View {
     
     var body: some View {
         List {
-            #if DEBUG
             errorsSection
-            #endif
             
             ratesSection
             
             bundleSection
             
-            #if DEBUG
             networkSection
-            #endif
             
             defaultsSection
             
@@ -227,13 +224,11 @@ struct DebugView: View {
             }
             .normalizePadding()
             
-            #if DEBUG
             Button(role: .destructive) {
                 rvm.checkForUpdate()
             } label: {
                 Text(verbatim: "Update rates")
             }
-            #endif
         } header: {
             Text("Rates")
         }
@@ -295,7 +290,6 @@ struct DebugView: View {
     
     private var defaultsSection: some View {
         Section {
-            #if DEBUG
             NavigationLink {
                 UserDefaultsValuesView(defaults: .standard)
             } label: {
@@ -307,7 +301,6 @@ struct DebugView: View {
             } label: {
                 Text("Clear UserDefaults")
             }
-            #endif
             
             NavigationLink("Rates fetch queue") {
                 List {
@@ -426,7 +419,6 @@ extension DebugView {
     }
 }
 
-#if DEBUG
 struct UserDefaultsValuesView: View {
     let defaults: [String:Any]
     

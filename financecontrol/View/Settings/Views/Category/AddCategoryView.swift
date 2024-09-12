@@ -45,6 +45,11 @@ struct AddCategoryView: View {
                 Text("Required")
                     .foregroundColor(.red)
             }
+            
+            if name.count >= 50 {
+                Text("\(100 - name.count) characters left")
+                    .foregroundColor(name.count > 100 ? .red : .secondary)
+            }
         }
     }
     
@@ -69,7 +74,7 @@ struct AddCategoryView: View {
     private var trailingToolbar: ToolbarItem<Void, some View> {
         ToolbarItem(placement: .topBarTrailing) {
             Button("Save") {
-                if name.isEmpty || colorSelectedDescription.isEmpty {
+                if name.isEmpty || colorSelectedDescription.isEmpty || name.count > 100 {
                     triedToSave = true
                     HapticManager.shared.notification(.warning)
                 } else {
@@ -84,7 +89,7 @@ struct AddCategoryView: View {
                 }
             }
             .font(.body.bold())
-            .foregroundColor(name.isEmpty || colorSelectedDescription.isEmpty ? .secondary.opacity(0.7) : .accentColor)
+            .foregroundColor(name.isEmpty || colorSelectedDescription.isEmpty || name.count > 100 ? .secondary.opacity(0.7) : .accentColor)
         }
     }
     

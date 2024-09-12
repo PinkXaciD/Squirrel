@@ -423,7 +423,6 @@ extension CoreDataModel {
         let interval = 0...(Calendar.current.dateComponents([.month], from: firstSpendingDate, to: Date()).month ?? 1)
         
         for number in interval {
-//            let date = Date().getFirstDayOfMonth(-index)
             chartData.append(.getEmpty(id: -number))
         }
         

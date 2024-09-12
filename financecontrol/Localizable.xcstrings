@@ -246,6 +246,9 @@
         }
       }
     },
+    "All expenses, settings and any other data are stored locally." : {
+
+    },
     "Always format without timezones" : {
 
     },
@@ -347,9 +350,6 @@
     "Build: %@" : {
 
     },
-    "Bundle" : {
-
-    },
     "Cancel" : {
 
     },
@@ -376,19 +376,10 @@
     "Clear" : {
 
     },
-    "Clear fetch queue" : {
-
-    },
     "Clear filters" : {
 
     },
     "Clear selection" : {
-
-    },
-    "Clear shared UserDefaults" : {
-
-    },
-    "Clear standart UserDefaults" : {
 
     },
     "Close" : {
@@ -442,9 +433,6 @@
     "Dawn of Squipan" : {
 
     },
-    "Debug" : {
-
-    },
     "Default" : {
 
     },
@@ -484,9 +472,6 @@
     "Error" : {
 
     },
-    "Errors" : {
-
-    },
     "Even a squirrel needs a hat in winter" : {
 
     },
@@ -524,9 +509,6 @@
 
     },
     "Failed to update rates" : {
-
-    },
-    "Fallback rates timestamp:" : {
 
     },
     "Filter" : {
@@ -571,10 +553,10 @@
     "Icon" : {
 
     },
-    "Identifier:" : {
+    "If the time zone of the expense differs from the current one, the date will be formatted with the time zone of the expense. You can change this behavior by enabling this option." : {
 
     },
-    "If the time zone of the expense differs from the current one, the date will be formatted with the time zone of the expense. You can change this behavior by enabling this option." : {
+    "If you believe this policy has been violated in any way, please [create an issue on GitHub.](%@)" : {
 
     },
     "Import data from JSON" : {
@@ -608,25 +590,25 @@
     "Indigo" : {
 
     },
-    "Is connected" : {
-      "comment" : "Debug view: is network available"
-    },
-    "Is expensive" : {
-      "comment" : "Debug view: is network expensive"
-    },
     "It seems some system files are corrupted" : {
 
     },
     "It seems some system files are missing or corrupted" : {
 
     },
-    "Like neon glow at night" : {
+    "It's probably all LED's nowadays" : {
 
     },
     "Minimize" : {
 
     },
     "Mint" : {
+
+    },
+    "More about policy changes" : {
+
+    },
+    "More..." : {
 
     },
     "N:A" : {
@@ -756,7 +738,7 @@
     "Privacy" : {
 
     },
-    "Privacy policy" : {
+    "Privacy Policy" : {
 
     },
     "Purple" : {
@@ -765,19 +747,10 @@
     "Rates" : {
 
     },
-    "Rates fetch queue" : {
-
-    },
     "Rates updated" : {
 
     },
-    "Rates updated at:" : {
-
-    },
     "Recommended" : {
-
-    },
-    "Reload all widget timelines" : {
 
     },
     "Remove from favorites" : {
@@ -867,14 +840,14 @@
     "Squirrel" : {
 
     },
+    "Squirrel does not send any data or identifiers from your device." : {
+
+    },
     "Sqwoorl" : {
 
     },
     "Stats" : {
 
-    },
-    "Status:" : {
-      "comment" : "Debug view: network status"
     },
     "Stealth" : {
 
@@ -891,7 +864,10 @@
     "Teal" : {
 
     },
-    "This will clear all settings of app. \nYou can't undo this action." : {
+    "This policy is also available on [our website.](%@)" : {
+
+    },
+    "This policy is valid to this version of the app." : {
 
     },
     "To" : {
@@ -927,9 +903,6 @@
     "Updating rates..." : {
 
     },
-    "Validate returns" : {
-
-    },
     "Ver. %@ (%@)" : {
       "localizations" : {
         "en" : {
@@ -939,6 +912,9 @@
           }
         }
       }
+    },
+    "We respect your privacy and will not change our stance on tracking or storing data locally. This clarification is here so that if we add any opt-in features, such as cloud sync, this policy will be updated to reflect that." : {
+
     },
     "Welcome to" : {
 

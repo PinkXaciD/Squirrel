@@ -34,8 +34,6 @@ struct CategoryEditSubView: View {
     @State private var colorSelectedDescription: String
     @State private var triedToSave: Bool = false
     
-    @State private var showConfirmationDialog: Bool = false
-    
     @FocusState var nameIsFocused: Bool
         
     init(category: CategoryEntity, dismiss: Binding<Bool>) {
@@ -53,7 +51,7 @@ struct CategoryEditSubView: View {
             
             favoriteSection
             
-            deleteSection
+            archiveSection
             
             spendingsSection
         }
@@ -62,15 +60,6 @@ struct CategoryEditSubView: View {
             
             trailingToolbar
         }
-        .confirmationDialog("Delete this category?", isPresented: $showConfirmationDialog, titleVisibility: .visible) {
-            Button("Delete", role: .destructive) {
-                cdm.deleteCategory(category)
-                dismiss = true
-            }
-        } message: {
-            Text("You can't undo this action.\nAll expenses from this category would be deleted")
-        }
-
     }
     
     private var nameSection: some View {
@@ -81,6 +70,11 @@ struct CategoryEditSubView: View {
             if triedToSave && name.isEmpty {
                 Text("Required")
                     .foregroundColor(.red)
+            }
+            
+            if name.count >= 50 {
+                Text("\(100 - name.count) characters left")
+                    .foregroundColor(name.count > 100 ? .red : .secondary)
             }
         }
     }
@@ -106,10 +100,11 @@ struct CategoryEditSubView: View {
         }
     }
     
-    private var deleteSection: some View {
+    private var archiveSection: some View {
         Section {
-            Button("Delete", role: .destructive) {
-                showConfirmationDialog.toggle()
+            Button("Archive") {
+                dismiss = true
+                cdm.changeShadowStateOfCategory(category)
             }
         }
     }
@@ -141,7 +136,7 @@ struct CategoryEditSubView: View {
     private var trailingToolbar: ToolbarItem<Void, some View> {
         ToolbarItem(placement: .topBarTrailing) {
             Button("Save") {
-                if name.isEmpty || colorSelectedDescription.isEmpty {
+                if name.isEmpty || colorSelectedDescription.isEmpty || name.count > 100 {
                     withAnimation {
                         triedToSave = true
                     }
@@ -153,7 +148,7 @@ struct CategoryEditSubView: View {
                 }
             }
             .font(.body.bold())
-            .foregroundColor(name.isEmpty || colorSelectedDescription.isEmpty ? .secondary.opacity(0.7) : .accentColor)
+            .foregroundColor(name.isEmpty || colorSelectedDescription.isEmpty || name.count > 100 ? .secondary.opacity(0.7) : .accentColor)
         }
     }
     

@@ -38,7 +38,7 @@ extension CustomIcon {
         case .firstFlight:
             "To the store!"
         case .neonNight:
-            "Like neon glow at night"
+            "It's probably all LED's nowadays"
         case .winterized:
             "Even a squirrel needs a hat in winter"
         case .dawnOfSquipan:
