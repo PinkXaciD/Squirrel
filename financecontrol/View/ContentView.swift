@@ -67,13 +67,25 @@ struct ContentView: View {
     }
         
     var body: some View {
-        NavigationView {
-            TabView {
-                homeTab
-                
-                statsTab
-                
-                settingsTab
+        Group {
+            if #available(iOS 18.0, *) {
+                NavigationView {
+                    TabView {
+                        homeTab
+                        
+                        statsTab
+                        
+                        settingsTab
+                    }
+                }
+            } else {
+                TabView {
+                    homeTab
+                    
+                    statsTab
+                    
+                    settingsTab
+                }
             }
         }
         .blur(radius: hideContent ? Vars.privacyBlur : 0)

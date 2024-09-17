@@ -1,6 +1,8 @@
 # Squirrel
 
-**Simple iOS native app for spendings control, written using SwiftUI (in progress)**
+**Simple iOS native expense tracker, written using SwiftUI**
+
+**Now available on the App Store:** https://apps.apple.com/app/squirrel-expense-tracker/id6477331498
 
 ![Images](README/Screenshots/Cover035.png)
 
@@ -19,5 +21,4 @@
 - Advanced filters and data export/import in JSON
 ![Filters and Export](README/Screenshots/FiltersAndExport035.png)
 
-## How to install?
-Currently not available on the App Store, but you can build this app yourself!
+This code is available under a GPL v3 license. [Learn more](LICENSE)
