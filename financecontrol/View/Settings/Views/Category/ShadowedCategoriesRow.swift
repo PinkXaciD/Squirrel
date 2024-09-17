@@ -38,7 +38,7 @@ struct ShadowedCategoriesRow: View {
                 
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("You can't undo this action.\nAll expenses from this category would be deleted")
+                Text("You can't undo this action.\nAll expenses from this category will be deleted")
             }
             .normalizePadding()
     }

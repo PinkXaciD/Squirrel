@@ -1,3 +1,4 @@
+
 //
 //  ContentView.swift
 //  financecontrol
@@ -66,12 +67,14 @@ struct ContentView: View {
     }
         
     var body: some View {
-        TabView {
-            homeTab
-            
-            statsTab
-            
-            settingsTab
+        NavigationView {
+            TabView {
+                homeTab
+                
+                statsTab
+                
+                settingsTab
+            }
         }
         .blur(radius: hideContent ? Vars.privacyBlur : 0)
         .animation(.easeOut(duration: 0.1), value: hideContent)
@@ -94,7 +97,7 @@ struct ContentView: View {
         }
         .tint(colorIdentifier(color: tint))
         .accentColor(colorIdentifier(color: tint))
-        .preferredColorScheme(themeConvert(autoDarkMode: autoDarkMode, darkMode: darkMode))
+//        .preferredColorScheme(themeConvert(autoDarkMode: autoDarkMode, darkMode: darkMode))
         .onAppear {
             setColorScheme()
         }

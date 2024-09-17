@@ -60,7 +60,7 @@ struct OnboardingCurrencyView: View {
     
     private var header: some View {
         VStack(alignment: .leading, spacing: 15) {
-            OnboardingHeaderView(header: "Select currency", description: "You can change default currency or add more later in settings")
+            OnboardingHeaderView(header: "Select currency", description: "You can change the default currency or add more later in settings")
             
             searchBar
         }

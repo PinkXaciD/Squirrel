@@ -8,7 +8,7 @@
 import SwiftUI
 
 enum CustomIcon: CaseIterable {
-    case sqwoorl, firstFlight, neonNight, stealth, winterized, dawnOfSquipan, NA
+    case sqwoorl, firstFlight, neonNight, winterized, dawnOfSquipan, NA
 }
 
 extension CustomIcon {
@@ -26,8 +26,6 @@ extension CustomIcon {
             "Dawn of Squipan"
         case .NA:
             "N:A"
-        case .stealth:
-            "Stealth"
         }
     }
     
@@ -45,8 +43,6 @@ extension CustomIcon {
             "App of the rising sun"
         case .NA:
             "Everything that lives is designed to end. We are perpetually trapped in a never-ending spiral..."
-        case .stealth:
-            "No radar will find you now"
         }
     }
     
@@ -64,8 +60,6 @@ extension CustomIcon {
             "AppIcon_DawnOfSquipan"
         case .NA:
             "AppIcon_NA"
-        case .stealth:
-            "AppIcon_Stealth"
         }
     }
     

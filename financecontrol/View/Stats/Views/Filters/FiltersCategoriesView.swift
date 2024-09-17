@@ -40,13 +40,13 @@ struct FiltersCategoriesView: View {
                 }
             }
         }
-        .navigationTitle("Filter by Categories")
+        .navigationTitle("Categories")
         .toolbar {
             trailingToolbar
         }
         .overlay {
             if listData.isEmpty {
-                CustomContentUnavailableView("No categories", imageName: "list.bullet", description: "You can add categories in settings.")
+                CustomContentUnavailableView("No Categories", imageName: "list.bullet", description: "You can add categories in settings.")
             }
         }
     }
