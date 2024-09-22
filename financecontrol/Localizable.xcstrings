@@ -221,7 +221,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Add return"
+            "value" : "Add Return"
           }
         }
       }
@@ -265,25 +265,12 @@
     "An open-source expense tracker." : {
 
     },
-    "App content will be blurred when you minimize it" : {
-
-    },
     "App of the rising sun" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "App of the rising sun"
-          }
-        }
-      }
-    },
-    "App site" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "App site"
           }
         }
       }
@@ -397,6 +384,9 @@
     "Comment is too long" : {
 
     },
+    "Content will be blurred when you minimize the app" : {
+
+    },
     "Continue" : {
 
     },
@@ -425,9 +415,6 @@
 
     },
     "Date" : {
-
-    },
-    "Date selection" : {
 
     },
     "Dawn of Squipan" : {
@@ -514,9 +501,6 @@
     "Filter" : {
 
     },
-    "Filter by Categories" : {
-
-    },
     "Filters" : {
 
     },
@@ -556,7 +540,7 @@
     "If the time zone of the expense differs from the current one, the date will be formatted with the time zone of the expense. You can change this behavior by enabling this option." : {
 
     },
-    "If you believe this policy has been violated in any way, please [create an issue on GitHub.](%@)" : {
+    "If you believe this policy has been violated in any way, please create an issue on GitHub." : {
 
     },
     "Import data from JSON" : {
@@ -632,9 +616,6 @@
     "No Archived Categories" : {
 
     },
-    "No categories" : {
-
-    },
     "No Categories" : {
 
     },
@@ -659,9 +640,6 @@
     "No network" : {
 
     },
-    "No radar will find you now" : {
-
-    },
     "No results" : {
 
     },
@@ -674,10 +652,10 @@
     "No Shortcuts" : {
 
     },
-    "No up to date exchange rate for %@ found" : {
+    "No up to date exchange rate found" : {
 
     },
-    "No up to date exchange rate found" : {
+    "No up to date exchange rate found for %@" : {
 
     },
     "No URL was found" : {
@@ -702,6 +680,9 @@
 
     },
     "Other" : {
+
+    },
+    "Our website" : {
 
     },
     "past-7-days-home" : {
@@ -792,9 +773,6 @@
     "Select currency" : {
 
     },
-    "Select Date" : {
-
-    },
     "Selected as default" : {
 
     },
@@ -849,9 +827,6 @@
     "Stats" : {
 
     },
-    "Stealth" : {
-
-    },
     "Success" : {
 
     },
@@ -864,10 +839,10 @@
     "Teal" : {
 
     },
-    "This policy is also available on [our website.](%@)" : {
+    "This policy is also available on our website." : {
 
     },
-    "This policy is valid to this version of the app." : {
+    "This policy is valid for this version of the app." : {
 
     },
     "To" : {
@@ -890,7 +865,7 @@
     },
     "unknown-place-localized" : {
       "comment" : "Unknown place",
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -949,7 +924,7 @@
     "You can archive categories in settings, they will be hidden from selection when you add new expenses, but all old expenses will be saved." : {
 
     },
-    "You can change default currency or add more later in settings" : {
+    "You can change the default currency or add more later in settings" : {
 
     },
     "You can choose a currency to be selected by default, different from display currency" : {
@@ -961,7 +936,7 @@
     "You can't undo this action." : {
 
     },
-    "You can't undo this action.\nAll expenses from this category would be deleted" : {
+    "You can't undo this action.\nAll expenses from this category will be deleted" : {
 
     }
   },

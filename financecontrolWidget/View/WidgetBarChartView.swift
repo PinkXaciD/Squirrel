@@ -64,6 +64,7 @@ struct WidgetBarChartView: View {
                                 RoundedRectangle(cornerRadius: isLarge ? 5 : 3)
                                     .frame(width: width, height: value)
                                     .foregroundColor(colorIdentifier(color: tint))
+                                    .widgetAccentableModifier()
                             }
                             .clipShape(RoundedRectangle(cornerRadius: isLarge ? 5 : 3))
                         }
@@ -102,6 +103,7 @@ struct WidgetBarChartView: View {
                             RoundedRectangle(cornerRadius: isLarge ? 5 : 3)
                                 .frame(width: width, height: geometry.size.height * key * 0.1 )
                                 .foregroundColor(.secondary.opacity(0.3))
+                                .widgetAccentableModifier()
                         }
                         .clipShape(RoundedRectangle(cornerRadius: isLarge ? 5 : 3))
                     }
@@ -135,5 +137,15 @@ struct WidgetBarChartView: View {
             result.append((key: key, value: value))
         }
         return result
+    }
+}
+
+fileprivate extension View {
+    func widgetAccentableModifier() -> some View {
+        if #available(iOS 16.0, *) {
+            return self.widgetAccentable()
+        }
+        
+        return self
     }
 }

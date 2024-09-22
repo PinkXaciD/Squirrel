@@ -52,7 +52,7 @@ struct AboutView: View {
             }
             .normalizePadding()
             
-            Button("App site") {
+            Button("Our website") {
                 openURLButtonAction(URLs.appSite)
             }
             
@@ -140,9 +140,15 @@ struct AboutView: View {
 struct PrivacyPolicyView: View {
     @Environment(\.colorScheme)
     private var colorScheme
+    @Environment(\.openURL)
+    private var openURL
     
     @State
     private var showMore: Bool = false
+    @State
+    private var showConfirmationDialog: Bool = false
+    @State
+    private var urlToOpen: URL? = nil
     
     var body: some View {
         VStack {
@@ -155,7 +161,7 @@ struct PrivacyPolicyView: View {
                     }
                     
                     VStack(alignment: .leading) {
-                        Text("This policy is valid to this version of the app.")
+                        Text("This policy is valid for this version of the app.")
                             .animation(.none, value: showMore)
                         
                         if !showMore {
@@ -195,12 +201,27 @@ struct PrivacyPolicyView: View {
                     }
                     .padding(.vertical, showMore ? 7 : 0)
                     
-                    Text("If you believe this policy has been violated in any way, please [create an issue on GitHub.](\(URLs.newGithubIssue.absoluteString))")
+                    Button("If you believe this policy has been violated in any way, please create an issue on GitHub.") {
+                        urlToOpen = URLs.newGithubIssue
+                        showConfirmationDialog = true
+                    }
                 }
                 
                 Section {
-                    Text("This policy is also available on [our website.](\(URLs.privacyPolicy.absoluteString))")
+                    Button("This policy is also available on our website.") {
+                        urlToOpen = URLs.privacyPolicy
+                        showConfirmationDialog = true
+                    }
                 }
+            }
+        }
+        .confirmationDialog("Open \"\(urlToOpen?.absoluteString ?? "URL")\"?", isPresented: $showConfirmationDialog, titleVisibility: .visible, presenting: urlToOpen) { url in
+            Button("Open in browser") {
+                openURL(url)
+            }
+            
+            Button("Copy to clipboard") {
+                UIPasteboard.general.url = url
             }
         }
         .navigationTitle("Privacy Policy")

@@ -206,7 +206,7 @@ struct SettingsView: View {
                     } header: {
                         BlurContentExample()
                     } footer: {
-                        Text("App content will be blurred when you minimize it")
+                        Text("Content will be blurred when you minimize the app")
                     }
                 }
                 .navigationTitle("Hide app content")

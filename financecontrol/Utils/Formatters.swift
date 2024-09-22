@@ -31,6 +31,7 @@ func colorIdentifier(color: String) -> Color {
 }
 
 func themeConvert(autoDarkMode: Bool, darkMode: Bool) -> ColorScheme? {
+    print("\(#function) called")
     if autoDarkMode {
         return nil
     }

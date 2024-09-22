@@ -43,6 +43,7 @@ struct IconRow: View {
             .resizable()
             .frame(width: iconSize, height: iconSize)
             .cornerRadius(cornerRadius)
+            .setDarkModeForIcon()
             .overlay(iconOverlay)
             .hoverEffect(.lift)
     }
@@ -79,5 +80,15 @@ extension IconRow {
     init(_ icon: CustomIcon, selection: Binding<String?>) {
         self._vm = StateObject(wrappedValue: .init(icon: icon, selection: selection))
         self._selectedIcon = selection
+    }
+}
+
+fileprivate extension View {
+    func setDarkModeForIcon() -> some View {
+        if #unavailable(iOS 18.0) {
+            return self.environment(\.colorScheme, .light)
+        }
+        
+        return self
     }
 }

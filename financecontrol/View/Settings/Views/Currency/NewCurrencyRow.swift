@@ -40,7 +40,7 @@ struct NewCurrencyRow: View {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             } else {
-                Text("No up to date exchange rate for \(code) found")
+                Text("No up to date exchange rate found for \(code)")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
