@@ -10,7 +10,7 @@ import SwiftUI
 struct AddCategoryView: View {
     @EnvironmentObject private var cdm: CoreDataModel
     
-    @Binding var id: UUID
+    @Binding var selectedCategory: CategoryEntity?
     let insert: Bool
     
     @State private var name: String = ""
@@ -79,7 +79,7 @@ struct AddCategoryView: View {
                     HapticManager.shared.notification(.warning)
                 } else {
                     if insert {
-                        id = cdm.addCategory(name: name, color: colorSelectedDescription)
+                        selectedCategory = cdm.addCategory(name: name, color: colorSelectedDescription)
                     } else {
                         _ = cdm.addCategory(name: name, color: colorSelectedDescription)
                     }
@@ -102,11 +102,11 @@ struct AddCategoryView: View {
     }
 }
 
-struct NewCategoryView_Previews: PreviewProvider {
-    static var previews: some View {
-        @State var id = UUID()
-        
-        AddCategoryView(id: $id, insert: false)
-            .environmentObject(CoreDataModel())
-    }
-}
+//struct NewCategoryView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        @State var id = UUID()
+//        
+//        AddCategoryView(selectedCategory: $id, insert: false)
+//            .environmentObject(CoreDataModel())
+//    }
+//}

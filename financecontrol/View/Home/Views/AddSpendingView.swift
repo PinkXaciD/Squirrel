@@ -107,6 +107,7 @@ struct AddSpendingView: View {
             
             HStack {
                 Text("Currency")
+                
                 CurrencySelector(currency: $vm.currency)
             }
             
@@ -115,7 +116,8 @@ struct AddSpendingView: View {
             
             HStack {
                 Text("Category")
-                CategorySelector(category: $vm.categoryId)
+                
+                CategorySelector(selectedCategory: $vm.selectedCategory)
             }
             
         } header: {
@@ -231,7 +233,7 @@ struct AddSpendingView: View {
                         .font(Font.body.weight(.semibold))
                 }
             }
-            .disabled(!utils.checkAll(amount: vm.amount, place: vm.place, comment: vm.comment) || !vm.categoryHasChanged || isLoading)
+            .disabled(!utils.checkAll(amount: vm.amount, place: vm.place, comment: vm.comment) || vm.selectedCategory == nil || isLoading)
         }
     }
 }
@@ -269,7 +271,6 @@ extension AddSpendingView {
         isLoading = true
         clearFocus()
         vm.done()
-//        dismiss()
     }
 }
 
@@ -280,16 +281,14 @@ fileprivate struct PopularCategoryButtonView: View {
     
     var body: some View {
         Button {
-            if let id = category.id {
-                withAnimation {
-                    vm.categoryId = id
-                }
+            withAnimation {
+                vm.selectedCategory = category
             }
         } label: {
             Text(category.name ?? "Error")
                 .font(.body)
-                .fontWeight(vm.categoryId == category.id ? .semibold : .regular)
-                .foregroundColor(vm.categoryId == category.id ? Color(uiColor: .secondarySystemGroupedBackground) : Color[category.color ?? ""])
+                .fontWeight(vm.selectedCategory?.id == category.id ? .semibold : .regular)
+                .foregroundColor(vm.selectedCategory?.id == category.id ? Color(uiColor: .secondarySystemGroupedBackground) : Color[category.color ?? ""])
                 .padding(.vertical, 6)
                 .padding(.horizontal, 12)
                 .background {
@@ -297,7 +296,7 @@ fileprivate struct PopularCategoryButtonView: View {
                         .fill(getBackgroundColor())
                 }
                 .brightness(isFocused ? 0.05 : 0)
-                .animation(.default, value: vm.categoryId)
+                .animation(.default, value: vm.selectedCategory)
         }
         .buttonStyle(PlainButtonStyle())
         .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 10))
@@ -310,7 +309,7 @@ fileprivate struct PopularCategoryButtonView: View {
     }
     
     private func getBackgroundColor() -> Color {
-        if vm.categoryId == category.id {
+        if vm.selectedCategory?.id == category.id {
             return Color[category.color ?? ""]
         } else {
             return Color(uiColor: .secondarySystemGroupedBackground)
@@ -337,113 +336,113 @@ struct AddSpendingShortcut: Identifiable {
     var comment: String?
 }
 
-struct AddSpendingShortcutListView: View {
-    let shortcuts = UserDefaults.standard.value(forKey: "addSpendingShortcuts") as? [UUID:AddSpendingShortcut] ?? [:]
-    
-    var body: some View {
-        Group {
-            if !shortcuts.isEmpty {
-                List {
-                    ForEach(Array(shortcuts.keys), id: \.self) { key in
-                        NavigationLink {
-                            AddSpendingShortcutAddView(shortcut: shortcuts[key])
-                        } label: {
-                            Text(shortcuts[key]?.shortcutName ?? "Error")
-                        }
-                    }
-                }
-            } else {
-                CustomContentUnavailableView("No Shortcuts", imageName: "tray.fill")
-            }
-        }
-        .navigationTitle("Shortcuts")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                NavigationLink {
-                    AddSpendingShortcutAddView()
-                } label: {
-                    Label("Add new", systemImage: "plus")
-                }
-            }
-        }
-    }
-}
+//struct AddSpendingShortcutListView: View {
+//    let shortcuts = UserDefaults.standard.value(forKey: "addSpendingShortcuts") as? [UUID:AddSpendingShortcut] ?? [:]
+//    
+//    var body: some View {
+//        Group {
+//            if !shortcuts.isEmpty {
+//                List {
+//                    ForEach(Array(shortcuts.keys), id: \.self) { key in
+//                        NavigationLink {
+//                            AddSpendingShortcutAddView(shortcut: shortcuts[key])
+//                        } label: {
+//                            Text(shortcuts[key]?.shortcutName ?? "Error")
+//                        }
+//                    }
+//                }
+//            } else {
+//                CustomContentUnavailableView("No Shortcuts", imageName: "tray.fill")
+//            }
+//        }
+//        .navigationTitle("Shortcuts")
+//        .navigationBarTitleDisplayMode(.inline)
+//        .toolbar {
+//            ToolbarItem(placement: .topBarTrailing) {
+//                NavigationLink {
+//                    AddSpendingShortcutAddView()
+//                } label: {
+//                    Label("Add new", systemImage: "plus")
+//                }
+//            }
+//        }
+//    }
+//}
 
-struct AddSpendingShortcutAddView: View {
-    @Environment(\.dismiss) private var dismiss
-    
-    let shortcut: AddSpendingShortcut?
-    
-    @State private var shortcutName: String = ""
-    @State private var amount: String = ""
-    @State private var currency: String = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
-    @State private var categoryID: UUID = .init()
-    @State private var place: String = ""
-    @State private var comment: String = ""
-    
-    init(shortcut: AddSpendingShortcut? = nil) {
-        if let shortcut {
-            var formatter: NumberFormatter {
-                let formatter = NumberFormatter()
-                formatter.maximumFractionDigits = 2
-                formatter.minimumFractionDigits = 0
-                formatter.decimalSeparator = Locale.current.decimalSeparator ?? "."
-                return formatter
-            }
-            
-            self.shortcut = shortcut
-            self.shortcutName = shortcut.shortcutName
-            
-            if let amount = shortcut.amount {
-                self.amount = formatter.string(from: amount as NSNumber) ?? ""
-            }
-            
-            self.currency = shortcut.currency ?? UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
-            self.categoryID = shortcut.categoryID ?? .init()
-            self.place = shortcut.place ?? ""
-            self.comment = shortcut.comment ?? ""
-        } else {
-            self.shortcut = nil
-        }
-    }
-    
-    var body: some View {
-        List {
-            Section {
-                TextField("Name", text: $shortcutName)
-            }
-            
-            Section {
-                TextField("Amount", text: $amount)
-                    .keyboardType(.decimalPad)
-                    .currencyFormatted($amount, currencyCode: currency)
-                
-                HStack {
-                    Text("Currency")
-                    CurrencySelector(currency: $currency)
-                }
-                
-                HStack {
-                    Text("Category")
-                    CategorySelector(category: $categoryID)
-                }
-                
-                TextField("Place", text: $place)
-                
-                TextField("Comment", text: $comment)
-            }
-        }
-        .navigationTitle("New Shortcut")
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    dismiss()
-                } label: {
-                    Text("Save")
-                        .font(.body.bold())
-                }
-            }
-        }
-    }
-}
+//struct AddSpendingShortcutAddView: View {
+//    @Environment(\.dismiss) private var dismiss
+//    
+//    let shortcut: AddSpendingShortcut?
+//    
+//    @State private var shortcutName: String = ""
+//    @State private var amount: String = ""
+//    @State private var currency: String = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
+//    @State private var categoryID: UUID = .init()
+//    @State private var place: String = ""
+//    @State private var comment: String = ""
+//    
+//    init(shortcut: AddSpendingShortcut? = nil) {
+//        if let shortcut {
+//            var formatter: NumberFormatter {
+//                let formatter = NumberFormatter()
+//                formatter.maximumFractionDigits = 2
+//                formatter.minimumFractionDigits = 0
+//                formatter.decimalSeparator = Locale.current.decimalSeparator ?? "."
+//                return formatter
+//            }
+//            
+//            self.shortcut = shortcut
+//            self.shortcutName = shortcut.shortcutName
+//            
+//            if let amount = shortcut.amount {
+//                self.amount = formatter.string(from: amount as NSNumber) ?? ""
+//            }
+//            
+//            self.currency = shortcut.currency ?? UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
+//            self.categoryID = shortcut.categoryID ?? .init()
+//            self.place = shortcut.place ?? ""
+//            self.comment = shortcut.comment ?? ""
+//        } else {
+//            self.shortcut = nil
+//        }
+//    }
+//    
+//    var body: some View {
+//        List {
+//            Section {
+//                TextField("Name", text: $shortcutName)
+//            }
+//            
+//            Section {
+//                TextField("Amount", text: $amount)
+//                    .keyboardType(.decimalPad)
+//                    .currencyFormatted($amount, currencyCode: currency)
+//                
+//                HStack {
+//                    Text("Currency")
+//                    CurrencySelector(currency: $currency)
+//                }
+//                
+//                HStack {
+//                    Text("Category")
+//                    CategorySelector(selectedCategory: $categoryID)
+//                }
+//                
+//                TextField("Place", text: $place)
+//                
+//                TextField("Comment", text: $comment)
+//            }
+//        }
+//        .navigationTitle("New Shortcut")
+//        .toolbar {
+//            ToolbarItem(placement: .topBarTrailing) {
+//                Button {
+//                    dismiss()
+//                } label: {
+//                    Text("Save")
+//                        .font(.body.bold())
+//                }
+//            }
+//        }
+//    }
+//}

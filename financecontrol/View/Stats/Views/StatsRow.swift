@@ -79,11 +79,15 @@ struct StatsRow: View {
                         Image(systemName: "clock")
                             .foregroundColor(.secondary)
                             .font(.caption2)
+                        
+                        Text(localEntity.dateAdjustedToTimeZoneDate.formatted(date: .omitted, time: .shortened))
+                            .font(.caption)
+                            .foregroundColor(Color.secondary)
+                    } else {
+                        Text(localEntity.wrappedDate.formatted(date: .omitted, time: .shortened))
+                            .font(.caption)
+                            .foregroundColor(Color.secondary)
                     }
-                    
-                    Text(localEntity.wrappedDate, format: localEntity.dateFormat(forRow: true).hour().minute())
-                        .font(.caption)
-                        .foregroundColor(Color.secondary)
                 }
                 
                 HStack {

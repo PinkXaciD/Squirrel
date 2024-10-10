@@ -83,7 +83,7 @@ struct EditSpendingView: View {
             HStack {
                 Text("Category")
                 
-                CategorySelector(category: $vm.categoryId)
+                CategorySelector(selectedCategory: $vm.category)
             }
             
             DatePicker("Date", selection: $vm.date, in: Vars.firstAvailableDate...Date.now)

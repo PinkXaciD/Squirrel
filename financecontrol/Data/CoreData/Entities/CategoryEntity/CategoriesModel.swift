@@ -47,7 +47,7 @@ extension CoreDataModel {
         }
     }
     
-    func addCategory(name: String, color: String) -> UUID {
+    func addCategory(name: String, color: String) -> CategoryEntity? {
         
         if let description = NSEntityDescription.entity(forEntityName: "CategoryEntity", in: context) {
             
@@ -62,10 +62,10 @@ extension CoreDataModel {
             manager.save()
             fetchCategories()
             
-            return id
+            return newCategory
         }
         
-        return UUID()
+        return nil
     }
     
     func addToCategory(_ spending: SpendingEntity, _ category: CategoryEntity) {

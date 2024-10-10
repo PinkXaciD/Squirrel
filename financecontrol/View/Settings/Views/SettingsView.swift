@@ -179,15 +179,15 @@ struct SettingsView: View {
         }
     }
     
-    private var shortcutsSection: some View {
-        Section {
-            NavigationLink("Shortcuts (beta)") {
-                AddSpendingShortcutListView()
-            }
-        } header: {
-            Text("Shortcuts (beta)")
-        }
-    }
+//    private var shortcutsSection: some View {
+//        Section {
+//            NavigationLink("Shortcuts (beta)") {
+//                AddSpendingShortcutListView()
+//            }
+//        } header: {
+//            Text("Shortcuts (beta)")
+//        }
+//    }
     
     var categorySection: some View {
         Section(header: Text("Categories")) {

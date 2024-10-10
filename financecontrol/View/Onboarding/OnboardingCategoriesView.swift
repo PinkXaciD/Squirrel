@@ -61,7 +61,7 @@ struct OnboardingCategoriesView: View {
     private var addSection: some View {
         Section {
             NavigationLink("Add category") {
-                AddCategoryView(id: .constant(.init()), insert: false)
+                AddCategoryView(selectedCategory: .constant(.init()), insert: false)
                     .onAppear {
                         withAnimation {
                             showOverlay = false

@@ -92,6 +92,7 @@ extension UserDefaults {
         if value.isEmpty, let code = Locale.current.currencyCode {
             value.append(code)
             UserDefaults.standard.set(code, forKey: UDKeys.defaultCurrency.rawValue)
+            UserDefaults.standard.set(code, forKey: UDKeys.defaultSelectedCurrency.rawValue)
             
             if let defaults = UserDefaults(suiteName: Vars.groupName) {
                 defaults.set(code, forKey: "defaultCurrency")

@@ -17,7 +17,17 @@ struct CurrencySelector: View {
     
     var body: some View {
         Menu {
-            CurrencyPicker(selectedCurrency: $currency)
+            Picker("", selection: $currency) {
+                ForEach(UserDefaults.standard.getCurrencies().sorted(), id:\.code) { currency in
+                    Button {} label: {
+                        Text(currency.name ?? currency.code)
+                        
+                        Text(currency.code)
+                    }
+                }
+            }
+            
+            Divider()
             
             Section {
                 otherButton
@@ -53,33 +63,13 @@ struct CurrencySelector: View {
     }
 }
 
-struct CurrencyPicker: View {
-    
-    @EnvironmentObject private var cdm: CoreDataModel
-    
-    @Binding var selectedCurrency: String
-    
-    var body: some View {
-        let currencies = UserDefaults.standard.getCurrencies()
-        
-        Picker("Select currency", selection: $selectedCurrency) {
-            ForEach(currencies.sorted(), id: \.hashValue) { currency in
-                Text(currency.name ?? currency.code)
-                    .tag(currency.code)
-            }
-        }
-        .pickerStyle(.inline)
-        .labelsHidden()
-    }
-}
-
 struct OtherCurrencySelector: View {
     @Environment(\.dismiss) private var dismiss
     @Binding var selectedCurrency: String
     @State private var search: String = ""
     
-    let currencyCodes = Dictionary(grouping: Locale.customCommonISOCurrencyCodes) {
-        (Locale.current.localizedString(forCurrencyCode: $0) ?? $0).prefix(1).capitalized
+    let currencyCodes = Dictionary(grouping: Currency.getAll()) {
+        ($0.name ?? $0.code).prefix(1).capitalized
     }
     
     var body: some View {
@@ -89,40 +79,18 @@ struct OtherCurrencySelector: View {
             if !searchResult.isEmpty {
                 List {
                     ForEach(Array(searchResult.keys).sorted(), id: \.self) { key in
-                        Section {
-                            if let currencies = searchResult[key] {
-                                let mappedCurrencies = currencies.map { (code: $0, name: Locale.current.localizedString(forCurrencyCode: $0) ?? $0) }
-                                ForEach(mappedCurrencies.sorted { $0.name < $1.name }, id: \.code) { currency in
-                                    Button {
-                                        selectedCurrency = currency.code
-                                        dismiss()
-                                    } label: {
-                                        HStack {
-                                            Text(currency.name)
-                                            
-                                            Spacer()
-                                            
-                                            Image(systemName: "checkmark")
-                                                .font(.body.bold())
-                                                .foregroundColor(.accentColor)
-                                                .opacity(selectedCurrency == currency.code ? 1 : 0)
-                                        }
-                                        .background {
-                                            Rectangle()
-                                                .fill(Color(uiColor: .secondarySystemGroupedBackground))
-                                                .frame(maxWidth: .infinity)
-                                        }
-                                    }
-                                    .buttonStyle(PlainButtonStyle())
-                                }
-                            }
-                        } header: {
-                            Text(key.capitalized)
+                        if let content = searchResult[key] {
+                            section(key, content)
                         }
                     }
                 }
             } else {
                 CustomContentUnavailableView.search(search)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background {
+                        Color(uiColor: .systemGroupedBackground)
+                            .ignoresSafeArea()
+                    }
             }
         }
         .navigationTitle("Select currency")
@@ -130,18 +98,59 @@ struct OtherCurrencySelector: View {
         .searchable(text: $search, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search by name or ISO code")
     }
     
-    private func searchFunc() -> [String : [String]] {
-        if search.isEmpty {
+    private func section(_ key: String, _ content: [Currency]) -> some View {
+        Section {
+            ForEach(content, id: \.id) { currency in
+                pickerButton(currency)
+            }
+        } header: {
+            Text(key.capitalized)
+        }
+    }
+    
+    private func pickerButton(_ currency: Currency) -> some View {
+        Button {
+            selectedCurrency = currency.code
+            dismiss()
+        } label: {
+            HStack {
+                VStack(alignment: .leading) {
+                    Text(currency.name ?? currency.code)
+                        .foregroundStyle(.primary)
+                    
+                    Text(currency.code)
+                        .foregroundStyle(.secondary)
+                }
+                
+                Spacer()
+                
+                Image(systemName: "checkmark")
+                    .font(.body.bold())
+                    .foregroundColor(.accentColor)
+                    .opacity(selectedCurrency == currency.code ? 1 : 0)
+            }
+            .background {
+                Rectangle()
+                    .fill(Color(uiColor: .secondarySystemGroupedBackground))
+                    .frame(maxWidth: .infinity)
+            }
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+    
+    private func searchFunc() -> [String : [Currency]] {
+        let trimmedSearch = search.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        if trimmedSearch.isEmpty {
             return currencyCodes
         } else {
-            let trimmedSearch = search.trimmingCharacters(in: .whitespacesAndNewlines)
-            
-            return currencyCodes.mapValues { values in
-                values.filter { value in
-                    value.localizedCaseInsensitiveContains(trimmedSearch) || (Locale.current.localizedString(forCurrencyCode: value) ?? "").localizedCaseInsensitiveContains(trimmedSearch)
-                }
+            let allCurrencies = Currency.getAll().filter { currency in
+                currency.code.localizedCaseInsensitiveContains(trimmedSearch) || (currency.name ?? currency.code).localizedCaseInsensitiveContains(trimmedSearch)
             }
-            .filter { !$0.value.isEmpty }
+            
+            return Dictionary(grouping: allCurrencies) { currency in
+                (currency.name ?? currency.code).prefix(1).capitalized
+            }
         }
     }
 }

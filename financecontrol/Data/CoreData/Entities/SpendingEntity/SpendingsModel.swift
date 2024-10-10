@@ -33,13 +33,12 @@ extension CoreDataModel {
             let ratesFetchQueueSet = Set(UserDefaults.standard.getFetchQueue())
             var ratesFetchSpendings = [SpendingEntity]()
             #if DEBUG
-            var places = [UUID:[String:Int]]()
+//            var places = [UUID:[String:Int]]()
             #endif
             
             do {
                 spendings = try self.context.fetch(request)
                 self.savedSpendings = spendings
-                lastFetchDate = Date()
             } catch {
                 ErrorType(error: error).publish(file: #file, function: #function)
             }
@@ -62,11 +61,12 @@ extension CoreDataModel {
             
             let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
             let rate = UserDefaults.standard.getRates()?[defaultCurrency] ?? 1
+            let formatWithoutTimezones = UserDefaults.standard.bool(forKey: UDKeys.formatWithoutTimeZones.rawValue)
             
             // MARK: Fetch for loop
             for spending in spendings {
                 let safeSpending = spending.safeObject()
-                let startOfDay = Calendar.current.startOfDay(for: safeSpending.wrappedDate)
+                let startOfDay = formatWithoutTimezones ? Calendar.current.startOfDay(for: safeSpending.wrappedDate) : Calendar.current.startOfDay(for: safeSpending.dateAdjustedToTimeZoneDate)
                 
                 currencies.insert(Currency(code: safeSpending.wrappedCurrency))
                 
@@ -96,11 +96,11 @@ extension CoreDataModel {
                 
                 #if DEBUG
                 // Places
-                if let place = safeSpending.place, let categoryID = safeSpending.categoryID {
-                    var value = places[categoryID] ?? [:]
-                    value.updateValue((value[place] ?? 0) + 1, forKey: place)
-                    places.updateValue(value, forKey: categoryID)
-                }
+//                if let place = safeSpending.place, let categoryID = safeSpending.categoryID {
+//                    var value = places[categoryID] ?? [:]
+//                    value.updateValue((value[place] ?? 0) + 1, forKey: place)
+//                    places.updateValue(value, forKey: categoryID)
+//                }
                 #endif
             } // End of for loop
             

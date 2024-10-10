@@ -24,7 +24,6 @@ struct BarChart: View {
                         .frame(height: 2)
                         .offset(y: -(10 + countAvgBarHeight()))
                         .foregroundColor(.secondary.opacity(showAverage ? 0.7 : 0.3))
-//                        .padding(.horizontal, countDashedLinePadding(geometry.size.width))
                 }
                 
                 VStack {
@@ -91,16 +90,11 @@ struct BarChart: View {
         return height / max * value
     }
     
-    private func countDashedLinePadding(_ width: CGFloat) -> CGFloat {
-        let barWidth: CGFloat = 30
-        let spacing = width - (barWidth * 7)
-        return spacing / 14
-    }
-    
     private func isActive(index: Int) -> Bool {
         if itemSelected != -1 {
             return index == itemSelected
         }
+        
         return true
     }
     

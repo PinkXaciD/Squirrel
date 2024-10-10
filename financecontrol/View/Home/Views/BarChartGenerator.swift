@@ -59,22 +59,30 @@ struct BarChartGenerator: View {
             date = showAverage ? NSLocalizedString("average-home-barchart", comment: "") : NSLocalizedString("past-7-days-home", comment: "")
         }
         
-        var amount: String = ""
+        var amount: Double = 0
         
         if let value = data?[index].value {
-            amount = value.formatted(.currency(code: defaultCurrency))
+            amount = value
         } else {
-            amount = showAverage ? (cdm.barChartData.sum / 7).formatted(.currency(code: defaultCurrency)) : cdm.barChartData.sum.formatted(.currency(code: defaultCurrency))
+            amount = showAverage ? (cdm.barChartData.sum / 7) : cdm.barChartData.sum
         }
         
         return VStack {
             Text(date)
-            Text(amount)
-                .amountStyle()
-                .padding(-3)
             
-//            Text(itemSelected == -1 ? "Average: \((cdm.barChartData.sum/7).formatted(.currency(code: defaultCurrency))) a day" : countAnalytics(data?[index].value ?? 0))
+            if cdm.lastFetchDate == nil {
+                Text("Loading...")
+                    .amountStyle()
+                    .padding(-3)
+                    .transition(.opacity)
+            } else {
+                Text(Locale.autoupdatingCurrent.currencyNarrowFormat(amount, currency: defaultCurrency, showCurrencySymbol: true) ?? amount.formatted(.currency(code: defaultCurrency)))
+                    .amountStyle()
+                    .padding(-3)
+                    .transition(.opacity)
+            }
         }
+        .animation(.default, value: cdm.lastFetchDate)
     }
     
     private func dateFormat(_ date: Date) -> String {

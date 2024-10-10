@@ -32,6 +32,8 @@ struct SpendingView: View {
     
     @AppStorage(UDKeys.defaultCurrency.rawValue) 
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
+    @AppStorage(UDKeys.formatWithoutTimeZones.rawValue)
+    private var formatWithoutTimeZones: Bool = false
     
     @State
     private var alertIsPresented: Bool = false
@@ -84,9 +86,19 @@ struct SpendingView: View {
                 
                 Spacer()
                 
-                Text(safeEntity.wrappedDate, format: safeEntity.dateFormat().year().month(.wide).day().hour().minute())
-                    .foregroundColor(.secondary)
+                if !formatWithoutTimeZones, let timeZone = safeEntity.timeZone, timeZone.secondsFromGMT() != TimeZone.autoupdatingCurrent.secondsFromGMT() {
+                    VStack(alignment: .trailing) {
+                        Text(safeEntity.dateAdjustedToTimeZoneDate.formatted(date: .long, time: .shortened))
+                        
+                        Text(timeZone.localizedName(for: .standard, locale: .autoupdatingCurrent) ?? timeZone.identifier)
+                    }
+                    .foregroundStyle(.secondary)
                     .multilineTextAlignment(.trailing)
+                } else {
+                    Text(safeEntity.wrappedDate.formatted(date: .long, time: .shortened))
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.trailing)
+                }
             }
             .onTapGesture {
                 editAction()

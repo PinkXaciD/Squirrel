@@ -8,18 +8,27 @@
 import Foundation
 
 extension Locale {
+    private var currencyFormatter: NumberFormatter {
+        let formatter = NumberFormatter()
+        formatter.locale = self
+        return formatter
+    }
+    
     func currencyNarrowFormat(
         _ value: Double,
         currency currencyCode: String? = nil,
-        removeFractionDigigtsFrom preciseValue: Double = 10000
+        removeFractionDigigtsFrom preciseValue: Double = 10000,
+        showCurrencySymbol: Bool = false
     ) -> String? {
         let currencyCode: String = currencyCode ?? self.currencyCode ?? ""
         
-        let formatter = NumberFormatter()
-        formatter.locale = self
+        let formatter = self.currencyFormatter
         formatter.numberStyle = .currency
         formatter.currencyCode = currencyCode
-        formatter.currencySymbol = ""
+        
+        if !showCurrencySymbol {
+            formatter.currencySymbol = ""
+        }
         
         if value < preciseValue {
             return formatter.string(from: value as NSNumber)

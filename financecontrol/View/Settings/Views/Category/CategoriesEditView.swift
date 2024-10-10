@@ -48,7 +48,7 @@ struct CategoriesEditView: View {
     private var manageCategoriesSection: some View {
         Section {
             NavigationLink("Add new") {
-                AddCategoryView(id: .constant(.init()), insert: false)
+                AddCategoryView(selectedCategory: .constant(.init()), insert: false)
             }
             
             NavigationLink {
@@ -66,7 +66,7 @@ struct CategoriesEditView: View {
     
     private var addNewToolbarButton: some View {
         NavigationLink {
-            AddCategoryView(id: .constant(.init()), insert: false)
+            AddCategoryView(selectedCategory: .constant(.init()), insert: false)
         } label: {
             Label("Add new category", systemImage: "plus")
         }

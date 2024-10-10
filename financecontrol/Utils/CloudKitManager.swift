@@ -57,7 +57,7 @@ final class CloudKitManager {
                 #endif
                 
                 return try await container.publicCloudDatabase.record(for: CKRecord.ID(recordName: "latest"))
-            } catch CKError.networkUnavailable {
+            } catch CKError.networkUnavailable, CKError.serviceUnavailable {
                 throw CloudKitError.networkUnavailable
             }
         }
