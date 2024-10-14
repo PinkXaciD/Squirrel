@@ -22,19 +22,20 @@ struct BarChartGenerator: View {
             Divider()
                 .padding(.vertical, 5)
             
-            legend
-                .onTapGesture {
-                    if itemSelected == -1 {
-                        withAnimation(.default.speed(3)) {
-                            showAverage.toggle()
-                        }
-                    } else {
-                        withAnimation(.default.speed(3)) {
-                            itemSelected = -1
-                        }
+            Button {
+                if itemSelected == -1 {
+                    withAnimation(.default.speed(3)) {
+                        showAverage.toggle()
+                    }
+                } else {
+                    withAnimation(.default.speed(3)) {
+                        itemSelected = -1
                     }
                 }
-                .animation(.default.speed(3), value: cdm.barChartData)
+            } label: {
+                legend
+            }
+            .buttonStyle(.plain)
         }
         .onDisappear {
             itemSelected = -1
@@ -71,7 +72,7 @@ struct BarChartGenerator: View {
             Text(date)
             
             if cdm.lastFetchDate == nil {
-                Text("Loading...")
+                Text(verbatim: " ")
                     .amountStyle()
                     .padding(-3)
                     .transition(.opacity)
@@ -82,17 +83,17 @@ struct BarChartGenerator: View {
                     .transition(.opacity)
             }
         }
-        .animation(.default, value: cdm.lastFetchDate)
+        .animation(.easeOut, value: cdm.lastFetchDate)
+    }
+    
+    private var dateFormatter: DateFormatter {
+        let formatter: DateFormatter = .init()
+        formatter.timeStyle = .none
+        formatter.dateStyle = .medium
+        return formatter
     }
     
     private func dateFormat(_ date: Date) -> String {
-        var dateFormatter: DateFormatter {
-            let formatter: DateFormatter = .init()
-            formatter.timeStyle = .none
-            formatter.dateStyle = .medium
-            return formatter
-        }
-        
         if Calendar.current.isDateInToday(date) {
             return NSLocalizedString("Today", comment: "")
         } else if Calendar.current.isDateInYesterday(date) {

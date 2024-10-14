@@ -523,6 +523,9 @@
     "Gestures" : {
 
     },
+    "Ghost" : {
+
+    },
     "Hide app content" : {
 
     },
@@ -585,9 +588,6 @@
 
     },
     "It's probably all LED's nowadays" : {
-
-    },
-    "Loading..." : {
 
     },
     "Minimize" : {
@@ -709,6 +709,9 @@
 
     },
     "Place name is too long" : {
+
+    },
+    "Plays for the audience" : {
 
     },
     "Please submit a bug report and try to reinstall the app" : {

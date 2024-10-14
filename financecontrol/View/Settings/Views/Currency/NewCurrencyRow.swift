@@ -16,13 +16,6 @@ struct NewCurrencyRow: View {
     let name: String
     let code: String
     
-    var currencyFormatter: NumberFormatter {
-        let currencyFormatter = NumberFormatter()
-        currencyFormatter.maximumFractionDigits = 2
-        currencyFormatter.minimumFractionDigits = 2
-        return currencyFormatter
-    }
-    
     var body: some View {
         Button(action: addCurrency) {
             buttonLabel

@@ -325,7 +325,7 @@ struct AmountInput_Previews: PreviewProvider {
     }
 }
 
-// MARK: Shortcuts
+// MARK: Shortcuts (not yet implemented)
 struct AddSpendingShortcut: Identifiable {
     var id: UUID = UUID()
     var shortcutName: String

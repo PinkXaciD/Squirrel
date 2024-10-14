@@ -17,11 +17,7 @@ struct InputUtils {
     }
     
     func amountCheck(amount: String) -> Bool {
-        var formatter: NumberFormatter {
-            let formatter = NumberFormatter()
-            
-            return formatter
-        }
+        let formatter = NumberFormatter.standard
         
         guard
             let number = formatter.number(from: amount),

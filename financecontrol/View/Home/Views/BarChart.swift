@@ -39,6 +39,7 @@ struct BarChart: View {
                             .onTapGesture {
                                 tapActions(index: countIndex(data.key))
                             }
+                            .foregroundStyle(isActive(index: countIndex(data.key)) ? Color.accentColor : Color.secondary, Color.secondary)
                         }
                     }
                     

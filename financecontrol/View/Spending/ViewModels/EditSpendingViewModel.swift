@@ -36,13 +36,7 @@ final class EditSpendingViewModel: ViewModel {
     #endif
     
     init(ratesViewModel rvm: RatesViewModel, coreDataModel cdm: CoreDataModel, entity: SpendingEntity) {
-        var formatter: NumberFormatter {
-            let formatter = NumberFormatter()
-            formatter.maximumFractionDigits = 2
-            formatter.minimumFractionDigits = 0
-            formatter.decimalSeparator = Locale.current.decimalSeparator ?? "."
-            return formatter
-        }
+        let formatter = NumberFormatter.currency
         
         self.cdm = cdm
         self.rvm = rvm
@@ -158,13 +152,7 @@ final class EditSpendingViewModel: ViewModel {
     }
     
     func clear() {
-        var formatter: NumberFormatter {
-            let formatter = NumberFormatter()
-            formatter.maximumFractionDigits = 2
-            formatter.minimumFractionDigits = 0
-            formatter.decimalSeparator = Locale.current.decimalSeparator ?? "."
-            return formatter
-        }
+        let formatter = NumberFormatter.currency
         
         self.amount = formatter.string(from: entity.amount as NSNumber) ?? "\(entity.amount)".replacingOccurrences(of: ".", with: Locale.current.decimalSeparator ?? ".")
         self.currency = entity.wrappedCurrency

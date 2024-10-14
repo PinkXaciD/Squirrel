@@ -117,7 +117,7 @@ final class AddSpendingViewModel: ViewModel {
         DispatchQueue.global(qos: .utility).async { [weak self, catID] in
             guard let self else { return }
             
-            let formatter = NumberFormatter()
+            let formatter = NumberFormatter.standard
             
             guard let number = formatter.number(from: amount) else {
                 DispatchQueue.main.async {

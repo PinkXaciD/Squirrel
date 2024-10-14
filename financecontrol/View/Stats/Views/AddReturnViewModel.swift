@@ -32,9 +32,9 @@ final class AddReturnViewModel: ViewModel {
     
     var doubleAmount: Double {
         if currency == spending.wrappedCurrency {
-            return Double(truncating: NumberFormatter().number(from: amount) ?? 0)
+            return Double(truncating: NumberFormatter.standard.number(from: amount) ?? 0)
         } else {
-            let doubleAmount = Double(truncating: NumberFormatter().number(from: amount) ?? 0)
+            let doubleAmount = Double(truncating: NumberFormatter.standard.number(from: amount) ?? 0)
             
             return round(doubleAmount / (rvm.rates[currency] ?? 1) * (rvm.rates[spending.wrappedCurrency] ?? 1) * 100) / 100
         }
@@ -91,15 +91,15 @@ final class AddReturnViewModel: ViewModel {
         )
     }
     
+    private var formatter: NumberFormatter {
+        let formatter = NumberFormatter()
+        formatter.maximumFractionDigits = 2
+        formatter.minimumFractionDigits = 0
+        formatter.decimalSeparator = Locale.current.decimalSeparator ?? "."
+        return formatter
+    }
+    
     func addFull() {
-        var formatter: NumberFormatter {
-            let formatter = NumberFormatter()
-            formatter.maximumFractionDigits = 2
-            formatter.minimumFractionDigits = 0
-            formatter.decimalSeparator = Locale.current.decimalSeparator ?? "."
-            return formatter
-        }
-        
         self.currency = spending.wrappedCurrency
         self.amount = formatter.string(from: spending.amountWithReturns as NSNumber) ?? String(spending.amountWithReturns).replacingOccurrences(of: ",", with: Locale.current.decimalSeparator ?? ".")
     }

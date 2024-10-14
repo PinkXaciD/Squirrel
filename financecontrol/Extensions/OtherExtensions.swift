@@ -84,3 +84,15 @@ extension DateFormatter {
         return formatter
     }()
 }
+
+extension NumberFormatter {
+    static let standard = NumberFormatter()
+    
+    static var currency: NumberFormatter {
+        let formatter = NumberFormatter()
+        formatter.maximumFractionDigits = 2
+        formatter.minimumFractionDigits = 0
+        formatter.decimalSeparator = Locale.current.decimalSeparator ?? "."
+        return formatter
+    }
+}
