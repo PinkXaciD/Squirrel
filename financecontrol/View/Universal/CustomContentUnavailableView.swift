@@ -56,7 +56,7 @@ extension CustomContentUnavailableView {
     static let search: Self = CustomContentUnavailableView("No results", imageName: "magnifyingglass", description: "Check the spelling or try a new search.")
     
     static func search(_ text: String) -> CustomContentUnavailableView {
-        return CustomContentUnavailableView("No results for \"\(text)\"", imageName: "magnifyingglass", description: "Check the spelling or try a new search.")
+        return CustomContentUnavailableView("No results for \"\(text.trimmingCharacters(in: .whitespacesAndNewlines))\"", imageName: "magnifyingglass", description: "Check the spelling or try a new search.")
     }
 }
 

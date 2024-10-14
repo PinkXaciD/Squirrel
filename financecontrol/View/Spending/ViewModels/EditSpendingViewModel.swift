@@ -10,7 +10,7 @@ import SwiftUI
 import OSLog
 #endif
 
-final class EditSpendingViewModel: SpendingViewModel {
+final class EditSpendingViewModel: ViewModel {
     var cdm: CoreDataModel
     var rvm: RatesViewModel
     var entity: SpendingEntity
@@ -22,9 +22,7 @@ final class EditSpendingViewModel: SpendingViewModel {
     @Published
     var date: Date
     @Published
-    var categoryName: String
-    @Published
-    var categoryId: UUID
+    var category: CategoryEntity?
     @Published
     var place: String
     @Published
@@ -38,13 +36,7 @@ final class EditSpendingViewModel: SpendingViewModel {
     #endif
     
     init(ratesViewModel rvm: RatesViewModel, coreDataModel cdm: CoreDataModel, entity: SpendingEntity) {
-        var formatter: NumberFormatter {
-            let formatter = NumberFormatter()
-            formatter.maximumFractionDigits = 2
-            formatter.minimumFractionDigits = 0
-            formatter.decimalSeparator = Locale.current.decimalSeparator ?? "."
-            return formatter
-        }
+        let formatter = NumberFormatter.currency
         
         self.cdm = cdm
         self.rvm = rvm
@@ -52,8 +44,7 @@ final class EditSpendingViewModel: SpendingViewModel {
         self.amount = formatter.string(from: entity.amount as NSNumber) ?? "\(entity.amount)".replacingOccurrences(of: ".", with: Locale.current.decimalSeparator ?? ".")
         self.currency = entity.wrappedCurrency
         self.date = entity.wrappedDate
-        self.categoryName = entity.categoryName
-        self.categoryId = entity.category?.id ?? .init()
+        self.category = entity.category
         self.place = entity.place ?? ""
         self.comment = entity.comment ?? ""
         
@@ -70,10 +61,10 @@ final class EditSpendingViewModel: SpendingViewModel {
     }
     
     func done() {
-        DispatchQueue.global(qos: .utility).async { [weak self] in
+        guard let catID = self.category?.id else { return }
+        
+        DispatchQueue.global(qos: .utility).async { [weak self, catID] in
             guard let self else { return }
-            
-            guard self.cdm.findCategory(self.categoryId) != nil else { return }
             
             let formatter = NumberFormatter()
             
@@ -99,7 +90,7 @@ final class EditSpendingViewModel: SpendingViewModel {
                 currency: self.currency,
                 date: self.date,
                 place: self.place.trimmingCharacters(in: .whitespacesAndNewlines),
-                categoryId: self.categoryId
+                categoryId: catID
             )
             
             if self.currency == "USD" {
@@ -161,19 +152,12 @@ final class EditSpendingViewModel: SpendingViewModel {
     }
     
     func clear() {
-        var formatter: NumberFormatter {
-            let formatter = NumberFormatter()
-            formatter.maximumFractionDigits = 2
-            formatter.minimumFractionDigits = 0
-            formatter.decimalSeparator = Locale.current.decimalSeparator ?? "."
-            return formatter
-        }
+        let formatter = NumberFormatter.currency
         
         self.amount = formatter.string(from: entity.amount as NSNumber) ?? "\(entity.amount)".replacingOccurrences(of: ".", with: Locale.current.decimalSeparator ?? ".")
         self.currency = entity.wrappedCurrency
         self.date = entity.wrappedDate
-        self.categoryName = entity.categoryName
-        self.categoryId = entity.category?.id ?? .init()
+        self.category = entity.category
         self.place = entity.place ?? ""
         self.comment = entity.comment ?? ""
     }

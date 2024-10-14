@@ -22,13 +22,7 @@ final class EditReturnViewModel: ViewModel {
     private var rvm: RatesViewModel
     
     init(returnEntity: ReturnEntity, cdm: CoreDataModel, rvm: RatesViewModel) {
-        var formatter: NumberFormatter {
-            let formatter = NumberFormatter()
-            formatter.maximumFractionDigits = 2
-            formatter.minimumFractionDigits = 0
-            formatter.decimalSeparator = Locale.current.decimalSeparator ?? "."
-            return formatter
-        }
+        let formatter = NumberFormatter.currency
         
         self.amount = formatter.string(from: returnEntity.amount as NSNumber) ?? "\(returnEntity.amount)".replacingOccurrences(of: ".", with: Locale.current.decimalSeparator ?? ".")
         self.name = returnEntity.name ?? ""
@@ -43,9 +37,9 @@ final class EditReturnViewModel: ViewModel {
     
     var doubleAmount: Double {
         if currency == spending?.wrappedCurrency {
-            return Double(truncating: NumberFormatter().number(from: amount) ?? 0)
+            return Double(truncating: NumberFormatter.standard.number(from: amount) ?? 0)
         } else {
-            let doubleAmount = Double(truncating: NumberFormatter().number(from: amount) ?? 0)
+            let doubleAmount = Double(truncating: NumberFormatter.standard.number(from: amount) ?? 0)
             
             return round(doubleAmount / (rvm.rates[currency] ?? 1) * (rvm.rates[spending?.wrappedCurrency ?? "USD"] ?? 1) * 100) / 100
         }

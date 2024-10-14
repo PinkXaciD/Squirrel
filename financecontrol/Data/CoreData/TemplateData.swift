@@ -12,11 +12,11 @@ extension CoreDataModel {
         context.perform { [weak self] in
             guard let self else { return }
             
-            let restaurantsID = addCategory(name: "Restaurants", color: "nord1")
-            let groceriesID = addCategory(name: "Groceries", color: "nord4")
-            let subscriptionsID = addCategory(name: "Subscriptions", color: "nord6")
-            let transportID = addCategory(name: "Transport", color: "nord94")
-            let travelID = addCategory(name: "Travel", color: "nord7")
+            let restaurantsID = addCategory(name: "Restaurants", color: "nord1")?.id ?? .init()
+            let groceriesID = addCategory(name: "Groceries", color: "nord4")?.id ?? .init()
+            let subscriptionsID = addCategory(name: "Subscriptions", color: "nord6")?.id ?? .init()
+            let transportID = addCategory(name: "Transport", color: "nord94")?.id ?? .init()
+            let travelID = addCategory(name: "Travel", color: "nord7")?.id ?? .init()
             
             let components = Calendar.current.dateComponents([.year, .month, .day], from: Date())
             

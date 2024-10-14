@@ -22,19 +22,20 @@ struct BarChartGenerator: View {
             Divider()
                 .padding(.vertical, 5)
             
-            legend
-                .onTapGesture {
-                    if itemSelected == -1 {
-                        withAnimation(.default.speed(3)) {
-                            showAverage.toggle()
-                        }
-                    } else {
-                        withAnimation(.default.speed(3)) {
-                            itemSelected = -1
-                        }
+            Button {
+                if itemSelected == -1 {
+                    withAnimation(.default.speed(3)) {
+                        showAverage.toggle()
+                    }
+                } else {
+                    withAnimation(.default.speed(3)) {
+                        itemSelected = -1
                     }
                 }
-                .animation(.default.speed(3), value: cdm.barChartData)
+            } label: {
+                legend
+            }
+            .buttonStyle(.plain)
         }
         .onDisappear {
             itemSelected = -1
@@ -59,32 +60,40 @@ struct BarChartGenerator: View {
             date = showAverage ? NSLocalizedString("average-home-barchart", comment: "") : NSLocalizedString("past-7-days-home", comment: "")
         }
         
-        var amount: String = ""
+        var amount: Double = 0
         
         if let value = data?[index].value {
-            amount = value.formatted(.currency(code: defaultCurrency))
+            amount = value
         } else {
-            amount = showAverage ? (cdm.barChartData.sum / 7).formatted(.currency(code: defaultCurrency)) : cdm.barChartData.sum.formatted(.currency(code: defaultCurrency))
+            amount = showAverage ? (cdm.barChartData.sum / 7) : cdm.barChartData.sum
         }
         
         return VStack {
             Text(date)
-            Text(amount)
-                .amountStyle()
-                .padding(-3)
             
-//            Text(itemSelected == -1 ? "Average: \((cdm.barChartData.sum/7).formatted(.currency(code: defaultCurrency))) a day" : countAnalytics(data?[index].value ?? 0))
+            if cdm.lastFetchDate == nil {
+                Text(verbatim: " ")
+                    .amountStyle()
+                    .padding(-3)
+                    .transition(.opacity)
+            } else {
+                Text(Locale.autoupdatingCurrent.currencyNarrowFormat(amount, currency: defaultCurrency, showCurrencySymbol: true) ?? amount.formatted(.currency(code: defaultCurrency)))
+                    .amountStyle()
+                    .padding(-3)
+                    .transition(.opacity)
+            }
         }
+        .animation(.easeOut, value: cdm.lastFetchDate)
+    }
+    
+    private var dateFormatter: DateFormatter {
+        let formatter: DateFormatter = .init()
+        formatter.timeStyle = .none
+        formatter.dateStyle = .medium
+        return formatter
     }
     
     private func dateFormat(_ date: Date) -> String {
-        var dateFormatter: DateFormatter {
-            let formatter: DateFormatter = .init()
-            formatter.timeStyle = .none
-            formatter.dateStyle = .medium
-            return formatter
-        }
-        
         if Calendar.current.isDateInToday(date) {
             return NSLocalizedString("Today", comment: "")
         } else if Calendar.current.isDateInYesterday(date) {

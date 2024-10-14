@@ -194,6 +194,20 @@ struct TSSpendingEntity: ToUnsafeObject, Hashable, Identifiable {
         date ?? Date()
     }
     
+    var dateAdjustedToTimeZoneDate: Date {
+        guard let secondsFromExpenseTimeZone = self.timeZone?.secondsFromGMT() else {
+            return self.wrappedDate
+        }
+        
+        let secondsFromCurrent = TimeZone.autoupdatingCurrent.secondsFromGMT()
+        
+        guard let result = Calendar.autoupdatingCurrent.date(byAdding: .second, value: (secondsFromCurrent - secondsFromExpenseTimeZone) * -1, to: self.wrappedDate) else {
+            return self.wrappedDate
+        }
+        
+        return result
+    }
+    
     var wrappedId: UUID {
         id ?? UUID()
     }
@@ -237,19 +251,6 @@ struct TSSpendingEntity: ToUnsafeObject, Hashable, Identifiable {
         }
         
         return timeZone
-    }
-    
-    func dateFormat(forRow: Bool = false) -> Date.FormatStyle {
-        let formatWithoutTimeZones: Bool = UserDefaults.standard.bool(forKey: UDKeys.formatWithoutTimeZones.rawValue)
-        var formatStyle = Date.FormatStyle.dateTime
-        formatStyle.timeZone = formatWithoutTimeZones ? .autoupdatingCurrent : (self.timeZone ?? .autoupdatingCurrent)
-        formatStyle.locale = .autoupdatingCurrent
-        
-        if !forRow, !formatWithoutTimeZones, let timeZone, timeZone.secondsFromGMT() != TimeZone.autoupdatingCurrent.secondsFromGMT() {
-            formatStyle = formatStyle.timeZone(.localizedGMT(.short))
-        }
-        
-        return formatStyle
     }
     
     func unsafeObject(in context: NSManagedObjectContext) throws -> SpendingEntity {

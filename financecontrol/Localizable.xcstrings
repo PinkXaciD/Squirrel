@@ -237,6 +237,7 @@
       }
     },
     "All categories" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -498,6 +499,9 @@
     "Failed to update rates" : {
 
     },
+    "Favorite categories" : {
+
+    },
     "Filter" : {
 
     },
@@ -517,6 +521,9 @@
 
     },
     "Gestures" : {
+
+    },
+    "Ghost" : {
 
     },
     "Hide app content" : {
@@ -607,9 +614,6 @@
     "New Category" : {
 
     },
-    "New Shortcut" : {
-
-    },
     "No API key was found" : {
 
     },
@@ -634,6 +638,9 @@
     "No expenses" : {
 
     },
+    "No favorite categories. You can add them from settings." : {
+
+    },
     "No Info file was found" : {
 
     },
@@ -647,9 +654,6 @@
 
     },
     "No results for these filters" : {
-
-    },
-    "No Shortcuts" : {
 
     },
     "No up to date exchange rate found" : {
@@ -705,6 +709,9 @@
 
     },
     "Place name is too long" : {
+
+    },
+    "Plays for the audience" : {
 
     },
     "Please submit a bug report and try to reinstall the app" : {
@@ -789,12 +796,6 @@
 
     },
     "Settings" : {
-
-    },
-    "Shortcuts" : {
-
-    },
-    "Shortcuts (beta)" : {
 
     },
     "Show onboarding" : {
@@ -918,6 +919,9 @@
     "You can add categories later in settings" : {
 
     },
+    "You can add category to favorites from settings." : {
+
+    },
     "You can add expenses from home screen." : {
 
     },
@@ -937,6 +941,9 @@
 
     },
     "You can't undo this action.\nAll expenses from this category will be deleted" : {
+
+    },
+    "Your favorite categories will be shown here" : {
 
     }
   },

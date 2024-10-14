@@ -10,7 +10,7 @@ import SwiftUI
 struct CategorySelector: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var cdm: CoreDataModel
-    @Binding var category: UUID
+    @Binding var selectedCategory: CategoryEntity?
     
     @State private var editCategories: Bool = false
     @State private var showOther: Bool = false
@@ -21,41 +21,48 @@ struct CategorySelector: View {
         
         Menu {
             if favorites.isEmpty {
-                CategoryPicker(selectedCategory: $category, onlyFavorites: false)
-                
-                addNewButton
-                
-            } else if cdm.savedCategories.isEmpty {
-                addNewButton
-            } else {
-                CategoryPicker(selectedCategory: $category, onlyFavorites: true)
-                
-//                Menu("Other") {
-//                    CategoryPicker(selectedCategory: $category, onlyFavorites: false)
-//                }
-                
-                Section {
-                    showOtherButton
+                if #available(iOS 16.0, *) { // This type of styling is supported from iOS 16
+                    Button {} label: {
+                        Text("Your favorite categories will be shown here")
+                        
+                        Text("You can add category to favorites from settings.")
+                    }
+                } else {
+                    Text("No favorite categories. You can add them from settings.")
                 }
-                
-                Section {
-                    addNewButton
+            } else {
+                Picker("Favorite categories", selection: $selectedCategory) {
+                    ForEach(favorites) { category in
+                        Text(category.name ?? "Error")
+                            .tag(category)
+                    }
                 }
             }
+                
+            if !cdm.savedCategories.isEmpty {
+                Divider()
+                
+                showOtherButton
+            }
+            
+            Divider()
+            
+            addNewButton
         } label: {
             Spacer()
-            Text(cdm.findCategory(category)?.name ?? "Select Category")
+            
+            Text(selectedCategory?.name ?? "Select Category")
         }
         .background {
             Group {
                 NavigationLink(isActive: $editCategories) {
-                    AddCategoryView(id: $category, insert: true)
+                    AddCategoryView(selectedCategory: $selectedCategory, insert: true)
                 } label: {
                     EmptyView()
                 }
                 
                 NavigationLink(isActive: $showOther) {
-                    OtherCategorySelector(category: $category)
+                    OtherCategorySelector(selectedCategory: $selectedCategory)
                 } label: {
                     EmptyView()
                 }
@@ -91,38 +98,17 @@ struct CategorySelector: View {
     }
 }
 
-struct CategoryPicker: View {
-    @EnvironmentObject private var cdm: CoreDataModel
-    
-    @Binding var selectedCategory: UUID
-    let onlyFavorites: Bool
-    
-    var body: some View {
-        let categories = onlyFavorites ? cdm.savedCategories.filter({ $0.isFavorite }) : cdm.savedCategories
-        
-        Picker("All categories", selection: $selectedCategory) {
-            ForEach(categories) { category in
-                if let name = category.name, let tag = category.id {
-                    Text(name)
-                        .tag(tag)
-                }
-            }
-        }
-        .pickerStyle(.inline)
-        .labelsHidden()
-    }
-}
-
 fileprivate struct OtherCategorySelector: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var cdm: CoreDataModel
-    @Binding var category: UUID
+    @Binding var selectedCategory: CategoryEntity?
     
     @State private var search: String = ""
     
     var body: some View {
         Group {
             let searchResult = searchFunc(search)
+            
             if searchResult.isEmpty {
                 CustomContentUnavailableView.search(search.trimmingCharacters(in: .whitespacesAndNewlines))
             } else {
@@ -143,7 +129,7 @@ fileprivate struct OtherCategorySelector: View {
     private var addNewSection: some View {
         Section {
             NavigationLink {
-                AddCategoryView(id: $category, insert: true)
+                AddCategoryView(selectedCategory: $selectedCategory, insert: true)
             } label: {
                 Text("Add new")
             }
@@ -165,7 +151,7 @@ fileprivate struct OtherCategorySelector: View {
     
     private func makeButton(_ category: CategoryEntity) -> some View {
         Button {
-            self.category = category.id ?? .init()
+            self.selectedCategory = category
             dismiss()
         } label: {
             HStack {
@@ -180,16 +166,16 @@ fileprivate struct OtherCategorySelector: View {
                 
                 Image(systemName: "checkmark")
                     .font(.body.bold())
-                    .opacity(self.category == category.id ? 1 : 0)
+                    .opacity(self.selectedCategory?.id == category.id ? 1 : 0)
             }
         }
     }
 }
 
-struct CategorySelector_Previews: PreviewProvider {
-    static var previews: some View {
-        @State var category: UUID = UUID()
-        CategorySelector(category: $category)
-            .environmentObject(CoreDataModel())
-    }
-}
+//struct CategorySelector_Previews: PreviewProvider {
+//    static var previews: some View {
+//        @State var category: UUID = UUID()
+//        CategorySelector(selectedCategory: $category)
+//            .environmentObject(CoreDataModel())
+//    }
+//}

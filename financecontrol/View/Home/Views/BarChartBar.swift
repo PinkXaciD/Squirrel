@@ -17,15 +17,14 @@ struct BarChartBar: View {
         ZStack(alignment: .bottom) {
             Rectangle()
                 .frame(height: maxHeight)
-                .foregroundColor(Color.secondary)
+                .foregroundStyle(.secondary)
                 .opacity(isActive ? 0.1 : 0.07)
             
             RoundedRectangle(cornerRadius: 5)
                 .frame(height: data.value)
-                .foregroundColor(isActive ? Color.accentColor : Color.secondary)
+                .foregroundStyle(.primary)
                 .opacity(isActive ? 1 : 0.7)
-        } // Column rectangle end
-//        .clipShape(RoundedRectangle(cornerRadius: 5.01))
+        }
         .hoverEffect()
     }
 }

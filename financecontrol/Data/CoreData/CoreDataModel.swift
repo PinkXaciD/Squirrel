@@ -51,7 +51,7 @@ final class CoreDataModel: ObservableObject {
     @Published
     var shadowedCategories: [CategoryEntity] = []
     
-    var lastFetchDate: Date = Date()
+    var lastFetchDate: Date? = nil
     
     @available(*, deprecated, renamed: "UserDefaults.standart.getCurrencies()", message: "")
     @Published

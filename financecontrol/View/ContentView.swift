@@ -201,12 +201,12 @@ struct ContentView: View {
         if value == .active {
             rvm.checkForUpdate()
             
-            if !Calendar.current.isDateInToday(cdm.lastFetchDate) {
+            if let lastFetchDate = cdm.lastFetchDate, !Calendar.current.isDateInToday(lastFetchDate) {
                 cdm.fetchSpendings(updateWidgets: false)
             }
             
             #if DEBUG
-            Logger(subsystem: Vars.appIdentifier, category: #fileID).log("Moved to foreground, CD last fetch: \(cdm.lastFetchDate.formatted())")
+            Logger(subsystem: Vars.appIdentifier, category: #fileID).log("Moved to foreground, CD last fetch: \((cdm.lastFetchDate ?? .distantFuture).formatted())")
             #endif
         }
     }
