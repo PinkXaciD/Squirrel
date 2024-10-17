@@ -61,24 +61,70 @@ final class CoreDataModel: ObservableObject {
 }
 
 extension CoreDataModel {
-    /// Exports all data in JSON file
-    /// - Returns: URL to saved temporary file if save was successful
-    /// - Important: This method is not thread-safe
-    func exportJSON() throws -> URL? {
-        do {
-            let encoder = JSONEncoder()
-            encoder.outputFormatting = [.sortedKeys, .prettyPrinted]
-            encoder.dateEncodingStrategy = .iso8601
+    func exportCSV(
+        items: [ExportCSVViewModel.Item],
+        dateFrom: Date,
+        dateTo: Date,
+        withReturns: Bool,
+        timeZoneFormat: ExportCSVViewModel.TimeZoneFormat
+    ) throws -> URL? {
+        try context.performAndWait {
+            var result = "\(items.map({ $0.name }).reduce("", reduce))\n"
             
-            let data = try encoder.encode(savedCategories)
+            func reduce(_ initialResult: String, _ nextPartialResult: String) -> String {
+                if initialResult != "" {
+                    return initialResult + "," + nextPartialResult
+                }
+                
+                return nextPartialResult
+            }
             
-            if let jsonString = String(
-                data: data,
-                encoding: .utf8
-            ), let tempURL = FileManager.default.urls(
-                for: .documentDirectory,
-                in: .userDomainMask
-            ).first {
+            func appendToResult(_ spending: SpendingEntity) {
+                let quote = "\""
+                var spendingRow = String()
+                
+                for item in items {
+                    switch item.id {
+                    case "amount":
+                        spendingRow += quote + (Locale.autoupdatingCurrent.currencyNarrowFormat(withReturns ? spending.amountWithReturns : spending.amount, currency: spending.wrappedCurrency) ?? spending.amount.formatted()) + quote
+                    case "amountUSD":
+                        spendingRow += quote + (Locale.autoupdatingCurrent.currencyNarrowFormat(withReturns ? spending.amountUSDWithReturns : spending.amountUSD, currency: "USD") ?? spending.amount.formatted()) + quote
+                    case "currency":
+                        spendingRow += spending.wrappedCurrency
+                    case "date":
+                        spendingRow += quote + spending.wrappedDate.formatted(date: .numeric, time: .shortened) + quote
+                    case "timezone":
+                        if let timeZoneIdentifier = spending.timeZoneIdentifier, let timeZone = TimeZone(identifier: timeZoneIdentifier) {
+                            spendingRow += quote + timeZoneFormat.formatTimeZone(timeZone) + quote
+                        } else {
+                            spendingRow += ""
+                        }
+                    case "category":
+                        spendingRow += quote + (spending.category?.name?.replacingOccurrences(of: "\n", with: "; ") ?? "") + quote
+                    case "place":
+                        spendingRow += quote + (spending.place?.replacingOccurrences(of: "\n", with: "; ") ?? "") + quote
+                    case "comment":
+                        spendingRow += quote + (spending.comment?.replacingOccurrences(of: "\n", with: "; ") ?? "") + quote
+                    default:
+                        spendingRow += ""
+                    }
+                    
+                    spendingRow += ","
+                }
+                
+                if !spendingRow.isEmpty {
+                    spendingRow.removeLast()
+                    result += spendingRow + "\n"
+                }
+            }
+            // safeSpending.wrappedDate >= firstDate, safeSpending.wrappedDate < secondDate
+            for spending in self.savedSpendings {
+                if spending.wrappedDate >= dateFrom && spending.wrappedDate < dateTo {
+                    appendToResult(spending)
+                }
+            }
+            
+            if let tempURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
                 var dateFormatter: DateFormatter {
                     let dateFormatter = DateFormatter()
                     dateFormatter.dateFormat = "yyyy-MM-dd_HH-mm"
@@ -86,15 +132,51 @@ extension CoreDataModel {
                     return dateFormatter
                 }
                 
-                let pathURL = tempURL.appendingPathComponent("\(Bundle.main.displayName ?? "Squirrel")_Export_\(dateFormatter.string(from: Date()))", conformingTo: .json)
-                try jsonString.write(to: pathURL, atomically: true, encoding: .utf8)
-                
+                let pathURL = tempURL.appendingPathComponent("\(Bundle.main.displayName ?? "Squirrel")_Export_\(dateFormatter.string(from: Date())).csv")
+                try result.write(to: pathURL, atomically: true, encoding: .utf8)
                 return pathURL
             }
             
             return nil
-        } catch {
-            throw error
+        }
+    }
+    
+    /// Exports all data in JSON file
+    /// - Returns: URL to saved temporary file if save was successful
+    /// - Important: This method is not thread-safe
+    func exportJSON() throws -> URL? {
+        try context.performAndWait {
+            do {
+                let encoder = JSONEncoder()
+                encoder.outputFormatting = [.sortedKeys, .prettyPrinted]
+                encoder.dateEncodingStrategy = .iso8601
+                
+                let data = try encoder.encode(savedCategories)
+                
+                if let jsonString = String(
+                    data: data,
+                    encoding: .utf8
+                ), let tempURL = FileManager.default.urls(
+                    for: .documentDirectory,
+                    in: .userDomainMask
+                ).first {
+                    var dateFormatter: DateFormatter {
+                        let dateFormatter = DateFormatter()
+                        dateFormatter.dateFormat = "yyyy-MM-dd_HH-mm"
+                        dateFormatter.timeZone = .autoupdatingCurrent
+                        return dateFormatter
+                    }
+                    
+                    let pathURL = tempURL.appendingPathComponent("\(Bundle.main.displayName ?? "Squirrel")_Export_\(dateFormatter.string(from: Date()))", conformingTo: .json)
+                    try jsonString.write(to: pathURL, atomically: true, encoding: .utf8)
+                    
+                    return pathURL
+                }
+                
+                return nil
+            } catch {
+                throw error
+            }
         }
     }
     

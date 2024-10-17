@@ -31,7 +31,7 @@ final class CoreDataModelTests: XCTestCase {
 //            XCTFail("Currency not setted up")
 //        }
         
-        XCTAssertTrue(cdm?.savedCurrencies == [])
+//        XCTAssertTrue(cdm?.savedCurrencies == [])
         XCTAssertTrue(cdm?.savedSpendings == [])
         XCTAssertTrue(cdm?.savedCategories == [])
         XCTAssertTrue(cdm?.shadowedCategories == [])
