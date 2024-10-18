@@ -89,8 +89,8 @@ final class ExportCSVViewModel: ViewModel {
         self.items = items
         self.cdm = cdm
         self.withReturns = true
-        self.dateTo = Date()
-        self.dateFrom = cdm.savedSpendings.last?.wrappedDate ?? Vars.firstAvailableDate
+        self.dateTo = Calendar.autoupdatingCurrent.startOfDay(for: Date())
+        self.dateFrom = Calendar.autoupdatingCurrent.startOfDay(for: cdm.savedSpendings.last?.wrappedDate ?? Vars.firstAvailableDate)
         self.timeZoneFormat = .gmt
         self.selectedFieldsCount = items.count(where: { $0.isActive })
         self.isTimeZoneSelected = false
@@ -118,7 +118,13 @@ final class ExportCSVViewModel: ViewModel {
     
     func export() -> URL? {
         do {
-            return try cdm.exportCSV(items: items.filter({ $0.isActive }), dateFrom: dateFrom, dateTo: dateTo, withReturns: withReturns, timeZoneFormat: timeZoneFormat)
+            return try cdm.exportCSV(
+                items: items.filter({ $0.isActive }),
+                dateFrom: dateFrom,
+                dateTo: Calendar.autoupdatingCurrent.date(byAdding: .day, value: 1, to: dateTo) ?? dateTo,
+                withReturns: withReturns,
+                timeZoneFormat: timeZoneFormat
+            )
         } catch {
             ErrorType(error: error).publish()
             return nil

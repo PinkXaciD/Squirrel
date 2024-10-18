@@ -14,6 +14,7 @@ struct CustomContentUnavailableView: View {
     let showEffect: Bool
     let effectType: CustomSymbolEffect
     @State private var animation: Bool = false
+    @ScaledMetric private var imageSize: CGFloat = 50
     
     var body: some View {
         VStack(spacing: 6) {
@@ -22,7 +23,7 @@ struct CustomContentUnavailableView: View {
                 .aspectRatio(contentMode: .fit)
                 .symbolRenderingMode(.monochrome)
                 .availableSymbolEffect(value: animation, effect: effectType)
-                .frame(height: 50)
+                .frame(height: imageSize)
                 .foregroundColor(.secondary)
                 .padding(15)
             

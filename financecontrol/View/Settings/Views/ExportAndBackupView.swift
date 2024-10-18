@@ -20,7 +20,12 @@ struct ExportAndBackupView: View {
     
     var body: some View {
         VStack {
-            Spacer()
+            if cdm.savedSpendings.isEmpty {
+                CustomContentUnavailableView("No Expenses", imageName: "list.bullet", description: "You can add expenses from home screen.")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                Spacer()
+            }
             
             csvButton
             
@@ -64,6 +69,7 @@ struct ExportAndBackupView: View {
                 }
         }
         .buttonStyle(.plain)
+        .disabled(cdm.savedSpendings.isEmpty)
     }
     
     private var jsonButtons: some View {
@@ -86,6 +92,7 @@ struct ExportAndBackupView: View {
                 }
             }
             .animation(.default, value: presentExportSheet)
+            .disabled(cdm.savedSpendings.isEmpty)
             
             Divider()
             
