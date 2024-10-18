@@ -91,7 +91,7 @@ struct AddReturnView: View {
             Button("Return full amount") {
                 vm.addFull()
             }
-            .disabled(spending.amountWithReturns == 0 || (Double(vm.amount.replacingOccurrences(of: ",", with: ".")) ?? 0) == spending.amountWithReturns)
+            .disabled(spending.amountWithReturns == 0 || (Double(truncating: NumberFormatter.standard.number(from: vm.amount) ?? 0)) == spending.amountWithReturns)
         }
     }
     

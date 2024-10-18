@@ -77,8 +77,8 @@ final class ExportCSVViewModel: ViewModel {
     init(cdm: CoreDataModel) {
         let items = [
             Item(name: NSLocalizedString("Amount", comment: ""), id: "amount"),
-            Item(name: NSLocalizedString("Amount in USD", comment: ""), id: "amountUSD", isActive: false),
             Item(name: NSLocalizedString("Currency", comment: ""), id: "currency"),
+            Item(name: NSLocalizedString("Amount in USD", comment: ""), id: "amountUSD", isActive: false),
             Item(name: NSLocalizedString("Date", comment: ""), id: "date"),
             Item(name: NSLocalizedString("Timezone", comment: ""), id: "timezone", isActive: false),
             Item(name: NSLocalizedString("Category", comment: ""), id: "category"),

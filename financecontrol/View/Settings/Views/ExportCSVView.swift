@@ -65,27 +65,22 @@ struct ExportCSVView: View {
                 
                 Section {
                     ForEach(vm.items) { item in
-                        if #available(iOS 16.0, *) {
-                            HStack {
-                                Button {
-                                    vm.toggleItemActiveState(item)
-                                } label: {
-                                    if item.isActive {
-                                        Image(systemName: "checkmark.circle.fill")
-                                            .foregroundStyle(.tint)
-                                    } else {
-                                        Image(systemName: "circle")
-                                            .foregroundStyle(.secondary)
-                                    }
+                        HStack {
+                            Button {
+                                vm.toggleItemActiveState(item)
+                            } label: {
+                                if item.isActive {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundStyle(.tint)
+                                } else {
+                                    Image(systemName: "circle")
+                                        .foregroundStyle(.secondary)
                                 }
-                                .font(.title3)
-                                
-                                Text(item.name)
-                                    .foregroundStyle(item.isActive ? .primary : .secondary)
                             }
-                        } else {
-                            ExportCSVListRowView(item: item)
-                                .environmentObject(vm)
+                            .font(.title3)
+                            
+                            Text(item.name)
+                                .foregroundStyle(item.isActive ? .primary : .secondary)
                         }
                     }
                     .onMove { indexSet, int in
@@ -101,12 +96,6 @@ struct ExportCSVView: View {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") {
                         dismiss()
-                    }
-                }
-                
-                ToolbarItem(placement: .topBarTrailing) {
-                    if #unavailable(iOS 16.0) {
-                        EditButton()
                     }
                 }
             }
@@ -169,52 +158,9 @@ struct ExportCSVView: View {
     private func deleteTempFile() {
         do {
             try FileManager.default.removeItem(at: shareURL)
-            HapticManager.shared.notification(.success)
+            dismiss()
         } catch {
             ErrorType(error: error).publish()
-        }
-    }
-}
-
-struct ExportCSVListRowView: View {
-    @Environment(\.editMode) private var editMode
-    @EnvironmentObject private var vm: ExportCSVViewModel
-    let item: ExportCSVViewModel.Item
-    
-    var body: some View {
-        HStack {
-            if #available(iOS 16.0, *) {
-                Button {
-                    vm.toggleItemActiveState(item)
-                } label: {
-                    if item.isActive {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(.tint)
-                    } else {
-                        Image(systemName: "circle")
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .font(.title3)
-            } else {
-                if editMode?.wrappedValue == .inactive {
-                    Button {
-                        vm.toggleItemActiveState(item)
-                    } label: {
-                        if item.isActive {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundStyle(.tint)
-                        } else {
-                            Image(systemName: "circle")
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    .font(.title3)
-                }
-            }
-            
-            Text(item.name)
-                .foregroundStyle(item.isActive ? .primary : .secondary)
         }
     }
 }
