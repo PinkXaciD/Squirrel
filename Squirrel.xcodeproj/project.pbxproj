@@ -53,7 +53,7 @@
 		8D41134A2C77946C00613308 /* LocaleExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4113482C77925100613308 /* LocaleExtensions.swift */; };
 		8D4443672BEBBD5200AA58CD /* CustomPagingScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4443662BEBBD5200AA58CD /* CustomPagingScrollView.swift */; };
 		8D46ED852BF383130091145B /* StatsSearchOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D46ED842BF383130091145B /* StatsSearchOverlayView.swift */; };
-		8D4927672AB2128F008E6347 /* readme.md in Resources */ = {isa = PBXBuildFile; fileRef = 8D4927662AB2128F008E6347 /* readme.md */; };
+		8D4927672AB2128F008E6347 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 8D4927662AB2128F008E6347 /* README.md */; };
 		8D4A539C2A78055200081E5F /* EditSpendingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4A539B2A78055200081E5F /* EditSpendingView.swift */; };
 		8D4A7A652B6960BA0038C0FE /* PieChartLazyPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4A7A642B6960BA0038C0FE /* PieChartLazyPageView.swift */; };
 		8D4B0ACF2A55F245008D32B1 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4B0ACE2A55F245008D32B1 /* DataManager.swift */; };
@@ -250,7 +250,7 @@
 		8D4113482C77925100613308 /* LocaleExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocaleExtensions.swift; sourceTree = "<group>"; };
 		8D4443662BEBBD5200AA58CD /* CustomPagingScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPagingScrollView.swift; sourceTree = "<group>"; };
 		8D46ED842BF383130091145B /* StatsSearchOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsSearchOverlayView.swift; sourceTree = "<group>"; };
-		8D4927662AB2128F008E6347 /* readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = readme.md; sourceTree = "<group>"; };
+		8D4927662AB2128F008E6347 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		8D4A539B2A78055200081E5F /* EditSpendingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditSpendingView.swift; sourceTree = "<group>"; };
 		8D4A7A642B6960BA0038C0FE /* PieChartLazyPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieChartLazyPageView.swift; sourceTree = "<group>"; };
 		8D4B0ACE2A55F245008D32B1 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
@@ -873,7 +873,7 @@
 				8DFF59662BA35D1F002DBB1B /* PrivacyInfo.xcprivacy */,
 				8D00D75B2B5801C900E8C70D /* Vars.swift */,
 				8DF8AE9B2AB47334006D287B /* .gitignore */,
-				8D4927662AB2128F008E6347 /* readme.md */,
+				8D4927662AB2128F008E6347 /* README.md */,
 				8D1A7FB62C99DD2E00BAF6A0 /* LICENSE */,
 				8DAFF8B02B39D274001D5A9D /* README */,
 				8DBFEBCC2A49ED4800165414 /* financecontrol */,
@@ -1078,7 +1078,7 @@
 				8D4FE3002BA9D954001009F2 /* PrivacyInfo.xcprivacy in Resources */,
 				8D7FCA552B16A59C009AAAEB /* Localizable.xcstrings in Resources */,
 				8D1A7FB72C99DD2E00BAF6A0 /* LICENSE in Resources */,
-				8D4927672AB2128F008E6347 /* readme.md in Resources */,
+				8D4927672AB2128F008E6347 /* README.md in Resources */,
 				8D8646762C4810B9007B1885 /* Charts035.png in Resources */,
 				8D8646792C4810B9007B1885 /* FiltersAndExport035.png in Resources */,
 				8DBFEBD22A49ED4900165414 /* Assets.xcassets in Resources */,
