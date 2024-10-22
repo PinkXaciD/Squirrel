@@ -45,7 +45,7 @@ struct StatsListView: View {
     
     private var noResults: some View {
         if cdm.savedSpendings.isEmpty {
-            CustomContentUnavailableView("No expenses", imageName: "list.bullet", description: "You can add expenses from home screen.")
+            CustomContentUnavailableView("No Expenses", imageName: "list.bullet", description: "You can add expenses from home screen.")
         } else if !searchModel.search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             CustomContentUnavailableView.search(searchModel.search.trimmingCharacters(in: .whitespacesAndNewlines))
         } else {

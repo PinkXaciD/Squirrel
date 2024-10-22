@@ -43,7 +43,7 @@ struct FiltersCurrenciesView: View {
         }
         .overlay {
             if cdm.usedCurrencies.isEmpty {
-                CustomContentUnavailableView("No expenses", imageName: "list.bullet", description: "You can add expenses from home screen.")
+                CustomContentUnavailableView("No Expenses", imageName: "list.bullet", description: "You can add expenses from home screen.")
             }
         }
     }

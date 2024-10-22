@@ -236,17 +236,6 @@
         }
       }
     },
-    "All categories" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "All categories"
-          }
-        }
-      }
-    },
     "All expenses, settings and any other data are stored locally." : {
 
     },
@@ -262,6 +251,9 @@
           }
         }
       }
+    },
+    "Amount in USD" : {
+
     },
     "An open-source expense tracker." : {
 
@@ -400,6 +392,9 @@
     "Create an issue on GitHub" : {
 
     },
+    "Create local backup" : {
+
+    },
     "Currencies" : {
 
     },
@@ -478,13 +473,25 @@
     "Expenses" : {
 
     },
-    "Export all data as JSON" : {
+    "Export" : {
 
     },
-    "Export and Import" : {
+    "Export and Backup" : {
 
     },
-    "Export and import data" : {
+    "Export and backup data" : {
+
+    },
+    "Export to CSV" : {
+
+    },
+    "Export to JSON" : {
+
+    },
+    "Export to spreadsheet" : {
+
+    },
+    "Export with selected parameters" : {
 
     },
     "Failed to create URL from given components" : {
@@ -550,10 +557,13 @@
     "If you believe this policy has been violated in any way, please create an issue on GitHub." : {
 
     },
-    "Import data from JSON" : {
+    "Import existing data" : {
 
     },
-    "Import existing data" : {
+    "Import from JSON" : {
+
+    },
+    "Import local backup" : {
 
     },
     "Imported %lld expenses" : {
@@ -636,6 +646,9 @@
 
     },
     "No expenses" : {
+
+    },
+    "No Expenses" : {
 
     },
     "No favorite categories. You can add them from settings." : {
@@ -777,6 +790,9 @@
     "Select a tab from sidebar" : {
 
     },
+    "Select at least one field" : {
+
+    },
     "Select currency" : {
 
     },
@@ -846,6 +862,45 @@
     "This policy is valid for this version of the app." : {
 
     },
+    "Timezone" : {
+
+    },
+    "Timezone format" : {
+
+    },
+    "timezone-identifier" : {
+      "comment" : "Timezone identifier",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Identifier"
+          }
+        }
+      }
+    },
+    "timezone-name" : {
+      "comment" : "Timezone name",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
+          }
+        }
+      }
+    },
+    "timezone-offset-from-gmt" : {
+      "comment" : "Timezone ofset from GMT",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offset from GMT"
+          }
+        }
+      }
+    },
     "To" : {
 
     },
@@ -879,15 +934,11 @@
     "Updating rates..." : {
 
     },
-    "Ver. %@ (%@)" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Ver. %1$@ (%2$@)"
-          }
-        }
-      }
+    "Use Amounts with Returns" : {
+
+    },
+    "Ver. %@" : {
+
     },
     "We respect your privacy and will not change our stance on tracking or storing data locally. This clarification is here so that if we add any opt-in features, such as cloud sync, this policy will be updated to reflect that." : {
 

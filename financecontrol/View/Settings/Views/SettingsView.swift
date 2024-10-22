@@ -179,16 +179,6 @@ struct SettingsView: View {
         }
     }
     
-//    private var shortcutsSection: some View {
-//        Section {
-//            NavigationLink("Shortcuts (beta)") {
-//                AddSpendingShortcutListView()
-//            }
-//        } header: {
-//            Text("Shortcuts (beta)")
-//        }
-//    }
-    
     var categorySection: some View {
         Section(header: Text("Categories")) {
             NavigationLink("Categories") {
@@ -218,10 +208,14 @@ struct SettingsView: View {
     }
     
     private var exportImportSection: some View {
-        Section(header: Text("Export and Import"), footer: footer) {
-            NavigationLink("Export and import data") {
-                ExportImportView()
+        Section {
+            NavigationLink("Export and backup data") {
+                ExportAndBackupView()
             }
+        } header: {
+            Text("Export and Backup")
+        } footer: {
+            footer
         }
     }
     
@@ -230,7 +224,7 @@ struct SettingsView: View {
             Text("Squirrel")
                 .bold()
             
-            Text("Ver. \(version ?? "") (\(build ?? ""))")
+            Text("Ver. \(version ?? "")")
         }
         .padding()
         .frame(maxWidth: .infinity)
@@ -284,5 +278,6 @@ struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         SettingsView(presentOnboarding: .constant(false))
             .environmentObject(CoreDataModel())
+            .environmentObject(RatesViewModel())
     }
 }

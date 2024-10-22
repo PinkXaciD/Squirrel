@@ -62,10 +62,9 @@ final class EditReturnViewModel: ViewModel {
     func validate() -> Bool {
         guard
             !amount.isEmpty,
-            let number = NumberFormatter().number(from: amount),
-            Double(truncating: number) != 0,
+            doubleAmount != 0,
             let spending = self.spending,
-            Double(truncating: number) <= (spending.amountWithReturns + oldAmount)
+            doubleAmount <= (spending.amountWithReturns + oldAmount)
         else {
             return true
         }

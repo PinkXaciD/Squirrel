@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		8D00D75C2B5801C900E8C70D /* Vars.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D00D75B2B5801C900E8C70D /* Vars.swift */; };
 		8D00D75D2B5801C900E8C70D /* Vars.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D00D75B2B5801C900E8C70D /* Vars.swift */; };
+		8D02AA792CBFE63300C4B4F6 /* ExportCSVView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D02AA782CBFE63300C4B4F6 /* ExportCSVView.swift */; };
+		8D02AA7B2CBFE69900C4B4F6 /* ExportCSVViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D02AA7A2CBFE69900C4B4F6 /* ExportCSVViewModel.swift */; };
 		8D0429D92A9B8B2D00A09BB4 /* BarChartBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0429D82A9B8B2D00A09BB4 /* BarChartBar.swift */; };
 		8D0429DB2A9B8D2400A09BB4 /* BarChartGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0429DA2A9B8D2400A09BB4 /* BarChartGenerator.swift */; };
 		8D043F682B51A89B00F2F560 /* SumWidgetTimelineProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D043F662B51A84C00F2F560 /* SumWidgetTimelineProvider.swift */; };
@@ -16,7 +18,7 @@
 		8D043F702B51AA4500F2F560 /* AccessorySumWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D043F6F2B51AA4500F2F560 /* AccessorySumWidgetView.swift */; };
 		8D044C012C34639300868A21 /* DataContainer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8D044BFF2C34639300868A21 /* DataContainer.xcdatamodeld */; };
 		8D044C032C35A88E00868A21 /* StatsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D044C022C35A88E00868A21 /* StatsViewModel.swift */; };
-		8D05C6D82AE0479E0097078A /* ExportImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D05C6D72AE0479E0097078A /* ExportImportView.swift */; };
+		8D05C6D82AE0479E0097078A /* ExportAndBackupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D05C6D72AE0479E0097078A /* ExportAndBackupView.swift */; };
 		8D06810C2B6D45CD00195205 /* PieChartLegendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D06810B2B6D45CD00195205 /* PieChartLegendView.swift */; };
 		8D06810E2B6D461600195205 /* PieChartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D06810D2B6D461600195205 /* PieChartViewModel.swift */; };
 		8D0681102B6D466600195205 /* PieChartCompleteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D06810F2B6D466600195205 /* PieChartCompleteView.swift */; };
@@ -51,7 +53,7 @@
 		8D41134A2C77946C00613308 /* LocaleExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4113482C77925100613308 /* LocaleExtensions.swift */; };
 		8D4443672BEBBD5200AA58CD /* CustomPagingScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4443662BEBBD5200AA58CD /* CustomPagingScrollView.swift */; };
 		8D46ED852BF383130091145B /* StatsSearchOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D46ED842BF383130091145B /* StatsSearchOverlayView.swift */; };
-		8D4927672AB2128F008E6347 /* readme.md in Resources */ = {isa = PBXBuildFile; fileRef = 8D4927662AB2128F008E6347 /* readme.md */; };
+		8D4927672AB2128F008E6347 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 8D4927662AB2128F008E6347 /* README.md */; };
 		8D4A539C2A78055200081E5F /* EditSpendingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4A539B2A78055200081E5F /* EditSpendingView.swift */; };
 		8D4A7A652B6960BA0038C0FE /* PieChartLazyPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4A7A642B6960BA0038C0FE /* PieChartLazyPageView.swift */; };
 		8D4B0ACF2A55F245008D32B1 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4B0ACE2A55F245008D32B1 /* DataManager.swift */; };
@@ -205,6 +207,8 @@
 
 /* Begin PBXFileReference section */
 		8D00D75B2B5801C900E8C70D /* Vars.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vars.swift; sourceTree = "<group>"; };
+		8D02AA782CBFE63300C4B4F6 /* ExportCSVView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportCSVView.swift; sourceTree = "<group>"; };
+		8D02AA7A2CBFE69900C4B4F6 /* ExportCSVViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportCSVViewModel.swift; sourceTree = "<group>"; };
 		8D0429D82A9B8B2D00A09BB4 /* BarChartBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BarChartBar.swift; path = financecontrol/View/Home/Views/BarChartBar.swift; sourceTree = SOURCE_ROOT; };
 		8D0429DA2A9B8D2400A09BB4 /* BarChartGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarChartGenerator.swift; sourceTree = "<group>"; };
 		8D043F662B51A84C00F2F560 /* SumWidgetTimelineProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SumWidgetTimelineProvider.swift; sourceTree = "<group>"; };
@@ -212,7 +216,7 @@
 		8D043F6F2B51AA4500F2F560 /* AccessorySumWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessorySumWidgetView.swift; sourceTree = "<group>"; };
 		8D044C002C34639300868A21 /* SpendingsModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SpendingsModel.xcdatamodel; sourceTree = "<group>"; };
 		8D044C022C35A88E00868A21 /* StatsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsViewModel.swift; sourceTree = "<group>"; };
-		8D05C6D72AE0479E0097078A /* ExportImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportImportView.swift; sourceTree = "<group>"; };
+		8D05C6D72AE0479E0097078A /* ExportAndBackupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportAndBackupView.swift; sourceTree = "<group>"; };
 		8D06810B2B6D45CD00195205 /* PieChartLegendView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieChartLegendView.swift; sourceTree = "<group>"; };
 		8D06810D2B6D461600195205 /* PieChartViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieChartViewModel.swift; sourceTree = "<group>"; };
 		8D06810F2B6D466600195205 /* PieChartCompleteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieChartCompleteView.swift; sourceTree = "<group>"; };
@@ -246,7 +250,7 @@
 		8D4113482C77925100613308 /* LocaleExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocaleExtensions.swift; sourceTree = "<group>"; };
 		8D4443662BEBBD5200AA58CD /* CustomPagingScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPagingScrollView.swift; sourceTree = "<group>"; };
 		8D46ED842BF383130091145B /* StatsSearchOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsSearchOverlayView.swift; sourceTree = "<group>"; };
-		8D4927662AB2128F008E6347 /* readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = readme.md; sourceTree = "<group>"; };
+		8D4927662AB2128F008E6347 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		8D4A539B2A78055200081E5F /* EditSpendingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditSpendingView.swift; sourceTree = "<group>"; };
 		8D4A7A642B6960BA0038C0FE /* PieChartLazyPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieChartLazyPageView.swift; sourceTree = "<group>"; };
 		8D4B0ACE2A55F245008D32B1 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
@@ -816,12 +820,13 @@
 				8DEED7272A5C4A3700C79752 /* SettingsView.swift */,
 				8DBA96A52AD48DB800F900C4 /* AboutView.swift */,
 				8DEC3FF02AD580D700F5D82E /* DebugView.swift */,
-				8D05C6D72AE0479E0097078A /* ExportImportView.swift */,
+				8D05C6D72AE0479E0097078A /* ExportAndBackupView.swift */,
 				8D9E22D72AE6A1BD00801932 /* CustomShareSheet.swift */,
 				8D406EAA2A9A36EA002D3ED1 /* Category */,
 				8D406EA92A9A36C0002D3ED1 /* Currency */,
 				8DFA1EDF2B4C16DE00B97113 /* IconRow.swift */,
 				8D59A2502C860D0B007E40E9 /* SettingsFormattingView.swift */,
+				8D02AA782CBFE63300C4B4F6 /* ExportCSVView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -868,7 +873,7 @@
 				8DFF59662BA35D1F002DBB1B /* PrivacyInfo.xcprivacy */,
 				8D00D75B2B5801C900E8C70D /* Vars.swift */,
 				8DF8AE9B2AB47334006D287B /* .gitignore */,
-				8D4927662AB2128F008E6347 /* readme.md */,
+				8D4927662AB2128F008E6347 /* README.md */,
 				8D1A7FB62C99DD2E00BAF6A0 /* LICENSE */,
 				8DAFF8B02B39D274001D5A9D /* README */,
 				8DBFEBCC2A49ED4800165414 /* financecontrol */,
@@ -936,6 +941,7 @@
 			isa = PBXGroup;
 			children = (
 				8DFA1EE22B4C1F7A00B97113 /* IconRowViewModel.swift */,
+				8D02AA7A2CBFE69900C4B4F6 /* ExportCSVViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -1072,7 +1078,7 @@
 				8D4FE3002BA9D954001009F2 /* PrivacyInfo.xcprivacy in Resources */,
 				8D7FCA552B16A59C009AAAEB /* Localizable.xcstrings in Resources */,
 				8D1A7FB72C99DD2E00BAF6A0 /* LICENSE in Resources */,
-				8D4927672AB2128F008E6347 /* readme.md in Resources */,
+				8D4927672AB2128F008E6347 /* README.md in Resources */,
 				8D8646762C4810B9007B1885 /* Charts035.png in Resources */,
 				8D8646792C4810B9007B1885 /* FiltersAndExport035.png in Resources */,
 				8DBFEBD22A49ED4900165414 /* Assets.xcassets in Resources */,
@@ -1209,7 +1215,7 @@
 				8D6B3E602C0DE77D00C4A97A /* Line.swift in Sources */,
 				8D803B132C4EA6AD00778B6C /* Keychain.swift in Sources */,
 				8DE80D8F2B8CF5E300B6ACA8 /* StatsListViewModel.swift in Sources */,
-				8D05C6D82AE0479E0097078A /* ExportImportView.swift in Sources */,
+				8D05C6D82AE0479E0097078A /* ExportAndBackupView.swift in Sources */,
 				8D5CBE782B84F68300435335 /* CoreDataErrors.swift in Sources */,
 				8D0429DB2A9B8D2400A09BB4 /* BarChartGenerator.swift in Sources */,
 				8D28C7F02A73DF7000F27CD4 /* Colors.swift in Sources */,
@@ -1229,10 +1235,12 @@
 				8D830DF12AE00CE600EFB1E7 /* ShadowedCategoriesRow.swift in Sources */,
 				8D51765F2C34573B00141B6C /* TemplateData.swift in Sources */,
 				8DE80D912B8D096400B6ACA8 /* FiltersViewModel.swift in Sources */,
+				8D02AA792CBFE63300C4B4F6 /* ExportCSVView.swift in Sources */,
 				8D06810C2B6D45CD00195205 /* PieChartLegendView.swift in Sources */,
 				8D91DB842B74EB990040C2CE /* ChartData.swift in Sources */,
 				8DFA1EE02B4C16DE00B97113 /* IconRow.swift in Sources */,
 				8DB42E6C2B0F6BE1000E7EA5 /* EditSpendingViewModel.swift in Sources */,
+				8D02AA7B2CBFE69900C4B4F6 /* ExportCSVViewModel.swift in Sources */,
 				8D54F4FB2B96335100B17886 /* CustomContentUnavailableView.swift in Sources */,
 				8DE48D122A72DA88008A2DD4 /* CategoriesEditView.swift in Sources */,
 				8DEED7282A5C4A3700C79752 /* SettingsView.swift in Sources */,
@@ -1325,7 +1333,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 41;
+				CURRENT_PROJECT_VERSION = 44;
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1340,7 +1348,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0.2;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirreldebug.squirrelWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1364,7 +1372,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 41;
+				CURRENT_PROJECT_VERSION = 44;
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1379,7 +1387,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0.2;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirrel.squirrelWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1524,7 +1532,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 41;
+				CURRENT_PROJECT_VERSION = 44;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
@@ -1544,7 +1552,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.2;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirreldebug;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1568,7 +1576,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 41;
+				CURRENT_PROJECT_VERSION = 44;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
@@ -1588,7 +1596,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.2;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirrel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

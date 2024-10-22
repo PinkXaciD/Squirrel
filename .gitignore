@@ -27,4 +27,7 @@ financecontrol/Assets.xcassets/
 
 financecontrolWidget/Assets.xcassets/SquirrelLogoImage.imageset/*.png
 
+/Squirrel.xcodeproj/xcuserdata
+/Squirrel.xcodeproj/project.xcworkspace/xcuserdata
+
 CommitMessage.md

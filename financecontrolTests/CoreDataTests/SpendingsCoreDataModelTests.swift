@@ -15,7 +15,7 @@ final class SpendingsCoreDataModelTests: XCTestCase {
 
     override func setUp() {
         cdm = .init()
-        categoryId = cdm?.addCategory(name: "Spendings tests", color: "nord1")
+        categoryId = cdm?.addCategory(name: "Spendings tests", color: "nord1")?.id
     }
 
     override func tearDown() {
@@ -73,7 +73,7 @@ final class SpendingsCoreDataModelTests: XCTestCase {
     
     func testEditSpendingEditsSpendings() {
         let expectation = XCTestExpectation(description: "Edit spending")
-        var cancellables = Set<AnyCancellable>()
+//        var cancellables = Set<AnyCancellable>()
         
 //        func waitForChartDataUpdate() {
 //            cdm?.$updateCharts

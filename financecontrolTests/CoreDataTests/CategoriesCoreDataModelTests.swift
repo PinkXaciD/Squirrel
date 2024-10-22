@@ -41,7 +41,7 @@ final class CategoriesCoreDataModelTests: XCTestCase {
         var addedIds: [UUID] = []
         
         for _ in 0..<count {
-            let catId = cdm?.addCategory(name: categoryNames.randomElement()!, color: categoryColors.randomElement()!)
+            let catId = cdm?.addCategory(name: categoryNames.randomElement()!, color: categoryColors.randomElement()!)?.id
             
             if let catId {
                 addedIds.append(catId)
@@ -200,7 +200,7 @@ final class CategoriesCoreDataModelTests: XCTestCase {
         let name = categoryNames.randomElement()!
         let color = categoryColors.randomElement()!
         
-        let id = cdm?.addCategory(name: name, color: color)
+        let id = cdm?.addCategory(name: name, color: color)?.id
         
         let fetchedCategory = cdm?.findCategory(id ?? .init())
         
