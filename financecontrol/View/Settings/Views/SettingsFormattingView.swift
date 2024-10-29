@@ -11,7 +11,7 @@ struct SettingsFormattingView: View {
     @EnvironmentObject
     private var cdm: CoreDataModel
     
-    @AppStorage(UDKeys.formatWithoutTimeZones.rawValue)
+    @AppStorage(UDKey.formatWithoutTimeZones.rawValue)
     private var formatWithoutTimeZones: Bool = false
     
     @State

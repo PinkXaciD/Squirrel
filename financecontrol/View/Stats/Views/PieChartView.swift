@@ -20,11 +20,11 @@ struct PieChartView: View {
     let size: CGFloat
     let showMinimizeButton: Bool
     
-    @AppStorage(UDKeys.defaultCurrency.rawValue)
+    @AppStorage(UDKey.defaultCurrency.rawValue)
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
     @State
-    private var minimizeLegend: Bool = UserDefaults.standard.bool(forKey: UDKeys.minimizeLegend.rawValue)
+    private var minimizeLegend: Bool = UserDefaults.standard.bool(forKey: UDKey.minimizeLegend.rawValue)
     
     var body: some View {
         Section {
@@ -83,7 +83,7 @@ extension PieChartView {
         withAnimation {
             minimizeLegend.toggle()
         }
-        UserDefaults.standard.set(minimizeLegend, forKey: UDKeys.minimizeLegend.rawValue)
+        UserDefaults.standard.set(minimizeLegend, forKey: UDKey.minimizeLegend.rawValue)
     }
     
     private func expandButtonLabel() -> some View {

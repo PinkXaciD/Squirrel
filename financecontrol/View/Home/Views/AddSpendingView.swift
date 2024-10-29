@@ -15,11 +15,11 @@ struct AddSpendingView: View {
     @StateObject
     private var vm: AddSpendingViewModel
     
-    @AppStorage(UDKeys.color.rawValue)
+    @AppStorage(UDKey.color.rawValue)
     private var tint: String = "Orange"
-    @AppStorage(UDKeys.defaultCurrency.rawValue)
+    @AppStorage(UDKey.defaultCurrency.rawValue)
     private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
-    @AppStorage(UDKeys.privacyScreen.rawValue)
+    @AppStorage(UDKey.privacyScreen.rawValue)
     private var privacyScreenIsEnabled: Bool = false
     
     @Environment(\.dismiss) 
@@ -111,7 +111,7 @@ struct AddSpendingView: View {
                 CurrencySelector(currency: $vm.currency)
             }
             
-            DatePicker("Date", selection: $vm.date, in: Vars.firstAvailableDate...Date.now)
+            DatePicker("Date", selection: $vm.date, in: .firstAvailableDate...Date.now)
                 .datePickerStyle(.compact)
             
             HStack {

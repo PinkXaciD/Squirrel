@@ -26,7 +26,7 @@ struct ExportCSVView: View {
         NavigationView {
             List {
                 Section {
-                    DatePicker("From", selection: $vm.dateFrom, in: Vars.firstAvailableDate...vm.dateTo, displayedComponents: .date)
+                    DatePicker("From", selection: $vm.dateFrom, in: .firstAvailableDate...vm.dateTo, displayedComponents: .date)
                     
                     DatePicker("To", selection: $vm.dateTo, in: vm.dateFrom...Date(), displayedComponents: .date)
                 }

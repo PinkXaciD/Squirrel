@@ -8,6 +8,8 @@
 import Foundation
 
 extension Date {
+    static let firstAvailableDate: Date = Date(timeIntervalSinceReferenceDate: 599_529_600) // 2020/01/01, 0:00 GMT
+    
     var previousDay: Date {
         guard let date = Calendar.current.date(byAdding: .day, value: -1, to: self) else {
             return self

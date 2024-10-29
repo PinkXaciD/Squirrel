@@ -291,6 +291,58 @@ struct DebugView: View {
     private var defaultsSection: some View {
         Section {
             NavigationLink {
+                List {
+                    HStack {
+                        Text(verbatim: "Version")
+                        
+                        Spacer()
+                        
+                        Text(UserDefaults.standard.integer(forKey: UDKey.urlUpdateVersion.rawValue).description)
+                            .foregroundStyle(.secondary)
+                    }
+                    
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(verbatim: "GitHub URL")
+                                .foregroundStyle(.secondary)
+                            
+                            Text(URL.github.absoluteString)
+                        }
+                        
+                        Spacer()
+                    }
+                    
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(verbatim: "Website URL")
+                                .foregroundStyle(.secondary)
+                            
+                            Text(URL.appWebsite.absoluteString)
+                        }
+                        
+                        Spacer()
+                    }
+                    
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(verbatim: "New GitHub issue URL")
+                                .foregroundStyle(.secondary)
+                            
+                            Text(URL.newGithubIssue.absoluteString)
+                        }
+                        
+                        Spacer()
+                    }
+                }
+                .refreshable {
+                    let ckManager = CloudKitManager.shared
+                    await ckManager.updateCloudKitContent(forceUpdate: true)
+                }
+            } label: {
+                Text(verbatim: "URLs")
+            }
+            
+            NavigationLink {
                 UserDefaultsValuesView(defaults: .standard)
             } label: {
                 Text(verbatim: "UserDefaults values")
@@ -412,7 +464,7 @@ extension DebugView {
             let date: Date = isoDateFromatter.date(from: Rates.fallback.timestamp) ?? DateFormatter.forRatesTimestamp.date(from: Rates.fallback.timestamp) ?? .distantPast
             return dateFormatter.string(from: date)
         case .update:
-            let ratesUpdateTime: String = UserDefaults.standard.string(forKey: UDKeys.updateTime.rawValue) ?? "Error"
+            let ratesUpdateTime: String = UserDefaults.standard.string(forKey: UDKey.updateTime.rawValue) ?? "Error"
             let date: Date = isoDateFromatter.date(from: ratesUpdateTime) ?? DateFormatter.forRatesTimestamp.date(from: ratesUpdateTime) ?? .distantPast
             return dateFormatter.string(from: date)
         }

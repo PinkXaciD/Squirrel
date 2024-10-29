@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct ColorAndIconView: View {
-    @AppStorage(UDKeys.color.rawValue) 
+    @AppStorage(UDKey.color.rawValue) 
     var defaultColor: String = "Orange"
-    @AppStorage(UDKeys.color.rawValue, store: UserDefaults(suiteName: Vars.groupName))
+    @AppStorage(UDKey.color.rawValue, store: UserDefaults(suiteName: Vars.groupName))
     var sharedDefaultColor: String = "Orange"
     
     @State

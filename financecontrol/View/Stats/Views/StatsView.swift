@@ -13,7 +13,7 @@ import OSLog
 struct StatsView: View {
     @Environment(\.isSearching)
     private var isSearching
-    @AppStorage(UDKeys.color.rawValue)
+    @AppStorage(UDKey.color.rawValue)
     private var tint: String = "Orange"
     
     @EnvironmentObject

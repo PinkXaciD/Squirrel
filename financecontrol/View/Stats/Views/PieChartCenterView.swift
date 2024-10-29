@@ -14,7 +14,7 @@ struct CenterChartView: View {
     private var rvm: RatesViewModel
     @EnvironmentObject
     private var fvm: FiltersViewModel
-    @AppStorage(UDKeys.defaultCurrency.rawValue)
+    @AppStorage(UDKey.defaultCurrency.rawValue)
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     var selectedMonth: Date
     

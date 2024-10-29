@@ -59,9 +59,9 @@ extension CoreDataModel {
                 barChartData.updateValue(0, forKey: Calendar.current.date(byAdding: .day, value: -number, to: Calendar.current.startOfDay(for: Date())) ?? Date())
             }
             
-            let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
+            let defaultCurrency = UserDefaults.standard.string(forKey: UDKey.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
             let rate = UserDefaults.standard.getRates()?[defaultCurrency] ?? 1
-            let formatWithoutTimezones = UserDefaults.standard.bool(forKey: UDKeys.formatWithoutTimeZones.rawValue)
+            let formatWithoutTimezones = UserDefaults.standard.bool(forKey: UDKey.formatWithoutTimeZones.rawValue)
             
             // MARK: Fetch for loop
             for spending in spendings {
@@ -463,7 +463,7 @@ extension CoreDataModel {
                 barChartData.updateValue(0, forKey: Calendar.current.date(byAdding: .day, value: -number, to: Calendar.current.startOfDay(for: Date())) ?? Date())
             }
             
-            let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
+            let defaultCurrency = UserDefaults.standard.string(forKey: UDKey.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
             let rate = UserDefaults.standard.getRates()?[defaultCurrency] ?? 1
             
             for spending in self.savedSpendings {
@@ -506,7 +506,7 @@ extension CoreDataModel {
                 // Goes away from safe thread
                 Task { [weak self, spending, safeSpending] in
                     do {
-                        let ckManager = CloudKitManager()
+                        let ckManager = CloudKitManager.shared
                         let formattedDate = DateFormatter.forRatesTimestamp.string(from: safeSpending.wrappedDate)
                         let rate = try await ckManager.fetchRates(timestamp: formattedDate).rates.rates[safeSpending.wrappedCurrency] ?? 1
                         

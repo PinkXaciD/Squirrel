@@ -12,7 +12,7 @@ struct OnboardingView: View {
     @EnvironmentObject private var cdm: CoreDataModel
     
     @State private var screen: Int = 0
-    @State private var selectedCurrency: String = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
+    @State private var selectedCurrency: String = UserDefaults.standard.string(forKey: UDKey.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
     @State private var showOverlay: Bool = false
     @State private var transition: AnyTransition = .horizontalMoveForward
     
@@ -149,9 +149,9 @@ struct OnboardingView: View {
         if screen == 1 {
             UserDefaults.standard.addCurrency(selectedCurrency)
             
-            UserDefaults.standard.set(selectedCurrency, forKey: UDKeys.defaultCurrency.rawValue)
-            UserDefaults.standard.set(selectedCurrency, forKey: UDKeys.defaultSelectedCurrency.rawValue)
-            UserDefaults.standard.set(false, forKey: UDKeys.separateCurrencies.rawValue)
+            UserDefaults.standard.set(selectedCurrency, forKey: UDKey.defaultCurrency.rawValue)
+            UserDefaults.standard.set(selectedCurrency, forKey: UDKey.defaultSelectedCurrency.rawValue)
+            UserDefaults.standard.set(false, forKey: UDKey.separateCurrencies.rawValue)
             
             if let defaults = UserDefaults(suiteName: Vars.groupName) {
                 defaults.set(selectedCurrency, forKey: "defaultCurrency")

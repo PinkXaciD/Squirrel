@@ -17,15 +17,15 @@ struct ContentView: View {
     @Environment(\.openURL)
     private var openURL
     
-    @AppStorage(UDKeys.presentOnboarding.rawValue)
+    @AppStorage(UDKey.presentOnboarding.rawValue)
     private var presentOnboarding: Bool = true
-    @AppStorage(UDKeys.color.rawValue)
+    @AppStorage(UDKey.color.rawValue)
     private var tint: String = "Orange"
-    @AppStorage(UDKeys.autoDarkMode.rawValue)
+    @AppStorage(UDKey.autoDarkMode.rawValue)
     private var autoDarkMode: Bool = true
-    @AppStorage(UDKeys.darkMode.rawValue)
+    @AppStorage(UDKey.darkMode.rawValue)
     private var darkMode: Bool = false
-    @AppStorage(UDKeys.privacyScreen.rawValue)
+    @AppStorage(UDKey.privacyScreen.rawValue)
     private var privacyScreenIsEnabled: Bool = false
     
     @StateObject
@@ -92,7 +92,7 @@ struct ContentView: View {
         .animation(.easeOut(duration: 0.1), value: hideContent)
         .ignoresSafeArea()
         .onOpenURL { url in
-            if url == URLs.addExpenseAction {
+            if url == .addExpenseAction {
                 addExpenseAction = true
             }
         }
@@ -122,7 +122,7 @@ struct ContentView: View {
             if error.createIssue {
                 Button("Create an issue on GitHub") {
                     errorHandler.dropError()
-                    openURL(URLs.newGithubIssue)
+                    openURL(.newGithubIssue)
                 }
             }
             

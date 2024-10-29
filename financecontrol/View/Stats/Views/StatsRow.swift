@@ -19,7 +19,7 @@ struct StatsRow: View {
     @EnvironmentObject
     private var vm: StatsViewModel
     
-    @AppStorage(UDKeys.formatWithoutTimeZones.rawValue)
+    @AppStorage(UDKey.formatWithoutTimeZones.rawValue)
     private var formatWithoutTimeZones: Bool = false
     
     let localEntity: TSSpendingEntity

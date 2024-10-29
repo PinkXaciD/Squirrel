@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct SpendingCompleteView: View {
-    @AppStorage(UDKeys.color.rawValue)
+    @AppStorage(UDKey.color.rawValue)
     private var tint: String = "Orange"
-    @AppStorage(UDKeys.privacyScreen.rawValue)
+    @AppStorage(UDKey.privacyScreen.rawValue)
     private var privacyScreenIsEnabled: Bool = false
     @EnvironmentObject
     private var privacyMonitor: PrivacyMonitor

@@ -86,7 +86,7 @@ struct EditSpendingView: View {
                 CategorySelector(selectedCategory: $vm.category)
             }
             
-            DatePicker("Date", selection: $vm.date, in: Vars.firstAvailableDate...Date.now)
+            DatePicker("Date", selection: $vm.date, in: .firstAvailableDate...Date.now)
                 .datePickerStyle(.compact)
         }
     }

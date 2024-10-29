@@ -12,11 +12,11 @@ struct DefaultCurrencySelectorView: View {
     
     @EnvironmentObject private var cdm: CoreDataModel
     
-    @AppStorage(UDKeys.defaultCurrency.rawValue)
+    @AppStorage(UDKey.defaultCurrency.rawValue)
     private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
-    @AppStorage(UDKeys.defaultSelectedCurrency.rawValue)
-    private var defaultSelectedCurrency: String = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
-    @AppStorage(UDKeys.separateCurrencies.rawValue) 
+    @AppStorage(UDKey.defaultSelectedCurrency.rawValue)
+    private var defaultSelectedCurrency: String = UserDefaults.standard.string(forKey: UDKey.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
+    @AppStorage(UDKey.separateCurrencies.rawValue) 
     private var separateCurrencies: Bool = false
     
     @State
@@ -138,18 +138,18 @@ struct DefaultCurrencySelectorView: View {
         NotificationCenter.default.post(name: Notification.Name("UpdatePieChart"), object: nil)
         
         if let defaults = UserDefaults(suiteName: Vars.groupName) {
-            defaults.set(tag, forKey: UDKeys.defaultCurrency.rawValue)
+            defaults.set(tag, forKey: UDKey.defaultCurrency.rawValue)
             cdm.passSpendingsToSumWidget(data: cdm.statsListData)
         }
     }
 }
 
 struct SelectedCurrencySelectorView: View {
-    @AppStorage(UDKeys.defaultSelectedCurrency.rawValue) 
-    private var defaultSelectedCurrency: String = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
-    @AppStorage(UDKeys.defaultCurrency.rawValue)
+    @AppStorage(UDKey.defaultSelectedCurrency.rawValue) 
+    private var defaultSelectedCurrency: String = UserDefaults.standard.string(forKey: UDKey.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
+    @AppStorage(UDKey.defaultCurrency.rawValue)
     private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
-    @AppStorage(UDKeys.separateCurrencies.rawValue)
+    @AppStorage(UDKey.separateCurrencies.rawValue)
     private var separateCurrencies: Bool = false
     
     var body: some View {

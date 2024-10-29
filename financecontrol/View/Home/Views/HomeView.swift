@@ -10,8 +10,8 @@ import SwiftUI
 struct HomeView: View {
     @EnvironmentObject private var cdm: CoreDataModel
     @EnvironmentObject private var rvm: RatesViewModel
-    @AppStorage(UDKeys.updateRates.rawValue) private var updateRates: Bool = false
-    @State private var ratesAreFetching: Bool = UserDefaults.standard.bool(forKey: UDKeys.updateRates.rawValue)
+    @AppStorage(UDKey.updateRates.rawValue) private var updateRates: Bool = false
+    @State private var ratesAreFetching: Bool = UserDefaults.standard.bool(forKey: UDKey.updateRates.rawValue)
     @Binding var showingSheet: Bool
     @Binding var presentOnboarding: Bool
     @State private var shortcut: AddSpendingShortcut? = nil

@@ -13,15 +13,15 @@ struct SettingsView: View {
     @EnvironmentObject
     private var rvm: RatesViewModel
     
-    @AppStorage(UDKeys.color.rawValue)
+    @AppStorage(UDKey.color.rawValue)
     var defaultColor: String = "Orange"
-    @AppStorage(UDKeys.defaultCurrency.rawValue)
+    @AppStorage(UDKey.defaultCurrency.rawValue)
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
-    @AppStorage(UDKeys.autoDarkMode.rawValue)
+    @AppStorage(UDKey.autoDarkMode.rawValue)
     private var autoDarkMode: Bool = true
-    @AppStorage(UDKeys.darkMode.rawValue)
+    @AppStorage(UDKey.darkMode.rawValue)
     private var darkMode: Bool = false
-    @AppStorage(UDKeys.privacyScreen.rawValue)
+    @AppStorage(UDKey.privacyScreen.rawValue)
     private var privacyScreenIsEnabled: Bool = false
     @State
     private var showDarkModeToggle: Bool = false
@@ -236,12 +236,12 @@ extension SettingsView {
         @State private var blur: CGFloat = 0
         
         var sum: Decimal {
-            let sum = (10 * (Rates.fallback.rates[UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"] ?? 1))
+            let sum = (10 * (Rates.fallback.rates[UserDefaults.standard.string(forKey: UDKey.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"] ?? 1))
             let count = "\(Int(sum))".count
             return pow(10, count - 1)
         }
         
-        let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? "USD"
+        let defaultCurrency = UserDefaults.standard.string(forKey: UDKey.defaultCurrency.rawValue) ?? "USD"
         
         var body: some View {
             ZStack {

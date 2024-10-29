@@ -71,7 +71,7 @@ final class AddSpendingViewModel: ViewModel {
 //            self.comment = shortcut.comment ?? ""
 //        } else {
             self.amount = ""
-            self.currency = UserDefaults.standard.string(forKey: UDKeys.defaultSelectedCurrency.rawValue) ?? UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
+            self.currency = UserDefaults.standard.string(forKey: UDKey.defaultSelectedCurrency.rawValue) ?? UserDefaults.standard.string(forKey: UDKey.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
             self.date = .now
             self.selectedCategory = nil
             self.place = ""

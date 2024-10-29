@@ -10,7 +10,7 @@ import SwiftUI
 struct BarChartGenerator: View {
     @EnvironmentObject var cdm: CoreDataModel
     @EnvironmentObject private var rvm: RatesViewModel
-    @AppStorage(UDKeys.defaultCurrency.rawValue) var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
+    @AppStorage(UDKey.defaultCurrency.rawValue) var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
 
     @State private var itemSelected: Int = -1
     @State private var showAverage: Bool = false

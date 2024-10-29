@@ -15,7 +15,12 @@ final class CloudKitManager {
         case failedToDecodeResult, failedToGetResult, noValueFound, noEditDateFound, noRecordFound, networkUnavailable
         
         var errorDescription: String? {
-            "CloudKit error \(self.rawValue)"
+            switch self {
+            case .networkUnavailable:
+                "Network Unavailable"
+            default:
+                "CloudKit error \(self.rawValue)"
+            }
         }
         
         var recoverySuggestion: String? {
@@ -33,10 +38,14 @@ final class CloudKitManager {
     let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
     #endif
     
-    init() {
+    fileprivate init() {
         #if DEBUG
         logger.debug("CloudKitManager init")
         #endif
+        
+        Task { [weak self] in
+            await self?.updateCloudKitContent()
+        }
     }
     
     deinit {
@@ -90,4 +99,94 @@ final class CloudKitManager {
         
         return (editDate, Rates(timestamp: record.recordID.recordName, rates: rates))
     }
+    
+    func updateCloudKitContent(forceUpdate: Bool = false) async {
+        let publicDB = container.publicCloudDatabase
+        
+        let urlVersion = try? await publicDB.record(for: CKRecord.ID(recordName: "AllURLUpdateVersion"))
+        let socialVersion = try? await publicDB.record(for: CKRecord.ID(recordName: "AllSocialNetworksUpdateVersion"))
+        
+        if let urlVersion, let value = urlVersion.value(forKey: "value") as? Int {
+            if (value > UserDefaults.standard.integer(forKey: UDKey.urlUpdateVersion.rawValue)) || forceUpdate {
+                await self.updateAppURLS(urlVersion: value)
+            }
+        }
+        
+        if let socialVersion, let value = socialVersion.value(forKey: "value") as? Int {
+            if (value > UserDefaults.standard.integer(forKey: UDKey.socialNetworksUpdateVersion.rawValue)) || forceUpdate {
+                await self.updateSocialNetworks(socialVersion: value)
+            }
+        }
+    }
+    
+    private func updateAppURLS(urlVersion: Int) async {
+        let publicDB = container.publicCloudDatabase
+        var count = 0
+        let udKeys = UDKey.urlKeys
+        
+        var ckIDs: [CKRecord.ID] {
+            var result = [CKRecord.ID]()
+            result.reserveCapacity(udKeys.count)
+            
+            for key in udKeys {
+                if let ckID = key.ckID {
+                    result.append(CKRecord.ID(recordName: ckID))
+                }
+            }
+            
+            return result
+        }
+        
+        let records = try? await publicDB.records(for: ckIDs)
+        
+        for key in udKeys {
+            guard let ckID = key.ckID else {
+                continue
+            }
+            
+            guard let record = records?[CKRecord.ID(recordName: ckID)] else {
+                continue
+            }
+            
+            guard let urlString = try? record.get().value(forKey: "urlString") as? String else {
+                continue
+            }
+            
+            guard let url = URL(string: urlString) else {
+                continue
+            }
+            
+            UserDefaults.standard.set(url, forKey: key.rawValue)
+            count += 1
+            
+            #if DEBUG
+            logger.info("URL \(url.absoluteString) is saved for key \(key.rawValue)")
+            #endif
+        }
+        
+        if count == ckIDs.count {
+            UserDefaults.standard.set(urlVersion, forKey: UDKey.urlUpdateVersion.rawValue)
+        }
+        
+        #if DEBUG
+        logger.info("URLs updated to version \(urlVersion.description)")
+        #endif
+    }
+    
+    private func updateSocialNetworks(socialVersion: Int) async {
+        let publicDB = container.publicCloudDatabase
+        
+        do {
+            let record = try await publicDB.record(for: CKRecord.ID(recordName: "SocialNetworks"))
+            guard let string = record.value(forKey: "content") as? String else { return }
+            guard let data = string.data(using: .utf8) else { return }
+            UserDefaults.standard.set(data, forKey: UDKey.socialNetworksJSON.rawValue)
+            UserDefaults.standard.set(socialVersion, forKey: UDKey.socialNetworksUpdateVersion.rawValue)
+        } catch {}
+    }
+}
+
+// MARK: Singleton
+extension CloudKitManager {
+    static let shared = CloudKitManager()
 }

@@ -377,6 +377,9 @@
     "Comment is too long" : {
 
     },
+    "Contact Us" : {
+
+    },
     "Content will be blurred when you minimize the app" : {
 
     },
@@ -386,7 +389,13 @@
     "Continue with sample data" : {
 
     },
+    "Copy link to clipboard" : {
+
+    },
     "Copy to clipboard" : {
+
+    },
+    "Copy username to clipboard" : {
 
     },
     "Create an issue on GitHub" : {
@@ -444,6 +453,9 @@
 
     },
     "Edit" : {
+
+    },
+    "Email" : {
 
     },
     "Empty database" : {
@@ -684,9 +696,6 @@
     "OK" : {
 
     },
-    "Open \"%@\"?" : {
-
-    },
     "Open in browser" : {
 
     },
@@ -818,6 +827,9 @@
 
     },
     "Skip" : {
+
+    },
+    "Social Networks" : {
 
     },
     "Some category" : {
@@ -953,6 +965,9 @@
 
     },
     "Without returns" : {
+
+    },
+    "Write" : {
 
     },
     "Yes, that's his real name" : {

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import UIKit
 
 extension View {
     /// Giving amount style to some text view
