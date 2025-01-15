@@ -12,8 +12,8 @@ import OSLog
 #endif
 
 struct StatsRow: View {
-    @EnvironmentObject 
-    private var cdm: CoreDataModel
+    @Environment(\.managedObjectContext)
+    private var viewContext
     @EnvironmentObject
     private var rvm: RatesViewModel
     @EnvironmentObject
@@ -22,7 +22,7 @@ struct StatsRow: View {
     @AppStorage(UDKey.formatWithoutTimeZones.rawValue)
     private var formatWithoutTimeZones: Bool = false
     
-    let localEntity: TSSpendingEntity
+    let entity: SpendingEntity
     
     #if DEBUG
     let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
@@ -58,15 +58,15 @@ struct StatsRow: View {
     private var buttonLabel: some View {
         return HStack {
             VStack(alignment: .leading, spacing: 5) {
-                if let place = localEntity.place, !place.isEmpty {
-                    Text(localEntity.categoryName)
+                if let place = entity.place, !place.isEmpty {
+                    Text(entity.categoryName)
                         .font(.caption)
                         .foregroundColor(Color.secondary)
                     
                     Text(place)
                         .foregroundColor(.primary)
                 } else {
-                    Text(localEntity.categoryName)
+                    Text(entity.categoryName)
                         .foregroundColor(.primary)
                 }
             }
@@ -75,41 +75,39 @@ struct StatsRow: View {
             
             VStack(alignment: .trailing, spacing: 5) {
                 HStack(spacing: 3) {
-                    if !formatWithoutTimeZones, let timeZone = localEntity.timeZone, timeZone.secondsFromGMT() != TimeZone.autoupdatingCurrent.secondsFromGMT() {
+                    if !formatWithoutTimeZones, let timeZone = TimeZone(identifier: entity.timeZoneIdentifier ?? ""), timeZone.secondsFromGMT() != TimeZone.autoupdatingCurrent.secondsFromGMT() {
                         Image(systemName: "clock")
                             .foregroundColor(.secondary)
                             .font(.caption2)
                         
-                        Text(localEntity.dateAdjustedToTimeZoneDate.formatted(date: .omitted, time: .shortened))
+                        Text(entity.dateAdjustedToTimeZoneDate.formatted(date: .omitted, time: .shortened))
                             .font(.caption)
                             .foregroundColor(Color.secondary)
                     } else {
-                        Text(localEntity.wrappedDate.formatted(date: .omitted, time: .shortened))
+                        Text(entity.wrappedDate.formatted(date: .omitted, time: .shortened))
                             .font(.caption)
                             .foregroundColor(Color.secondary)
                     }
                 }
                 
                 HStack {
-                    if !localEntity.returns.isEmpty {
+                    if !(entity.returns?.allObjects.isEmpty ?? true) {
                         Image(systemName: "arrow.uturn.backward")
                             .foregroundColor(.secondary)
                             .font(.caption.bold())
                     }
                     
-                    Text("\((-localEntity.amountWithReturns).formatted(.currency(code: localEntity.wrappedCurrency)))")
+                    Text("\((-entity.amountWithReturns).formatted(.currency(code: entity.wrappedCurrency)))")
                 }
-                .foregroundColor(localEntity.amountWithReturns != 0 ? .primary : .secondary)
+                .foregroundColor(entity.amountWithReturns != 0 ? .primary : .secondary)
             }
         }
     }
     
     private var editButton: some View {
         Button {
-            if  let entity = try? localEntity.unsafeObject(in: cdm.context){
-                vm.edit.toggle()
-                vm.entityToEdit = entity
-            }
+            vm.edit.toggle()
+            vm.entityToEdit = entity
         } label: {
             Label {
                 Text("Edit")
@@ -122,9 +120,7 @@ struct StatsRow: View {
     
     private var deleteButton: some View {
         Button(role: .destructive) {
-            if let entity = try? localEntity.unsafeObject(in: cdm.context) {
-                deleteSpending(entity)
-            }
+            deleteSpending(entity)
         } label: {
             Label {
                 Text("Delete")
@@ -137,59 +133,47 @@ struct StatsRow: View {
     
     private var returnButon: some View {
         Button {
-            if let entity = try? localEntity.unsafeObject(in: cdm.context) {
-                vm.entityToAddReturn = entity
-            }
+            vm.entityToAddReturn = entity
         } label: {
             Label("Add return", systemImage: "arrow.uturn.backward")
         }
         .tint(.yellow)
-        .disabled(localEntity.amountWithReturns == 0)
+        .disabled(entity.amountWithReturns == 0)
     }
     
     // MARK: Functions
     
-    init(entity: TSSpendingEntity) {
-        self.localEntity = entity
-        
-//        #if DEBUG
-//        logger.log("Sum: \(entity.amountWithReturns), date: \(entity.wrappedDate) initialized")
-//        print(entity.amount, entity.currency, entity.categoryName, "Initialized")
-//        #endif
-    }
-    
     private func buttonAction() {
-        if vm.entityToEdit == nil, let entity = try? localEntity.unsafeObject(in: cdm.context) {
+        if vm.entityToEdit == nil {
             vm.entityToEdit = entity
         }
     }
     
     private func deleteSpending(_ entity: SpendingEntity) {
-        withAnimation {
-            cdm.deleteSpending(entity)
-        }
+        viewContext.delete(entity)
+        try? viewContext.save()
     }
 }
 
-#Preview {
-    let row = StatsRow(
-        entity: .init(
-            amount: 1000,
-            amountUSD: 6.87,
-            comment: "",
-            currency: "JPY",
-            date: .now,
-            timeZoneIdentifier: "Asia/Tokyo",
-            id: .init(),
-            place: "Some place",
-            categoryID: .init(),
-            categoryName: "Category",
-            categoryColor: "",
-            returns: []
-        )
-    )
-    
-    return List {
-        row
-    }
-}
+//#Preview {
+//    let row = StatsRow(
+//        entity: .init(
+//            amount: 1000,
+//            amountUSD: 6.87,
+//            comment: "",
+//            currency: "JPY",
+//            date: .now,
+//            timeZoneIdentifier: "Asia/Tokyo",
+//            id: .init(),
+//            place: "Some place",
+//            categoryID: .init(),
+//            categoryName: "Category",
+//            categoryColor: "",
+//            returns: []
+//        )
+//    )
+//    
+//    return List {
+//        row
+//    }
+//}

@@ -33,9 +33,10 @@ final class CloudKitManager {
     }
     
     private let container = CKContainer(identifier: "iCloud.dev.squirrelapp.squirrel")
+    private let cloudKitCoreDataZoneID = CKRecordZone.ID(zoneName: "com.apple.coredata.cloudkit.zone")
     
     #if DEBUG
-    let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
+    private let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
     #endif
     
     fileprivate init() {
@@ -183,6 +184,23 @@ final class CloudKitManager {
             UserDefaults.standard.set(data, forKey: UDKey.socialNetworksJSON.rawValue)
             UserDefaults.standard.set(socialVersion, forKey: UDKey.socialNetworksUpdateVersion.rawValue)
         } catch {}
+    }
+    
+    func dropUserDataFromPublicDatabase() async throws {
+        let zoneIDs = try await container.privateCloudDatabase.allRecordZones()
+        
+        if zoneIDs.contains(where: { $0.zoneID == cloudKitCoreDataZoneID }) {
+            try await container.privateCloudDatabase.deleteRecordZone(withID: cloudKitCoreDataZoneID)
+            HapticManager.shared.notification(.success)
+        }
+    }
+    
+    func hasDataInCloudKit() async -> Bool {
+        let zoneIDs = try? await container.privateCloudDatabase.allRecordZones()
+        
+        guard let zoneIDs else { return true }
+        
+        return zoneIDs.contains(where: { $0.zoneID == cloudKitCoreDataZoneID })
     }
 }
 

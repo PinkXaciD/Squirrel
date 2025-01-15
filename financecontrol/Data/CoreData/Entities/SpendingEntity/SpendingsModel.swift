@@ -14,7 +14,9 @@ extension CoreDataModel {
     /// Fetches all spendings from CoreData and updates all related values
     ///
     /// This method is thread-safe and works on main thread asynchronously
-    @objc func fetchSpendings(updateWidgets: Bool = true) {
+    @objc
+    func fetchSpendings(updateWidgets: Bool = true) {        
+//        print("\(#function) called")
         context.perform { [weak self] in
             guard let self else { return }
             
@@ -66,9 +68,11 @@ extension CoreDataModel {
             // MARK: Fetch for loop
             for spending in spendings {
                 let safeSpending = spending.safeObject()
-                let startOfDay = formatWithoutTimezones ? Calendar.current.startOfDay(for: safeSpending.wrappedDate) : Calendar.current.startOfDay(for: safeSpending.dateAdjustedToTimeZoneDate)
+                let startOfDay = formatWithoutTimezones ? Calendar.current.startOfDay(for: safeSpending.wrappedDate) : Calendar.current.startOfDay(for: safeSpending.dateAdjustedToTimeZone)
                 
-                currencies.insert(Currency(code: safeSpending.wrappedCurrency))
+                if !currencies.contains(Currency(code: safeSpending.wrappedCurrency)) {
+                    currencies.insert(Currency(code: safeSpending.wrappedCurrency))
+                }
                 
                 // Stats list data
                 if statsListData[startOfDay] != nil {
@@ -222,6 +226,24 @@ extension CoreDataModel {
             }
         }
     }
+    
+#if DEBUG
+    func addTestSpending() {
+        self.addSpending(
+            spending: .init(
+                amountUSD: 1,
+                amount: 1,
+                amountWithReturns: 1,
+                amountUSDWithReturns: 1,
+                comment: "Test comment",
+                currency: "USD",
+                date: Date(),
+                place: "Test place",
+                categoryId: self.savedCategories.first?.id ?? .init()
+            )
+        )
+    }
+#endif
     
     /// Edits spending and updates all related data
     /// - Parameters:

@@ -30,7 +30,7 @@ class SearchViewModel: ViewModel {
             .debounce(for: 0.3, scheduler: DispatchQueue.main)
             .sink { [weak self] value in
                 withAnimation {
-                    self?.search = value
+                    self?.search = value.trimmingCharacters(in: .whitespacesAndNewlines)
                 }
             }
             .store(in: &cancellables)

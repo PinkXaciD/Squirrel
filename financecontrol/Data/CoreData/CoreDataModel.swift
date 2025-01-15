@@ -14,13 +14,28 @@ final class CoreDataModel: ObservableObject {
     let container: NSPersistentContainer
     let context: NSManagedObjectContext
     let manager = DataManager.shared
+    var localHistoryToken: NSPersistentHistoryToken?
     
     init() {
         self.container = manager.container
         self.context = manager.context
+        self.localHistoryToken = manager.container.persistentStoreCoordinator.currentPersistentHistoryToken(fromStores: container.persistentStoreCoordinator.persistentStores)
         fetchSpendings(updateWidgets: false)
         fetchCategories()
         timerUpdate()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(updateFromCloud), name: .NSPersistentStoreRemoteChange, object: context.persistentStoreCoordinator)
+        NotificationCenter.default.addObserver(self, selector: #selector(fetchSpendings), name: .NSManagedObjectContextDidSaveObjectIDs, object: nil)
+    }
+    
+    @objc
+    private func updateFromCloud(_ notification: Notification) {
+        let cloudHistoryToken = notification.userInfo?[NSPersistentHistoryTokenKey] as? NSPersistentHistoryToken
+        
+        if let cloudHistoryToken, cloudHistoryToken != localHistoryToken {
+            self.fetchSpendings()
+            self.localHistoryToken = cloudHistoryToken
+        }
     }
     
     /// An array containing all spendings from CoreData
@@ -44,6 +59,7 @@ final class CoreDataModel: ObservableObject {
     var usedCurrencies: Set<Currency> = .init()
     
     /// An array containing not shadowed categories from CoreData
+//    @available(*, deprecated, renamed: "FetchRequest", message: "")
     @Published
     var savedCategories: [CategoryEntity] = []
     
@@ -52,10 +68,6 @@ final class CoreDataModel: ObservableObject {
     var shadowedCategories: [CategoryEntity] = []
     
     var lastFetchDate: Date? = nil
-    
-    @available(*, deprecated, renamed: "UserDefaults.standart.getCurrencies()", message: "")
-    @Published
-    var savedCurrencies: [CurrencyEntity] = []
     
     var waitingForRatesToBeAvailable: Bool = false
 }

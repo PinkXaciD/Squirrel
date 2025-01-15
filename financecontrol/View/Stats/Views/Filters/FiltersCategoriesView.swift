@@ -16,12 +16,14 @@ struct FiltersCategoriesView: View {
     @Binding
     var applyFilters: Bool
     
-    let listData: [CategoryEntity]
+//    let listData: [CategoryEntity]
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)])
+    private var fetchedCategories: FetchedResults<CategoryEntity>
     
     var body: some View {
         List {
             Section {
-                ForEach(listData) { category in
+                ForEach(fetchedCategories) { category in
                     Button {
                         categoryButtonAction(category)
                     } label: {
@@ -30,7 +32,7 @@ struct FiltersCategoriesView: View {
                 }
             }
             
-            if !listData.isEmpty {
+            if !fetchedCategories.isEmpty {
                 Section {
                     Button("Clear selection", role: .destructive) {
                         categories.removeAll()
@@ -45,7 +47,7 @@ struct FiltersCategoriesView: View {
             trailingToolbar
         }
         .overlay {
-            if listData.isEmpty {
+            if fetchedCategories.isEmpty {
                 CustomContentUnavailableView("No Categories", imageName: "list.bullet", description: "You can add categories in settings.")
             }
         }
@@ -89,11 +91,5 @@ struct FiltersCategoriesView: View {
                 .opacity(categories.contains(category.id ?? .init()) ? 1 : 0)
                 .animation(.default.speed(3), value: categories)
         }
-    }
-    
-    init(categories: Binding<[UUID]>, applyFilters: Binding<Bool>, cdm: CoreDataModel) {
-        self._categories = categories
-        self._applyFilters = applyFilters
-        self.listData = (cdm.savedCategories + cdm.shadowedCategories).sorted { $0.name ?? "" < $1.name ?? "" }
     }
 }

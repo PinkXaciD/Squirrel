@@ -23,6 +23,9 @@ struct EditSpendingView: View {
     private var confirmationDialogIsPresented: Bool = false
     let utils = InputUtils()
     
+    @FetchRequest(sortDescriptors: [SortDescriptor(\CategoryEntity.name)], predicate: NSPredicate(format: "isShadowed == false"))
+    private var categories: FetchedResults<CategoryEntity>
+    
     enum Field {
         case amount
         case comment
@@ -83,7 +86,7 @@ struct EditSpendingView: View {
             HStack {
                 Text("Category")
                 
-                CategorySelector(selectedCategory: $vm.category)
+                CategorySelector(selectedCategory: $vm.category, categories: categories)
             }
             
             DatePicker("Date", selection: $vm.date, in: .firstAvailableDate...Date.now)

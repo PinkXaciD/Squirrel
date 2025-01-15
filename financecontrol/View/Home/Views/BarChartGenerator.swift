@@ -8,8 +8,7 @@
 import SwiftUI
 
 struct BarChartGenerator: View {
-    @EnvironmentObject var cdm: CoreDataModel
-    @EnvironmentObject private var rvm: RatesViewModel
+    @StateObject var vm: BarChartViewModel
     @AppStorage(UDKey.defaultCurrency.rawValue) var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
 
     @State private var itemSelected: Int = -1
@@ -17,7 +16,7 @@ struct BarChartGenerator: View {
     
     var body: some View {
         VStack(alignment: .center) {
-            BarChart(itemSelected: $itemSelected, showAverage: $showAverage)
+            BarChart(vm: vm, itemSelected: $itemSelected, showAverage: $showAverage)
             
             Divider()
                 .padding(.vertical, 5)
@@ -45,7 +44,7 @@ struct BarChartGenerator: View {
     var legend: some View {
         switch itemSelected {
         case 0...6:
-            return legendGenerator(data: cdm.barChartData.bars.sorted(by: { $0.key > $1.key }), index: itemSelected)
+            return legendGenerator(data: vm.data.bars.sorted(by: { $0.key > $1.key }), index: itemSelected)
         default:
             return legendGenerator(data: nil, index: 0)
         }
@@ -65,13 +64,13 @@ struct BarChartGenerator: View {
         if let value = data?[index].value {
             amount = value
         } else {
-            amount = showAverage ? (cdm.barChartData.sum / 7) : cdm.barChartData.sum
+            amount = showAverage ? (vm.data.sum / 7) : vm.data.sum
         }
         
         return VStack {
             Text(date)
             
-            if cdm.lastFetchDate == nil {
+            if vm.lastFetchDate == nil {
                 Text(verbatim: " ")
                     .amountStyle()
                     .padding(-3)
@@ -83,7 +82,7 @@ struct BarChartGenerator: View {
                     .transition(.opacity)
             }
         }
-        .animation(.easeOut, value: cdm.lastFetchDate)
+        .animation(.easeOut, value: vm.lastFetchDate)
     }
     
     private var dateFormatter: DateFormatter {
@@ -104,8 +103,8 @@ struct BarChartGenerator: View {
     }
 }
 
-struct BarChartGenerator_Previews: PreviewProvider {
-    static var previews: some View {
-        BarChartGenerator()
-    }
-}
+//struct BarChartGenerator_Previews: PreviewProvider {
+//    static var previews: some View {
+//        BarChartGenerator()
+//    }
+//}

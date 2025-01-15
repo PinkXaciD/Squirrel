@@ -12,6 +12,8 @@ struct SettingsView: View {
     private var cdm: CoreDataModel
     @EnvironmentObject
     private var rvm: RatesViewModel
+    @EnvironmentObject
+    private var kvsManager: CloudKitKVSManager
     
     @AppStorage(UDKey.color.rawValue)
     var defaultColor: String = "Orange"
@@ -28,6 +30,7 @@ struct SettingsView: View {
     
     @Binding
     var presentOnboarding: Bool
+    let cloudSyncWasEnabled: Bool
     
     let version: String? = Bundle.main.releaseVersionNumber
     let build: String? = Bundle.main.buildVersionNumber
@@ -43,7 +46,6 @@ struct SettingsView: View {
                             Color(uiColor: .systemGroupedBackground)
                                 .ignoresSafeArea()
                                 
-                            
                             Text("Select a tab from sidebar")
                                 .foregroundStyle(.secondary)
                         }
@@ -51,7 +53,6 @@ struct SettingsView: View {
                     .environmentObject(rvm)
                     .environmentObject(cdm)
                 }
-
             } else {
                 NavigationView {
                     list
@@ -209,6 +210,27 @@ struct SettingsView: View {
     
     private var exportImportSection: some View {
         Section {
+            NavigationLink {
+                ICloudSyncView(cloudSyncWasEnabled: cloudSyncWasEnabled)
+            } label: {
+                HStack {
+                    Text("iCloud sync")
+                    
+                    Spacer()
+                    
+                    VStack(alignment: .trailing) {
+                        Text(kvsManager.iCloudSync ? "On" : "Off")
+                            .foregroundStyle(.secondary)
+                        
+                        if kvsManager.iCloudSync != cloudSyncWasEnabled {
+                            Text("appication-restart-required-key")
+                                .foregroundStyle(.red)
+                                .font(.footnote)
+                        }
+                    }
+                }
+            }
+            
             NavigationLink("Export and backup data") {
                 ExportAndBackupView()
             }
@@ -276,7 +298,7 @@ extension SettingsView {
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView(presentOnboarding: .constant(false))
+        SettingsView(presentOnboarding: .constant(false), cloudSyncWasEnabled: false)
             .environmentObject(CoreDataModel())
             .environmentObject(RatesViewModel())
     }

@@ -18,6 +18,10 @@ public final class CategoryEntity: NSManagedObject, Codable {
         case id, color, isShadowed, isFavorite, name, spendings
     }
     
+    override public init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?) {
+        super.init(entity: entity, insertInto: context)
+    }
+    
     required convenience public init(from decoder: Decoder) throws {
         guard let context = decoder.userInfo[.moc] as? NSManagedObjectContext else {
             throw URLError(.badURL)

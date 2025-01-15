@@ -53,6 +53,10 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "-com.apple.CoreData.ConcurrencyDebug 1"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-com.apple.CoreData.Logging.stderr 0"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

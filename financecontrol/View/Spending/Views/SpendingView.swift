@@ -88,7 +88,7 @@ struct SpendingView: View {
                 
                 if !formatWithoutTimeZones, let timeZone = safeEntity.timeZone, timeZone.secondsFromGMT() != TimeZone.autoupdatingCurrent.secondsFromGMT() {
                     VStack(alignment: .trailing) {
-                        Text(safeEntity.dateAdjustedToTimeZoneDate.formatted(date: .long, time: .shortened))
+                        Text(safeEntity.dateAdjustedToTimeZone.formatted(date: .long, time: .shortened))
                         
                         Text(timeZone.localizedName(for: .standard, locale: .autoupdatingCurrent) ?? timeZone.identifier)
                     }

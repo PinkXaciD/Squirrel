@@ -109,7 +109,7 @@ struct FiltersView: View {
     private var categoriesSection: some View {
         Section {
             NavigationLink {
-                FiltersCategoriesView(categories: $fvm.filterCategories, applyFilters: $fvm.applyFilters, cdm: cdm)
+                FiltersCategoriesView(categories: $fvm.filterCategories, applyFilters: $fvm.applyFilters)
             } label: {
                 categoriesPickerLabel
             }

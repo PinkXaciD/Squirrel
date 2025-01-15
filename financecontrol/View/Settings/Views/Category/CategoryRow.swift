@@ -9,7 +9,8 @@ import SwiftUI
 
 struct CategoryRow: View {
     
-    @EnvironmentObject private var cdm: CoreDataModel
+//    @EnvironmentObject private var cdm: CoreDataModel
+    @Environment(\.managedObjectContext) private var viewContext
     
     let category: CategoryEntity
     
@@ -63,7 +64,9 @@ struct CategoryRow: View {
     private var favoriteButton: some View {
         Button {
             withAnimation {
-                cdm.changeFavoriteStateOfCategory(category)
+                category.isFavorite.toggle()
+                try? viewContext.save()
+//                cdm.changeFavoriteStateOfCategory(category)
             }
         } label: {
             Label(
@@ -77,7 +80,9 @@ struct CategoryRow: View {
     private func getDeleteButton(isSwipeAction: Bool) -> some View {
         Button(role: isSwipeAction ? .destructive : nil) {
             withAnimation {
-                cdm.changeShadowStateOfCategory(category)
+                category.isShadowed.toggle()
+                try? viewContext.save()
+//                cdm.changeShadowStateOfCategory(category)
             }
         } label: {
             Label("Archive", systemImage: "archivebox.fill")

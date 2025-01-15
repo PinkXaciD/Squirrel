@@ -31,4 +31,9 @@ extension Date {
         
         return newDate
     }
+    
+    static var weekAgo: Self {
+        let date = Calendar.current.startOfDay(for: Date())
+        return Calendar.current.date(byAdding: .day, value: -7, to: date) ?? Date()
+    }
 }

@@ -111,7 +111,7 @@ fileprivate struct InternalCustomPagingScrollView: View {
                     scrollManager.resetOffsets()
                 }
             }
-            .gesture(
+            .highPriorityGesture(
                 DragGesture()
                     .onChanged { value in
                         changedDragGesture(value: value)

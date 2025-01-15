@@ -278,6 +278,16 @@
         }
       }
     },
+    "appication-restart-required-key" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appication restart required"
+          }
+        }
+      }
+    },
     "Apply" : {
       "localizations" : {
         "en" : {
@@ -322,6 +332,9 @@
       }
     },
     "Back" : {
+
+    },
+    "Backup your expenses seamlessly" : {
 
     },
     "Blue" : {
@@ -434,6 +447,9 @@
     "Delete" : {
 
     },
+    "Delete data from iCloud" : {
+
+    },
     "Delete this category?" : {
 
     },
@@ -444,6 +460,9 @@
 
     },
     "Disable" : {
+
+    },
+    "Disable iCloud sync" : {
 
     },
     "Disabled" : {
@@ -459,6 +478,9 @@
 
     },
     "Empty database" : {
+
+    },
+    "Enable iCloud sync" : {
 
     },
     "Enter name" : {
@@ -560,6 +582,9 @@
     "Home" : {
 
     },
+    "iCloud sync" : {
+
+    },
     "Icon" : {
 
     },
@@ -619,6 +644,9 @@
 
     },
     "More about policy changes" : {
+
+    },
+    "More ways to reach us" : {
 
     },
     "More..." : {
@@ -693,7 +721,13 @@
     "Nothing to import" : {
 
     },
+    "Off" : {
+
+    },
     "OK" : {
+
+    },
+    "On" : {
 
     },
     "Open in browser" : {
@@ -847,6 +881,9 @@
     "Squirrel" : {
 
     },
+    "Squirrel %@" : {
+
+    },
     "Squirrel does not send any data or identifiers from your device." : {
 
     },
@@ -860,6 +897,9 @@
 
     },
     "Swipe from left to restore, swipe from right to delete" : {
+
+    },
+    "Sync your expenses to iCloud" : {
 
     },
     "Tap here to remove selection" : {
@@ -958,6 +998,12 @@
     "Welcome to" : {
 
     },
+    "What's new in %@" : {
+
+    },
+    "What's new?" : {
+
+    },
     "Winterized" : {
 
     },
@@ -997,6 +1043,12 @@
     "You can change the default currency or add more later in settings" : {
 
     },
+    "You can change this later in settings" : {
+
+    },
+    "You can change this setting later in settings. Application reload will be required" : {
+
+    },
     "You can choose a currency to be selected by default, different from display currency" : {
 
     },
@@ -1007,6 +1059,18 @@
 
     },
     "You can't undo this action.\nAll expenses from this category will be deleted" : {
+
+    },
+    "You will be able to delete your data after restarting the application" : {
+
+    },
+    "Your data is stored in your iCloud storage. We don't have access to your data." : {
+
+    },
+    "Your data will be stored in your iCloud storage. We don't have access to your data." : {
+
+    },
+    "Your expenses are syncing to iCloud" : {
 
     },
     "Your favorite categories will be shown here" : {

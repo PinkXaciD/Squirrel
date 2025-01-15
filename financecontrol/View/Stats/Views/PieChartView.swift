@@ -35,7 +35,9 @@ struct PieChartView: View {
             .disabled(pcvm.isScrollDisabled)
             .listRowInsets(.init(top: 20, leading: 0, bottom: 20, trailing: 0))
             
-            legend
+            if !pcvm.data[(pcvm.selection >= pcvm.data.count || pcvm.selection < 0) ? 0 : pcvm.selection].categories.isEmpty {
+                legend
+            }
         } footer: {
             if showMinimizeButton {
                 footer

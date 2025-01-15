@@ -9,15 +9,17 @@ import SwiftUI
 
 struct CategorySelector: View {
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var cdm: CoreDataModel
     @Binding var selectedCategory: CategoryEntity?
     
+//    @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)], predicate: NSPredicate(format: "isShadowed == false"))
+//    private var categories: FetchedResults<CategoryEntity>
+    let categories: FetchedResults<CategoryEntity>
     @State private var editCategories: Bool = false
     @State private var showOther: Bool = false
     
     var body: some View {
         
-        let favorites = cdm.savedCategories.filter { $0.isFavorite }
+        let favorites = categories.filter { $0.isFavorite }
         
         Menu {
             if favorites.isEmpty {
@@ -39,7 +41,7 @@ struct CategorySelector: View {
                 }
             }
                 
-            if !cdm.savedCategories.isEmpty {
+            if !categories.isEmpty {
                 Divider()
                 
                 showOtherButton
@@ -62,11 +64,10 @@ struct CategorySelector: View {
                 }
                 
                 NavigationLink(isActive: $showOther) {
-                    OtherCategorySelector(selectedCategory: $selectedCategory)
+                    OtherCategorySelector(selectedCategory: $selectedCategory, categories: categories)
                 } label: {
                     EmptyView()
                 }
-
             }
             .disabled(true)
             .opacity(0)
@@ -103,6 +104,7 @@ fileprivate struct OtherCategorySelector: View {
     @EnvironmentObject private var cdm: CoreDataModel
     @Binding var selectedCategory: CategoryEntity?
     
+    let categories: FetchedResults<CategoryEntity>
     @State private var search: String = ""
     
     var body: some View {
@@ -141,10 +143,10 @@ fileprivate struct OtherCategorySelector: View {
         let trimmedSearch = searchString.trimmingCharacters(in: .whitespacesAndNewlines)
         
         if trimmedSearch.isEmpty {
-            return cdm.savedCategories
+            return categories.map { $0 }
         }
         
-        return cdm.savedCategories.filter { category in
+        return categories.filter { category in
             category.name?.localizedCaseInsensitiveContains(trimmedSearch) ?? false
         }
     }

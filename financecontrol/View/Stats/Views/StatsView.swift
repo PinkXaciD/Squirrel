@@ -13,13 +13,15 @@ import OSLog
 struct StatsView: View {
     @Environment(\.isSearching)
     private var isSearching
+    @Environment(\.managedObjectContext)
+    private var viewContext
     @AppStorage(UDKey.color.rawValue)
     private var tint: String = "Orange"
     
-    @EnvironmentObject
-    private var cdm: CoreDataModel
-    @EnvironmentObject
-    private var rvm: RatesViewModel
+//    @EnvironmentObject
+//    private var cdm: CoreDataModel
+//    @EnvironmentObject
+//    private var rvm: RatesViewModel
     @EnvironmentObject
     private var pcvm: PieChartViewModel
     @EnvironmentObject
@@ -53,6 +55,11 @@ struct StatsView: View {
             IPadStatsView(size: size)
         } else {
             iPhoneStatsView
+#if DEBUG
+                .refreshable {
+                    viewContext.refreshAllObjects()
+                }
+#endif
         }
     }
     
@@ -64,7 +71,14 @@ struct StatsView: View {
                         .id(0)
                 }
                 
-                StatsListView()
+                StatsListView(
+                    spendings: SectionedFetchRequest(
+                        sectionIdentifier: \SpendingEntity.startOfDay,
+                        sortDescriptors: [SortDescriptor(\SpendingEntity.date, order: .reverse)],
+                        predicate: getListPredicate(),
+                        animation: .default
+                    )
+                )
             }
             .toolbar {
                 leadingToolbar
@@ -160,6 +174,55 @@ extension StatsView {
         pcvm.updateData()
         pcvm.isScrollDisabled = false
     }
+    
+    private func getListPredicate() -> NSPredicate {
+        if pcvm.selection == 0, !fvm.applyFilters, pcvm.selectedCategory == nil, searchModel.search.isEmpty {
+            return NSPredicate(value: true)
+        }
+        
+        var predicates = [NSPredicate]()
+        
+        if let selectedCategory = pcvm.selectedCategory {
+            let selectedCategoryPredicate = NSPredicate(format: "category.id == %@", selectedCategory.id as CVarArg)
+            predicates.append(selectedCategoryPredicate)
+        }
+        
+        if pcvm.selection != 0 {
+            let selectedMonthPredicate = NSPredicate(
+                format: "date >= %@ AND date < %@",
+                Date().getFirstDayOfMonth(-pcvm.selection) as CVarArg,
+                Date().getFirstDayOfMonth(-pcvm.selection + 1) as CVarArg
+            )
+            predicates.append(selectedMonthPredicate)
+        }
+        
+        if fvm.applyFilters {
+            let datePredicate = NSPredicate(format: "date >= %@ AND date < %@", fvm.startFilterDate as CVarArg, fvm.endFilterDate as CVarArg)
+            predicates.append(datePredicate)
+            
+            if !fvm.filterCategories.isEmpty {
+                let filterCategoriesPredicate = NSPredicate(format: "category.id IN %@", fvm.filterCategories as CVarArg)
+                predicates.append(filterCategoriesPredicate)
+            }
+            
+            if !fvm.currencies.isEmpty {
+                let currenciesPredicate = NSPredicate(format: "currency IN %@", fvm.currencies as CVarArg)
+                predicates.append(currenciesPredicate)
+            }
+            
+            if let withReturns = fvm.withReturns {
+                let returnsPredicate = NSPredicate(format: "returns.@count \(withReturns ? ">" : "==") 0")
+                predicates.append(returnsPredicate)
+            }
+        }
+        
+        if !searchModel.search.isEmpty {
+            let searchPredicate = NSPredicate(format: "place CONTAINS %@ OR comment CONTAINS %@", searchModel.search, searchModel.search)
+            predicates.append(searchPredicate)
+        }
+        
+        return NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+    }
 }
 
 fileprivate struct IPadStatsView: View {
@@ -220,7 +283,15 @@ fileprivate struct IPadStatsView: View {
     }
     
     private var listView: some View {
-        StatsListView()
+        StatsListView(
+            spendings: SectionedFetchRequest(
+                sectionIdentifier: \SpendingEntity.startOfDay,
+                sortDescriptors: [SortDescriptor(\SpendingEntity.date, order: .reverse)],
+//                predicate: getListPredicate(),
+                predicate: NSPredicate(value: true),
+                animation: .default
+            )
+        )
     }
     
     private var filters: some View {

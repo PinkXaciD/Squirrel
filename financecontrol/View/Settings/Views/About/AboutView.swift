@@ -19,6 +19,8 @@ struct AboutView: View {
     private var showConfirmationDialog: Bool = false
     @State
     private var urlToOpen: URL? = nil
+    @State
+    private var showWhatsNew: Bool = false
     
     var body: some View {
         List {
@@ -40,6 +42,9 @@ struct AboutView: View {
             Button("Copy to clipboard") {
                 UIPasteboard.general.url = url
             }
+        }
+        .sheet(isPresented: $showWhatsNew) {
+            WhatsNewView()
         }
     }
     
@@ -95,6 +100,10 @@ struct AboutView: View {
     
     private var onboardingSection: some View {
         Section {
+            Button("What's new?") {
+                showWhatsNew.toggle()
+            }
+            
             Button("Show onboarding") {
                 presentOnboarding = true
             }

@@ -30,8 +30,6 @@ final class AddSpendingViewModel: ViewModel {
     @Published
     var comment: String
     @Published
-    var popularCategories: [CategoryEntity] = []
-    @Published
     var dismiss: Bool = false
     
     #if DEBUG
@@ -85,8 +83,6 @@ final class AddSpendingViewModel: ViewModel {
         self.vmStateLogger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
         vmStateLogger.debug("\(#function) called")
         #endif
-        
-        countPopularCategories()
     }
     
     deinit {
@@ -97,17 +93,9 @@ final class AddSpendingViewModel: ViewModel {
         cancellables.cancelAll()
     }
     
-    private func countPopularCategories() {
-        DispatchQueue.main.async { [weak self] in
-            guard let self else {
-                return
-            }
-            
-            let sortedCategories = self.cdm.savedCategories.sorted { $0.spendings?.allObjects.count ?? 0 > $1.spendings?.allObjects.count ?? 0 }
-            
-            withAnimation {
-                self.popularCategories = Array(sortedCategories.prefix(5))
-            }
+    private func dismissAction() {
+        DispatchQueue.main.async {
+            self.dismiss = true
         }
     }
     
@@ -178,9 +166,8 @@ final class AddSpendingViewModel: ViewModel {
                         }
                         
                         self.cdm.addSpending(spending: spendingCopy, addToFetchQueue: isHistoricalRatesUnvailable)
-                        DispatchQueue.main.async {
-                            self.dismiss = true
-                        }
+                        
+                        self.dismissAction()
                     }
                 }
             }

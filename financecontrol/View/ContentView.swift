@@ -44,6 +44,8 @@ struct ContentView: View {
     private var privacyMonitor: PrivacyMonitor = PrivacyMonitor(privacyScreenIsEnabled: false, hideExpenseSum: false)
     @StateObject
     private var statsViewModel: StatsViewModel = StatsViewModel()
+    @StateObject
+    private var cloudKitKVSManager = CloudKitKVSManager()
     
     @ObservedObject 
     private var errorHandler = ErrorHandler.shared
@@ -52,6 +54,8 @@ struct ContentView: View {
     private var addExpenseAction: Bool = false
     @State
     private var hideContent: Bool = false
+    
+    let cloudSyncWasEnabled = NSUbiquitousKeyValueStore.default.bool(forKey: UDKey.iCloudSync.rawValue)
     
     init() {
         let coreDataModel = CoreDataModel()
@@ -104,6 +108,7 @@ struct ContentView: View {
         .sheet(isPresented: $presentOnboarding) {
             OnboardingView()
                 .environmentObject(cdm)
+                .environmentObject(cloudKitKVSManager)
                 .accentColor(.orange)
                 .interactiveDismissDisabled()
         }
@@ -136,10 +141,15 @@ struct ContentView: View {
     }
     
     private var homeTab: some View {
-        HomeView(showingSheet: $addExpenseAction, presentOnboarding: $presentOnboarding)
-            .tabItem {
-                Label("Home", systemImage: "house.fill")
-            }
+        HomeView(
+            showingSheet: $addExpenseAction,
+            presentOnboarding: $presentOnboarding,
+            cloudSyncWasEnabled: cloudSyncWasEnabled
+        )
+        .environmentObject(cloudKitKVSManager)
+        .tabItem {
+            Label("Home", systemImage: "house.fill")
+        }
     }
     
     private var statsTab: some View {
@@ -171,10 +181,11 @@ struct ContentView: View {
     }
     
     private var settingsTab: some View {
-        SettingsView(presentOnboarding: $presentOnboarding)
+        SettingsView(presentOnboarding: $presentOnboarding, cloudSyncWasEnabled: cloudSyncWasEnabled)
             .tabItem {
                 Label("Settings", systemImage: "gearshape.fill")
             }
+            .environmentObject(cloudKitKVSManager)
     }
     
     private func setColorScheme() {
