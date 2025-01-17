@@ -149,7 +149,7 @@ final class BarChartViewModel: ViewModel {
         context.perform { [weak self] in
             guard let self else { return }
             
-            let weekAgo = Calendar.autoupdatingCurrent.startOfDay(for: Date()).addingTimeInterval(.day * -7)
+            let weekAgo = Calendar.autoupdatingCurrent.startOfDay(for: Date()).addingTimeInterval(.day * -6)
             let defaultCurrency = UserDefaults.standard.string(forKey: UDKey.defaultCurrency.rawValue) ?? "USD"
             let defaultRate = UserDefaults.standard.getRates()?[defaultCurrency] ?? 1
             

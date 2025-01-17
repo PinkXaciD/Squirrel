@@ -140,6 +140,7 @@ struct SettingsView: View {
             
             NavigationLink("Formatting") {
                 SettingsFormattingView()
+                    .navigationBarTitleDisplayMode(.inline)
             }
             .zIndex(1)
         } header: {

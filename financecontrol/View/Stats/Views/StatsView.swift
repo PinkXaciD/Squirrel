@@ -103,7 +103,7 @@ struct StatsView: View {
                     Label("Clear filters", systemImage: "xmark")
                 }
                 .disabled(!fvm.applyFilters)
-                .buttonStyle(BorderedButtonStyle())
+                .buttonStyle(.bordered)
                 .hoverEffect()
             }
         }
@@ -217,7 +217,7 @@ extension StatsView {
         }
         
         if !searchModel.search.isEmpty {
-            let searchPredicate = NSPredicate(format: "place CONTAINS %@ OR comment CONTAINS %@", searchModel.search, searchModel.search)
+            let searchPredicate = NSPredicate(format: "place CONTAINS[c] %@ OR comment CONTAINS[c] %@", searchModel.search, searchModel.search)
             predicates.append(searchPredicate)
         }
         

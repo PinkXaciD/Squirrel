@@ -16,6 +16,8 @@ extension URL {
     
     static let newGithubIssue: URL! = URL(string: "\(github.absoluteString)/issues/new")
     
+    static let githubChangelog: URL! = URL(string: "\(github.absoluteString)/releases/tag/v\(Bundle.main.releaseVersionNumber ?? "")")
+    
     static let appWebsite: URL = {
         UserDefaults.standard.url(forKey: UDKey.appWebsiteURL.rawValue) ?? URL(string: "https://squirrelapp.dev")!
     }()

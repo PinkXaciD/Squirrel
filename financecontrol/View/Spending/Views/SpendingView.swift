@@ -34,6 +34,8 @@ struct SpendingView: View {
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     @AppStorage(UDKey.formatWithoutTimeZones.rawValue)
     private var formatWithoutTimeZones: Bool = false
+    @AppStorage(UDKey.timeZoneFormat.rawValue)
+    private var timeZoneFormat: Int = 0
     
     @State
     private var alertIsPresented: Bool = false
@@ -73,7 +75,9 @@ struct SpendingView: View {
         Section(header: infoHeader) {
             HStack {
                 Text("Category")
+                
                 Spacer()
+                
                 Text(safeEntity.categoryName)
                     .foregroundColor(.secondary)
             }
@@ -90,7 +94,7 @@ struct SpendingView: View {
                     VStack(alignment: .trailing) {
                         Text(safeEntity.dateAdjustedToTimeZone.formatted(date: .long, time: .shortened))
                         
-                        Text(timeZone.localizedName(for: .standard, locale: .autoupdatingCurrent) ?? timeZone.identifier)
+                        Text(timeZone.formatted(TimeZone.Format(rawValue: timeZoneFormat)))
                     }
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.trailing)

@@ -63,12 +63,6 @@ extension Calendar {
     }()
 }
 
-extension TimeZone {
-    func hoursFromGMT() -> Double {
-        return Double(self.secondsFromGMT() / 3600)
-    }
-}
-
 extension TimeInterval {
     static let hour: Self = 3600
     

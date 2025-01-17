@@ -104,6 +104,7 @@
 		8D7ECC7A2AACAF6F005A515D /* CustomColorSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D7ECC792AACAF6F005A515D /* CustomColorSelector.swift */; };
 		8D7EFB0B2A85096B009797E8 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D7EFB0A2A85096B009797E8 /* Date+Extensions.swift */; };
 		8D7FCA552B16A59C009AAAEB /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 8D7FCA542B16A59C009AAAEB /* Localizable.xcstrings */; };
+		8D800A7F2D39672F00887DED /* TimeZone+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D800A7E2D39672F00887DED /* TimeZone+Extensions.swift */; };
 		8D803B112C4EA58200778B6C /* CloudKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D803B102C4EA58200778B6C /* CloudKitManager.swift */; };
 		8D803B132C4EA6AD00778B6C /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D803B122C4EA6AD00778B6C /* Keychain.swift */; };
 		8D830DF12AE00CE600EFB1E7 /* ShadowedCategoriesRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D830DF02AE00CE600EFB1E7 /* ShadowedCategoriesRow.swift */; };
@@ -160,6 +161,7 @@
 		8DCB302D2A97314400DC9ABB /* StatsRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCB302C2A97314400DC9ABB /* StatsRow.swift */; };
 		8DCB302F2A97578F00DC9ABB /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCB302E2A97578F00DC9ABB /* View+Extensions.swift */; };
 		8DCB60772B6E6FAA00B94872 /* ApplePie in Frameworks */ = {isa = PBXBuildFile; productRef = 8DCB60762B6E6FAA00B94872 /* ApplePie */; };
+		8DCD2C512D3A7975006A8F78 /* OtherExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCB302A2A971C2F00DC9ABB /* OtherExtensions.swift */; };
 		8DD0526D2C133E3F002F752E /* ToSafeUnsafeObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD0526C2C133E3F002F752E /* ToSafeUnsafeObject.swift */; };
 		8DD5C38C2A603F4500FC862C /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD5C38B2A603F4500FC862C /* Formatters.swift */; };
 		8DD5C38F2A607F1C00FC862C /* CategorySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD5C38E2A607F1C00FC862C /* CategorySelector.swift */; };
@@ -306,6 +308,7 @@
 		8D7ECC792AACAF6F005A515D /* CustomColorSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomColorSelector.swift; sourceTree = "<group>"; };
 		8D7EFB0A2A85096B009797E8 /* Date+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
 		8D7FCA542B16A59C009AAAEB /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		8D800A7E2D39672F00887DED /* TimeZone+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeZone+Extensions.swift"; sourceTree = "<group>"; };
 		8D803B102C4EA58200778B6C /* CloudKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitManager.swift; sourceTree = "<group>"; };
 		8D803B122C4EA6AD00778B6C /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		8D830DF02AE00CE600EFB1E7 /* ShadowedCategoriesRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowedCategoriesRow.swift; sourceTree = "<group>"; };
@@ -670,6 +673,7 @@
 				8DB9F9B82BB6F811000AF853 /* UserDefaults+Extensions.swift */,
 				8DBD9B2B2CC97A6C00C77567 /* UDKey.swift */,
 				8DCB302A2A971C2F00DC9ABB /* OtherExtensions.swift */,
+				8D800A7E2D39672F00887DED /* TimeZone+Extensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1146,6 +1150,7 @@
 				8D8845022C57EEDB0066F87D /* Formatters.swift in Sources */,
 				8D043F6E2B51A9F000F2F560 /* AccessorySumWidget.swift in Sources */,
 				8D766B092C53D33600CF317A /* WeeklySpendingsWidget.swift in Sources */,
+				8DCD2C512D3A7975006A8F78 /* OtherExtensions.swift in Sources */,
 				8D766B052C53D2A100CF317A /* Line.swift in Sources */,
 				8DBD9B2D2CC97A7A00C77567 /* UDKey.swift in Sources */,
 				8DCB1BDB2B53122E000FFE2B /* AddExpenseWidgetProvider.swift in Sources */,
@@ -1282,6 +1287,7 @@
 				8D9B50162AC2FCCD00C7732B /* RatesErrors.swift in Sources */,
 				8D8EA1932B2A18DA009B8B5D /* UIKitModalPresenter.swift in Sources */,
 				8DBFEBF92A49ED9A00165414 /* HomeView.swift in Sources */,
+				8D800A7F2D39672F00887DED /* TimeZone+Extensions.swift in Sources */,
 				8DD772DB2D2C43C8009F5787 /* CloudKitKVSManager.swift in Sources */,
 				8DE29BA82A683F01002F5C42 /* AddCategoryView.swift in Sources */,
 				8DBD9B282CC9210300C77567 /* URL+Extensions.swift in Sources */,
@@ -1369,7 +1375,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 46;
+				CURRENT_PROJECT_VERSION = 47;
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1408,7 +1414,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 46;
+				CURRENT_PROJECT_VERSION = 47;
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1568,7 +1574,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 46;
+				CURRENT_PROJECT_VERSION = 47;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
@@ -1612,7 +1618,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 46;
+				CURRENT_PROJECT_VERSION = 47;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;

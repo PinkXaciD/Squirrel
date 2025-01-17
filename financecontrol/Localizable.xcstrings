@@ -283,7 +283,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Appication restart required"
+            "value" : "Application restart required"
           }
         }
       }
@@ -555,10 +555,26 @@
     "First Flight" : {
 
     },
+    "format-without-timezones-description-key" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If the time zone of the expense differs from the current one, the date will be formatted with the time zone of the expense. You can change this behavior by enabling this option."
+          }
+        }
+      }
+    },
     "Formatting" : {
 
     },
     "From" : {
+
+    },
+    "Full changelog" : {
+
+    },
+    "Full changelog on GitHub" : {
 
     },
     "Gestures" : {
@@ -586,9 +602,6 @@
 
     },
     "Icon" : {
-
-    },
-    "If the time zone of the expense differs from the current one, the date will be formatted with the time zone of the expense. You can change this behavior by enabling this option." : {
 
     },
     "If you believe this policy has been violated in any way, please create an issue on GitHub." : {
@@ -644,6 +657,9 @@
 
     },
     "More about policy changes" : {
+
+    },
+    "More timezone format options" : {
 
     },
     "More ways to reach us" : {
@@ -1050,6 +1066,9 @@
 
     },
     "You can choose a currency to be selected by default, different from display currency" : {
+
+    },
+    "You can now change timezone format on expense screen" : {
 
     },
     "You can perform quick actions like editing or deleting via swipe actions or by holding row" : {

@@ -44,12 +44,12 @@ struct StatsListView: View {
     }
     
     private var noResults: some View {
-        if spendings.isEmpty {
-            CustomContentUnavailableView("No Expenses", imageName: "list.bullet", description: "You can add expenses from home screen.")
-        } else if !searchModel.search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+        if !searchModel.search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             CustomContentUnavailableView.search(searchModel.search.trimmingCharacters(in: .whitespacesAndNewlines))
-        } else {
+        } else if fvm.applyFilters {
             CustomContentUnavailableView("No results for these filters", imageName: "tray.fill")
+        } else {
+            CustomContentUnavailableView("No Expenses", imageName: "list.bullet", description: "You can add expenses from home screen.")
         }
     }
     

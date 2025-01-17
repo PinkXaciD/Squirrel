@@ -10,6 +10,8 @@ import SwiftUI
 struct WhatsNewView: View {
     @Environment(\.dismiss)
     private var dismiss
+    @Environment(\.openURL)
+    private var openURL
     
     @AppStorage(UDKey.color.rawValue)
     private var tint: String = "Orange"
@@ -19,26 +21,23 @@ struct WhatsNewView: View {
     @ScaledMetric
     private var buttonSize: CGFloat = 50
     
+    @State
+    private var showConfirmationDialog: Bool = false
+    
+    var showSmallHeader: Bool {
+        UIApplication.shared.keyWindow?.safeAreaInsets.bottom == 0 // Check if device has home button
+    }
+    
     var body: some View {
         NavigationView {
-            VStack {
+            VStack(alignment: .center) {
                 Spacer()
                 
-                Image(.onboarding)
-                    .clipShape(RoundedRectangle(cornerRadius: 30))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 30)
-                            .stroke(lineWidth: 1)
-                            .foregroundColor(.primary)
-                            .opacity(0.3)
-                    }
-                    .padding(.vertical)
-                
-                Text("What's new in \(Text("Squirrel \(Bundle.main.releaseVersionNumber ?? "")").foregroundColor(.orange))")
-                    .font(.largeTitle)
-                    .fontWeight(.heavy)
-                    .padding()
-                    .multilineTextAlignment(.center)
+                if showSmallHeader {
+                    smallHeader
+                } else {
+                    largeHeader
+                }
                 
                 Spacer()
                 
@@ -50,6 +49,13 @@ struct WhatsNewView: View {
                 )
                 
                 getNavLinkRow(
+                    imageName: "globe.asia.australia.fill",
+                    title: "More timezone format options",
+                    subtitle: "You can now change timezone format on expense screen",
+                    destination: SettingsFormattingView().navigationBarTitleDisplayMode(.large)
+                )
+                
+                getNavLinkRow(
                     imageName: "at",
                     title: "Social Networks",
                     subtitle: "More ways to reach us",
@@ -57,6 +63,10 @@ struct WhatsNewView: View {
                 )
                 
                 Spacer()
+                
+                Button("Full changelog on GitHub") {
+                    showConfirmationDialog.toggle()
+                }
             }
             .padding()
             .toolbar {
@@ -69,8 +79,62 @@ struct WhatsNewView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
         }
-        .tint(colorIdentifier(color: tint))
-        .accentColor(colorIdentifier(color: tint))
+        .tint(.orange)
+        .accentColor(.orange)
+        .confirmationDialog("\(URL.githubChangelog)", isPresented: $showConfirmationDialog, titleVisibility: .visible) {
+            Button("Open in browser") {
+                openURL(URL.githubChangelog)
+            }
+            
+            Button("Copy to clipboard") {
+                UIPasteboard.general.url = URL.githubChangelog
+            }
+        } message: {
+            Text("Full changelog")
+        }
+    }
+    
+    private var smallHeader: some View {
+        HStack {
+            Image(.onboarding)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 80, height: 80)
+                .clipShape(RoundedRectangle(cornerRadius: 15))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 15)
+                        .stroke(lineWidth: 1)
+                        .foregroundColor(.primary)
+                        .opacity(0.3)
+                }
+            
+            Text("What's new in \(Text("Squirrel \(Bundle.main.releaseVersionNumber ?? "")").foregroundColor(.orange))")
+                .font(.largeTitle)
+                .fontWeight(.heavy)
+                .minimumScaleFactor(0.5)
+                .padding(.leading)
+                .multilineTextAlignment(.leading)
+        }
+    }
+    
+    private var largeHeader: some View {
+        VStack {
+            Image(.onboarding)
+                .clipShape(RoundedRectangle(cornerRadius: 30))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 30)
+                        .stroke(lineWidth: 1)
+                        .foregroundColor(.primary)
+                        .opacity(0.3)
+                }
+            
+            Text("What's new in \(Text("Squirrel \(Bundle.main.releaseVersionNumber ?? "")").foregroundColor(.orange))")
+                .font(.largeTitle)
+                .fontWeight(.heavy)
+                .minimumScaleFactor(0.5)
+                .padding()
+                .multilineTextAlignment(.center)
+        }
     }
     
     @ViewBuilder
@@ -93,6 +157,7 @@ struct WhatsNewView: View {
                 Image(systemName: "chevron.forward")
                     .foregroundStyle(.secondary)
             }
+            .background(.background)
         }
         .buttonStyle(CustomButtonStyle())
     }
@@ -103,7 +168,7 @@ struct WhatsNewView: View {
         title: LocalizedStringKey,
         subtitle: LocalizedStringKey?
     ) -> some View {
-        let label = HStack(spacing: 15) {
+        HStack(spacing: 15) {
             Image(systemName: imageName)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
@@ -125,18 +190,22 @@ struct WhatsNewView: View {
             Spacer()
         }
         .padding()
-        
-        label
+//        .minimumScaleFactor(0.8)
     }
     
     private var cloudSyncView: some View {
-        VStack(alignment: .leading) {
-            OnboardingHeaderView(header: "iCloud sync", description: "You can change this setting later in settings. Application reload will be required")
-                .padding(.bottom, 50)
+        ZStack {
+            Color(uiColor: .systemGroupedBackground)
+                .ignoresSafeArea()
             
-            CloudSyncView()
+            VStack(alignment: .leading) {
+                OnboardingHeaderView(header: "iCloud sync", description: "You can change this setting later in settings. Application reload will be required")
+                    .padding(.bottom, 50)
+                
+                CloudSyncView()
+            }
+            .padding(.horizontal)
         }
-        .padding()
     }
     
     struct CustomButtonStyle: ButtonStyle {
