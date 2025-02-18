@@ -25,14 +25,12 @@ struct WhatsNewView: View {
     private var showConfirmationDialog: Bool = false
     
     var showSmallHeader: Bool {
-        UIApplication.shared.keyWindow?.safeAreaInsets.bottom == 0 // Check if device has home button
+        UIApplication.shared.keyWindow?.safeAreaInsets.bottom == 0 // Check if device has a home button
     }
     
     var body: some View {
         NavigationView {
             VStack(alignment: .center) {
-                Spacer()
-                
                 if showSmallHeader {
                     smallHeader
                 } else {
@@ -111,7 +109,6 @@ struct WhatsNewView: View {
             Text("What's new in \(Text("Squirrel \(Bundle.main.releaseVersionNumber ?? "")").foregroundColor(.orange))")
                 .font(.largeTitle)
                 .fontWeight(.heavy)
-                .minimumScaleFactor(0.5)
                 .padding(.leading)
                 .multilineTextAlignment(.leading)
         }
@@ -131,9 +128,9 @@ struct WhatsNewView: View {
             Text("What's new in \(Text("Squirrel \(Bundle.main.releaseVersionNumber ?? "")").foregroundColor(.orange))")
                 .font(.largeTitle)
                 .fontWeight(.heavy)
-                .minimumScaleFactor(0.5)
                 .padding()
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
     

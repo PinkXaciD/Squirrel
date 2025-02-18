@@ -707,6 +707,9 @@
     "No Expenses" : {
 
     },
+    "No Expenses in This Month" : {
+
+    },
     "No favorite categories. You can add them from settings." : {
 
     },
@@ -722,7 +725,7 @@
     "No results for \"%@\"" : {
 
     },
-    "No results for these filters" : {
+    "No Results for These Filters" : {
 
     },
     "No up to date exchange rate found" : {

@@ -20,12 +20,26 @@ final class CoreDataModel: ObservableObject {
         self.container = manager.container
         self.context = manager.context
         self.localHistoryToken = manager.container.persistentStoreCoordinator.currentPersistentHistoryToken(fromStores: container.persistentStoreCoordinator.persistentStores)
+        self.spendingsCount = 0
+        
         fetchSpendings(updateWidgets: false)
-        fetchCategories()
         timerUpdate()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(updateFromCloud), name: .NSPersistentStoreRemoteChange, object: context.persistentStoreCoordinator)
-        NotificationCenter.default.addObserver(self, selector: #selector(fetchSpendings), name: .NSManagedObjectContextDidSaveObjectIDs, object: nil)
+        if UserDefaults.standard.bool(forKey: UDKey.iCloudSync.rawValue) {
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(updateFromCloud),
+                name: .NSPersistentStoreRemoteChange,
+                object: context.persistentStoreCoordinator
+            )
+        }
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(contextDidSave),
+            name: .NSManagedObjectContextDidSave,
+            object: nil
+        )
     }
     
     @objc
@@ -38,17 +52,24 @@ final class CoreDataModel: ObservableObject {
         }
     }
     
+    @objc
+    private func contextDidSave(_ notification: Notification) {
+//        print(#function)
+        self.fetchSpendings()
+    }
+    
     /// An array containing all spendings from CoreData
+    @available(*, deprecated, renamed: "FetchRequest", message: "")
     @Published
     var savedSpendings: [SpendingEntity] = []
     
     /// Data for spendings list in `StatsView`
-    @Published
-    var statsListData: StatsListData = StatsListData()
+//    @Published
+//    var statsListData: StatsListData = StatsListData()
     
     /// Data for bar chart in `HomeView`
-    @Published
-    var barChartData: NewBarChartData = NewBarChartData()
+//    @Published
+//    var barChartData: NewBarChartData = NewBarChartData()
     
     /// Data for pie chart in `StatsView`
     @Published
@@ -59,13 +80,20 @@ final class CoreDataModel: ObservableObject {
     var usedCurrencies: Set<Currency> = .init()
     
     /// An array containing not shadowed categories from CoreData
-//    @available(*, deprecated, renamed: "FetchRequest", message: "")
+    @available(*, deprecated, renamed: "FetchRequest", message: "")
     @Published
     var savedCategories: [CategoryEntity] = []
     
     /// An array containing shadowed categories from CoreData
+    @available(*, deprecated, renamed: "FetchRequest", message: "")
     @Published
     var shadowedCategories: [CategoryEntity] = []
+    
+    @Published
+    var spendingsCount: Int
+    
+    @Published
+    var firstSpendingDate: Date?
     
     var lastFetchDate: Date? = nil
     
@@ -131,7 +159,11 @@ extension CoreDataModel {
                 }
             }
             // safeSpending.wrappedDate >= firstDate, safeSpending.wrappedDate < secondDate
-            for spending in self.savedSpendings {
+            let fetchRequest = SpendingEntity.fetchRequest()
+            fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \SpendingEntity.date, ascending: false)]
+            let fetchedSpendings = try? fetchRequest.execute()
+            
+            for spending in fetchedSpendings ?? [] {
                 if spending.wrappedDate >= dateFrom && spending.wrappedDate < dateTo {
                     appendToResult(spending)
                 }
@@ -166,7 +198,12 @@ extension CoreDataModel {
                 encoder.outputFormatting = [.sortedKeys, .prettyPrinted]
                 encoder.dateEncodingStrategy = .iso8601
                 
-                let data = try encoder.encode(savedCategories)
+                let fetchRequest = CategoryEntity.fetchRequest()
+                fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \CategoryEntity.name, ascending: true)]
+                
+                let fetchedResults = try context.fetch(fetchRequest)
+                
+                let data = try encoder.encode(fetchedResults)
                 
                 if let jsonString = String(
                     data: data,
@@ -214,16 +251,33 @@ extension CoreDataModel {
                 decoder.userInfo[.moc] = privateContext
                 
                 try privateContext.performAndWait {
+                    let spendings = try SpendingEntity.fetchRequest().execute()
+                    let categories = try CategoryEntity.fetchRequest().execute()
+                    var spendingIDs = Set<UUID>()
+                    var categoryIDs = Set<UUID>()
+                    
+                    for spending in spendings {
+                        if let id = spending.id {
+                            spendingIDs.insert(id)
+                        }
+                    }
+                    
+                    for category in categories {
+                        if let id = category.id {
+                            categoryIDs.insert(id)
+                        }
+                    }
+                    
                     let tempData = try decoder.decode([CategoryEntity].self, from: jsonData)
                     
-                    let existingCategoryIds = Set((savedCategories + shadowedCategories).map { $0.id })
-                    let existingSpendingsIds = Set(savedSpendings.map { $0.id })
+//                    let existingCategoryIds = Set((savedCategories + shadowedCategories).map { $0.id })
+//                    let existingSpendingsIds = Set(savedSpendings.map { $0.id })
                     
                     for category in tempData {
                         if let spendings = category.spendings?.allObjects as? [SpendingEntity], !spendings.isEmpty {
                             for spending in spendings {
-                                if !existingSpendingsIds.contains(spending.id) {
-                                    if existingCategoryIds.contains(category.id) {
+                                if !spendingIDs.contains(spending.wrappedId) {
+                                    if categoryIDs.contains(category.id ?? .init()) {
                                         importSpending(spending)
                                     }
                                     
@@ -234,7 +288,7 @@ extension CoreDataModel {
                             }
                         }
                         
-                        if existingCategoryIds.contains(category.id) {
+                        if categoryIDs.contains(category.id ?? UUID()) {
                             privateContext.delete(category)
                         }
                     }

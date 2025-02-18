@@ -46,6 +46,8 @@ struct ContentView: View {
     private var statsViewModel: StatsViewModel = StatsViewModel()
     @StateObject
     private var cloudKitKVSManager = CloudKitKVSManager()
+    @StateObject
+    private var barChartViewModel = BarChartViewModel(context: DataManager.shared.context)
     
     @ObservedObject 
     private var errorHandler = ErrorHandler.shared
@@ -147,6 +149,7 @@ struct ContentView: View {
             cloudSyncWasEnabled: cloudSyncWasEnabled
         )
         .environmentObject(cloudKitKVSManager)
+        .environmentObject(barChartViewModel)
         .tabItem {
             Label("Home", systemImage: "house.fill")
         }

@@ -43,6 +43,7 @@
 		8D2AD7D22BA1CE6E001DCC61 /* OnboardingGesturesTemplateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AD7D12BA1CE6E001DCC61 /* OnboardingGesturesTemplateView.swift */; };
 		8D2AD7D42BA1CEA6001DCC61 /* OnboardingCategoriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AD7D32BA1CEA6001DCC61 /* OnboardingCategoriesView.swift */; };
 		8D2AD7D62BA21152001DCC61 /* Transition+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AD7D52BA21152001DCC61 /* Transition+Extensions.swift */; };
+		8D3542DC2D3ECE850065A5CE /* BarChartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D3542DB2D3ECE850065A5CE /* BarChartViewModel.swift */; };
 		8D35AC962B0E62DE0030F7DF /* AddSpendingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D35AC952B0E62DE0030F7DF /* AddSpendingViewModel.swift */; };
 		8D3876632A740F960005FFAF /* InputUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D3876622A740F960005FFAF /* InputUtils.swift */; };
 		8D39C6932B1F3C9500F40FD6 /* EditReturnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D39C6922B1F3C9500F40FD6 /* EditReturnView.swift */; };
@@ -174,6 +175,7 @@
 		8DE80D912B8D096400B6ACA8 /* FiltersViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DE80D902B8D096400B6ACA8 /* FiltersViewModel.swift */; };
 		8DEC3FF12AD580D700F5D82E /* DebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEC3FF02AD580D700F5D82E /* DebugView.swift */; };
 		8DEED7282A5C4A3700C79752 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEED7272A5C4A3700C79752 /* SettingsView.swift */; };
+		8DEF69CB2D64E57D004C3384 /* StatsRowViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DEF69CA2D64E57D004C3384 /* StatsRowViewModel.swift */; };
 		8DF003752B0CB07900133554 /* PieChartCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF003742B0CB07900133554 /* PieChartCenterView.swift */; };
 		8DF003772B0CC0A200133554 /* FiltersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF003762B0CC0A200133554 /* FiltersView.swift */; };
 		8DF6B9D22B7E78CA0088645E /* StatsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DF6B9D12B7E78CA0088645E /* StatsListView.swift */; };
@@ -251,6 +253,7 @@
 		8D2AD7D12BA1CE6E001DCC61 /* OnboardingGesturesTemplateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingGesturesTemplateView.swift; sourceTree = "<group>"; };
 		8D2AD7D32BA1CEA6001DCC61 /* OnboardingCategoriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCategoriesView.swift; sourceTree = "<group>"; };
 		8D2AD7D52BA21152001DCC61 /* Transition+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Transition+Extensions.swift"; sourceTree = "<group>"; };
+		8D3542DB2D3ECE850065A5CE /* BarChartViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarChartViewModel.swift; sourceTree = "<group>"; };
 		8D35AC952B0E62DE0030F7DF /* AddSpendingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddSpendingViewModel.swift; sourceTree = "<group>"; };
 		8D3876622A740F960005FFAF /* InputUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputUtils.swift; sourceTree = "<group>"; };
 		8D39C6922B1F3C9500F40FD6 /* EditReturnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditReturnView.swift; sourceTree = "<group>"; };
@@ -378,6 +381,7 @@
 		8DE80D902B8D096400B6ACA8 /* FiltersViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersViewModel.swift; sourceTree = "<group>"; };
 		8DEC3FF02AD580D700F5D82E /* DebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugView.swift; sourceTree = "<group>"; };
 		8DEED7272A5C4A3700C79752 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		8DEF69CA2D64E57D004C3384 /* StatsRowViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsRowViewModel.swift; sourceTree = "<group>"; };
 		8DF003742B0CB07900133554 /* PieChartCenterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieChartCenterView.swift; sourceTree = "<group>"; };
 		8DF003762B0CC0A200133554 /* FiltersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersView.swift; sourceTree = "<group>"; };
 		8DF6B9D12B7E78CA0088645E /* StatsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsListView.swift; sourceTree = "<group>"; };
@@ -509,6 +513,7 @@
 			isa = PBXGroup;
 			children = (
 				8D35AC952B0E62DE0030F7DF /* AddSpendingViewModel.swift */,
+				8D3542DB2D3ECE850065A5CE /* BarChartViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -722,6 +727,7 @@
 				8DE80D902B8D096400B6ACA8 /* FiltersViewModel.swift */,
 				8D54F4F52B96326200B17886 /* StatsSearchViewModel.swift */,
 				8D044C022C35A88E00868A21 /* StatsViewModel.swift */,
+				8DEF69CA2D64E57D004C3384 /* StatsRowViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -1212,6 +1218,7 @@
 				8DBEF1332ADD5BB8005D683D /* NewCurrencyRow.swift in Sources */,
 				8DBFEBCE2A49ED4800165414 /* financecontrolApp.swift in Sources */,
 				8D6A5A192C18A15100322929 /* FiltersCurrenciesView.swift in Sources */,
+				8DEF69CB2D64E57D004C3384 /* StatsRowViewModel.swift in Sources */,
 				8D3876632A740F960005FFAF /* InputUtils.swift in Sources */,
 				8DD5C38F2A607F1C00FC862C /* CategorySelector.swift in Sources */,
 				8D6E44102B18C53100FDFF9D /* ReturnEntity+CoreDataClass.swift in Sources */,
@@ -1223,6 +1230,7 @@
 				8DD5C38C2A603F4500FC862C /* Formatters.swift in Sources */,
 				8DF6B9D22B7E78CA0088645E /* StatsListView.swift in Sources */,
 				8D2240BD2B0F94B500D5572B /* ViewModelProtocol.swift in Sources */,
+				8D3542DC2D3ECE850065A5CE /* BarChartViewModel.swift in Sources */,
 				8D46ED852BF383130091145B /* StatsSearchOverlayView.swift in Sources */,
 				8D35AC962B0E62DE0030F7DF /* AddSpendingViewModel.swift in Sources */,
 				8D4A539C2A78055200081E5F /* EditSpendingView.swift in Sources */,
@@ -1375,7 +1383,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 47;
+				CURRENT_PROJECT_VERSION = 48;
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1414,7 +1422,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 47;
+				CURRENT_PROJECT_VERSION = 48;
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1574,7 +1582,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 47;
+				CURRENT_PROJECT_VERSION = 48;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
@@ -1618,7 +1626,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 47;
+				CURRENT_PROJECT_VERSION = 48;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;

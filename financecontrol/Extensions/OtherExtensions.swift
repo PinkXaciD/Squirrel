@@ -90,3 +90,11 @@ extension NumberFormatter {
         return formatter
     }
 }
+
+extension NSNotification.Name {
+    static let PieChartScrollToPrevious = NSNotification.Name(rawValue: "PieChartScrollToPrevious")
+    
+    static let PieChartScrollToNext = NSNotification.Name(rawValue: "PieChartScrollToNext")
+    
+    static let UpdatePieChart = NSNotification.Name("UpdatePieChart")
+}

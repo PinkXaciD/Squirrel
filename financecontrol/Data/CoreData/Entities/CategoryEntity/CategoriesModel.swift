@@ -14,20 +14,20 @@ extension CoreDataModel {
     
     func fetchCategories() {
         
-        let request = CategoryEntity.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-        request.predicate = NSPredicate(format: "isShadowed == false")
-        
-        let requestForShadowed = CategoryEntity.fetchRequest()
-        requestForShadowed.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-        requestForShadowed.predicate = NSPredicate(format: "isShadowed == true")
-        
-        do {
-            savedCategories = try context.fetch(request)
-            shadowedCategories = try context.fetch(requestForShadowed)
-        } catch {
-            ErrorType(error: error).publish()
-        }
+//        let request = CategoryEntity.fetchRequest()
+//        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+//        request.predicate = NSPredicate(format: "isShadowed == false")
+//        
+//        let requestForShadowed = CategoryEntity.fetchRequest()
+//        requestForShadowed.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+//        requestForShadowed.predicate = NSPredicate(format: "isShadowed == true")
+//        
+//        do {
+//            savedCategories = try context.fetch(request)
+//            shadowedCategories = try context.fetch(requestForShadowed)
+//        } catch {
+//            ErrorType(error: error).publish()
+//        }
     }
     
     func findCategory(_ id: UUID, in context: NSManagedObjectContext = DataManager.shared.context) -> CategoryEntity? {

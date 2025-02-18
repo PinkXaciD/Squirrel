@@ -12,7 +12,8 @@ struct CategoryRow: View {
 //    @EnvironmentObject private var cdm: CoreDataModel
     @Environment(\.managedObjectContext) private var viewContext
     
-    let category: CategoryEntity
+    @ObservedObject
+    var category: CategoryEntity
     
     var body: some View {
         
@@ -33,6 +34,7 @@ struct CategoryRow: View {
             getDeleteButton(isSwipeAction: false)
         }
         .normalizePadding()
+        .animation(.default, value: category.isFavorite)
     }
     
     private var navLinkLabel: some View {
@@ -63,11 +65,11 @@ struct CategoryRow: View {
     
     private var favoriteButton: some View {
         Button {
-            withAnimation {
+//            withAnimation {
                 category.isFavorite.toggle()
                 try? viewContext.save()
 //                cdm.changeFavoriteStateOfCategory(category)
-            }
+//            }
         } label: {
             Label(
                 category.isFavorite ? "Remove from favorites" : "Add to favorites", 

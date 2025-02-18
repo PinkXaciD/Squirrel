@@ -18,8 +18,8 @@ struct DebugView: View {
     private var defaultsConfirmationIsShowing: Bool = false
     @State
     private var timelineConfirmationIsShowing: Bool = false
-    @State
-    private var validateConfirmationIsShowing: Bool = false
+//    @State
+//    private var validateConfirmationIsShowing: Bool = false
     
     var body: some View {
         List {
@@ -37,7 +37,7 @@ struct DebugView: View {
             
             reloadWidgetsSection
             
-            validateSection
+//            validateSection
         }
         .confirmationDialog("This will clear all settings of app. \nYou can't undo this action.", isPresented: $defaultsConfirmationIsShowing, titleVisibility: .visible) {
             clearSharedDefaultsButton
@@ -47,11 +47,11 @@ struct DebugView: View {
         .confirmationDialog("", isPresented: $timelineConfirmationIsShowing) {
             Button("Reload all widget timelines", role: .destructive, action: WidgetsManager.shared.reloadAll)
         }
-        .confirmationDialog("", isPresented: $validateConfirmationIsShowing) {
-            Button("Validate returns", role: .destructive) {
-                cdm.validateReturns(rvm: rvm)
-            }
-        }
+//        .confirmationDialog("", isPresented: $validateConfirmationIsShowing) {
+//            Button("Validate returns", role: .destructive) {
+//                cdm.validateReturns(rvm: rvm)
+//            }
+//        }
         .navigationTitle("Debug")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -370,16 +370,16 @@ struct DebugView: View {
         }
     }
     
-    private var validateSection: some View {
-        Section {
-            Button(role: .destructive) {
-                validateConfirmationIsShowing.toggle()
-            } label: {
-                Text("Validate returns")
-            }
-
-        }
-    }
+//    private var validateSection: some View {
+//        Section {
+//            Button(role: .destructive) {
+//                validateConfirmationIsShowing.toggle()
+//            } label: {
+//                Text("Validate returns")
+//            }
+//
+//        }
+//    }
     
     private var keychainSection: some View {
         Section {

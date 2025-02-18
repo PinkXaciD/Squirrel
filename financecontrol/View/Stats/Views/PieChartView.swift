@@ -27,26 +27,31 @@ struct PieChartView: View {
     private var minimizeLegend: Bool = UserDefaults.standard.bool(forKey: UDKey.minimizeLegend.rawValue)
     
     var body: some View {
-        Section {
-            VStack {
-                chart
-            }
-            .frame(height: size * 1.1)
-            .disabled(pcvm.isScrollDisabled)
-            .listRowInsets(.init(top: 20, leading: 0, bottom: 20, trailing: 0))
+        VStack(alignment: .leading) {
+            chart
+                .frame(height: size * 1.1)
+                .disabled(pcvm.isScrollDisabled)
+                .clipped()
             
             if !pcvm.data[(pcvm.selection >= pcvm.data.count || pcvm.selection < 0) ? 0 : pcvm.selection].categories.isEmpty {
+                Divider()
+                
                 legend
             }
-        } footer: {
-            if showMinimizeButton {
-                footer
-            }
+        }
+        .padding(.vertical, 8)
+        .background {
+            RoundedRectangle(cornerRadius: 10)
+                .foregroundStyle(Color(uiColor: .secondarySystemGroupedBackground))
         }
         .onChange(of: pcvm.selection) { _ in
             if pcvm.showOther {
                 pcvm.showOther = false
             }
+        }
+        
+        if showMinimizeButton {
+            footer
         }
     }
     
@@ -69,6 +74,8 @@ struct PieChartView: View {
                         
                         Text("Tap here to remove selection")
                     }
+                    .foregroundStyle(.secondary)
+                    .font(.footnote)
                 }
                 .buttonStyle(.plain)
             }
@@ -77,6 +84,7 @@ struct PieChartView: View {
             
             Button(action: toggleLegend, label: expandButtonLabel)
         }
+        .padding(.horizontal)
     }
 }
 

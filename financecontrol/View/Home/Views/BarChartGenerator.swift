@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct BarChartGenerator: View {
-    @StateObject var vm: BarChartViewModel
+    @EnvironmentObject var vm: BarChartViewModel
     @AppStorage(UDKey.defaultCurrency.rawValue) var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
 
     @State private var itemSelected: Int = -1
@@ -16,7 +16,7 @@ struct BarChartGenerator: View {
     
     var body: some View {
         VStack(alignment: .center) {
-            BarChart(vm: vm, itemSelected: $itemSelected, showAverage: $showAverage)
+            BarChart(itemSelected: $itemSelected, showAverage: $showAverage)
             
             Divider()
                 .padding(.vertical, 5)

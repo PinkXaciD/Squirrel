@@ -16,21 +16,15 @@ final class DataManager {
     init() {
         let container =  NSPersistentCloudKitContainer(name: "DataContainer")
         
-        guard let storeDescription = container.persistentStoreDescriptions.first else {
-            self.container = container
-            self.context = container.viewContext
-            return
+        if let storeDescription = container.persistentStoreDescriptions.first {
+            if !NSUbiquitousKeyValueStore.default.bool(forKey: UDKey.iCloudSync.rawValue) {
+                storeDescription.configuration = "Default"
+                storeDescription.cloudKitContainerOptions = nil
+            }
+            
+            storeDescription.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+            storeDescription.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
         }
-        
-        if !NSUbiquitousKeyValueStore.default.bool(forKey: UDKey.iCloudSync.rawValue) {
-            storeDescription.configuration = "Default"
-            storeDescription.cloudKitContainerOptions = nil
-        } else {
-            storeDescription.configuration = "Cloud"
-        }
-        
-        storeDescription.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
-        storeDescription.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
         
         container.loadPersistentStores { description, error in
             if let error = error {

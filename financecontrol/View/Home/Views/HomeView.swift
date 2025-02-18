@@ -103,7 +103,7 @@ struct HomeView: View {
     
     private var barChartSection: some View {
         Section {
-            BarChartGenerator(vm: BarChartViewModel(context: viewContext))
+            BarChartGenerator()
                 .padding(.vertical)
         }
     }

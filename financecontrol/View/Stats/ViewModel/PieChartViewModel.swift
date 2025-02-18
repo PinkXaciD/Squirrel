@@ -30,7 +30,7 @@ final class PieChartViewModel: ViewModel {
         
         self.data = cdm.getNewChartData()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(updateData), name: Notification.Name("UpdatePieChart"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateData), name: .UpdatePieChart, object: nil)
         
         #if DEBUG
         let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)

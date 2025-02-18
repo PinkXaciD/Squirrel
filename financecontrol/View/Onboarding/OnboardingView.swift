@@ -161,7 +161,7 @@ struct OnboardingView: View {
             
             if let defaults = UserDefaults(suiteName: Vars.groupName) {
                 defaults.set(selectedCurrency, forKey: "defaultCurrency")
-                cdm.passSpendingsToSumWidget(data: cdm.statsListData)
+                cdm.passSpendingsToSumWidget()
             }
         }
         

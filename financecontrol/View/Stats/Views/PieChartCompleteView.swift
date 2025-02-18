@@ -28,7 +28,7 @@ struct PieChartCompleteView: View {
                 }
             } else {
                 APChart(
-                    vm.showOther ? (data.categories + data.otherCategories) : (data.categories),
+                    categories(),
                     separators: 0.3,
                     innerRadius: 0.73,
                     animation: .default
@@ -43,5 +43,19 @@ struct PieChartCompleteView: View {
                 operationsInMonth: vm.selectedCategory == nil ? data.sum : data.categoriesDict[vm.selectedCategory?.id ?? .init()]?.sum ?? 0
             )
         }
+    }
+    
+    private func categories() -> [ChartCategory] {
+        if vm.showOther {
+            return data.categories + data.otherCategories
+        }
+        
+        if let otherCategory = data.otherCategory {
+            var result = data.categories
+            result.append(otherCategory)
+            return result
+        }
+        
+        return data.categories
     }
 }

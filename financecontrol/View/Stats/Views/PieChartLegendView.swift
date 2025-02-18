@@ -80,7 +80,7 @@ struct PieChartLegendView: View {
                     Spacer()
                 }
                 .font(.system(size: 14))
-                .listRowInsets(.init(top: 10, leading: 20, bottom: 10, trailing: 20))
+                .padding(.horizontal)
                 .transaction { transaction in
                     transaction.animation = nil
                 }

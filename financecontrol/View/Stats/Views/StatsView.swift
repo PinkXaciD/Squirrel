@@ -18,10 +18,6 @@ struct StatsView: View {
     @AppStorage(UDKey.color.rawValue)
     private var tint: String = "Orange"
     
-//    @EnvironmentObject
-//    private var cdm: CoreDataModel
-//    @EnvironmentObject
-//    private var rvm: RatesViewModel
     @EnvironmentObject
     private var pcvm: PieChartViewModel
     @EnvironmentObject
@@ -57,7 +53,7 @@ struct StatsView: View {
             iPhoneStatsView
 #if DEBUG
                 .refreshable {
-                    viewContext.refreshAllObjects()
+                    NotificationCenter.default.post(name: .UpdatePieChart, object: nil)
                 }
 #endif
         }
@@ -65,33 +61,36 @@ struct StatsView: View {
     
     private var iPhoneStatsView: some View {
         NavigationView {
-            List {
-                if !isSearching, searchModel.input.isEmpty {
-                    PieChartView(size: size, showMinimizeButton: true)
-                        .id(0)
+            ZStack {
+                Color(uiColor: .systemGroupedBackground)
+                    .ignoresSafeArea(.all)
+                
+                ScrollView (.vertical) {
+                    LazyVStack {
+                        if !isSearching, searchModel.input.isEmpty {
+                            VStack {
+                                PieChartView(size: size, showMinimizeButton: true)
+                            }
+                        }
+                        
+                        StatsListView()
+                    }
+                    .padding()
+                    .toolbar {
+                        leadingToolbar
+                        
+                        trailingToolbar
+                    }
+                    .sheet(isPresented: $showFilters) {
+                        filters
+                    }
+                    .navigationTitle("Stats")
                 }
-                
-                StatsListView(
-                    spendings: SectionedFetchRequest(
-                        sectionIdentifier: \SpendingEntity.startOfDay,
-                        sortDescriptors: [SortDescriptor(\SpendingEntity.date, order: .reverse)],
-                        predicate: getListPredicate(),
-                        animation: .default
-                    )
-                )
             }
-            .toolbar {
-                leadingToolbar
-                
-                trailingToolbar
-            }
-            .sheet(isPresented: $showFilters) {
-                filters
-            }
-            .navigationTitle("Stats")
         }
         .navigationViewStyle(.stack)
         .searchable(text: $searchModel.input, placement: .automatic, prompt: "Search by place or comment")
+        .navigationViewStyle(.stack)
     }
     
     private var leadingToolbar: ToolbarItem<Void, some View> {
@@ -175,54 +174,80 @@ extension StatsView {
         pcvm.isScrollDisabled = false
     }
     
-    private func getListPredicate() -> NSPredicate {
-        if pcvm.selection == 0, !fvm.applyFilters, pcvm.selectedCategory == nil, searchModel.search.isEmpty {
-            return NSPredicate(value: true)
-        }
-        
-        var predicates = [NSPredicate]()
-        
-        if let selectedCategory = pcvm.selectedCategory {
-            let selectedCategoryPredicate = NSPredicate(format: "category.id == %@", selectedCategory.id as CVarArg)
-            predicates.append(selectedCategoryPredicate)
-        }
-        
-        if pcvm.selection != 0 {
-            let selectedMonthPredicate = NSPredicate(
-                format: "date >= %@ AND date < %@",
-                Date().getFirstDayOfMonth(-pcvm.selection) as CVarArg,
-                Date().getFirstDayOfMonth(-pcvm.selection + 1) as CVarArg
-            )
-            predicates.append(selectedMonthPredicate)
-        }
-        
-        if fvm.applyFilters {
-            let datePredicate = NSPredicate(format: "date >= %@ AND date < %@", fvm.startFilterDate as CVarArg, fvm.endFilterDate as CVarArg)
-            predicates.append(datePredicate)
-            
-            if !fvm.filterCategories.isEmpty {
-                let filterCategoriesPredicate = NSPredicate(format: "category.id IN %@", fvm.filterCategories as CVarArg)
-                predicates.append(filterCategoriesPredicate)
-            }
-            
-            if !fvm.currencies.isEmpty {
-                let currenciesPredicate = NSPredicate(format: "currency IN %@", fvm.currencies as CVarArg)
-                predicates.append(currenciesPredicate)
-            }
-            
-            if let withReturns = fvm.withReturns {
-                let returnsPredicate = NSPredicate(format: "returns.@count \(withReturns ? ">" : "==") 0")
-                predicates.append(returnsPredicate)
-            }
-        }
-        
-        if !searchModel.search.isEmpty {
-            let searchPredicate = NSPredicate(format: "place CONTAINS[c] %@ OR comment CONTAINS[c] %@", searchModel.search, searchModel.search)
-            predicates.append(searchPredicate)
-        }
-        
-        return NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-    }
+//    private func getListPredicate() -> NSPredicate {
+//        if pcvm.selection == 0, !fvm.applyFilters, pcvm.selectedCategory == nil, searchModel.search.isEmpty {
+//            return NSPredicate(value: true)
+//        }
+//        
+//        var predicates = [NSPredicate]()
+//        
+//        if let selectedCategory = pcvm.selectedCategory {
+//            let selectedCategoryPredicate = NSPredicate(format: "category.id == %@", selectedCategory.id as CVarArg)
+//            predicates.append(selectedCategoryPredicate)
+//        }
+//        
+//        if pcvm.selection != 0 {
+//            let selectedMonthPredicate = NSPredicate(
+//                format: "date >= %@ AND date < %@",
+//                Date().getFirstDayOfMonth(-pcvm.selection) as CVarArg,
+//                Date().getFirstDayOfMonth(-pcvm.selection + 1) as CVarArg
+//            )
+//            predicates.append(selectedMonthPredicate)
+//        }
+//        
+////        if !fvm.applyFilters && searchModel.search.isEmpty {
+////            if pcvm.selection == 0 {
+//////                let selectedMonthPredicate = NSPredicate(
+//////                    format: "date >= %@ AND date < %@",
+//////                    Date().getFirstDayOfMonth(-(pcvm.selection + loadMoreCount)) as CVarArg,
+//////                    Date().getFirstDayOfMonth(-pcvm.selection + 1) as CVarArg
+//////                )
+//////                predicates.append(selectedMonthPredicate)
+////            } else {
+////                let selectedMonthPredicate = NSPredicate(
+////                    format: "date >= %@ AND date < %@",
+////                    Date().getFirstDayOfMonth(-pcvm.selection) as CVarArg,
+////                    Date().getFirstDayOfMonth(-pcvm.selection + 1) as CVarArg
+////                )
+////                predicates.append(selectedMonthPredicate)
+////            }
+////        }
+//        
+//        if fvm.applyFilters {
+//            let datePredicate = NSPredicate(format: "date >= %@ AND date < %@", fvm.startFilterDate as CVarArg, fvm.endFilterDate as CVarArg)
+//            predicates.append(datePredicate)
+//            
+//            if !fvm.filterCategories.isEmpty {
+//                let filterCategoriesPredicate = NSPredicate(format: "category.id IN %@", fvm.filterCategories as CVarArg)
+//                predicates.append(filterCategoriesPredicate)
+//            }
+//            
+//            if !fvm.currencies.isEmpty {
+//                let currenciesPredicate = NSPredicate(format: "currency IN %@", fvm.currencies as CVarArg)
+//                predicates.append(currenciesPredicate)
+//            }
+//            
+//            if let withReturns = fvm.withReturns {
+//                let returnsPredicate = NSPredicate(format: "returns.@count \(withReturns ? ">" : "==") 0")
+//                predicates.append(returnsPredicate)
+//            }
+//        }
+////        else {
+////            let selectedMonthPredicate = NSPredicate(
+////                format: "date >= %@ AND date < %@",
+////                Date().getFirstDayOfMonth(-pcvm.selection) as CVarArg,
+////                Date().getFirstDayOfMonth(-pcvm.selection + 1) as CVarArg
+////            )
+////            predicates.append(selectedMonthPredicate)
+////        }
+//        
+//        if !searchModel.search.isEmpty {
+//            let searchPredicate = NSPredicate(format: "place CONTAINS[cd] %@ OR comment CONTAINS[cd] %@", searchModel.search, searchModel.search)
+//            predicates.append(searchPredicate)
+//        }
+//        
+//        return NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+//    }
 }
 
 fileprivate struct IPadStatsView: View {
@@ -284,13 +309,15 @@ fileprivate struct IPadStatsView: View {
     
     private var listView: some View {
         StatsListView(
-            spendings: SectionedFetchRequest(
-                sectionIdentifier: \SpendingEntity.startOfDay,
-                sortDescriptors: [SortDescriptor(\SpendingEntity.date, order: .reverse)],
-//                predicate: getListPredicate(),
-                predicate: NSPredicate(value: true),
-                animation: .default
-            )
+//            spendings: SectionedFetchRequest(
+//                sectionIdentifier: \SpendingEntity.startOfDay,
+//                sortDescriptors: [
+//                    SortDescriptor(\SpendingEntity.date, order: .reverse)
+//                ],
+////                predicate: getListPredicate(),
+//                predicate: NSPredicate(value: true),
+//                animation: .default
+//            )
         )
     }
     
@@ -376,6 +403,24 @@ fileprivate struct IPadStatsView: View {
         
         pcvm.updateData()
         pcvm.isScrollDisabled = false
+    }
+}
+
+fileprivate struct ListButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled)
+    private var isEnabled
+    
+    func makeBody(configuration: Configuration) -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color(uiColor: .secondarySystemGroupedBackground))
+            
+            configuration.label
+                .foregroundStyle(.tint)
+                .opacity(configuration.isPressed ? 0.5 : 1)
+                .padding(.horizontal)
+                .grayscale(isEnabled ? 0 : 1)
+        }
     }
 }
 

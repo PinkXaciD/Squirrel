@@ -66,6 +66,10 @@ fileprivate struct InternalCustomPagingScrollView: View {
         self.data = data
         self._scrollManager = StateObject(wrappedValue: PagingScrollViewManager(geometry: geometry, viewScale: viewScale, invertedViewScale: 1 - viewScale, invert: invert))
         
+//        NotificationCenter.default.addObserver(forName: NSNotification.Name("TestingScroll"), object: nil, queue: .main) { [self] notification in
+//            self.scrollToPrevious()
+//            print("Test")
+//        }
 //        print("ChildView \(selection.wrappedValue) init") // TODO: Remove
     }
     
@@ -347,7 +351,7 @@ final class PagingScrollViewManager: ObservableObject {
     let viewScale: CGFloat
     let invertedViewScale: CGFloat
     let invert: Bool
-    var cancellables = Set<AnyCancellable>()
+    var offsetSubscription: AnyCancellable?
     
     init(geometry: GeometryProxy, viewScale: CGFloat, invertedViewScale: CGFloat, invert: Bool) {
         self.hOffset = 0
@@ -380,7 +384,7 @@ final class PagingScrollViewManager: ObservableObject {
     }
     
     private func subscribeToOffset() {
-        self.$hOffset
+        offsetSubscription = self.$hOffset
             .debounce(for: 1, scheduler: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self else { return }
@@ -391,13 +395,10 @@ final class PagingScrollViewManager: ObservableObject {
                     }
                 }
             }
-            .store(in: &cancellables)
     }
     
     func gestureEnded() {
-        for item in cancellables {
-            item.cancel()
-        }
+        offsetSubscription?.cancel()
         
         subscribeToOffset()
     }

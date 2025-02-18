@@ -7,6 +7,7 @@
 
 import Combine
 import SwiftUI
+import CoreData
 #if DEBUG
 import OSLog
 #endif
@@ -15,58 +16,71 @@ final class StatsListViewModel: ViewModel {
     #if DEBUG
     let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
     #endif
-//    private var savedSpendingsPublisher: Published<[SpendingEntity]>.Publisher
+    
+    @Published private(set) var selection: Int
+    @Published private(set) var selectedCategoryId: UUID?
+    @Published private(set) var data: [(key: Date, value: [SpendingEntity])] = .init()
+    
+    private var allSpendingsCount: Int
+    
     private var searchModel: StatsSearchViewModel
     private var fvm: FiltersViewModel
     private var pcvm: PieChartViewModel
-//    private var cdm: CoreDataModel
-    @Published var selection: Int
-    @Published var selectedCategoryId: UUID?
-    @Published var data: [Date:[SpendingEntity]] = .init()
-    var cancellables = Set<AnyCancellable>()
     private let context = DataManager.shared.context
+    private var cancellables = Set<AnyCancellable>()
     
     init(cdm: CoreDataModel, fvm: FiltersViewModel, pcvm: PieChartViewModel, searchModel: StatsSearchViewModel) {
-//        self.savedSpendingsPublisher = cdm.$savedSpendings
+        self.allSpendingsCount = 0
         self.searchModel = searchModel
         self.fvm = fvm
         self.pcvm = pcvm
-//        self.cdm = cdm
         self.selection = pcvm.selection
         self.selectedCategoryId = pcvm.selectedCategory?.id
         subscribeToSelection()
         subscribeToSelectedCategory()
+        subscribeToSearch()
         
-//        NotificationCenter.default.addObserver(
-//            forName: .NSManagedObjectContextDidSave,
-//            object: cdm.context,
-//            queue: .main
-//        ) { [weak self] _ in
-//            self?.fetch()
-//        }
-//        
-//        fetch()
+        NotificationCenter.default.addObserver(self, selector: #selector(fetchFromNotification), name: .UpdatePieChart, object: nil)
+        
+        Task {
+            await fetch()
+        }
     }
     
     deinit {
-        NotificationCenter.default.removeObserver(self, name: .NSManagedObjectContextDidSave, object: context)
+        NotificationCenter.default.removeObserver(self, name: .UpdatePieChart, object: nil)
     }
     
-    private func fetch() {
-        context.perform { [weak self] in
-            let request = SpendingEntity.fetchRequest()
-            request.predicate = self?.getPredicate()
-            request.sortDescriptors = [NSSortDescriptor(keyPath: \SpendingEntity.date, ascending: false)]
-            
-            do {
-                guard let result = try self?.context.fetch(request) else { return }
-                
-                self?.data = Dictionary(grouping: result) {
-                    $0.startOfDay
-                }
-            } catch {
-//                print(error)
+    @objc
+    private func fetchFromNotification() {
+        Task {
+            await self.fetch()
+        }
+    }
+    
+    private func fetch() async {
+        let request = SpendingEntity.fetchRequest()
+        request.predicate = self.getPredicate()
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \SpendingEntity.date, ascending: false)]
+        
+        do {
+            let result = try self.context.performAndWait {
+                try self.context.fetch(request)
             }
+            
+            let sectionedResult = Dictionary(grouping: result) {
+                $0.startOfDay
+            }
+            
+            let sortedResult = sectionedResult.sorted { (firstSection, secondSection) in
+                firstSection.key > secondSection.key
+            }
+            
+            await MainActor.run {
+                self.data = sortedResult
+            }
+        } catch {
+
         }
     }
     
@@ -112,7 +126,7 @@ final class StatsListViewModel: ViewModel {
         }
         
         if !searchModel.search.isEmpty {
-            let searchPredicate = NSPredicate(format: "place CONTAINS %@ OR comment CONTAINS %@", searchModel.search, searchModel.search)
+            let searchPredicate = NSPredicate(format: "place CONTAINS[cd] %@ OR comment CONTAINS[cd] %@", searchModel.search, searchModel.search)
             predicates.append(searchPredicate)
         }
         
@@ -123,9 +137,11 @@ final class StatsListViewModel: ViewModel {
         pcvm.$selection
             .receive(on: DispatchQueue.main)
             .dropFirst()
-//            .debounce(for: 0.3, scheduler: DispatchQueue.main)
-            .sink { [weak self] newValue in
-                self?.selection = newValue
+            .debounce(for: 0.3, scheduler: DispatchQueue.main)
+            .sink { [weak self] _ in
+                Task {
+                    await self?.fetch()
+                }
             }
             .store(in: &cancellables)
     }
@@ -133,8 +149,20 @@ final class StatsListViewModel: ViewModel {
     private func subscribeToSelectedCategory() {
         pcvm.$selectedCategory
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] category in
-                self?.selectedCategoryId = category?.id
+            .sink { [weak self] _ in
+                Task {
+                    await self?.fetch()
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func subscribeToSearch() {
+        searchModel.getPublisher()
+            .sink { [weak self] _ in
+                Task {
+                    await self?.fetch()
+                }
             }
             .store(in: &cancellables)
     }

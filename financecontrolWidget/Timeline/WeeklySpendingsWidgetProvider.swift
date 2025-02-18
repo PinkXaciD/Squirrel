@@ -54,6 +54,8 @@ struct WeeklySpendingsWidgetProvider: TimelineProvider {
         let data = defaults?.dictionary(forKey: "WeeklySpendingsWidgetData") as? [String:Double] ?? .init()
         let defaultCurrency = defaults?.string(forKey: "defaultCurrency") ?? Locale.current.currencyCode ?? "USD"
         
+        print(defaultCurrency, data)
+        
         let trueData = {
             let calendar = Calendar.current
 //            calendar.locale = Locale.current

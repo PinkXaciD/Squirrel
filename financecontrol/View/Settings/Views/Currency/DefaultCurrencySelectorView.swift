@@ -134,12 +134,12 @@ struct DefaultCurrencySelectorView: View {
             defaultSelectedCurrency = tag
         }
         
-        cdm.updateBarChart()
-        NotificationCenter.default.post(name: Notification.Name("UpdatePieChart"), object: nil)
+//        cdm.updateBarChart()
+        NotificationCenter.default.post(name: .UpdatePieChart, object: nil)
         
         if let defaults = UserDefaults(suiteName: Vars.groupName) {
             defaults.set(tag, forKey: UDKey.defaultCurrency.rawValue)
-            cdm.passSpendingsToSumWidget(data: cdm.statsListData)
+            cdm.passSpendingsToSumWidget()
         }
     }
 }
