@@ -5,7 +5,6 @@
 //  Created by PinkXaciD on R 5/09/18.
 //
 
-import Foundation
 import SwiftUI
 #if DEBUG
 import OSLog

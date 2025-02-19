@@ -68,8 +68,10 @@ final class StatsListViewModel: ViewModel {
                 try self.context.fetch(request)
             }
             
-            let sectionedResult = Dictionary(grouping: result) {
-                $0.startOfDay
+            let sectionedResult = Dictionary(grouping: result) { spending in
+                return self.context.performAndWait {
+                    spending.startOfDay
+                }
             }
             
             let sortedResult = sectionedResult.sorted { (firstSection, secondSection) in
@@ -135,9 +137,7 @@ final class StatsListViewModel: ViewModel {
     
     private func subscribeToSelection() {
         pcvm.$selection
-            .receive(on: DispatchQueue.main)
             .dropFirst()
-            .debounce(for: 0.3, scheduler: DispatchQueue.main)
             .sink { [weak self] _ in
                 Task {
                     await self?.fetch()
@@ -148,7 +148,7 @@ final class StatsListViewModel: ViewModel {
     
     private func subscribeToSelectedCategory() {
         pcvm.$selectedCategory
-            .receive(on: DispatchQueue.main)
+            .dropFirst()
             .sink { [weak self] _ in
                 Task {
                     await self?.fetch()
@@ -159,6 +159,7 @@ final class StatsListViewModel: ViewModel {
     
     private func subscribeToSearch() {
         searchModel.getPublisher()
+            .dropFirst()
             .sink { [weak self] _ in
                 Task {
                     await self?.fetch()
