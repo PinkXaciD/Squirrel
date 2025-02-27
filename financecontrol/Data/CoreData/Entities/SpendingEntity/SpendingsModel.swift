@@ -30,7 +30,6 @@ extension CoreDataModel {
             do {
                 spendings = try self.context.fetch(request)
                 self.firstSpendingDate = spendings.last?.date ?? Date()
-                self.spendingsCount = spendings.count
             } catch {
                 ErrorType(error: error).publish(file: #file, function: #function)
             }
@@ -203,10 +202,10 @@ extension CoreDataModel {
     
 #if DEBUG
     func addTestSpending() {
-        context.perform { [context] in
+        context.perform { [weak context] in
             let fetchRequest = CategoryEntity.fetchRequest()
             fetchRequest.predicate = NSPredicate(format: "isShadowed == false")
-            let result = try? context.fetch(fetchRequest)
+            let result = try? context?.fetch(fetchRequest)
             
             guard let result, let randomCategory = result.randomElement()?.id else {
                 return

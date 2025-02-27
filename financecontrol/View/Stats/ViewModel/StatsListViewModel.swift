@@ -7,7 +7,6 @@
 
 import Combine
 import SwiftUI
-import CoreData
 #if DEBUG
 import OSLog
 #endif
@@ -19,7 +18,7 @@ final class StatsListViewModel: ViewModel {
     
     @Published private(set) var selection: Int
     @Published private(set) var selectedCategoryId: UUID?
-    @Published private(set) var data: [(key: Date, value: [SpendingEntity])] = .init()
+    @Published private(set) var data: [(key: Date, value: [StatsRowData])] = .init()
     
     private var allSpendingsCount: Int
     
@@ -54,11 +53,11 @@ final class StatsListViewModel: ViewModel {
     @objc
     private func fetchFromNotification() {
         Task {
-            await self.fetch()
+            await self.fetch(animateChanges: true)
         }
     }
     
-    private func fetch() async {
+    private func fetch(animateChanges: Bool = false) async {
         let request = SpendingEntity.fetchRequest()
         request.predicate = self.getPredicate()
         request.sortDescriptors = [NSSortDescriptor(keyPath: \SpendingEntity.date, ascending: false)]
@@ -74,15 +73,30 @@ final class StatsListViewModel: ViewModel {
                 }
             }
             
-            let sortedResult = sectionedResult.sorted { (firstSection, secondSection) in
-                firstSection.key > secondSection.key
-            }
+            let sortedResult = sectionedResult
+                .mapValues { arr in
+                    var result = [StatsRowData]()
+                    result.reserveCapacity(arr.count)
+                    
+                    for entity in arr {
+                        context.performAndWait {
+                            result.append(StatsRowData(entity: entity))
+                        }
+                    }
+                    
+                    return result
+                }
+                .sorted { (firstSection, secondSection) in
+                    firstSection.key > secondSection.key
+                }
             
             await MainActor.run {
-                self.data = sortedResult
+                withAnimation(animateChanges ? .default : .none) {
+                    self.data = sortedResult
+                }
             }
         } catch {
-
+            ErrorType(error: error).publish()
         }
     }
     
@@ -138,7 +152,9 @@ final class StatsListViewModel: ViewModel {
     private func subscribeToSelection() {
         pcvm.$selection
             .dropFirst()
-            .sink { [weak self] _ in
+            .sink { [weak self] newValue in
+                self?.selection = newValue
+                
                 Task {
                     await self?.fetch()
                 }
@@ -173,10 +189,34 @@ final class StatsListViewModel: ViewModel {
     }
 }
 
-extension Set<AnyCancellable> {
-    func cancelAll() {
-        for item in self {
-            item.cancel()
+struct StatsRowData: Identifiable {
+    let entity: SpendingEntity
+    let amount: Double
+    let currency: String
+    let categoryName: String
+    let date: Date
+    let place: String?
+    let showTimeZoneIcon: Bool
+    let hasReturns: Bool
+    
+    let id: UUID
+    
+    init(entity: SpendingEntity) {
+        self.id = entity.wrappedId
+        
+        self.entity = entity
+        self.amount = entity.amount
+        self.currency = entity.wrappedCurrency
+        self.categoryName = entity.categoryName
+        self.date = entity.dateAdjustedToTimeZone
+        self.place = entity.place
+        self.hasReturns = !(entity.returns?.allObjects.isEmpty ?? true)
+        
+        guard let entityTimeZoneID = entity.timeZoneIdentifier, let entityTimeZoneOffset = TimeZone(identifier: entityTimeZoneID)?.secondsFromGMT() else {
+            self.showTimeZoneIcon = false
+            return
         }
+        
+        self.showTimeZoneIcon = entityTimeZoneOffset != Calendar.autoupdatingCurrent.timeZone.secondsFromGMT()
     }
 }

@@ -12,6 +12,7 @@ final class DataManager {
     
     let container: NSPersistentContainer
     let context: NSManagedObjectContext
+    lazy private(set) var backgroundContext: NSManagedObjectContext = container.newBackgroundContext()
 
     init() {
         let container =  NSPersistentCloudKitContainer(name: "DataContainer")
@@ -26,7 +27,7 @@ final class DataManager {
             storeDescription.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
         }
         
-        container.loadPersistentStores { description, error in
+        container.loadPersistentStores { _, error in
             if let error = error {
                 ErrorType(error: error).publish()
             }
@@ -58,6 +59,21 @@ final class DataManager {
                 context.rollback()
                 ErrorType(error: error).publish(file: #fileID, function: #function)
             }
+        }
+    }
+    
+    func deleteSpending(with objectID: NSManagedObjectID) {
+        guard let object = try? backgroundContext.existingObject(with: objectID) else {
+            print("Failed")
+            return
+        }
+        
+        backgroundContext.delete(object)
+        do {
+            try backgroundContext.save()
+        } catch {
+            ErrorType(error: error).publish()
+            backgroundContext.rollback()
         }
     }
 }

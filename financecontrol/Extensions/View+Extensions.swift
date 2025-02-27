@@ -172,3 +172,23 @@ fileprivate struct DynamicTypeListStylingViewModifier: ViewModifier {
         }
     }
 }
+
+struct MaskFromTheBottomModifier: ViewModifier {
+    let isActive: Bool
+    
+    func body(content: Content) -> some View {
+        content
+            .zIndex(isActive ? -1 : 1)
+            .opacity(isActive ? 0 : 1)
+            .mask {
+                VStack(spacing: 0) {
+                    Rectangle()
+                        .frame(maxHeight: isActive ? 0 : nil)
+                    
+                    if isActive {
+                        Spacer()
+                    }
+                }
+            }
+    }
+}

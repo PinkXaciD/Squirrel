@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreData
 #if DEBUG
 import OSLog
 #endif
@@ -33,6 +34,11 @@ struct StatsView: View {
     
     @State
     private var showFilters: Bool = false
+    
+    @State
+    private var spendingToDelete: SpendingEntity? = nil
+    @State
+    private var presentDeleteDialog: Bool = false
     
     private var size: CGFloat {
         let currentScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
@@ -73,7 +79,7 @@ struct StatsView: View {
                             }
                         }
                         
-                        StatsListView()
+                        StatsListView(spendingToDelete: $spendingToDelete, presentDeleteDialog: $presentDeleteDialog)
                     }
                     .padding()
                     .toolbar {
@@ -88,8 +94,14 @@ struct StatsView: View {
                 }
             }
         }
-        .navigationViewStyle(.stack)
         .searchable(text: $searchModel.input, placement: .automatic, prompt: "Search by place or comment")
+        .confirmationDialog("Delete this expense?", isPresented: $presentDeleteDialog, titleVisibility: .visible, presenting: spendingToDelete) { spending in
+            Button("Delete", role: .destructive) {
+                DataManager.shared.deleteSpending(with: spending.objectID)
+            }
+        } message: { _ in
+            Text("You can't undo this action.")
+        }
         .navigationViewStyle(.stack)
     }
     
@@ -308,7 +320,7 @@ fileprivate struct IPadStatsView: View {
     }
     
     private var listView: some View {
-        StatsListView(
+        StatsListView(spendingToDelete: .constant(nil), presentDeleteDialog: .constant(false)
 //            spendings: SectionedFetchRequest(
 //                sectionIdentifier: \SpendingEntity.startOfDay,
 //                sortDescriptors: [

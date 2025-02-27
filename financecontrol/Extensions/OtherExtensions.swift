@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 extension Bundle {
     var releaseVersionNumber: String? {
@@ -92,9 +93,13 @@ extension NumberFormatter {
 }
 
 extension NSNotification.Name {
-    static let PieChartScrollToPrevious = NSNotification.Name(rawValue: "PieChartScrollToPrevious")
-    
-    static let PieChartScrollToNext = NSNotification.Name(rawValue: "PieChartScrollToNext")
-    
     static let UpdatePieChart = NSNotification.Name("UpdatePieChart")
+}
+
+extension Set<AnyCancellable> {
+    func cancelAll() {
+        for item in self {
+            item.cancel()
+        }
+    }
 }

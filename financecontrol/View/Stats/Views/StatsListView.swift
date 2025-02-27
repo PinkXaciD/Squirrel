@@ -19,11 +19,17 @@ struct StatsListView: View {
     @GestureState
     private var draggingRow: UUID? = nil
     
+    @Binding
+    var spendingToDelete: SpendingEntity?
+    @Binding
+    var presentDeleteDialog: Bool
+    
     var body: some View {
         if !vm.data.isEmpty {
             list
         } else {
             noResults
+                .padding(.vertical)
         }
     }
     
@@ -39,10 +45,10 @@ struct StatsListView: View {
                 
                 VStack(spacing: 0) {
                     ForEach(section.value) { spending in
-                        StatsRow(test: $draggingRow, entity: spending)
+                        StatsRow(state: $draggingRow, data: spending, spendingToDelete: $spendingToDelete, presentDeleteDialog: $presentDeleteDialog)
                             .environmentObject(rowVM)
                         
-                        if spending.wrappedId != section.value.last?.wrappedId {
+                        if spending.id != section.value.last?.id {
                             Divider()
                         }
                     }

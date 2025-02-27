@@ -16,16 +16,15 @@ final class CoreDataModel: ObservableObject {
     let manager = DataManager.shared
     var localHistoryToken: NSPersistentHistoryToken?
     
-    init() {
+    init(isCloudSyncEnabled: Bool = true) {
         self.container = manager.container
         self.context = manager.context
         self.localHistoryToken = manager.container.persistentStoreCoordinator.currentPersistentHistoryToken(fromStores: container.persistentStoreCoordinator.persistentStores)
-        self.spendingsCount = 0
         
         fetchSpendings(updateWidgets: false)
         timerUpdate()
         
-        if UserDefaults.standard.bool(forKey: UDKey.iCloudSync.rawValue) {
+        if isCloudSyncEnabled {
             NotificationCenter.default.addObserver(
                 self,
                 selector: #selector(updateFromCloud),
@@ -88,9 +87,6 @@ final class CoreDataModel: ObservableObject {
     @available(*, deprecated, renamed: "FetchRequest", message: "")
     @Published
     var shadowedCategories: [CategoryEntity] = []
-    
-    @Published
-    var spendingsCount: Int
     
     @Published
     var firstSpendingDate: Date?

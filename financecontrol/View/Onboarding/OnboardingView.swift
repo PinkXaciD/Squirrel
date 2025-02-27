@@ -205,6 +205,7 @@ struct OnboardingView: View {
     
     private var screen3: some View {
         OnboardingCloudSyncView()
+            .tint(.orange)
     }
     
     private var screen4: some View {

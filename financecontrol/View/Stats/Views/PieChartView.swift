@@ -26,6 +26,9 @@ struct PieChartView: View {
     @State
     private var minimizeLegend: Bool = UserDefaults.standard.bool(forKey: UDKey.minimizeLegend.rawValue)
     
+    @Namespace
+    var namespace
+    
     var body: some View {
         VStack(alignment: .leading) {
             chart
@@ -33,11 +36,7 @@ struct PieChartView: View {
                 .disabled(pcvm.isScrollDisabled)
                 .clipped()
             
-            if !pcvm.data[(pcvm.selection >= pcvm.data.count || pcvm.selection < 0) ? 0 : pcvm.selection].categories.isEmpty {
-                Divider()
-                
-                legend
-            }
+            legend
         }
         .padding(.vertical, 8)
         .background {
@@ -60,7 +59,7 @@ struct PieChartView: View {
     }
     
     private var legend: some View {
-        PieChartLegendView(minimize: $minimizeLegend, selection: $pcvm.selection, forceExpand: !showMinimizeButton)
+        PieChartLegendView(minimize: showMinimizeButton ? $minimizeLegend : .constant(true), selection: $pcvm.selection)
     }
     
     private var footer: some View {
@@ -98,7 +97,15 @@ extension PieChartView {
     
     private func expandButtonLabel() -> some View {
         Label {
-            Text(minimizeLegend ? "Expand" : "Minimize")
+            if minimizeLegend {
+                Text("Expand")
+                    .fixedSize()
+                    .matchedGeometryEffect(id: "MinimizeButtonText", in: namespace)
+            } else {
+                Text("Minimize")
+                    .fixedSize()
+                    .matchedGeometryEffect(id: "MinimizeButtonText", in: namespace)
+            }
         } icon: {
             Image(systemName: "chevron.down")
                 .rotationEffect(minimizeLegend ? .zero : .degrees(180))

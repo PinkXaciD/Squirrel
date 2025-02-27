@@ -27,10 +27,15 @@ struct StatsRow: View {
     @GestureState
     var rowDragging: UUID?
     
-    let entity: SpendingEntity
+    @Binding
+    var spendingToDelete: SpendingEntity?
+    @Binding
+    var presentDeleteDialog: Bool
+    
+    let data: StatsRowData
     
     var isDragging: Bool {
-        rowDragging == entity.id
+        rowDragging != nil && rowDragging == data.id
     }
     
     let buttonWidth: CGFloat = 70
@@ -41,9 +46,11 @@ struct StatsRow: View {
     let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
     #endif
     
-    init(test: GestureState<UUID?>, entity: SpendingEntity) {
-        self._rowDragging = test
-        self.entity = entity
+    init(state: GestureState<UUID?>, data: StatsRowData, spendingToDelete: Binding<SpendingEntity?>, presentDeleteDialog: Binding<Bool>) {
+        self._rowDragging = state
+        self.data = data
+        self._spendingToDelete = spendingToDelete
+        self._presentDeleteDialog = presentDeleteDialog
     }
     
     var body: some View {
@@ -56,6 +63,7 @@ struct StatsRow: View {
             mainButtonLabel
         }
         .buttonStyle(ListButtonStyle())
+        .transition(.maskFromTheBottom)
         .contextMenu {
             editButton
             
@@ -65,9 +73,9 @@ struct StatsRow: View {
         }
         .offset(x: offset)
         .background(alignment: .trailing) {
-            if isDragging || vm.showTrailingButtons == entity.id, vm.hOffset < 0 {
+            if isDragging || vm.showTrailingButtons == data.id, vm.hOffset < 0 {
                 HStack(spacing: 0) {
-                    if vm.triggerTrailingAction != self.entity.id {
+                    if vm.triggerTrailingAction != self.data.id {
                         returnButton
                             .buttonStyle(SwipeButtonStyle(alignment: .trailing))
                             .transition(.move(edge: .leading))
@@ -82,11 +90,11 @@ struct StatsRow: View {
             }
         }
         .background(alignment: .leading) {
-            if isDragging || vm.showLeadingButtons == entity.id, vm.hOffset > 0 {
+            if isDragging || vm.showLeadingButtons == data.id, vm.hOffset > 0 {
                 editButton
                     .frame(width: abs(offset), alignment: .trailing)
                     .transition(.move(edge: .leading))
-                    .buttonStyle(SingleSwipeButtonStyle(alignment: .leading, isActive: vm.triggerLeadingAction == self.entity.id))
+                    .buttonStyle(SingleSwipeButtonStyle(alignment: .leading, isActive: vm.triggerLeadingAction == self.data.id))
             }
         }
         .animation(.default, value: isDragging)
@@ -106,15 +114,15 @@ struct StatsRow: View {
     private var mainButtonLabel: some View {
         return HStack {
             VStack(alignment: .leading, spacing: 5) {
-                if let place = entity.place, !place.isEmpty {
-                    Text(entity.categoryName)
+                if let place = data.place, !place.isEmpty {
+                    Text(data.categoryName)
                         .font(.caption)
                         .foregroundColor(Color.secondary)
                     
                     Text(place)
                         .foregroundColor(.primary)
                 } else {
-                    Text(entity.categoryName)
+                    Text(data.categoryName)
                         .foregroundColor(.primary)
                 }
             }
@@ -123,31 +131,31 @@ struct StatsRow: View {
             
             VStack(alignment: .trailing, spacing: 5) {
                 HStack(spacing: 3) {
-                    if !formatWithoutTimeZones, let timeZone = TimeZone(identifier: entity.timeZoneIdentifier ?? ""), timeZone.secondsFromGMT() != TimeZone.autoupdatingCurrent.secondsFromGMT() {
+                    if !formatWithoutTimeZones, data.showTimeZoneIcon {
                         Image(systemName: "clock")
                             .foregroundColor(.secondary)
                             .font(.caption2)
                         
-                        Text(entity.dateAdjustedToTimeZoneDate.formatted(date: .omitted, time: .shortened))
+                        Text(data.date.formatted(date: .omitted, time: .shortened))
                             .font(.caption)
                             .foregroundColor(Color.secondary)
                     } else {
-                        Text(entity.wrappedDate.formatted(date: .omitted, time: .shortened))
+                        Text(data.date.formatted(date: .omitted, time: .shortened))
                             .font(.caption)
                             .foregroundColor(Color.secondary)
                     }
                 }
                 
                 HStack {
-                    if !(entity.returns?.allObjects.isEmpty ?? true) {
+                    if data.hasReturns {
                         Image(systemName: "arrow.uturn.backward")
                             .foregroundColor(.secondary)
                             .font(.caption.bold())
                     }
                     
-                    Text("\((-entity.amountWithReturns).formatted(.currency(code: entity.wrappedCurrency)))")
+                    Text("\((-data.amount).formatted(.currency(code: data.currency)))")
                 }
-                .foregroundColor(entity.amountWithReturns != 0 ? .primary : .secondary)
+                .foregroundColor(data.amount != 0 ? .primary : .secondary)
             }
         }
     }
@@ -180,14 +188,14 @@ struct StatsRow: View {
     
     private var returnButton: some View {
         Button {
-            listVM.entityToAddReturn = entity
+            listVM.entityToAddReturn = data.entity
             
             breakGesture()
         } label: {
             Label("Add return", systemImage: "arrow.uturn.backward")
         }
         .tint(.yellow)
-        .disabled(entity.amountWithReturns == 0)
+        .disabled(data.amount == 0)
     }
     
     // MARK: Functions
@@ -198,7 +206,7 @@ struct StatsRow: View {
         }
         
         if listVM.entityToEdit == nil {
-            listVM.entityToEdit = entity
+            listVM.entityToEdit = data.entity
         }
         
         breakGesture()
@@ -206,13 +214,15 @@ struct StatsRow: View {
     
     private func editButtonAction() {
         listVM.edit.toggle()
-        listVM.entityToEdit = entity
+        listVM.entityToEdit = data.entity
         
         breakGesture()
     }
     
     private func deleteButtonAction() {
-        deleteSpending(entity)
+//        deleteSpending(entity)
+        spendingToDelete = data.entity
+        presentDeleteDialog = true
         
         breakGesture()
     }
@@ -233,26 +243,26 @@ struct StatsRow: View {
     }
     
     private func handleGesture(value: DragGesture.Value, state: inout UUID?) {
-        guard state == nil || state == entity.id else {
+        guard state == nil || state == data.id else {
             return
         }
         
-        state = entity.id
-        vm.lastDragged = entity.id
+        state = data.id
+        vm.lastDragged = data.id
         
-        if vm.showLeadingButtons != nil, vm.showLeadingButtons != self.entity.id {
+        if vm.showLeadingButtons != nil, vm.showLeadingButtons != self.data.id {
             withAnimation {
                 vm.showLeadingButtons = nil
             }
         }
         
-        if vm.showTrailingButtons != nil, vm.showTrailingButtons != self.entity.id {
+        if vm.showTrailingButtons != nil, vm.showTrailingButtons != self.data.id {
             withAnimation {
                 vm.showTrailingButtons = nil
             }
         }
         
-        let translatedValue = value.translation.width + (vm.showLeadingButtons == self.entity.id ? buttonWidth : 0) + (vm.showTrailingButtons == self.entity.id ? -buttonWidth * 2 : 0)
+        let translatedValue = value.translation.width + (vm.showLeadingButtons == self.data.id ? buttonWidth : 0) + (vm.showTrailingButtons == self.data.id ? -buttonWidth * 2 : 0)
         
         self.vm.hOffset = translatedValue
         
@@ -261,10 +271,10 @@ struct StatsRow: View {
                 self.vm.triggerLeadingAction = nil
             }
             
-            if translatedValue < trailingTreshhold, vm.triggerTrailingAction != self.entity.id {
-                self.vm.triggerTrailingAction = self.entity.id
+            if translatedValue < trailingTreshhold, vm.triggerTrailingAction != self.data.id {
+                self.vm.triggerTrailingAction = self.data.id
                 HapticManager.shared.impact(.light)
-            } else if translatedValue >= trailingTreshhold, vm.triggerTrailingAction == self.entity.id {
+            } else if translatedValue >= trailingTreshhold, vm.triggerTrailingAction == self.data.id {
                 self.vm.triggerTrailingAction = nil
                 HapticManager.shared.impact(.light)
             }
@@ -273,10 +283,10 @@ struct StatsRow: View {
                 self.vm.triggerTrailingAction = nil
             }
             
-            if translatedValue > leadingTreshhold, vm.triggerLeadingAction != self.entity.id {
-                self.vm.triggerLeadingAction = self.entity.id
+            if translatedValue > leadingTreshhold, vm.triggerLeadingAction != self.data.id {
+                self.vm.triggerLeadingAction = self.data.id
                 HapticManager.shared.impact(.light)
-            } else if translatedValue <= leadingTreshhold, vm.triggerLeadingAction == self.entity.id {
+            } else if translatedValue <= leadingTreshhold, vm.triggerLeadingAction == self.data.id {
                 self.vm.triggerLeadingAction = nil
                 HapticManager.shared.impact(.light)
             }
@@ -284,13 +294,13 @@ struct StatsRow: View {
     }
     
     private func endGesture(value: DragGesture.Value) {
-        guard vm.lastDragged == entity.id else {
+        guard vm.lastDragged == data.id else {
             return
         }
         
         vm.lastDragged = nil
         
-        let translatedValue = value.translation.width + (vm.showLeadingButtons == self.entity.wrappedId ? buttonWidth : 0) + (vm.showTrailingButtons == self.entity.wrappedId ? -buttonWidth * 2 : 0)
+        let translatedValue = value.translation.width + (vm.showLeadingButtons == self.data.id ? buttonWidth : 0) + (vm.showTrailingButtons == self.data.id ? -buttonWidth * 2 : 0)
         
         if translatedValue < trailingTreshhold {
             breakGesture()
@@ -313,7 +323,7 @@ struct StatsRow: View {
         }
         
         if translatedValue < -buttonWidth {
-            self.vm.showTrailingButtons = self.entity.id
+            self.vm.showTrailingButtons = self.data.id
             
             withAnimation {
                 self.vm.hOffset = -buttonWidth * 2
@@ -323,7 +333,7 @@ struct StatsRow: View {
         }
         
         if translatedValue > buttonWidth/2 {
-            self.vm.showLeadingButtons = self.entity.id
+            self.vm.showLeadingButtons = self.data.id
             
             withAnimation {
                 self.vm.hOffset = buttonWidth
@@ -347,17 +357,17 @@ struct StatsRow: View {
     private var offset: CGFloat {
         var result: CGFloat = self.vm.hOffset
         
-        if vm.triggerLeadingAction == self.entity.id {
+        if let triggerLeadingAction = vm.triggerLeadingAction, triggerLeadingAction == self.data.id {
             let valueAfter = self.vm.hOffset - leadingTreshhold
             result = leadingTreshhold + valueAfter * 0.2
         }
         
-        if vm.triggerTrailingAction == self.entity.id {
+        if let triggerTrailingAction = vm.triggerTrailingAction, triggerTrailingAction == self.data.id {
             let valueAfter = self.vm.hOffset + 250
             result = -250 + valueAfter * 0.2 - 30
         }
         
-        guard isDragging || vm.showLeadingButtons == self.entity.wrappedId || vm.showTrailingButtons == self.entity.wrappedId else {
+        guard isDragging || vm.showLeadingButtons == self.data.id || vm.showTrailingButtons == self.data.id else {
             return 0
         }
         
@@ -405,7 +415,7 @@ struct StatsRow: View {
         let isActive: Bool
         
         func makeBody(configuration: Configuration) -> some View {
-            ZStack(alignment: isActive ? .trailing : .leading) {
+            ZStack {
                 Rectangle()
                     .fill(.tint)
                 
@@ -419,6 +429,7 @@ struct StatsRow: View {
                 .labelStyle(.iconOnly)
                 .font(.title2)
                 .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, alignment: isActive ? .trailing : .leading)
             }
         }
         

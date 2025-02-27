@@ -45,7 +45,7 @@ struct ContentView: View {
     @StateObject
     private var statsViewModel: StatsViewModel = StatsViewModel()
     @StateObject
-    private var cloudKitKVSManager = CloudKitKVSManager()
+    private var cloudKitKVSManager: CloudKitKVSManager
     @StateObject
     private var barChartViewModel = BarChartViewModel(context: DataManager.shared.context)
     
@@ -60,11 +60,13 @@ struct ContentView: View {
     let cloudSyncWasEnabled = NSUbiquitousKeyValueStore.default.bool(forKey: UDKey.iCloudSync.rawValue)
     
     init() {
-        let coreDataModel = CoreDataModel()
+        let cloudKitKVSManger = CloudKitKVSManager()
+        let coreDataModel = CoreDataModel(isCloudSyncEnabled: cloudKitKVSManger.iCloudSync)
         let filtersViewModel = FiltersViewModel()
         let pieChartViewModel = PieChartViewModel(cdm: coreDataModel, fvm: filtersViewModel)
         let statsSearchViewModel = StatsSearchViewModel()
         let statsListViewModel = StatsListViewModel(cdm: coreDataModel, fvm: filtersViewModel, pcvm: pieChartViewModel, searchModel: statsSearchViewModel)
+        self._cloudKitKVSManager = StateObject(wrappedValue: cloudKitKVSManger)
         self._cdm = StateObject(wrappedValue: coreDataModel)
         self._pieChartViewModel = StateObject(wrappedValue: pieChartViewModel)
         self._filtersViewModel = StateObject(wrappedValue: filtersViewModel)

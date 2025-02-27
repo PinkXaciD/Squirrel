@@ -61,10 +61,10 @@ extension SpendingEntity {
     
     @objc
     public var startOfDay: Date {
-        UserDefaults.standard.bool(forKey: UDKey.formatWithoutTimeZones.rawValue) ? Calendar.current.startOfDay(for: self.wrappedDate) : Calendar.current.startOfDay(for: self.dateAdjustedToTimeZoneDate)
+        UserDefaults.standard.bool(forKey: UDKey.formatWithoutTimeZones.rawValue) ? Calendar.current.startOfDay(for: self.wrappedDate) : Calendar.current.startOfDay(for: self.dateAdjustedToTimeZone)
     }
     
-    public var dateAdjustedToTimeZoneDate: Date {
+    public var dateAdjustedToTimeZone: Date {
         guard let secondsFromExpenseTimeZone = TimeZone(identifier: self.timeZoneIdentifier ?? "")?.secondsFromGMT() else {
             return self.wrappedDate
         }
