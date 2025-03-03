@@ -21,6 +21,8 @@ struct EditSpendingView: View {
     
     @State
     private var confirmationDialogIsPresented: Bool = false
+    @State
+    private var buttonTapped: Bool = false
     let utils = InputUtils()
     
     @FetchRequest(sortDescriptors: [SortDescriptor(\CategoryEntity.name)], predicate: NSPredicate(format: "isShadowed == false"))
@@ -76,7 +78,7 @@ struct EditSpendingView: View {
         .navigationBarTitleDisplayMode(.inline)
         .onAppear(perform: appearActions)
         .disabled(vm.isLoading)
-        .interactiveDismissDisabled()
+        .interactiveDismissDisabled(true)
     }
     
     // MARK: Variables
@@ -175,6 +177,10 @@ struct EditSpendingView: View {
             }
         } header: {
             Text("\(entity.returns?.allObjects.count ?? 0) returns")
+        } footer: {
+            Text("Returns amount is greater then the expense amount")
+                .foregroundStyle(.red)
+                .opacity((entity.returnsSum > (Double(vm.amount.replacingOccurrences(of: ",", with: ".")) ?? 0) && buttonTapped) ? 1 : 0)
         }
     }
     
@@ -196,12 +202,14 @@ struct EditSpendingView: View {
                         .fontWeight(.semibold)
                 }
             }
-            .disabled(
-                !utils.checkAll(amount: vm.amount, place: vm.place, comment: vm.comment)
-                ||
-                entity.returnsSum > (Double(vm.amount.replacingOccurrences(of: ",", with: ".")) ?? 0)
-            )
+            .foregroundStyle(isTrailingButtonDisabled ? Color.secondary.opacity(0.7) : categoryColor)
         }
+    }
+    
+    private var isTrailingButtonDisabled: Bool {
+        !utils.checkAll(amount: vm.amount, place: vm.place, comment: vm.comment)
+        ||
+        entity.returnsSum > (Double(vm.amount.replacingOccurrences(of: ",", with: ".")) ?? 0)
     }
     
     private var leadingToolbar: ToolbarItem<Void, some View> {
@@ -240,6 +248,14 @@ extension EditSpendingView {
     }
     
     private func doneButtonAction() {
+        guard !isTrailingButtonDisabled else {
+            withAnimation {
+                buttonTapped = true
+            }
+            HapticManager.shared.notification(.error)
+            return
+        }
+        
         vm.isLoading = true
         vm.done()
         clearFocus()

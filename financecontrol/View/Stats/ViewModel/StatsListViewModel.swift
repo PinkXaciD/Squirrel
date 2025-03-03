@@ -205,7 +205,7 @@ struct StatsRowData: Identifiable {
         self.id = entity.wrappedId
         
         self.entity = entity
-        self.amount = entity.amount
+        self.amount = entity.amountWithReturns
         self.currency = entity.wrappedCurrency
         self.categoryName = entity.categoryName
         self.date = entity.dateAdjustedToTimeZone

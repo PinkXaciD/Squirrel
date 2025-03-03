@@ -84,7 +84,8 @@ extension CoreDataModel {
         amountUSD: Double,
         currency: String,
         date: Date,
-        name: String
+        name: String,
+        performSave: Bool = true
     ) {
         guard
             let description = NSEntityDescription.entity(forEntityName: "ReturnEntity", in: context)
@@ -104,7 +105,9 @@ extension CoreDataModel {
         spending.removeFromReturns(oldReturn)
         spending.addToReturns(newReturn)
         
-        manager.save()
-        fetchSpendings()
+        if performSave {
+            manager.save()
+            fetchSpendings()
+        }
     }
 }

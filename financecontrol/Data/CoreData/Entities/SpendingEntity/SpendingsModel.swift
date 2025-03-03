@@ -234,7 +234,7 @@ extension CoreDataModel {
     ///   - newSpending: Object with values to be inserted into spending
     ///
     /// This method is thread-safe and works on main thread asynchronously
-    func editSpending(spending: SpendingEntity, newSpending: SpendingEntityLocal, addToFetchQueue: Bool = false) {
+    func editSpending(spending: SpendingEntity, newSpending: SpendingEntityLocal, addToFetchQueue: Bool = false, exchangeRate: Double = 1) {
         context.perform { [weak self] in
             var check: Bool {
                 spending.amount != newSpending.amount ||
@@ -259,6 +259,24 @@ extension CoreDataModel {
             if let category = self?.findCategory(newSpending.categoryId, in: DataManager.shared.context) {
                 spending.category = category
             }
+            
+            for returnEntity in spending.returnsArr {
+                if returnEntity.currency == newSpending.currency {
+                    continue
+                }
+                
+                self?.editRerturnFromSpending(
+                    spending: spending,
+                    oldReturn: returnEntity,
+                    amount: returnEntity.amount,
+                    amountUSD: returnEntity.amount / exchangeRate,
+                    currency: spending.wrappedCurrency,
+                    date: returnEntity.date ?? spending.wrappedDate,
+                    name: returnEntity.name ??  "",
+                    performSave: false
+                )
+            }
+            
             
             self?.manager.save()
             #if DEBUG
@@ -467,7 +485,7 @@ extension CoreDataModel {
                             comment: safeSpending.comment ?? ""
                         )
                         
-                        self?.editSpending(spending: spending, newSpending: localSpending)
+                        self?.editSpending(spending: spending, newSpending: localSpending, exchangeRate: rate)
                         
                         #if DEBUG
                         DispatchQueue.main.async {

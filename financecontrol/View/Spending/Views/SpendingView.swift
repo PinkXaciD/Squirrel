@@ -130,11 +130,11 @@ struct SpendingView: View {
             }
             
             if safeEntity.wrappedCurrency != defaultCurrency {
-                Text(
-                    (entity.amountUSDWithReturns * (rvm.rates[defaultCurrency] ?? 1))
-                        .formatted(.currency(code: defaultCurrency))
-                )
-                .font(.system(.body, design: .rounded))
+                if safeEntity.returns.isEmpty {
+                    defaultCurrencyAmountWithoutReturns
+                } else {
+                    defaultCurrencyAmountWithReturns
+                }
             }
         }
         .textCase(nil)
@@ -181,6 +181,45 @@ struct SpendingView: View {
         }
         .scaledToFit()
         .minimumScaleFactor(0.01)
+    }
+    
+    private var defaultCurrencyAmountWithoutReturns: some View {
+        Text(
+            (entity.amountUSDWithReturns * (rvm.rates[defaultCurrency] ?? 1))
+                .formatted(.currency(code: defaultCurrency))
+        )
+        .font(.system(.body, design: .rounded))
+    }
+    
+    private var defaultCurrencyAmountWithReturns: some View {
+        HStack {
+            Text(
+                (entity.amountUSD * (rvm.rates[defaultCurrency] ?? 1))
+                    .formatted(.currency(code: defaultCurrency))
+            )
+            .font(.system(.body, design: .rounded))
+            .foregroundStyle(.secondary)
+            .roundedStrikeThrough(categoryColor, thickness: 1)
+            .onTapGesture {
+                editAction("amount")
+            }
+            
+            Image(systemName: "arrow.forward")
+                .font(.system(.caption, design: .rounded))
+                .foregroundStyle(.secondary)
+                .onTapGesture {
+                    editAction("amount")
+                }
+            
+            Text(
+                (entity.amountUSDWithReturns * (rvm.rates[defaultCurrency] ?? 1))
+                    .formatted(.currency(code: defaultCurrency))
+            )
+            .font(.system(.body, design: .rounded))
+            .onTapGesture {
+                editAction("amount")
+            }
+        }
     }
     
     private var commentSection: some View {

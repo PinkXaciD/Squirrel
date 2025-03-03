@@ -111,7 +111,7 @@ final class EditSpendingViewModel: ViewModel {
             DispatchQueue.main.async {
                 if Calendar.gmt.isDate(self.entity.wrappedDate, inSameDayAs: self.date), self.entity.wrappedCurrency == self.currency {
                     spending.amountUSD = (spending.amount / self.entity.amount) * self.entity.amountUSD
-                    self.cdm.editSpending(spending: self.entity, newSpending: spending)
+                    self.cdm.editSpending(spending: self.entity, newSpending: spending, exchangeRate: spending.amount / self.entity.amount)
                     self.end()
                     return
                 }
@@ -130,14 +130,14 @@ final class EditSpendingViewModel: ViewModel {
                             spendingCopy.amountUSD = doubleAmount / (self.rvm.rates[self.currency] ?? 1)
                         }
                         
-                        self.cdm.editSpending(spending: self.entity, newSpending: spendingCopy, addToFetchQueue: isHistoricalRatesUnavailable)
+                        self.cdm.editSpending(spending: self.entity, newSpending: spendingCopy, addToFetchQueue: isHistoricalRatesUnavailable, exchangeRate: oldRates?[self.currency] ?? 1)
                         self.end()
                     }
                 }
             } else {
                 spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
                 
-                cdm.editSpending(spending: entity, newSpending: spending)
+                cdm.editSpending(spending: entity, newSpending: spending, exchangeRate: (rvm.rates[currency] ?? 1))
                 DispatchQueue.main.async {
                     self.end()
                 }

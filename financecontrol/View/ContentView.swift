@@ -165,7 +165,9 @@ struct ContentView: View {
             .environmentObject(statsListViewModel)
             .environmentObject(privacyMonitor)
             .environmentObject(statsViewModel)
-            .sheet(item: $statsViewModel.entityToEdit) { entity in
+            .sheet(item: $statsViewModel.entityToEdit) {
+                statsViewModel.edit = false
+            } content: { entity in
                 SpendingCompleteView(
                     edit: $statsViewModel.edit,
                     entity: entity
