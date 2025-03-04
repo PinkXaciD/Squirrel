@@ -57,6 +57,24 @@ struct ContentView: View {
     @State
     private var hideContent: Bool = false
     
+    private var selection: Binding<Int> {
+        Binding(get: {
+            self.selectionValue
+        },
+        set: {
+            if $0 == selectionValue {
+                // tapped twice
+                self.scrollToTop = $0
+                return
+            }
+            self.selectionValue = $0
+        })
+    }
+    @State
+    private var selectionValue: Int = 0
+    @State
+    private var scrollToTop: Int? = nil
+    
     let cloudSyncWasEnabled = NSUbiquitousKeyValueStore.default.bool(forKey: UDKey.iCloudSync.rawValue)
     
     init() {
@@ -78,7 +96,7 @@ struct ContentView: View {
         Group {
             if #available(iOS 18.0, *) {
                 NavigationView {
-                    TabView {
+                    TabView(selection: selection) {
                         homeTab
                         
                         statsTab
@@ -87,7 +105,7 @@ struct ContentView: View {
                     }
                 }
             } else {
-                TabView {
+                TabView(selection: selection) {
                     homeTab
                     
                     statsTab
@@ -155,10 +173,11 @@ struct ContentView: View {
         .tabItem {
             Label("Home", systemImage: "house.fill")
         }
+        .tag(0)
     }
     
     private var statsTab: some View {
-        StatsView()
+        StatsView(scrollToTop: $scrollToTop)
             .environmentObject(pieChartViewModel)
             .environmentObject(filtersViewModel)
             .environmentObject(statsSearchViewModel)
@@ -185,14 +204,16 @@ struct ContentView: View {
             .tabItem {
                 Label("Stats", systemImage: "chart.pie.fill")
             }
+            .tag(1)
     }
     
     private var settingsTab: some View {
-        SettingsView(presentOnboarding: $presentOnboarding, cloudSyncWasEnabled: cloudSyncWasEnabled)
+        SettingsView(presentOnboarding: $presentOnboarding, cloudSyncWasEnabled: cloudSyncWasEnabled, scrollToTop: $scrollToTop)
             .tabItem {
                 Label("Settings", systemImage: "gearshape.fill")
             }
             .environmentObject(cloudKitKVSManager)
+            .tag(2)
     }
     
     private func setColorScheme() {

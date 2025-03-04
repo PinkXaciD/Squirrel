@@ -75,7 +75,7 @@ struct ICloudSyncView: View {
                     .disabled(cloudSyncWasEnabled)
                 } footer: {
                     if cloudSyncWasEnabled {
-                        Text("You will be able to delete your data after restarting the application")
+                        Text("You will be able to delete your data after restarting the app")
                     }
                 }
             }

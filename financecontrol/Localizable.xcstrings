@@ -283,7 +283,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Application restart required"
+            "value" : "App restart required"
           }
         }
       }
@@ -1068,7 +1068,7 @@
     "You can change this later in settings" : {
 
     },
-    "You can change this setting later in settings. Application reload will be required" : {
+    "You can change this setting later in settings. App reload will be required" : {
 
     },
     "You can choose a currency to be selected by default, different from display currency" : {
@@ -1086,7 +1086,7 @@
     "You can't undo this action.\nAll expenses from this category will be deleted" : {
 
     },
-    "You will be able to delete your data after restarting the application" : {
+    "You will be able to delete your data after restarting the app" : {
 
     },
     "Your data is stored in your iCloud storage. We don't have access to your data." : {

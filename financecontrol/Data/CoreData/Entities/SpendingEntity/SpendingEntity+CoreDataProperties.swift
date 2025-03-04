@@ -100,11 +100,7 @@ extension SpendingEntity {
         
         let result = returnsArr.map{ $0.amountUSD }.reduce(amountUSD, -)
         
-        if result < 0 {
-            return 0
-        } else {
-            return result
-        }
+        return max(result, 0)
     }
     
     public var returnsArr: [ReturnEntity] {
@@ -128,7 +124,7 @@ extension SpendingEntity {
     }
     
     public var amountWithReturns: Double {
-        return amount - returnsSum
+        return max(amount - returnsSum, 0)
     }
 }
 
@@ -245,11 +241,7 @@ struct TSSpendingEntity: ToUnsafeObject, Hashable, Identifiable {
         
         let result = returns.map{ $0.amountUSD }.reduce(amountUSD, -)
         
-        if result < 0 {
-            return 0
-        } else {
-            return result
-        }
+        return max(result, 0)
     }
     
     var returnsSum: Double {
@@ -263,7 +255,7 @@ struct TSSpendingEntity: ToUnsafeObject, Hashable, Identifiable {
     }
     
     var amountWithReturns: Double {
-        return amount - returnsSum
+        return max(amount - returnsSum, 0)
     }
     
     var timeZone: TimeZone? {

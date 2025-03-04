@@ -196,7 +196,7 @@ struct WhatsNewView: View {
                 .ignoresSafeArea()
             
             VStack(alignment: .leading) {
-                OnboardingHeaderView(header: "iCloud sync", description: "You can change this setting later in settings. Application reload will be required")
+                OnboardingHeaderView(header: "iCloud sync", description: "You can change this setting later in settings. App reload will be required")
                     .padding(.bottom, 50)
                 
                 CloudSyncView()

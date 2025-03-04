@@ -375,12 +375,20 @@ struct StatsRow: View {
     }
     
     private struct SwipeButtonStyle: ButtonStyle {
+        @Environment(\.isEnabled)
+        private var isEnabled
+        
         let alignment: Self.Alignment
         
         func makeBody(configuration: Configuration) -> some View {
             ZStack(alignment: alignment.trueAligniment) {
-                Rectangle()
-                    .fill(.tint)
+                if isEnabled {
+                    Rectangle()
+                        .fill(.tint)
+                } else {
+                    Rectangle()
+                        .fill(.secondary)
+                }
                 
                 ZStack {
                     Rectangle()
@@ -388,6 +396,7 @@ struct StatsRow: View {
                         .frame(width: 70)
                     
                     configuration.label
+                        .opacity(isEnabled ? 1 : 0.7)
                 }
                 .labelStyle(.iconOnly)
                 .font(.title2)

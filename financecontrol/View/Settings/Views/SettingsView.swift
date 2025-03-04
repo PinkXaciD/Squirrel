@@ -31,6 +31,8 @@ struct SettingsView: View {
     @Binding
     var presentOnboarding: Bool
     let cloudSyncWasEnabled: Bool
+    @Binding
+    var scrollToTop: Int?
     
     let version: String? = Bundle.main.releaseVersionNumber
     let build: String? = Bundle.main.buildVersionNumber
@@ -86,22 +88,38 @@ struct SettingsView: View {
     }
     
     private var list: some View {
-        List {
-            aboutSection
-            
-            appearanceSection
-            
-            currencySection
-            
-//                shortcutsSection
-            
-            categorySection
-            
-            privacySection
-            
-            exportImportSection
+        ScrollViewReader { scroll in
+            List {
+                aboutSection
+                    .id(0)
+                
+                appearanceSection
+                
+                currencySection
+                
+    //                shortcutsSection
+                
+                categorySection
+                
+                privacySection
+                
+                exportImportSection
+            }
+            .navigationTitle("Settings")
+            .onChange(of: scrollToTop) { value in
+                if #unavailable(iOS 18) {
+                    guard value == 2 else {
+                        return
+                    }
+                    
+                    withAnimation {
+                        scroll.scrollTo(0, anchor: .bottom)
+                    }
+                    
+                    self.scrollToTop = nil
+                }
+            }
         }
-        .navigationTitle("Settings")
     }
     
     var aboutSection: some View {
@@ -299,7 +317,7 @@ extension SettingsView {
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView(presentOnboarding: .constant(false), cloudSyncWasEnabled: false)
+        SettingsView(presentOnboarding: .constant(false), cloudSyncWasEnabled: false, scrollToTop: .constant(nil))
             .environmentObject(CoreDataModel())
             .environmentObject(RatesViewModel())
     }

@@ -40,6 +40,9 @@ struct StatsView: View {
     @State
     private var presentDeleteDialog: Bool = false
     
+    @Binding
+    var scrollToTop: Int?
+    
     private var size: CGFloat {
         let currentScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
         let windowBounds = currentScene?.windows.first(where: { $0.isKeyWindow })?.bounds
@@ -71,26 +74,40 @@ struct StatsView: View {
                 Color(uiColor: .systemGroupedBackground)
                     .ignoresSafeArea(.all)
                 
-                ScrollView (.vertical) {
-                    LazyVStack {
-                        if !isSearching, searchModel.input.isEmpty {
-                            VStack {
-                                PieChartView(size: size, showMinimizeButton: true)
+                ScrollViewReader { scroll in
+                    ScrollView (.vertical) {
+                        LazyVStack {
+                            if !isSearching, searchModel.input.isEmpty {
+                                VStack {
+                                    PieChartView(size: size, showMinimizeButton: true)
+                                }
+                                .id(0)
                             }
+                            
+                            StatsListView(spendingToDelete: $spendingToDelete, presentDeleteDialog: $presentDeleteDialog)
                         }
-                        
-                        StatsListView(spendingToDelete: $spendingToDelete, presentDeleteDialog: $presentDeleteDialog)
+                        .padding()
+                        .toolbar {
+                            leadingToolbar
+                            
+                            trailingToolbar
+                        }
+                        .sheet(isPresented: $showFilters) {
+                            filters
+                        }
+                        .navigationTitle("Stats")
+                        .onChange(of: scrollToTop) { value in
+                            guard value == 1 else {
+                                return
+                            }
+                            
+                            withAnimation {
+                                scroll.scrollTo(0, anchor: .bottom)
+                            }
+                            
+                            self.scrollToTop = nil
+                        }
                     }
-                    .padding()
-                    .toolbar {
-                        leadingToolbar
-                        
-                        trailingToolbar
-                    }
-                    .sheet(isPresented: $showFilters) {
-                        filters
-                    }
-                    .navigationTitle("Stats")
                 }
             }
         }
