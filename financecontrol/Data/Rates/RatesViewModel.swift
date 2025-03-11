@@ -73,6 +73,7 @@ final class RatesViewModel: ViewModel {
                     UserDefaults.standard.set(false, forKey: UDKey.updateRates.rawValue)
                     
                     self.updateTime = Date()
+                    NotificationCenter.default.post(name: .UpdatePieChart, object: nil)
                     self.status = .success
                 }
                 

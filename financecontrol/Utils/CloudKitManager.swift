@@ -32,6 +32,9 @@ final class CloudKitManager {
         }
     }
     
+    @Published
+    private(set) var accountStatus: CKAccountStatus?
+    
     private let container = CKContainer(identifier: "iCloud.dev.squirrelapp.squirrel")
     private let cloudKitCoreDataZoneID = CKRecordZone.ID(zoneName: "com.apple.coredata.cloudkit.zone")
     
@@ -43,6 +46,24 @@ final class CloudKitManager {
         #if DEBUG
         logger.debug("CloudKitManager init")
         #endif
+        
+        container.accountStatus { [weak self] status, error in
+            if let error {
+                ErrorType(error: error).publish()
+            }
+            
+            self?.accountStatus = status
+            
+            if NSUbiquitousKeyValueStore.default.bool(forKey: UDKey.iCloudSync.rawValue), status != .available {
+                NSUbiquitousKeyValueStore.default.set(false, forKey: UDKey.iCloudSync.rawValue)
+                
+                DispatchQueue.main.async {
+                    CustomAlertManager.shared.addAlert(
+                        .init(type: .error, title: "iCloud sync turned off", description: "Sign in your iCloud account on device or allow Squirrel to use iCloud in settings.", systemImage: "exclamationmark.icloud.fill")
+                    )
+                }
+            }
+        }
         
         Task { [weak self] in
             await self?.updateCloudKitContent()
@@ -187,6 +208,10 @@ final class CloudKitManager {
     }
     
     func dropUserDataFromPublicDatabase() async throws {
+        guard accountStatus == .available else {
+            return
+        }
+        
         let zoneIDs = try await container.privateCloudDatabase.allRecordZones()
         
         if zoneIDs.contains(where: { $0.zoneID == cloudKitCoreDataZoneID }) {
@@ -196,6 +221,10 @@ final class CloudKitManager {
     }
     
     func hasDataInCloudKit() async -> Bool {
+        guard accountStatus == .available else {
+            return false
+        }
+        
         let zoneIDs = try? await container.privateCloudDatabase.allRecordZones()
         
         guard let zoneIDs else { return true }

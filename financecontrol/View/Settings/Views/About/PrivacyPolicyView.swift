@@ -27,7 +27,7 @@ struct PrivacyPolicyView: View {
                     VStack(alignment: .leading) {
                         Text("Squirrel does not send any data or identifiers from your device.")
                         
-                        Text("All expenses, settings and any other data are stored locally.")
+                        expensesStorageText
                     }
                     
                     VStack(alignment: .leading) {
@@ -55,7 +55,7 @@ struct PrivacyPolicyView: View {
                                         .font(.body.bold())
                                         .padding(.vertical, 5)
                                     
-                                    Text("We respect your privacy and will not change our stance on tracking or storing data locally. This clarification is here so that if we add any opt-in features, such as cloud sync, this policy will be updated to reflect that.")
+                                    Text("We respect your privacy and will not change our stance on tracking or storing data in your control. This clarification is here so that if we add any opt-in features this policy will be updated to reflect that.")
                                         .font(.subheadline)
                                 }
                                 .padding(.horizontal)
@@ -70,7 +70,9 @@ struct PrivacyPolicyView: View {
                         }
                     }
                     .padding(.vertical, showMore ? 7 : 0)
-                    
+                }
+                
+                Section {
                     Button("If you believe this policy has been violated in any way, please create an issue on GitHub.") {
                         urlToOpen = .newGithubIssue
                         showConfirmationDialog = true
@@ -96,6 +98,16 @@ struct PrivacyPolicyView: View {
         }
         .navigationTitle("Privacy Policy")
         .navigationBarTitleDisplayMode(.large)
+    }
+    
+    private var expensesStorageText: some View {
+        guard let attributedString = try? AttributedString(
+            markdown: "All expenses are stored locally by default. You can enable cloud synchronisation in settings, this way your expenses and categories will be stored in your iCloud storage in accordance with [Apple privacy policy](https://apple.com/legal/privacy) and [iCloud terms](https://www.apple.com/legal/internet-services/icloud)."
+        ) else {
+            return Text("privacy-policy-fallback-key")
+        }
+        
+        return Text(attributedString)
     }
 }
 

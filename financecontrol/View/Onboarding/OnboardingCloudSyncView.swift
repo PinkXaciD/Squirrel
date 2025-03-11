@@ -64,6 +64,15 @@ struct CloudSyncView: View {
                         .fill(Color(uiColor: .secondarySystemGroupedBackground))
                 }
         }
+        .disabled(CloudKitManager.shared.accountStatus != .available)
+        
+        if CloudKitManager.shared.accountStatus != .available {
+            Text("sign-in-to-icloud-key")
+                .font(.footnote)
+                .foregroundStyle(.red)
+                .padding(.horizontal)
+                .padding(.top, 1)
+        }
         
         Text("Your data will be stored in your iCloud storage. We don't have access to your data.")
             .font(.footnote)

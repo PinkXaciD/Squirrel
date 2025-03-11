@@ -53,10 +53,17 @@ struct ICloudSyncView: View {
                 Button(kvsManager.iCloudSync ? "Disable iCloud sync" : "Enable iCloud sync") {
                     kvsManager.iCloudSync.toggle()
                 }
+                .disabled(CloudKitManager.shared.accountStatus != .available)
             } footer: {
-                Text("appication-restart-required-key")
-                    .foregroundStyle(.red)
-                    .opacity(cloudSyncWasEnabled == kvsManager.iCloudSync ? 0 : 1)
+                VStack {
+                    if CloudKitManager.shared.accountStatus != .available {
+                        Text("sign-in-to-icloud-key")
+                    }
+                    
+                    Text("appication-restart-required-key")
+                        .foregroundStyle(.red)
+                        .opacity(cloudSyncWasEnabled == kvsManager.iCloudSync ? 0 : 1)
+                }
             }
             
             if !kvsManager.iCloudSync, vm.dataStoredInCloudKit {

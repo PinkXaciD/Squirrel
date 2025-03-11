@@ -236,9 +236,6 @@
         }
       }
     },
-    "All expenses, settings and any other data are stored locally." : {
-
-    },
     "Always format without timezones" : {
 
     },
@@ -601,6 +598,9 @@
     "iCloud sync" : {
 
     },
+    "iCloud sync turned off" : {
+
+    },
     "Icon" : {
 
     },
@@ -804,6 +804,16 @@
     "Privacy Policy" : {
 
     },
+    "privacy-policy-fallback-key" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All expenses are stored locally by default. You can enable cloud synchronisation in settings, this way your expenses and categories will be stored in your iCloud storage in accordance with Apple privacy policy (https://apple.com/legal/privacy) and iCloud terms (https://www.apple.com/legal/internet-services/icloud)."
+          }
+        }
+      }
+    },
     "Purple" : {
 
     },
@@ -881,6 +891,19 @@
     },
     "Show onboarding" : {
 
+    },
+    "Sign in your iCloud account on device or allow Squirrel to use iCloud in settings." : {
+
+    },
+    "sign-in-to-icloud-key" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To use this feature, you need to sign in to iCloud on your device or allow Squirrel to use iCloud in settings."
+          }
+        }
+      }
     },
     "Skip" : {
 
@@ -1014,7 +1037,7 @@
     "Ver. %@" : {
 
     },
-    "We respect your privacy and will not change our stance on tracking or storing data locally. This clarification is here so that if we add any opt-in features, such as cloud sync, this policy will be updated to reflect that." : {
+    "We respect your privacy and will not change our stance on tracking or storing data in your control. This clarification is here so that if we add any opt-in features this policy will be updated to reflect that." : {
 
     },
     "Welcome to" : {
