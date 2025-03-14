@@ -59,12 +59,36 @@ extension SpendingEntity {
         date ?? Date()
     }
     
+    @objc
+    public var startOfDay: Date {
+        UserDefaults.standard.bool(forKey: UDKey.formatWithoutTimeZones.rawValue) ? Calendar.current.startOfDay(for: self.wrappedDate) : Calendar.current.startOfDay(for: self.dateAdjustedToTimeZone)
+    }
+    
+    public var dateAdjustedToTimeZone: Date {
+        guard let secondsFromExpenseTimeZone = TimeZone(identifier: self.timeZoneIdentifier ?? "")?.secondsFromGMT() else {
+            return self.wrappedDate
+        }
+        
+        let secondsFromCurrent = TimeZone.autoupdatingCurrent.secondsFromGMT()
+        
+        guard let result = Calendar.autoupdatingCurrent.date(byAdding: .second, value: (secondsFromCurrent - secondsFromExpenseTimeZone) * -1, to: self.wrappedDate) else {
+            return self.wrappedDate
+        }
+        
+        return result
+    }
+    
     public var wrappedId: UUID {
         id ?? UUID()
     }
     
     public var categoryName: String {
         category?.name ?? "Error"
+    }
+    
+    @objc
+    public var categoryID: UUID {
+        category?.id ?? .init()
     }
     
     public var amountUSDWithReturns: Double {
@@ -76,11 +100,7 @@ extension SpendingEntity {
         
         let result = returnsArr.map{ $0.amountUSD }.reduce(amountUSD, -)
         
-        if result < 0 {
-            return 0
-        } else {
-            return result
-        }
+        return max(result, 0)
     }
     
     public var returnsArr: [ReturnEntity] {
@@ -104,7 +124,7 @@ extension SpendingEntity {
     }
     
     public var amountWithReturns: Double {
-        return amount - returnsSum
+        return max(amount - returnsSum, 0)
     }
 }
 
@@ -194,7 +214,7 @@ struct TSSpendingEntity: ToUnsafeObject, Hashable, Identifiable {
         date ?? Date()
     }
     
-    var dateAdjustedToTimeZoneDate: Date {
+    var dateAdjustedToTimeZone: Date {
         guard let secondsFromExpenseTimeZone = self.timeZone?.secondsFromGMT() else {
             return self.wrappedDate
         }
@@ -221,11 +241,7 @@ struct TSSpendingEntity: ToUnsafeObject, Hashable, Identifiable {
         
         let result = returns.map{ $0.amountUSD }.reduce(amountUSD, -)
         
-        if result < 0 {
-            return 0
-        } else {
-            return result
-        }
+        return max(result, 0)
     }
     
     var returnsSum: Double {
@@ -239,7 +255,7 @@ struct TSSpendingEntity: ToUnsafeObject, Hashable, Identifiable {
     }
     
     var amountWithReturns: Double {
-        return amount - returnsSum
+        return max(amount - returnsSum, 0)
     }
     
     var timeZone: TimeZone? {

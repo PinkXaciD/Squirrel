@@ -30,8 +30,7 @@ final class PieChartViewModel: ViewModel {
         
         self.data = cdm.getNewChartData()
         
-//        subscribeToUpdate()
-        observeUpdateNotification()
+        NotificationCenter.default.addObserver(self, selector: #selector(updateData), name: .UpdatePieChart, object: nil)
         
         #if DEBUG
         let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
@@ -44,6 +43,7 @@ final class PieChartViewModel: ViewModel {
         let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
         logger.debug("ViewModel deinitialized")
         #endif
+        NotificationCenter.default.removeObserver(self, name: .init("UpdatePieChart"), object: nil)
     }
 }
 
@@ -82,12 +82,5 @@ extension PieChartViewModel {
         self.selectedCategory = nil
         self.updateData()
         self.isScrollDisabled = false
-    }
-}
-
-// MARK: Private methods
-extension PieChartViewModel {
-    private func observeUpdateNotification() {
-        NotificationCenter.default.addObserver(self, selector: #selector(updateData), name: Notification.Name("UpdatePieChart"), object: nil)
     }
 }

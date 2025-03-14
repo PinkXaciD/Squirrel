@@ -5,7 +5,6 @@
 //  Created by PinkXaciD on R 5/09/18.
 //
 
-import Foundation
 import SwiftUI
 #if DEBUG
 import OSLog
@@ -31,12 +30,12 @@ final class RatesViewModel: ViewModel {
         
         hourlyUpdate()
         
-        if UserDefaults.standard.bool(forKey: UDKeys.updateRates.rawValue) {
-            updateRates()
+        if UserDefaults.standard.bool(forKey: UDKey.updateRates.rawValue) {
+            updateRates(checkURLVersion: true)
         }
     }
     
-    private func updateRates() {
+    private func updateRates(checkURLVersion: Bool = false) {
         let isTryingAgain = self.status == .tryingAgain
         self.status = .downloading
         
@@ -44,7 +43,7 @@ final class RatesViewModel: ViewModel {
             guard let self else { return }
             
             do {
-                let (cloudKitUpdateDate, safeRates) = try await getRates()
+                let (cloudKitUpdateDate, safeRates) = try await getRates(checkURLVersion: checkURLVersion)
                 
                 // MARK: Is latest check
                 guard
@@ -70,10 +69,11 @@ final class RatesViewModel: ViewModel {
                     self.rates = safeRates.rates
                     self.addRates(safeRates.rates)
                     
-                    UserDefaults.standard.set(isoFormatter.string(from: cloudKitUpdateDate), forKey: UDKeys.updateTime.rawValue)
-                    UserDefaults.standard.set(false, forKey: UDKeys.updateRates.rawValue)
+                    UserDefaults.standard.set(isoFormatter.string(from: cloudKitUpdateDate), forKey: UDKey.updateTime.rawValue)
+                    UserDefaults.standard.set(false, forKey: UDKey.updateRates.rawValue)
                     
                     self.updateTime = Date()
+                    NotificationCenter.default.post(name: .UpdatePieChart, object: nil)
                     self.status = .success
                 }
                 
@@ -168,7 +168,7 @@ final class RatesViewModel: ViewModel {
 // MARK: Rates View Model networking
 
 extension RatesViewModel {
-    func getRates(_ timestamp: Date? = nil) async throws -> (editDate: Date, rates: Rates) {
+    func getRates(_ timestamp: Date? = nil, checkURLVersion: Bool = false) async throws -> (editDate: Date, rates: Rates) {
         if let timestamp, let cached = cache[Calendar.gmt.startOfDay(for: timestamp)] {
             return (timestamp, cached)
         }
@@ -182,7 +182,7 @@ extension RatesViewModel {
             return nil
         }
         
-        let ckManager = CloudKitManager()
+        let ckManager = CloudKitManager.shared
         
         let result = try await ckManager.fetchRates(timestamp: timestampString ?? "latest")
         
@@ -205,6 +205,6 @@ extension RatesViewModel {
     }
     
     private func addRates(_ data: [String : Double]) {
-        UserDefaults.standard.set(data, forKey: UDKeys.rates.rawValue)
+        UserDefaults.standard.set(data, forKey: UDKey.rates.rawValue)
     }
 }

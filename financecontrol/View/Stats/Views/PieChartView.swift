@@ -20,31 +20,37 @@ struct PieChartView: View {
     let size: CGFloat
     let showMinimizeButton: Bool
     
-    @AppStorage(UDKeys.defaultCurrency.rawValue)
+    @AppStorage(UDKey.defaultCurrency.rawValue)
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     
     @State
-    private var minimizeLegend: Bool = UserDefaults.standard.bool(forKey: UDKeys.minimizeLegend.rawValue)
+    private var minimizeLegend: Bool = UserDefaults.standard.bool(forKey: UDKey.minimizeLegend.rawValue)
+    
+    @Namespace
+    var namespace
     
     var body: some View {
-        Section {
-            VStack {
-                chart
-            }
-            .frame(height: size * 1.1)
-            .disabled(pcvm.isScrollDisabled)
-            .listRowInsets(.init(top: 20, leading: 0, bottom: 20, trailing: 0))
+        VStack(alignment: .leading) {
+            chart
+                .frame(height: size * 1.1)
+                .disabled(pcvm.isScrollDisabled)
+                .clipped()
             
             legend
-        } footer: {
-            if showMinimizeButton {
-                footer
-            }
+        }
+        .padding(.vertical, 8)
+        .background {
+            RoundedRectangle(cornerRadius: 10)
+                .foregroundStyle(Color(uiColor: .secondarySystemGroupedBackground))
         }
         .onChange(of: pcvm.selection) { _ in
             if pcvm.showOther {
                 pcvm.showOther = false
             }
+        }
+        
+        if showMinimizeButton {
+            footer
         }
     }
     
@@ -53,7 +59,7 @@ struct PieChartView: View {
     }
     
     private var legend: some View {
-        PieChartLegendView(minimize: $minimizeLegend, selection: $pcvm.selection, forceExpand: !showMinimizeButton)
+        PieChartLegendView(minimize: showMinimizeButton ? $minimizeLegend : .constant(true), selection: $pcvm.selection)
     }
     
     private var footer: some View {
@@ -67,6 +73,8 @@ struct PieChartView: View {
                         
                         Text("Tap here to remove selection")
                     }
+                    .foregroundStyle(.secondary)
+                    .font(.footnote)
                 }
                 .buttonStyle(.plain)
             }
@@ -75,6 +83,7 @@ struct PieChartView: View {
             
             Button(action: toggleLegend, label: expandButtonLabel)
         }
+        .padding(.horizontal)
     }
 }
 
@@ -83,12 +92,20 @@ extension PieChartView {
         withAnimation {
             minimizeLegend.toggle()
         }
-        UserDefaults.standard.set(minimizeLegend, forKey: UDKeys.minimizeLegend.rawValue)
+        UserDefaults.standard.set(minimizeLegend, forKey: UDKey.minimizeLegend.rawValue)
     }
     
     private func expandButtonLabel() -> some View {
         Label {
-            Text(minimizeLegend ? "Expand" : "Minimize")
+            if minimizeLegend {
+                Text("Expand")
+                    .fixedSize()
+                    .matchedGeometryEffect(id: "MinimizeButtonText", in: namespace)
+            } else {
+                Text("Minimize")
+                    .fixedSize()
+                    .matchedGeometryEffect(id: "MinimizeButtonText", in: namespace)
+            }
         } icon: {
             Image(systemName: "chevron.down")
                 .rotationEffect(minimizeLegend ? .zero : .degrees(180))

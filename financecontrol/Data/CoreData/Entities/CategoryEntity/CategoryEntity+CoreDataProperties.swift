@@ -115,7 +115,7 @@ struct TSCategoryEntity: ToUnsafeObject, Identifiable, Comparable {
     
     var sumWithReturns: Double {
         let rates = UserDefaults.standard.getRates() ?? [:]
-        let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
+        let defaultCurrency = UserDefaults.standard.string(forKey: UDKey.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
         let sum = self.spendings.compactMap {
             if $0.wrappedCurrency == defaultCurrency {
                 return $0.amountWithReturns

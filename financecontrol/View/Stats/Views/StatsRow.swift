@@ -12,21 +12,46 @@ import OSLog
 #endif
 
 struct StatsRow: View {
-    @EnvironmentObject 
-    private var cdm: CoreDataModel
+    @Environment(\.managedObjectContext)
+    private var viewContext
     @EnvironmentObject
     private var rvm: RatesViewModel
     @EnvironmentObject
-    private var vm: StatsViewModel
+    private var listVM: StatsViewModel
+    @EnvironmentObject
+    private var vm: StatsRowViewModel
     
-    @AppStorage(UDKeys.formatWithoutTimeZones.rawValue)
+    @AppStorage(UDKey.formatWithoutTimeZones.rawValue)
     private var formatWithoutTimeZones: Bool = false
     
-    let localEntity: TSSpendingEntity
+    @GestureState
+    var rowDragging: UUID?
+    
+    @Binding
+    var spendingToDelete: SpendingEntity?
+    @Binding
+    var presentDeleteDialog: Bool
+    
+    let data: StatsRowData
+    
+    var isDragging: Bool {
+        rowDragging != nil && rowDragging == data.id
+    }
+    
+    let buttonWidth: CGFloat = 70
+    let leadingTreshhold: CGFloat = ((UIApplication.shared.keyWindow?.bounds.width) ?? 300) * 0.5 - 10
+    let trailingTreshhold: CGFloat = ((UIApplication.shared.keyWindow?.bounds.width) ?? 300) * -(2/3) + 10
     
     #if DEBUG
     let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
     #endif
+    
+    init(state: GestureState<UUID?>, data: StatsRowData, spendingToDelete: Binding<SpendingEntity?>, presentDeleteDialog: Binding<Bool>) {
+        self._rowDragging = state
+        self.data = data
+        self._spendingToDelete = spendingToDelete
+        self._presentDeleteDialog = presentDeleteDialog
+    }
     
     var body: some View {
         button
@@ -34,39 +59,70 @@ struct StatsRow: View {
     
     // MARK: Variables
     private var button: some View {
-        return Button(action: buttonAction) {
-            buttonLabel
+        Button(action: mainButtonAction) {
+            mainButtonLabel
         }
-        .normalizePadding()
-        .swipeActions(edge: .trailing) {
-            deleteButton
-            
-            returnButon
-        }
-        .swipeActions(edge: .leading) {
-            editButton
-        }
+        .buttonStyle(ListButtonStyle())
+        .transition(.maskFromTheBottom)
         .contextMenu {
             editButton
             
-            returnButon
+            returnButton
             
             deleteButton
         }
+        .offset(x: offset)
+        .background(alignment: .trailing) {
+            if isDragging || vm.showTrailingButtons == data.id, vm.hOffset < 0 {
+                HStack(spacing: 0) {
+                    if vm.triggerTrailingAction != self.data.id {
+                        returnButton
+                            .buttonStyle(SwipeButtonStyle(alignment: .trailing))
+                            .transition(.move(edge: .leading))
+                    }
+                    
+                    deleteButton
+                        .buttonStyle(SwipeButtonStyle(alignment: .trailing))
+                }
+                .frame(width: abs(offset))
+                .transition(.move(edge: .trailing))
+                .clipped()
+            }
+        }
+        .background(alignment: .leading) {
+            if isDragging || vm.showLeadingButtons == data.id, vm.hOffset > 0 {
+                editButton
+                    .frame(width: abs(offset), alignment: .trailing)
+                    .transition(.move(edge: .leading))
+                    .buttonStyle(SingleSwipeButtonStyle(alignment: .leading, isActive: vm.triggerLeadingAction == self.data.id))
+            }
+        }
+        .animation(.default, value: isDragging)
+        .animation(.default, value: vm.triggerLeadingAction)
+        .animation(.default, value: vm.triggerTrailingAction)
+        .highPriorityGesture(dragGesture)
+        .onDisappear {
+            withAnimation {
+                self.vm.hOffset = .zero
+                
+                self.vm.showLeadingButtons = nil
+                self.vm.showTrailingButtons = nil
+            }
+        }
     }
     
-    private var buttonLabel: some View {
+    private var mainButtonLabel: some View {
         return HStack {
             VStack(alignment: .leading, spacing: 5) {
-                if let place = localEntity.place, !place.isEmpty {
-                    Text(localEntity.categoryName)
+                if let place = data.place, !place.isEmpty {
+                    Text(data.categoryName)
                         .font(.caption)
                         .foregroundColor(Color.secondary)
                     
                     Text(place)
                         .foregroundColor(.primary)
                 } else {
-                    Text(localEntity.categoryName)
+                    Text(data.categoryName)
                         .foregroundColor(.primary)
                 }
             }
@@ -75,41 +131,38 @@ struct StatsRow: View {
             
             VStack(alignment: .trailing, spacing: 5) {
                 HStack(spacing: 3) {
-                    if !formatWithoutTimeZones, let timeZone = localEntity.timeZone, timeZone.secondsFromGMT() != TimeZone.autoupdatingCurrent.secondsFromGMT() {
+                    if !formatWithoutTimeZones, data.showTimeZoneIcon {
                         Image(systemName: "clock")
                             .foregroundColor(.secondary)
                             .font(.caption2)
                         
-                        Text(localEntity.dateAdjustedToTimeZoneDate.formatted(date: .omitted, time: .shortened))
+                        Text(data.date.formatted(date: .omitted, time: .shortened))
                             .font(.caption)
                             .foregroundColor(Color.secondary)
                     } else {
-                        Text(localEntity.wrappedDate.formatted(date: .omitted, time: .shortened))
+                        Text(data.date.formatted(date: .omitted, time: .shortened))
                             .font(.caption)
                             .foregroundColor(Color.secondary)
                     }
                 }
                 
                 HStack {
-                    if !localEntity.returns.isEmpty {
+                    if data.hasReturns {
                         Image(systemName: "arrow.uturn.backward")
                             .foregroundColor(.secondary)
                             .font(.caption.bold())
                     }
                     
-                    Text("\((-localEntity.amountWithReturns).formatted(.currency(code: localEntity.wrappedCurrency)))")
+                    Text("\((-data.amount).formatted(.currency(code: data.currency)))")
                 }
-                .foregroundColor(localEntity.amountWithReturns != 0 ? .primary : .secondary)
+                .foregroundColor(data.amount != 0 ? .primary : .secondary)
             }
         }
     }
     
     private var editButton: some View {
         Button {
-            if  let entity = try? localEntity.unsafeObject(in: cdm.context){
-                vm.edit.toggle()
-                vm.entityToEdit = entity
-            }
+            editButtonAction()
         } label: {
             Label {
                 Text("Edit")
@@ -122,9 +175,7 @@ struct StatsRow: View {
     
     private var deleteButton: some View {
         Button(role: .destructive) {
-            if let entity = try? localEntity.unsafeObject(in: cdm.context) {
-                deleteSpending(entity)
-            }
+            deleteButtonAction()
         } label: {
             Label {
                 Text("Delete")
@@ -135,61 +186,305 @@ struct StatsRow: View {
         .tint(.red)
     }
     
-    private var returnButon: some View {
+    private var returnButton: some View {
         Button {
-            if let entity = try? localEntity.unsafeObject(in: cdm.context) {
-                vm.entityToAddReturn = entity
-            }
+            listVM.entityToAddReturn = data.entity
+            
+            breakGesture()
         } label: {
             Label("Add return", systemImage: "arrow.uturn.backward")
         }
         .tint(.yellow)
-        .disabled(localEntity.amountWithReturns == 0)
+        .disabled(data.amount == 0)
     }
     
     // MARK: Functions
     
-    init(entity: TSSpendingEntity) {
-        self.localEntity = entity
+    private func mainButtonAction() {
+        guard rowDragging == nil else {
+            return
+        }
         
-//        #if DEBUG
-//        logger.log("Sum: \(entity.amountWithReturns), date: \(entity.wrappedDate) initialized")
-//        print(entity.amount, entity.currency, entity.categoryName, "Initialized")
-//        #endif
+        if listVM.entityToEdit == nil {
+            listVM.entityToEdit = data.entity
+        }
+        
+        breakGesture()
     }
     
-    private func buttonAction() {
-        if vm.entityToEdit == nil, let entity = try? localEntity.unsafeObject(in: cdm.context) {
-            vm.entityToEdit = entity
-        }
+    private func editButtonAction() {
+        listVM.edit.toggle()
+        listVM.entityToEdit = data.entity
+        
+        breakGesture()
+    }
+    
+    private func deleteButtonAction() {
+//        deleteSpending(entity)
+        spendingToDelete = data.entity
+        presentDeleteDialog = true
+        
+        breakGesture()
     }
     
     private func deleteSpending(_ entity: SpendingEntity) {
+        viewContext.delete(entity)
+        try? viewContext.save()
+    }
+    
+    private var dragGesture: some Gesture {
+        DragGesture(minimumDistance: 30)
+            .updating($rowDragging) { value, state, _ in
+                handleGesture(value: value, state: &state)
+            }
+            .onEnded { value in
+                endGesture(value: value)
+            }
+    }
+    
+    private func handleGesture(value: DragGesture.Value, state: inout UUID?) {
+        guard state == nil || state == data.id else {
+            return
+        }
+        
+        state = data.id
+        vm.lastDragged = data.id
+        
+        if vm.showLeadingButtons != nil, vm.showLeadingButtons != self.data.id {
+            withAnimation {
+                vm.showLeadingButtons = nil
+            }
+        }
+        
+        if vm.showTrailingButtons != nil, vm.showTrailingButtons != self.data.id {
+            withAnimation {
+                vm.showTrailingButtons = nil
+            }
+        }
+        
+        let translatedValue = value.translation.width + (vm.showLeadingButtons == self.data.id ? buttonWidth : 0) + (vm.showTrailingButtons == self.data.id ? -buttonWidth * 2 : 0)
+        
+        self.vm.hOffset = translatedValue
+        
+        if translatedValue < 0 {
+            if self.vm.triggerLeadingAction != nil {
+                self.vm.triggerLeadingAction = nil
+            }
+            
+            if translatedValue < trailingTreshhold, vm.triggerTrailingAction != self.data.id {
+                self.vm.triggerTrailingAction = self.data.id
+                HapticManager.shared.impact(.light)
+            } else if translatedValue >= trailingTreshhold, vm.triggerTrailingAction == self.data.id {
+                self.vm.triggerTrailingAction = nil
+                HapticManager.shared.impact(.light)
+            }
+        } else {
+            if self.vm.triggerTrailingAction != nil {
+                self.vm.triggerTrailingAction = nil
+            }
+            
+            if translatedValue > leadingTreshhold, vm.triggerLeadingAction != self.data.id {
+                self.vm.triggerLeadingAction = self.data.id
+                HapticManager.shared.impact(.light)
+            } else if translatedValue <= leadingTreshhold, vm.triggerLeadingAction == self.data.id {
+                self.vm.triggerLeadingAction = nil
+                HapticManager.shared.impact(.light)
+            }
+        }
+    }
+    
+    private func endGesture(value: DragGesture.Value) {
+        guard vm.lastDragged == data.id else {
+            return
+        }
+        
+        vm.lastDragged = nil
+        
+        let translatedValue = value.translation.width + (vm.showLeadingButtons == self.data.id ? buttonWidth : 0) + (vm.showTrailingButtons == self.data.id ? -buttonWidth * 2 : 0)
+        
+        if translatedValue < trailingTreshhold {
+            breakGesture()
+            
+            self.vm.triggerTrailingAction = nil
+            
+            deleteButtonAction()
+            
+            return
+        }
+        
+        if translatedValue > leadingTreshhold {
+            breakGesture()
+            
+            self.vm.triggerLeadingAction = nil
+            
+            editButtonAction()
+            
+            return
+        }
+        
+        if translatedValue < -buttonWidth {
+            self.vm.showTrailingButtons = self.data.id
+            
+            withAnimation {
+                self.vm.hOffset = -buttonWidth * 2
+            }
+            
+            return
+        }
+        
+        if translatedValue > buttonWidth/2 {
+            self.vm.showLeadingButtons = self.data.id
+            
+            withAnimation {
+                self.vm.hOffset = buttonWidth
+            }
+            
+            return
+        }
+        
+        breakGesture()
+    }
+    
+    private func breakGesture() {
         withAnimation {
-            cdm.deleteSpending(entity)
+            self.vm.hOffset = .zero
+            
+            self.vm.showLeadingButtons = nil
+            self.vm.showTrailingButtons = nil
+        }
+    }
+    
+    private var offset: CGFloat {
+        var result: CGFloat = self.vm.hOffset
+        
+        if let triggerLeadingAction = vm.triggerLeadingAction, triggerLeadingAction == self.data.id {
+            let valueAfter = self.vm.hOffset - leadingTreshhold
+            result = leadingTreshhold + valueAfter * 0.2
+        }
+        
+        if let triggerTrailingAction = vm.triggerTrailingAction, triggerTrailingAction == self.data.id {
+            let valueAfter = self.vm.hOffset + 250
+            result = -250 + valueAfter * 0.2 - 30
+        }
+        
+        guard isDragging || vm.showLeadingButtons == self.data.id || vm.showTrailingButtons == self.data.id else {
+            return 0
+        }
+        
+        return result
+    }
+    
+    private struct SwipeButtonStyle: ButtonStyle {
+        @Environment(\.isEnabled)
+        private var isEnabled
+        
+        let alignment: Self.Alignment
+        
+        func makeBody(configuration: Configuration) -> some View {
+            ZStack(alignment: alignment.trueAligniment) {
+                if isEnabled {
+                    Rectangle()
+                        .fill(.tint)
+                } else {
+                    Rectangle()
+                        .fill(.secondary)
+                }
+                
+                ZStack {
+                    Rectangle()
+                        .fill(.clear)
+                        .frame(width: 70)
+                    
+                    configuration.label
+                        .opacity(isEnabled ? 1 : 0.7)
+                }
+                .labelStyle(.iconOnly)
+                .font(.title2)
+                .frame(minWidth: .zero, alignment: alignment.trueAligniment)
+                .foregroundStyle(.white)
+            }
+        }
+        
+        enum Alignment {
+            case leading, trailing
+            
+            var trueAligniment: SwiftUI.Alignment {
+                switch self {
+                case .leading:
+                    .trailing
+                case .trailing:
+                    .leading
+                }
+            }
+        }
+    }
+    
+    private struct SingleSwipeButtonStyle: ButtonStyle {
+        let alignment: Self.Alignment
+        let isActive: Bool
+        
+        func makeBody(configuration: Configuration) -> some View {
+            ZStack {
+                Rectangle()
+                    .fill(.tint)
+                
+                ZStack {
+                    Rectangle()
+                        .fill(.clear)
+                        .frame(width: 70)
+                    
+                    configuration.label
+                }
+                .labelStyle(.iconOnly)
+                .font(.title2)
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, alignment: isActive ? .trailing : .leading)
+            }
+        }
+        
+        enum Alignment {
+            case leading, trailing
+            
+            var trueAligniment: SwiftUI.Alignment {
+                switch self {
+                case .leading:
+                    .trailing
+                case .trailing:
+                    .leading
+                }
+            }
+        }
+    }
+    
+    private struct ListButtonStyle: ButtonStyle {
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .padding(.vertical, 10)
+                .padding(.horizontal)
+                .background(Color(uiColor: .secondarySystemGroupedBackground))
         }
     }
 }
 
-#Preview {
-    let row = StatsRow(
-        entity: .init(
-            amount: 1000,
-            amountUSD: 6.87,
-            comment: "",
-            currency: "JPY",
-            date: .now,
-            timeZoneIdentifier: "Asia/Tokyo",
-            id: .init(),
-            place: "Some place",
-            categoryID: .init(),
-            categoryName: "Category",
-            categoryColor: "",
-            returns: []
-        )
-    )
-    
-    return List {
-        row
-    }
-}
+//#Preview {
+//    let row = StatsRow(
+//        entity: .init(
+//            amount: 1000,
+//            amountUSD: 6.87,
+//            comment: "",
+//            currency: "JPY",
+//            date: .now,
+//            timeZoneIdentifier: "Asia/Tokyo",
+//            id: .init(),
+//            place: "Some place",
+//            categoryID: .init(),
+//            categoryName: "Category",
+//            categoryColor: "",
+//            returns: []
+//        )
+//    )
+//    
+//    return List {
+//        row
+//    }
+//}

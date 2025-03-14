@@ -18,8 +18,8 @@ struct DebugView: View {
     private var defaultsConfirmationIsShowing: Bool = false
     @State
     private var timelineConfirmationIsShowing: Bool = false
-    @State
-    private var validateConfirmationIsShowing: Bool = false
+//    @State
+//    private var validateConfirmationIsShowing: Bool = false
     
     var body: some View {
         List {
@@ -37,7 +37,7 @@ struct DebugView: View {
             
             reloadWidgetsSection
             
-            validateSection
+//            validateSection
         }
         .confirmationDialog("This will clear all settings of app. \nYou can't undo this action.", isPresented: $defaultsConfirmationIsShowing, titleVisibility: .visible) {
             clearSharedDefaultsButton
@@ -47,11 +47,11 @@ struct DebugView: View {
         .confirmationDialog("", isPresented: $timelineConfirmationIsShowing) {
             Button("Reload all widget timelines", role: .destructive, action: WidgetsManager.shared.reloadAll)
         }
-        .confirmationDialog("", isPresented: $validateConfirmationIsShowing) {
-            Button("Validate returns", role: .destructive) {
-                cdm.validateReturns(rvm: rvm)
-            }
-        }
+//        .confirmationDialog("", isPresented: $validateConfirmationIsShowing) {
+//            Button("Validate returns", role: .destructive) {
+//                cdm.validateReturns(rvm: rvm)
+//            }
+//        }
         .navigationTitle("Debug")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -291,6 +291,58 @@ struct DebugView: View {
     private var defaultsSection: some View {
         Section {
             NavigationLink {
+                List {
+                    HStack {
+                        Text(verbatim: "Version")
+                        
+                        Spacer()
+                        
+                        Text(UserDefaults.standard.integer(forKey: UDKey.urlUpdateVersion.rawValue).description)
+                            .foregroundStyle(.secondary)
+                    }
+                    
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(verbatim: "GitHub URL")
+                                .foregroundStyle(.secondary)
+                            
+                            Text(URL.github.absoluteString)
+                        }
+                        
+                        Spacer()
+                    }
+                    
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(verbatim: "Website URL")
+                                .foregroundStyle(.secondary)
+                            
+                            Text(URL.appWebsite.absoluteString)
+                        }
+                        
+                        Spacer()
+                    }
+                    
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(verbatim: "New GitHub issue URL")
+                                .foregroundStyle(.secondary)
+                            
+                            Text(URL.newGithubIssue.absoluteString)
+                        }
+                        
+                        Spacer()
+                    }
+                }
+                .refreshable {
+                    let ckManager = CloudKitManager.shared
+                    await ckManager.updateCloudKitContent(forceUpdate: true)
+                }
+            } label: {
+                Text(verbatim: "URLs")
+            }
+            
+            NavigationLink {
                 UserDefaultsValuesView(defaults: .standard)
             } label: {
                 Text(verbatim: "UserDefaults values")
@@ -318,16 +370,16 @@ struct DebugView: View {
         }
     }
     
-    private var validateSection: some View {
-        Section {
-            Button(role: .destructive) {
-                validateConfirmationIsShowing.toggle()
-            } label: {
-                Text("Validate returns")
-            }
-
-        }
-    }
+//    private var validateSection: some View {
+//        Section {
+//            Button(role: .destructive) {
+//                validateConfirmationIsShowing.toggle()
+//            } label: {
+//                Text("Validate returns")
+//            }
+//
+//        }
+//    }
     
     private var keychainSection: some View {
         Section {
@@ -412,7 +464,7 @@ extension DebugView {
             let date: Date = isoDateFromatter.date(from: Rates.fallback.timestamp) ?? DateFormatter.forRatesTimestamp.date(from: Rates.fallback.timestamp) ?? .distantPast
             return dateFormatter.string(from: date)
         case .update:
-            let ratesUpdateTime: String = UserDefaults.standard.string(forKey: UDKeys.updateTime.rawValue) ?? "Error"
+            let ratesUpdateTime: String = UserDefaults.standard.string(forKey: UDKey.updateTime.rawValue) ?? "Error"
             let date: Date = isoDateFromatter.date(from: ratesUpdateTime) ?? DateFormatter.forRatesTimestamp.date(from: ratesUpdateTime) ?? .distantPast
             return dateFormatter.string(from: date)
         }

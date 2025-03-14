@@ -11,7 +11,10 @@ struct ExportAndBackupView: View {
     @EnvironmentObject private var cdm: CoreDataModel
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     
-    @AppStorage(UDKeys.color.rawValue) private var tint: String = "Orange"
+    @AppStorage(UDKey.color.rawValue) private var tint: String = "Orange"
+    
+    @FetchRequest(sortDescriptors: [SortDescriptor(\SpendingEntity.date)])
+    private var spendings: FetchedResults<SpendingEntity>
     
     @State private var shareURL: URL = .init(string: "https://apple.com")!
     @State private var presentExportSheet: Bool = false
@@ -20,7 +23,7 @@ struct ExportAndBackupView: View {
     
     var body: some View {
         VStack {
-            if cdm.savedSpendings.isEmpty {
+            if spendings.isEmpty {
                 CustomContentUnavailableView("No Expenses", imageName: "list.bullet", description: "You can add expenses from home screen.")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
@@ -69,7 +72,7 @@ struct ExportAndBackupView: View {
                 }
         }
         .buttonStyle(.plain)
-        .disabled(cdm.savedSpendings.isEmpty)
+        .disabled(spendings.isEmpty)
     }
     
     private var jsonButtons: some View {
@@ -92,7 +95,7 @@ struct ExportAndBackupView: View {
                 }
             }
             .animation(.default, value: presentExportSheet)
-            .disabled(cdm.savedSpendings.isEmpty)
+            .disabled(spendings.isEmpty)
             
             Divider()
             

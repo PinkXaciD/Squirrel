@@ -90,7 +90,7 @@ final class ExportCSVViewModel: ViewModel {
         self.cdm = cdm
         self.withReturns = true
         self.dateTo = Calendar.autoupdatingCurrent.startOfDay(for: Date())
-        self.dateFrom = Calendar.autoupdatingCurrent.startOfDay(for: cdm.savedSpendings.last?.wrappedDate ?? Vars.firstAvailableDate)
+        self.dateFrom = Calendar.autoupdatingCurrent.startOfDay(for: cdm.firstSpendingDate ?? .firstAvailableDate)
         self.timeZoneFormat = .gmt
         self.selectedFieldsCount = items.count(where: { $0.isActive })
         self.isTimeZoneSelected = false

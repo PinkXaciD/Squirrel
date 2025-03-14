@@ -4,7 +4,7 @@
 
 ![Images](README/Screenshots/GitHubHeader_v110.png)
 
-[![Download on the App Store](README/Resources/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg)](https://apple.co/3NzEHDD)
+[![Download on the App Store](README/Resources/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg)](https://apps.apple.com/jp/app/squirrel-expense-tracker/id6477331498)
 
 Available for iOS 15 and later.
 

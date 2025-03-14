@@ -8,13 +8,17 @@
 import SwiftUI
 
 struct CategoriesEditView: View {
-    @EnvironmentObject var cdm: CoreDataModel
+//    @EnvironmentObject var cdm: CoreDataModel
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)], predicate: NSPredicate(format: "isShadowed == false"), animation: .default)
+    private var categories: FetchedResults<CategoryEntity>
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)], predicate: NSPredicate(format: "isShadowed == true"), animation: .default)
+    private var shadowedCategories: FetchedResults<CategoryEntity>
     
     var body: some View {
         List {
-            if !cdm.savedCategories.isEmpty {
+            if !categories.isEmpty {
                 Section {
-                    ForEach(cdm.savedCategories) { entity in
+                    ForEach(categories) { entity in
                         CategoryRow(category: entity)
                     }
                 }
@@ -42,7 +46,6 @@ struct CategoriesEditView: View {
                 addNewToolbarButton
             }
         }
-        .animation(.default, value: cdm.savedCategories)
     }
     
     private var manageCategoriesSection: some View {
@@ -52,12 +55,12 @@ struct CategoriesEditView: View {
             }
             
             NavigationLink {
-                ShadowedCategoriesView()
+                ShadowedCategoriesView(categories: shadowedCategories)
             } label: {
                 HStack {
                     Text("Archived categories")
                     Spacer()
-                    Text(cdm.shadowedCategories.count.formatted())
+                    Text(shadowedCategories.count.formatted())
                         .foregroundStyle(.secondary)
                 }
             }
@@ -74,7 +77,7 @@ struct CategoriesEditView: View {
     
     private var shadowedCategoriesToolbarButton: some View {
         NavigationLink {
-            ShadowedCategoriesView()
+            ShadowedCategoriesView(categories: shadowedCategories)
         } label: {
             Label("Archived categories", systemImage: "archivebox")
         }

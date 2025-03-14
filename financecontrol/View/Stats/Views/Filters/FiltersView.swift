@@ -18,9 +18,9 @@ struct FiltersView: View {
     private var privacyMonitor: PrivacyMonitor
     @Environment(\.dismiss)
     private var dismiss
-    @AppStorage(UDKeys.color.rawValue)
+    @AppStorage(UDKey.color.rawValue)
     private var tint: String = "Orange"
-    @AppStorage(UDKeys.privacyScreen.rawValue)
+    @AppStorage(UDKey.privacyScreen.rawValue)
     private var privacyScreenIsEnabled: Bool = false
     
     @State
@@ -77,7 +77,7 @@ struct FiltersView: View {
     }
     
     private var firstDatePicker: some View {
-        let firstDate: Date = cdm.savedSpendings.last?.wrappedDate ?? Vars.firstAvailableDate
+        let firstDate: Date = cdm.firstSpendingDate ?? .firstAvailableDate
         
         return DatePicker("From", selection: $fvm.startFilterDate, in: firstDate...fvm.endFilterDate, displayedComponents: .date)
     }
@@ -109,7 +109,7 @@ struct FiltersView: View {
     private var categoriesSection: some View {
         Section {
             NavigationLink {
-                FiltersCategoriesView(categories: $fvm.filterCategories, applyFilters: $fvm.applyFilters, cdm: cdm)
+                FiltersCategoriesView(categories: $fvm.filterCategories, applyFilters: $fvm.applyFilters)
             } label: {
                 categoriesPickerLabel
             }
@@ -215,7 +215,7 @@ extension FiltersView {
     }
     
     private func setCurrentMonth() {
-        let firstDate: Date = cdm.savedSpendings.last?.wrappedDate ?? Vars.firstAvailableDate
+        let firstDate: Date = cdm.firstSpendingDate ?? .firstAvailableDate
         
         fvm.startFilterDate = Date().getFirstDayOfMonth() < firstDate ? firstDate : Date().getFirstDayOfMonth()
         fvm.endFilterDate = Date()
@@ -229,7 +229,7 @@ extension FiltersView {
             return
         }
         
-        let firstDate: Date = cdm.savedSpendings.last?.wrappedDate ?? Vars.firstAvailableDate
+        let firstDate: Date = cdm.firstSpendingDate ?? .firstAvailableDate
         
         fvm.startFilterDate = startDate < firstDate ? firstDate : startDate
         fvm.endFilterDate = Date()
@@ -243,7 +243,7 @@ extension FiltersView {
             return Date()
         }
         
-        let firstDate: Date = cdm.savedSpendings.last?.wrappedDate ?? Vars.firstAvailableDate
+        let firstDate: Date = cdm.firstSpendingDate ?? .firstAvailableDate
         
         return startDate < firstDate ? firstDate : startDate
     }

@@ -11,6 +11,8 @@ struct OnboardingCategoriesView: View {
     @Binding var showOverlay: Bool
     @Binding var screen: Int
     @EnvironmentObject private var cdm: CoreDataModel
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)], predicate: NSPredicate(format: "isShadowed == false"))
+    var categories: FetchedResults<CategoryEntity>
     
     @State private var presentImportSheet: Bool = false
     
@@ -79,14 +81,14 @@ struct OnboardingCategoriesView: View {
     
     private var categoriesSection: some View {
         Section {
-            if cdm.savedCategories.isEmpty {
+            if categories.isEmpty {
                 Button("Import existing data") {
                     presentImportSheet.toggle()
                 }
                 .tint(.orange)
             }
             
-            ForEach(cdm.savedCategories) { category in
+            ForEach(categories) { category in
                 HStack {
                     Image(systemName: "circle.fill")
                         .font(.title)

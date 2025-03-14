@@ -8,13 +8,15 @@
 import SwiftUI
 
 struct ShadowedCategoriesView: View {
-    @EnvironmentObject var cdm: CoreDataModel
+//    @EnvironmentObject var cdm: CoreDataModel
+    
+    let categories: FetchedResults<CategoryEntity>
     
     var body: some View {
-        if !cdm.shadowedCategories.isEmpty {
+        if !categories.isEmpty {
             List {
                 Section {
-                    ForEach(cdm.shadowedCategories) { category in
+                    ForEach(categories) { category in
                         ShadowedCategoriesRow(category: category, safeCategory: category.safeObject())
                     }
                 } footer: {
@@ -34,8 +36,11 @@ struct ShadowedCategoriesView: View {
 }
 
 struct ShadowedCategoriesView_Previews: PreviewProvider {
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)], predicate: NSPredicate(format: "isShadowed == true"), animation: .default)
+    static private var categories: FetchedResults<CategoryEntity>
+    
     static var previews: some View {
-        ShadowedCategoriesView()
+        ShadowedCategoriesView(categories: categories)
             .environmentObject(CoreDataModel())
     }
 }

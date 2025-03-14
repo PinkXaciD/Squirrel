@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreData
 #if DEBUG
 import OSLog
 #endif
@@ -13,13 +14,11 @@ import OSLog
 struct StatsView: View {
     @Environment(\.isSearching)
     private var isSearching
-    @AppStorage(UDKeys.color.rawValue)
+    @Environment(\.managedObjectContext)
+    private var viewContext
+    @AppStorage(UDKey.color.rawValue)
     private var tint: String = "Orange"
     
-    @EnvironmentObject
-    private var cdm: CoreDataModel
-    @EnvironmentObject
-    private var rvm: RatesViewModel
     @EnvironmentObject
     private var pcvm: PieChartViewModel
     @EnvironmentObject
@@ -35,6 +34,14 @@ struct StatsView: View {
     
     @State
     private var showFilters: Bool = false
+    
+    @State
+    private var spendingToDelete: SpendingEntity? = nil
+    @State
+    private var presentDeleteDialog: Bool = false
+    
+    @Binding
+    var scrollToTop: Int?
     
     private var size: CGFloat {
         let currentScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
@@ -53,31 +60,66 @@ struct StatsView: View {
             IPadStatsView(size: size)
         } else {
             iPhoneStatsView
+#if DEBUG
+                .refreshable {
+                    NotificationCenter.default.post(name: .UpdatePieChart, object: nil)
+                }
+#endif
         }
     }
     
     private var iPhoneStatsView: some View {
         NavigationView {
-            List {
-                if !isSearching, searchModel.input.isEmpty {
-                    PieChartView(size: size, showMinimizeButton: true)
-                        .id(0)
+            ZStack {
+                Color(uiColor: .systemGroupedBackground)
+                    .ignoresSafeArea(.all)
+                
+                ScrollViewReader { scroll in
+                    ScrollView (.vertical) {
+                        LazyVStack {
+                            if !isSearching, searchModel.input.isEmpty {
+                                VStack {
+                                    PieChartView(size: size, showMinimizeButton: true)
+                                }
+                                .id(0)
+                            }
+                            
+                            StatsListView(spendingToDelete: $spendingToDelete, presentDeleteDialog: $presentDeleteDialog)
+                        }
+                        .padding()
+                        .toolbar {
+                            leadingToolbar
+                            
+                            trailingToolbar
+                        }
+                        .sheet(isPresented: $showFilters) {
+                            filters
+                        }
+                        .navigationTitle("Stats")
+                        .onChange(of: scrollToTop) { value in
+                            guard value == 1 else {
+                                return
+                            }
+                            
+                            withAnimation {
+                                scroll.scrollTo(0, anchor: .bottom)
+                            }
+                            
+                            self.scrollToTop = nil
+                        }
+                    }
                 }
-                
-                StatsListView()
             }
-            .toolbar {
-                leadingToolbar
-                
-                trailingToolbar
+        }
+        .searchable(text: $searchModel.input, placement: .automatic, prompt: "Search by place or comment")
+        .confirmationDialog("Delete this expense?", isPresented: $presentDeleteDialog, titleVisibility: .visible, presenting: spendingToDelete) { spending in
+            Button("Delete", role: .destructive) {
+                DataManager.shared.deleteSpending(with: spending.objectID)
             }
-            .sheet(isPresented: $showFilters) {
-                filters
-            }
-            .navigationTitle("Stats")
+        } message: { _ in
+            Text("You can't undo this action.")
         }
         .navigationViewStyle(.stack)
-        .searchable(text: $searchModel.input, placement: .automatic, prompt: "Search by place or comment")
     }
     
     private var leadingToolbar: ToolbarItem<Void, some View> {
@@ -89,7 +131,7 @@ struct StatsView: View {
                     Label("Clear filters", systemImage: "xmark")
                 }
                 .disabled(!fvm.applyFilters)
-                .buttonStyle(BorderedButtonStyle())
+                .buttonStyle(.bordered)
                 .hoverEffect()
             }
         }
@@ -160,6 +202,81 @@ extension StatsView {
         pcvm.updateData()
         pcvm.isScrollDisabled = false
     }
+    
+//    private func getListPredicate() -> NSPredicate {
+//        if pcvm.selection == 0, !fvm.applyFilters, pcvm.selectedCategory == nil, searchModel.search.isEmpty {
+//            return NSPredicate(value: true)
+//        }
+//        
+//        var predicates = [NSPredicate]()
+//        
+//        if let selectedCategory = pcvm.selectedCategory {
+//            let selectedCategoryPredicate = NSPredicate(format: "category.id == %@", selectedCategory.id as CVarArg)
+//            predicates.append(selectedCategoryPredicate)
+//        }
+//        
+//        if pcvm.selection != 0 {
+//            let selectedMonthPredicate = NSPredicate(
+//                format: "date >= %@ AND date < %@",
+//                Date().getFirstDayOfMonth(-pcvm.selection) as CVarArg,
+//                Date().getFirstDayOfMonth(-pcvm.selection + 1) as CVarArg
+//            )
+//            predicates.append(selectedMonthPredicate)
+//        }
+//        
+////        if !fvm.applyFilters && searchModel.search.isEmpty {
+////            if pcvm.selection == 0 {
+//////                let selectedMonthPredicate = NSPredicate(
+//////                    format: "date >= %@ AND date < %@",
+//////                    Date().getFirstDayOfMonth(-(pcvm.selection + loadMoreCount)) as CVarArg,
+//////                    Date().getFirstDayOfMonth(-pcvm.selection + 1) as CVarArg
+//////                )
+//////                predicates.append(selectedMonthPredicate)
+////            } else {
+////                let selectedMonthPredicate = NSPredicate(
+////                    format: "date >= %@ AND date < %@",
+////                    Date().getFirstDayOfMonth(-pcvm.selection) as CVarArg,
+////                    Date().getFirstDayOfMonth(-pcvm.selection + 1) as CVarArg
+////                )
+////                predicates.append(selectedMonthPredicate)
+////            }
+////        }
+//        
+//        if fvm.applyFilters {
+//            let datePredicate = NSPredicate(format: "date >= %@ AND date < %@", fvm.startFilterDate as CVarArg, fvm.endFilterDate as CVarArg)
+//            predicates.append(datePredicate)
+//            
+//            if !fvm.filterCategories.isEmpty {
+//                let filterCategoriesPredicate = NSPredicate(format: "category.id IN %@", fvm.filterCategories as CVarArg)
+//                predicates.append(filterCategoriesPredicate)
+//            }
+//            
+//            if !fvm.currencies.isEmpty {
+//                let currenciesPredicate = NSPredicate(format: "currency IN %@", fvm.currencies as CVarArg)
+//                predicates.append(currenciesPredicate)
+//            }
+//            
+//            if let withReturns = fvm.withReturns {
+//                let returnsPredicate = NSPredicate(format: "returns.@count \(withReturns ? ">" : "==") 0")
+//                predicates.append(returnsPredicate)
+//            }
+//        }
+////        else {
+////            let selectedMonthPredicate = NSPredicate(
+////                format: "date >= %@ AND date < %@",
+////                Date().getFirstDayOfMonth(-pcvm.selection) as CVarArg,
+////                Date().getFirstDayOfMonth(-pcvm.selection + 1) as CVarArg
+////            )
+////            predicates.append(selectedMonthPredicate)
+////        }
+//        
+//        if !searchModel.search.isEmpty {
+//            let searchPredicate = NSPredicate(format: "place CONTAINS[cd] %@ OR comment CONTAINS[cd] %@", searchModel.search, searchModel.search)
+//            predicates.append(searchPredicate)
+//        }
+//        
+//        return NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+//    }
 }
 
 fileprivate struct IPadStatsView: View {
@@ -220,7 +337,17 @@ fileprivate struct IPadStatsView: View {
     }
     
     private var listView: some View {
-        StatsListView()
+        StatsListView(spendingToDelete: .constant(nil), presentDeleteDialog: .constant(false)
+//            spendings: SectionedFetchRequest(
+//                sectionIdentifier: \SpendingEntity.startOfDay,
+//                sortDescriptors: [
+//                    SortDescriptor(\SpendingEntity.date, order: .reverse)
+//                ],
+////                predicate: getListPredicate(),
+//                predicate: NSPredicate(value: true),
+//                animation: .default
+//            )
+        )
     }
     
     private var filters: some View {
@@ -305,6 +432,24 @@ fileprivate struct IPadStatsView: View {
         
         pcvm.updateData()
         pcvm.isScrollDisabled = false
+    }
+}
+
+fileprivate struct ListButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled)
+    private var isEnabled
+    
+    func makeBody(configuration: Configuration) -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color(uiColor: .secondarySystemGroupedBackground))
+            
+            configuration.label
+                .foregroundStyle(.tint)
+                .opacity(configuration.isPressed ? 0.5 : 1)
+                .padding(.horizontal)
+                .grayscale(isEnabled ? 0 : 1)
+        }
     }
 }
 

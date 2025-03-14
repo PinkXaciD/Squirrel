@@ -12,9 +12,12 @@ import OSLog
 
 func launch() {
     let dateFormatter = ISO8601DateFormatter()
+    #if DEBUG
+    let _ = CloudKitManager.shared
+    #endif
     
     // MARK: Rates update scheduling
-    let updateTime = UserDefaults.standard.string(forKey: UDKeys.updateTime.rawValue) ?? dateFormatter.string(from: .distantPast)
+    let updateTime = UserDefaults.standard.string(forKey: UDKey.updateTime.rawValue) ?? dateFormatter.string(from: .distantPast)
     
     if !Calendar.current.isDate(dateFormatter.date(from: updateTime) ?? .distantPast, equalTo: .now, toGranularity: .hour) {
         #if DEBUG
@@ -28,12 +31,12 @@ func launch() {
     }
     
     // MARK: Currency checks
-    if UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) == nil {
-        UserDefaults.standard.set(Locale.current.currencyCode ?? "USD", forKey: UDKeys.defaultCurrency.rawValue)
+    if UserDefaults.standard.string(forKey: UDKey.defaultCurrency.rawValue) == nil {
+        UserDefaults.standard.set(Locale.current.currencyCode ?? "USD", forKey: UDKey.defaultCurrency.rawValue)
     }
     
-    if let sharedDefaults = UserDefaults(suiteName: Vars.groupName), sharedDefaults.string(forKey: UDKeys.defaultCurrency.rawValue) == nil {
-        sharedDefaults.set(Locale.current.currencyCode ?? "USD", forKey: UDKeys.defaultCurrency.rawValue)
+    if let sharedDefaults = UserDefaults(suiteName: Vars.groupName), sharedDefaults.string(forKey: UDKey.defaultCurrency.rawValue) == nil {
+        sharedDefaults.set(Locale.current.currencyCode ?? "USD", forKey: UDKey.defaultCurrency.rawValue)
         WidgetsManager.shared.reloadSumWidgets()
     }
 }

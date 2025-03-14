@@ -12,7 +12,7 @@ struct WidgetBarChartView: View {
     @Environment(\.widgetFamily) private var widgetFamily
     @Environment(\.redactionReasons) private var redactionReasons
     
-    @AppStorage(UDKeys.color.rawValue, store: UserDefaults(suiteName: Vars.groupName))
+    @AppStorage(UDKey.color.rawValue, store: UserDefaults(suiteName: Vars.groupName))
     private var tint: String = "Orange"
     
     let data: [Date:Double]

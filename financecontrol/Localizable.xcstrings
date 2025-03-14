@@ -236,9 +236,6 @@
         }
       }
     },
-    "All expenses, settings and any other data are stored locally." : {
-
-    },
     "Always format without timezones" : {
 
     },
@@ -274,6 +271,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Appearance"
+          }
+        }
+      }
+    },
+    "appication-restart-required-key" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App restart required"
           }
         }
       }
@@ -322,6 +329,9 @@
       }
     },
     "Back" : {
+
+    },
+    "Backup your expenses seamlessly" : {
 
     },
     "Blue" : {
@@ -377,6 +387,9 @@
     "Comment is too long" : {
 
     },
+    "Contact Us" : {
+
+    },
     "Content will be blurred when you minimize the app" : {
 
     },
@@ -386,7 +399,13 @@
     "Continue with sample data" : {
 
     },
+    "Copy link to clipboard" : {
+
+    },
     "Copy to clipboard" : {
+
+    },
+    "Copy username to clipboard" : {
 
     },
     "Create an issue on GitHub" : {
@@ -425,6 +444,9 @@
     "Delete" : {
 
     },
+    "Delete data from iCloud" : {
+
+    },
     "Delete this category?" : {
 
     },
@@ -437,6 +459,9 @@
     "Disable" : {
 
     },
+    "Disable iCloud sync" : {
+
+    },
     "Disabled" : {
 
     },
@@ -446,7 +471,13 @@
     "Edit" : {
 
     },
+    "Email" : {
+
+    },
     "Empty database" : {
+
+    },
+    "Enable iCloud sync" : {
 
     },
     "Enter name" : {
@@ -521,10 +552,26 @@
     "First Flight" : {
 
     },
+    "format-without-timezones-description-key" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If the time zone of the expense differs from the current one, the date will be formatted with the time zone of the expense. You can change this behavior by enabling this option."
+          }
+        }
+      }
+    },
     "Formatting" : {
 
     },
     "From" : {
+
+    },
+    "Full changelog" : {
+
+    },
+    "Full changelog on GitHub" : {
 
     },
     "Gestures" : {
@@ -548,10 +595,13 @@
     "Home" : {
 
     },
-    "Icon" : {
+    "iCloud sync" : {
 
     },
-    "If the time zone of the expense differs from the current one, the date will be formatted with the time zone of the expense. You can change this behavior by enabling this option." : {
+    "iCloud sync turned off" : {
+
+    },
+    "Icon" : {
 
     },
     "If you believe this policy has been violated in any way, please create an issue on GitHub." : {
@@ -609,6 +659,12 @@
     "More about policy changes" : {
 
     },
+    "More timezone format options" : {
+
+    },
+    "More ways to reach us" : {
+
+    },
     "More..." : {
 
     },
@@ -651,6 +707,9 @@
     "No Expenses" : {
 
     },
+    "No Expenses in This Month" : {
+
+    },
     "No favorite categories. You can add them from settings." : {
 
     },
@@ -666,7 +725,7 @@
     "No results for \"%@\"" : {
 
     },
-    "No results for these filters" : {
+    "No Results for These Filters" : {
 
     },
     "No up to date exchange rate found" : {
@@ -681,10 +740,13 @@
     "Nothing to import" : {
 
     },
+    "Off" : {
+
+    },
     "OK" : {
 
     },
-    "Open \"%@\"?" : {
+    "On" : {
 
     },
     "Open in browser" : {
@@ -742,6 +804,16 @@
     "Privacy Policy" : {
 
     },
+    "privacy-policy-fallback-key" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All expenses are stored locally by default. You can enable cloud synchronisation in settings, this way your expenses and categories will be stored in your iCloud storage in accordance with Apple privacy policy (https://apple.com/legal/privacy) and iCloud terms (https://www.apple.com/legal/internet-services/icloud)."
+          }
+        }
+      }
+    },
     "Purple" : {
 
     },
@@ -770,6 +842,9 @@
 
     },
     "Returns" : {
+
+    },
+    "Returns amount is greater then the expense amount" : {
 
     },
     "Save" : {
@@ -817,7 +892,23 @@
     "Show onboarding" : {
 
     },
+    "Sign in your iCloud account on device or allow Squirrel to use iCloud in settings." : {
+
+    },
+    "sign-in-to-icloud-key" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To use this feature, you need to sign in to iCloud on your device or allow Squirrel to use iCloud in settings."
+          }
+        }
+      }
+    },
     "Skip" : {
+
+    },
+    "Social Networks" : {
 
     },
     "Some category" : {
@@ -835,6 +926,9 @@
     "Squirrel" : {
 
     },
+    "Squirrel %@" : {
+
+    },
     "Squirrel does not send any data or identifiers from your device." : {
 
     },
@@ -848,6 +942,9 @@
 
     },
     "Swipe from left to restore, swipe from right to delete" : {
+
+    },
+    "Sync your expenses to iCloud" : {
 
     },
     "Tap here to remove selection" : {
@@ -940,10 +1037,16 @@
     "Ver. %@" : {
 
     },
-    "We respect your privacy and will not change our stance on tracking or storing data locally. This clarification is here so that if we add any opt-in features, such as cloud sync, this policy will be updated to reflect that." : {
+    "We respect your privacy and will not change our stance on tracking or storing data in your control. This clarification is here so that if we add any opt-in features this policy will be updated to reflect that." : {
 
     },
     "Welcome to" : {
+
+    },
+    "What's new in %@" : {
+
+    },
+    "What's new?" : {
 
     },
     "Winterized" : {
@@ -953,6 +1056,9 @@
 
     },
     "Without returns" : {
+
+    },
+    "Write" : {
 
     },
     "Yes, that's his real name" : {
@@ -982,7 +1088,16 @@
     "You can change the default currency or add more later in settings" : {
 
     },
+    "You can change this later in settings" : {
+
+    },
+    "You can change this setting later in settings. App reload will be required" : {
+
+    },
     "You can choose a currency to be selected by default, different from display currency" : {
+
+    },
+    "You can now change timezone format on expense screen" : {
 
     },
     "You can perform quick actions like editing or deleting via swipe actions or by holding row" : {
@@ -992,6 +1107,18 @@
 
     },
     "You can't undo this action.\nAll expenses from this category will be deleted" : {
+
+    },
+    "You will be able to delete your data after restarting the app" : {
+
+    },
+    "Your data is stored in your iCloud storage. We don't have access to your data." : {
+
+    },
+    "Your data will be stored in your iCloud storage. We don't have access to your data." : {
+
+    },
+    "Your expenses are syncing to iCloud" : {
 
     },
     "Your favorite categories will be shown here" : {

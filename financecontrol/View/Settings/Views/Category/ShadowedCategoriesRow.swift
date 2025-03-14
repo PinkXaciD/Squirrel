@@ -9,7 +9,8 @@ import SwiftUI
 
 struct ShadowedCategoriesRow: View {
     
-    @EnvironmentObject private var cdm: CoreDataModel
+//    @EnvironmentObject private var cdm: CoreDataModel
+    @Environment(\.managedObjectContext) private var viewContext
     
     @State private var alertIsPresented: Bool = false
     
@@ -32,7 +33,9 @@ struct ShadowedCategoriesRow: View {
             .alert("Delete this category?", isPresented: $alertIsPresented) {
                 Button("Delete", role: .destructive) {
                     withAnimation {
-                        cdm.deleteCategory(category)
+                        viewContext.delete(category)
+                        try? viewContext.save()
+//                        cdm.deleteCategory(category)
                     }
                 }
                 
@@ -70,7 +73,9 @@ struct ShadowedCategoriesRow: View {
     private func getRestoreButton(isSwipeAction: Bool) -> some View {
         Button(role: isSwipeAction ? .destructive : nil) {
             withAnimation {
-                cdm.changeShadowStateOfCategory(category)
+                category.isShadowed.toggle()
+                try? viewContext.save()
+//                cdm.changeShadowStateOfCategory(category)
             }
         } label: {
             Label("Restore", systemImage: "arrow.uturn.backward")

@@ -12,22 +12,27 @@ struct SettingsView: View {
     private var cdm: CoreDataModel
     @EnvironmentObject
     private var rvm: RatesViewModel
+    @EnvironmentObject
+    private var kvsManager: CloudKitKVSManager
     
-    @AppStorage(UDKeys.color.rawValue)
+    @AppStorage(UDKey.color.rawValue)
     var defaultColor: String = "Orange"
-    @AppStorage(UDKeys.defaultCurrency.rawValue)
+    @AppStorage(UDKey.defaultCurrency.rawValue)
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
-    @AppStorage(UDKeys.autoDarkMode.rawValue)
+    @AppStorage(UDKey.autoDarkMode.rawValue)
     private var autoDarkMode: Bool = true
-    @AppStorage(UDKeys.darkMode.rawValue)
+    @AppStorage(UDKey.darkMode.rawValue)
     private var darkMode: Bool = false
-    @AppStorage(UDKeys.privacyScreen.rawValue)
+    @AppStorage(UDKey.privacyScreen.rawValue)
     private var privacyScreenIsEnabled: Bool = false
     @State
     private var showDarkModeToggle: Bool = false
     
     @Binding
     var presentOnboarding: Bool
+    let cloudSyncWasEnabled: Bool
+    @Binding
+    var scrollToTop: Int?
     
     let version: String? = Bundle.main.releaseVersionNumber
     let build: String? = Bundle.main.buildVersionNumber
@@ -43,7 +48,6 @@ struct SettingsView: View {
                             Color(uiColor: .systemGroupedBackground)
                                 .ignoresSafeArea()
                                 
-                            
                             Text("Select a tab from sidebar")
                                 .foregroundStyle(.secondary)
                         }
@@ -51,7 +55,6 @@ struct SettingsView: View {
                     .environmentObject(rvm)
                     .environmentObject(cdm)
                 }
-
             } else {
                 NavigationView {
                     list
@@ -85,22 +88,38 @@ struct SettingsView: View {
     }
     
     private var list: some View {
-        List {
-            aboutSection
-            
-            appearanceSection
-            
-            currencySection
-            
-//                shortcutsSection
-            
-            categorySection
-            
-            privacySection
-            
-            exportImportSection
+        ScrollViewReader { scroll in
+            List {
+                aboutSection
+                    .id(0)
+                
+                appearanceSection
+                
+                currencySection
+                
+    //                shortcutsSection
+                
+                categorySection
+                
+                privacySection
+                
+                exportImportSection
+            }
+            .navigationTitle("Settings")
+            .onChange(of: scrollToTop) { value in
+                if #unavailable(iOS 18) {
+                    guard value == 2 else {
+                        return
+                    }
+                    
+                    withAnimation {
+                        scroll.scrollTo(0, anchor: .bottom)
+                    }
+                    
+                    self.scrollToTop = nil
+                }
+            }
         }
-        .navigationTitle("Settings")
     }
     
     var aboutSection: some View {
@@ -139,6 +158,7 @@ struct SettingsView: View {
             
             NavigationLink("Formatting") {
                 SettingsFormattingView()
+                    .navigationBarTitleDisplayMode(.inline)
             }
             .zIndex(1)
         } header: {
@@ -209,6 +229,27 @@ struct SettingsView: View {
     
     private var exportImportSection: some View {
         Section {
+            NavigationLink {
+                ICloudSyncView(cloudSyncWasEnabled: cloudSyncWasEnabled)
+            } label: {
+                HStack {
+                    Text("iCloud sync")
+                    
+                    Spacer()
+                    
+                    VStack(alignment: .trailing) {
+                        Text(kvsManager.iCloudSync ? "On" : "Off")
+                            .foregroundStyle(.secondary)
+                        
+                        if kvsManager.iCloudSync != cloudSyncWasEnabled {
+                            Text("appication-restart-required-key")
+                                .foregroundStyle(.red)
+                                .font(.footnote)
+                        }
+                    }
+                }
+            }
+            
             NavigationLink("Export and backup data") {
                 ExportAndBackupView()
             }
@@ -236,12 +277,12 @@ extension SettingsView {
         @State private var blur: CGFloat = 0
         
         var sum: Decimal {
-            let sum = (10 * (Rates.fallback.rates[UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"] ?? 1))
+            let sum = (10 * (Rates.fallback.rates[UserDefaults.standard.string(forKey: UDKey.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"] ?? 1))
             let count = "\(Int(sum))".count
             return pow(10, count - 1)
         }
         
-        let defaultCurrency = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? "USD"
+        let defaultCurrency = UserDefaults.standard.string(forKey: UDKey.defaultCurrency.rawValue) ?? "USD"
         
         var body: some View {
             ZStack {
@@ -276,7 +317,7 @@ extension SettingsView {
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView(presentOnboarding: .constant(false))
+        SettingsView(presentOnboarding: .constant(false), cloudSyncWasEnabled: false, scrollToTop: .constant(nil))
             .environmentObject(CoreDataModel())
             .environmentObject(RatesViewModel())
     }

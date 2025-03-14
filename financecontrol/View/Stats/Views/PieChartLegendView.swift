@@ -16,34 +16,22 @@ struct PieChartLegendView: View {
     @Binding
     var selection: Int
     
-    let forceExpand: Bool
-    
     var body: some View {
         let data = pcvm.data[(selection >= pcvm.data.count || selection < 0) ? 0 : selection]
         
+        if !data.categories.isEmpty, pcvm.selectedCategory == nil {
+            Divider()
+        }
+        
+        if let selectedCategory = pcvm.selectedCategory, !(data.categoriesDict[selectedCategory.id]?.places ?? []).isEmpty {
+            Divider()
+        }
+        
         Group {
-            if minimize, !forceExpand {
+            if minimize {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 10) {
-                        if let selectedCategory = pcvm.selectedCategory {
-                            ForEach(data.categoriesDict[selectedCategory.id]?.places ?? []) { place in
-                                PieChartLegendRowView(category: place)
-                            }
-                        } else {
-                            ForEach(data.categories) { category in
-                                PieChartLegendRowView(category: category)
-                            }
-                            
-                            if let otherCategory = data.otherCategory, !pcvm.showOther {
-                                PieChartLegendRowView(category: otherCategory)
-                            }
-                            
-                            if pcvm.showOther {
-                                ForEach(data.otherCategories) { category in
-                                    PieChartLegendRowView(category: category)
-                                }
-                            }
-                        }
+                        content
                     }
                     .padding(.horizontal, 20)
                     .padding(.vertical, 2)
@@ -56,33 +44,42 @@ struct PieChartLegendView: View {
             } else {
                 HStack(spacing: 0) {
                     VStack(alignment: .leading, spacing: 10) {
-                        if let selectedCategory = pcvm.selectedCategory {
-                            ForEach(data.categoriesDict[selectedCategory.id]?.places ?? []) { place in
-                                PieChartLegendRowView(category: place)
-                            }
-                        } else {
-                            ForEach(data.categories) { category in
-                                PieChartLegendRowView(category: category)
-                            }
-                            
-                            if let otherCategory = data.otherCategory, !pcvm.showOther {
-                                PieChartLegendRowView(category: otherCategory)
-                            }
-                            
-                            if pcvm.showOther {
-                                ForEach(data.otherCategories) { category in
-                                    PieChartLegendRowView(category: category)
-                                }
-                            }
-                        }
+                        content
                     }
                     
                     Spacer()
                 }
                 .font(.system(size: 14))
-                .listRowInsets(.init(top: 10, leading: 20, bottom: 10, trailing: 20))
+                .padding(.horizontal, 20)
+                .padding(.vertical, 2)
                 .transaction { transaction in
                     transaction.animation = nil
+                }
+                .transition(.maskFromTheBottom)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var content: some View {
+        let data = pcvm.data[(selection >= pcvm.data.count || selection < 0) ? 0 : selection]
+        
+        if let selectedCategory = pcvm.selectedCategory {
+            ForEach(data.categoriesDict[selectedCategory.id]?.places ?? []) { place in
+                PieChartLegendRowView(category: place)
+            }
+        } else {
+            ForEach(data.categories) { category in
+                PieChartLegendRowView(category: category)
+            }
+            
+            if let otherCategory = data.otherCategory, !pcvm.showOther {
+                PieChartLegendRowView(category: otherCategory)
+            }
+            
+            if pcvm.showOther {
+                ForEach(data.otherCategories) { category in
+                    PieChartLegendRowView(category: category)
                 }
             }
         }

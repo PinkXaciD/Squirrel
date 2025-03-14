@@ -12,9 +12,20 @@ final class DataManager {
     
     let container: NSPersistentContainer
     let context: NSManagedObjectContext
+    lazy private(set) var backgroundContext: NSManagedObjectContext = container.newBackgroundContext()
 
     init() {
-        self.container = NSPersistentContainer(name: "DataContainer")
+        let container =  NSPersistentCloudKitContainer(name: "DataContainer")
+        
+        if let storeDescription = container.persistentStoreDescriptions.first {
+            if !NSUbiquitousKeyValueStore.default.bool(forKey: UDKey.iCloudSync.rawValue) {
+                storeDescription.configuration = "Default"
+                storeDescription.cloudKitContainerOptions = nil
+            }
+            
+            storeDescription.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+            storeDescription.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
+        }
         
         container.loadPersistentStores { _, error in
             if let error = error {
@@ -22,9 +33,21 @@ final class DataManager {
             }
         }
         
+#if DEBUG
+//        do {
+//            try container.initializeCloudKitSchema()
+//        } catch {
+//            print(error)
+//        }
+#endif
+        
         let context = container.viewContext
         context.name = "Main context"
         context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        context.automaticallyMergesChangesFromParent = true
+        
+        try? context.setQueryGenerationFrom(.current)
+        self.container = container
         self.context = context
     }
     
@@ -36,6 +59,21 @@ final class DataManager {
                 context.rollback()
                 ErrorType(error: error).publish(file: #fileID, function: #function)
             }
+        }
+    }
+    
+    func deleteSpending(with objectID: NSManagedObjectID) {
+        guard let object = try? backgroundContext.existingObject(with: objectID) else {
+            print("Failed")
+            return
+        }
+        
+        backgroundContext.delete(object)
+        do {
+            try backgroundContext.save()
+        } catch {
+            ErrorType(error: error).publish()
+            backgroundContext.rollback()
         }
     }
 }

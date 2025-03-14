@@ -8,13 +8,35 @@
 import SwiftUI
 
 struct HomeView: View {
-    @EnvironmentObject private var cdm: CoreDataModel
-    @EnvironmentObject private var rvm: RatesViewModel
-    @AppStorage(UDKeys.updateRates.rawValue) private var updateRates: Bool = false
-    @State private var ratesAreFetching: Bool = UserDefaults.standard.bool(forKey: UDKeys.updateRates.rawValue)
-    @Binding var showingSheet: Bool
-    @Binding var presentOnboarding: Bool
-    @State private var shortcut: AddSpendingShortcut? = nil
+    @Environment(\.managedObjectContext)
+    private var viewContext
+    
+    @EnvironmentObject
+    private var cdm: CoreDataModel
+    @EnvironmentObject
+    private var rvm: RatesViewModel
+    @EnvironmentObject
+    private var kvmManager: CloudKitKVSManager
+    
+    @AppStorage(UDKey.updateRates.rawValue)
+    private var updateRates: Bool = false
+    @AppStorage("LatestLaunchedBuild")
+    private var latestLaunchedBuild: Int = -1
+    
+    @State
+    private var ratesAreFetching: Bool = UserDefaults.standard.bool(forKey: UDKey.updateRates.rawValue)
+    @State
+    private var shortcut: AddSpendingShortcut? = nil
+    @State
+    private var showWhatsNew: Bool = false
+    
+    @Binding
+    var showingSheet: Bool
+    @Binding
+    var presentOnboarding: Bool
+    
+    let cloudSyncWasEnabled: Bool
+    let currentBuild = Int(Bundle.main.buildVersionNumber ?? "") ?? 0
     
     var body: some View {
         NavigationView {
@@ -26,19 +48,7 @@ struct HomeView: View {
                     #if DEBUG
                     .swipeActions(edge: .leading) {
                         Button {
-                            cdm.addSpending(
-                                spending: .init(
-                                    amountUSD: 1,
-                                    amount: 1,
-                                    amountWithReturns: 1,
-                                    amountUSDWithReturns: 1,
-                                    comment: "Test comment",
-                                    currency: "USD",
-                                    date: Date(),
-                                    place: "Test place",
-                                    categoryId: cdm.savedCategories.first?.id ?? .init()
-                                )
-                            )
+                            cdm.addTestSpending()
                         } label: {
                             Label {
                                 Text(verbatim: "Add test")
@@ -49,11 +59,29 @@ struct HomeView: View {
                     }
                     #endif
                 
+                if latestLaunchedBuild < currentBuild {
+                    whatsNewSection
+                }
+                
+#if DEBUG
+                if latestLaunchedBuild >= currentBuild {
+                    Button("Drop last version to 0") {
+                        latestLaunchedBuild = 0
+                    }
+                }
+#endif
+                
 //                shortcutsSection
             }
             .navigationTitle("Home")
             .sheet(isPresented: $showingSheet) {
                 AddSpendingView(ratesViewModel: rvm, codeDataModel: cdm, shortcut: shortcut)
+            }
+            .sheet(isPresented: $showWhatsNew) {
+                latestLaunchedBuild = currentBuild
+            } content: {
+                WhatsNewView()
+                    .environmentObject(kvmManager)
             }
             .onChange(of: rvm.status) { newValue in
                 if newValue == .success || newValue == .failed {
@@ -70,6 +98,7 @@ struct HomeView: View {
             }
         }
         .navigationViewStyle(.stack)
+        .animation(.default, value: latestLaunchedBuild)
     }
     
     private var barChartSection: some View {
@@ -90,8 +119,27 @@ struct HomeView: View {
             }
             .padding()
         } footer: {
-            if ratesAreFetching {
-                ratesFetchStatus
+            if ratesAreFetching || cloudSyncWasEnabled != kvmManager.iCloudSync {
+                VStack(alignment: .leading) {
+                    if ratesAreFetching {
+                        ratesFetchStatus
+                    }
+                    
+                    if cloudSyncWasEnabled != kvmManager.iCloudSync {
+                        Text("appication-restart-required-key")
+                            .foregroundStyle(.red)
+                    }
+                }
+            }
+        }
+    }
+    
+    private var whatsNewSection: some View {
+        Section {
+            Button("What's new in \(Bundle.main.releaseVersionNumber ?? "")") {
+//                latestLaunchedBuild = currentBuild
+                
+                showWhatsNew.toggle()
             }
         }
     }
@@ -166,7 +214,7 @@ struct HomeView: View {
 
 struct SwiftUIView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView(showingSheet: .constant(false), presentOnboarding: .constant(false))
+        HomeView(showingSheet: .constant(false), presentOnboarding: .constant(false), cloudSyncWasEnabled: false)
             .environmentObject(CoreDataModel())
     }
 }

@@ -17,15 +17,15 @@ struct ContentView: View {
     @Environment(\.openURL)
     private var openURL
     
-    @AppStorage(UDKeys.presentOnboarding.rawValue)
+    @AppStorage(UDKey.presentOnboarding.rawValue)
     private var presentOnboarding: Bool = true
-    @AppStorage(UDKeys.color.rawValue)
+    @AppStorage(UDKey.color.rawValue)
     private var tint: String = "Orange"
-    @AppStorage(UDKeys.autoDarkMode.rawValue)
+    @AppStorage(UDKey.autoDarkMode.rawValue)
     private var autoDarkMode: Bool = true
-    @AppStorage(UDKeys.darkMode.rawValue)
+    @AppStorage(UDKey.darkMode.rawValue)
     private var darkMode: Bool = false
-    @AppStorage(UDKeys.privacyScreen.rawValue)
+    @AppStorage(UDKey.privacyScreen.rawValue)
     private var privacyScreenIsEnabled: Bool = false
     
     @StateObject
@@ -44,6 +44,10 @@ struct ContentView: View {
     private var privacyMonitor: PrivacyMonitor = PrivacyMonitor(privacyScreenIsEnabled: false, hideExpenseSum: false)
     @StateObject
     private var statsViewModel: StatsViewModel = StatsViewModel()
+    @StateObject
+    private var cloudKitKVSManager: CloudKitKVSManager
+    @StateObject
+    private var barChartViewModel = BarChartViewModel(context: DataManager.shared.context)
     
     @ObservedObject 
     private var errorHandler = ErrorHandler.shared
@@ -53,12 +57,34 @@ struct ContentView: View {
     @State
     private var hideContent: Bool = false
     
+    private var selection: Binding<Int> {
+        Binding(get: {
+            self.selectionValue
+        },
+        set: {
+            if $0 == selectionValue {
+                // tapped twice
+                self.scrollToTop = $0
+                return
+            }
+            self.selectionValue = $0
+        })
+    }
+    @State
+    private var selectionValue: Int = 0
+    @State
+    private var scrollToTop: Int? = nil
+    
+    let cloudSyncWasEnabled = NSUbiquitousKeyValueStore.default.bool(forKey: UDKey.iCloudSync.rawValue)
+    
     init() {
-        let coreDataModel = CoreDataModel()
+        let cloudKitKVSManger = CloudKitKVSManager()
+        let coreDataModel = CoreDataModel(isCloudSyncEnabled: cloudKitKVSManger.iCloudSync)
         let filtersViewModel = FiltersViewModel()
         let pieChartViewModel = PieChartViewModel(cdm: coreDataModel, fvm: filtersViewModel)
         let statsSearchViewModel = StatsSearchViewModel()
         let statsListViewModel = StatsListViewModel(cdm: coreDataModel, fvm: filtersViewModel, pcvm: pieChartViewModel, searchModel: statsSearchViewModel)
+        self._cloudKitKVSManager = StateObject(wrappedValue: cloudKitKVSManger)
         self._cdm = StateObject(wrappedValue: coreDataModel)
         self._pieChartViewModel = StateObject(wrappedValue: pieChartViewModel)
         self._filtersViewModel = StateObject(wrappedValue: filtersViewModel)
@@ -70,7 +96,7 @@ struct ContentView: View {
         Group {
             if #available(iOS 18.0, *) {
                 NavigationView {
-                    TabView {
+                    TabView(selection: selection) {
                         homeTab
                         
                         statsTab
@@ -79,7 +105,7 @@ struct ContentView: View {
                     }
                 }
             } else {
-                TabView {
+                TabView(selection: selection) {
                     homeTab
                     
                     statsTab
@@ -92,7 +118,7 @@ struct ContentView: View {
         .animation(.easeOut(duration: 0.1), value: hideContent)
         .ignoresSafeArea()
         .onOpenURL { url in
-            if url == URLs.addExpenseAction {
+            if url == .addExpenseAction {
                 addExpenseAction = true
             }
         }
@@ -104,6 +130,7 @@ struct ContentView: View {
         .sheet(isPresented: $presentOnboarding) {
             OnboardingView()
                 .environmentObject(cdm)
+                .environmentObject(cloudKitKVSManager)
                 .accentColor(.orange)
                 .interactiveDismissDisabled()
         }
@@ -122,7 +149,7 @@ struct ContentView: View {
             if error.createIssue {
                 Button("Create an issue on GitHub") {
                     errorHandler.dropError()
-                    openURL(URLs.newGithubIssue)
+                    openURL(.newGithubIssue)
                 }
             }
             
@@ -136,21 +163,30 @@ struct ContentView: View {
     }
     
     private var homeTab: some View {
-        HomeView(showingSheet: $addExpenseAction, presentOnboarding: $presentOnboarding)
-            .tabItem {
-                Label("Home", systemImage: "house.fill")
-            }
+        HomeView(
+            showingSheet: $addExpenseAction,
+            presentOnboarding: $presentOnboarding,
+            cloudSyncWasEnabled: cloudSyncWasEnabled
+        )
+        .environmentObject(cloudKitKVSManager)
+        .environmentObject(barChartViewModel)
+        .tabItem {
+            Label("Home", systemImage: "house.fill")
+        }
+        .tag(0)
     }
     
     private var statsTab: some View {
-        StatsView()
+        StatsView(scrollToTop: $scrollToTop)
             .environmentObject(pieChartViewModel)
             .environmentObject(filtersViewModel)
             .environmentObject(statsSearchViewModel)
             .environmentObject(statsListViewModel)
             .environmentObject(privacyMonitor)
             .environmentObject(statsViewModel)
-            .sheet(item: $statsViewModel.entityToEdit) { entity in
+            .sheet(item: $statsViewModel.entityToEdit) {
+                statsViewModel.edit = false
+            } content: { entity in
                 SpendingCompleteView(
                     edit: $statsViewModel.edit,
                     entity: entity
@@ -168,13 +204,16 @@ struct ContentView: View {
             .tabItem {
                 Label("Stats", systemImage: "chart.pie.fill")
             }
+            .tag(1)
     }
     
     private var settingsTab: some View {
-        SettingsView(presentOnboarding: $presentOnboarding)
+        SettingsView(presentOnboarding: $presentOnboarding, cloudSyncWasEnabled: cloudSyncWasEnabled, scrollToTop: $scrollToTop)
             .tabItem {
                 Label("Settings", systemImage: "gearshape.fill")
             }
+            .environmentObject(cloudKitKVSManager)
+            .tag(2)
     }
     
     private func setColorScheme() {

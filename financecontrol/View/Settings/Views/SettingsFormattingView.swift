@@ -11,8 +11,10 @@ struct SettingsFormattingView: View {
     @EnvironmentObject
     private var cdm: CoreDataModel
     
-    @AppStorage(UDKeys.formatWithoutTimeZones.rawValue)
+    @AppStorage(UDKey.formatWithoutTimeZones.rawValue)
     private var formatWithoutTimeZones: Bool = false
+    @AppStorage("timeZoneFormat")
+    private var timeZoneFormat: Int = 0
     
     @State
     private var isToggled: Bool = false
@@ -22,11 +24,14 @@ struct SettingsFormattingView: View {
             Section {
                 Toggle("Always format without timezones", isOn: $formatWithoutTimeZones)
             } footer: {
-                Text("If the time zone of the expense differs from the current one, the date will be formatted with the time zone of the expense. You can change this behavior by enabling this option.")
+                Text("format-without-timezones-description-key")
+            }
+            
+            if !formatWithoutTimeZones {
+                timeZoneFormatSection
             }
         }
         .navigationTitle("Formatting")
-        .navigationBarTitleDisplayMode(.inline)
         .onChange(of: formatWithoutTimeZones) { _ in
             if !isToggled {
                 isToggled = true
@@ -37,5 +42,39 @@ struct SettingsFormattingView: View {
                 cdm.fetchSpendings()
             }
         }
+        .animation(.default, value: formatWithoutTimeZones)
+    }
+    
+    private var timeZoneFormatSection: some View {
+        Section {
+            HStack {
+                Text("Timezone format")
+                
+                Menu {
+                    Picker("Timezone format", selection: $timeZoneFormat) {
+                        ForEach(TimeZone.Format.allCases, id: \.rawValue) { format in
+                            Button {} label: {
+                                if #available(iOS 16.0, *) {
+                                    Text(format.localizedName)
+                                    
+                                    Text(TimeZone.autoupdatingCurrent.formatted(format))
+                                } else {
+                                    Text("\(format.localizedName)\n\(TimeZone.autoupdatingCurrent.formatted(format))")
+                                }
+                            }
+                            .tag(format.rawValue)
+                        }
+                        .pickerStyle(.inline)
+                    }
+                } label: {
+                    HStack {
+                        Spacer()
+                        
+                        Text("\(TimeZone.Format(rawValue: timeZoneFormat).localizedName)")
+                    }
+                }
+            }
+        }
+        .animation(.default.speed(2), value: timeZoneFormat)
     }
 }

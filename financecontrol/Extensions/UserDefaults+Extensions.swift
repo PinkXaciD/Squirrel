@@ -10,7 +10,7 @@ import Foundation
 // MARK: Rates
 extension UserDefaults {
     func getRates() -> [String:Double]? {
-        return self.dictionary(forKey: UDKeys.rates.rawValue) as? [String:Double]
+        return self.dictionary(forKey: UDKey.rates.rawValue) as? [String:Double]
     }
     
     func getUnwrapedRates() -> [String:Double] {
@@ -18,7 +18,7 @@ extension UserDefaults {
     }
     
     func getRatesUpdateTimestamp() -> Date? {
-        guard let timestampString = self.string(forKey: UDKeys.updateTime.rawValue) else {
+        guard let timestampString = self.string(forKey: UDKey.updateTime.rawValue) else {
             return nil
         }
         
@@ -38,7 +38,7 @@ extension UserDefaults {
 // MARK: Currencies
 extension UserDefaults {
     func getCurrencies() -> [Currency] {
-        guard let value = self.array(forKey: UDKeys.savedCurrencies.rawValue) as? [String] else {
+        guard let value = self.array(forKey: UDKey.savedCurrencies.rawValue) as? [String] else {
             return []
         }
         
@@ -46,7 +46,7 @@ extension UserDefaults {
     }
     
     func getRawCurrencies() -> [String] {
-        guard let value = self.value(forKey: UDKeys.savedCurrencies.rawValue) as? [String] else {
+        guard let value = self.value(forKey: UDKey.savedCurrencies.rawValue) as? [String] else {
             return []
         }
         
@@ -54,7 +54,7 @@ extension UserDefaults {
     }
     
     func addCurrency(_ currency: Currency) {
-        var value = self.array(forKey: UDKeys.savedCurrencies.rawValue) as? [String] ?? []
+        var value = self.array(forKey: UDKey.savedCurrencies.rawValue) as? [String] ?? []
         
         guard !value.contains(currency.code) else {
             return
@@ -62,7 +62,7 @@ extension UserDefaults {
         
         value.append(currency.code)
         
-        self.set(value, forKey: UDKeys.savedCurrencies.rawValue)
+        self.set(value, forKey: UDKey.savedCurrencies.rawValue)
     }
     
     func addCurrency(_ currencyCode: String) {
@@ -70,7 +70,7 @@ extension UserDefaults {
             return
         }
         
-        var value = self.array(forKey: UDKeys.savedCurrencies.rawValue) as? [String] ?? []
+        var value = self.array(forKey: UDKey.savedCurrencies.rawValue) as? [String] ?? []
         
         guard !value.contains(currencyCode) else {
             return
@@ -78,11 +78,11 @@ extension UserDefaults {
         
         value.append(currencyCode)
         
-        self.set(value, forKey: UDKeys.savedCurrencies.rawValue)
+        self.set(value, forKey: UDKey.savedCurrencies.rawValue)
     }
     
     func deleteCurrency(_ currency: Currency) {
-        guard var value = self.array(forKey: UDKeys.savedCurrencies.rawValue) as? [String] else {
+        guard var value = self.array(forKey: UDKey.savedCurrencies.rawValue) as? [String] else {
             // TODO: Custom error
             return
         }
@@ -91,42 +91,42 @@ extension UserDefaults {
         
         if value.isEmpty, let code = Locale.current.currencyCode {
             value.append(code)
-            UserDefaults.standard.set(code, forKey: UDKeys.defaultCurrency.rawValue)
-            UserDefaults.standard.set(code, forKey: UDKeys.defaultSelectedCurrency.rawValue)
+            UserDefaults.standard.set(code, forKey: UDKey.defaultCurrency.rawValue)
+            UserDefaults.standard.set(code, forKey: UDKey.defaultSelectedCurrency.rawValue)
             
             if let defaults = UserDefaults(suiteName: Vars.groupName) {
                 defaults.set(code, forKey: "defaultCurrency")
             }
         }
         
-        self.set(value, forKey: UDKeys.savedCurrencies.rawValue)
+        self.set(value, forKey: UDKey.savedCurrencies.rawValue)
     }
     
     static func defaultCurrency() -> String {
-        return self.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
+        return self.standard.string(forKey: UDKey.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
     }
 }
 
 extension UserDefaults {
     func addToFetchQueue(_ spendingID: UUID) {
-        var existingData = self.array(forKey: UDKeys.ratesFetchQueue.rawValue) as? [String] ?? []
+        var existingData = self.array(forKey: UDKey.ratesFetchQueue.rawValue) as? [String] ?? []
         
         if !existingData.contains(spendingID.uuidString) {
             existingData.append(spendingID.uuidString)
         }
         
-        self.set(existingData, forKey: UDKeys.ratesFetchQueue.rawValue)
+        self.set(existingData, forKey: UDKey.ratesFetchQueue.rawValue)
     }
     
     func addToFetchQueue(_ spendingIDs: [UUID]) {
-        var set = Set(self.array(forKey: UDKeys.ratesFetchQueue.rawValue) as? [String] ?? [])
+        var set = Set(self.array(forKey: UDKey.ratesFetchQueue.rawValue) as? [String] ?? [])
         set.formUnion(spendingIDs.map({ $0.uuidString }))
-        self.set(Array(set), forKey: UDKeys.ratesFetchQueue.rawValue)
+        self.set(Array(set), forKey: UDKey.ratesFetchQueue.rawValue)
     }
     
     func getFetchQueue() -> [UUID] {
         var result = [UUID]()
-        let existingData = self.array(forKey: UDKeys.ratesFetchQueue.rawValue) as? [String] ?? []
+        let existingData = self.array(forKey: UDKey.ratesFetchQueue.rawValue) as? [String] ?? []
         result.reserveCapacity(existingData.count)
         
         for element in existingData {
@@ -140,16 +140,16 @@ extension UserDefaults {
     
     func removeFromFetchQueue(_ spendingID: UUID) {
         let spendingIDString = spendingID.uuidString
-        var result = self.array(forKey: UDKeys.ratesFetchQueue.rawValue) as? [String] ?? []
+        var result = self.array(forKey: UDKey.ratesFetchQueue.rawValue) as? [String] ?? []
         
         result.removeAll { id in
             id == spendingIDString
         }
         
-        self.set(result, forKey: UDKeys.ratesFetchQueue.rawValue)
+        self.set(result, forKey: UDKey.ratesFetchQueue.rawValue)
     }
     
     func clearFetchQueue() {
-        self.removeObject(forKey: UDKeys.ratesFetchQueue.rawValue)
+        self.removeObject(forKey: UDKey.ratesFetchQueue.rawValue)
     }
 }

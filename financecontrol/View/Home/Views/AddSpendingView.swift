@@ -15,14 +15,17 @@ struct AddSpendingView: View {
     @StateObject
     private var vm: AddSpendingViewModel
     
-    @AppStorage(UDKeys.color.rawValue)
+    @AppStorage(UDKey.color.rawValue)
     private var tint: String = "Orange"
-    @AppStorage(UDKeys.defaultCurrency.rawValue)
+    @AppStorage(UDKey.defaultCurrency.rawValue)
     private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
-    @AppStorage(UDKeys.privacyScreen.rawValue)
+    @AppStorage(UDKey.privacyScreen.rawValue)
     private var privacyScreenIsEnabled: Bool = false
     
-    @Environment(\.dismiss) 
+    @FetchRequest(sortDescriptors: [SortDescriptor(\CategoryEntity.name)], predicate: NSPredicate(format: "isShadowed == false"))
+    private var categories: FetchedResults<CategoryEntity>
+    
+    @Environment(\.dismiss)
     private var dismiss
     @Environment(\.colorScheme)
     private var colorScheme
@@ -111,22 +114,22 @@ struct AddSpendingView: View {
                 CurrencySelector(currency: $vm.currency)
             }
             
-            DatePicker("Date", selection: $vm.date, in: Vars.firstAvailableDate...Date.now)
+            DatePicker("Date", selection: $vm.date, in: .firstAvailableDate...Date.now)
                 .datePickerStyle(.compact)
             
             HStack {
                 Text("Category")
                 
-                CategorySelector(selectedCategory: $vm.selectedCategory)
+                CategorySelector(selectedCategory: $vm.selectedCategory, categories: categories)
             }
             
         } header: {
             Text("Required")
         } footer: {
-            if vm.popularCategories.count > 0 {
+            if categories.count > 0 {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
-                        ForEach(vm.popularCategories) { category in
+                        ForEach(categories.sorted(by: { $0.spendings?.count ?? 0 > $1.spendings?.count ?? 0 }).prefix(5)) { category in
                             PopularCategoryButtonView(category: category)
                                 .environmentObject(vm)
                         }

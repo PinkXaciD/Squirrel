@@ -30,10 +30,12 @@ struct SpendingView: View {
     @Environment(\.dismiss) 
     private var dismiss
     
-    @AppStorage(UDKeys.defaultCurrency.rawValue) 
+    @AppStorage(UDKey.defaultCurrency.rawValue) 
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
-    @AppStorage(UDKeys.formatWithoutTimeZones.rawValue)
+    @AppStorage(UDKey.formatWithoutTimeZones.rawValue)
     private var formatWithoutTimeZones: Bool = false
+    @AppStorage(UDKey.timeZoneFormat.rawValue)
+    private var timeZoneFormat: Int = 0
     
     @State
     private var alertIsPresented: Bool = false
@@ -73,7 +75,9 @@ struct SpendingView: View {
         Section(header: infoHeader) {
             HStack {
                 Text("Category")
+                
                 Spacer()
+                
                 Text(safeEntity.categoryName)
                     .foregroundColor(.secondary)
             }
@@ -88,9 +92,9 @@ struct SpendingView: View {
                 
                 if !formatWithoutTimeZones, let timeZone = safeEntity.timeZone, timeZone.secondsFromGMT() != TimeZone.autoupdatingCurrent.secondsFromGMT() {
                     VStack(alignment: .trailing) {
-                        Text(safeEntity.dateAdjustedToTimeZoneDate.formatted(date: .long, time: .shortened))
+                        Text(safeEntity.dateAdjustedToTimeZone.formatted(date: .long, time: .shortened))
                         
-                        Text(timeZone.localizedName(for: .standard, locale: .autoupdatingCurrent) ?? timeZone.identifier)
+                        Text(timeZone.formatted(TimeZone.Format(rawValue: timeZoneFormat)))
                     }
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.trailing)
@@ -126,11 +130,11 @@ struct SpendingView: View {
             }
             
             if safeEntity.wrappedCurrency != defaultCurrency {
-                Text(
-                    (entity.amountUSDWithReturns * (rvm.rates[defaultCurrency] ?? 1))
-                        .formatted(.currency(code: defaultCurrency))
-                )
-                .font(.system(.body, design: .rounded))
+                if safeEntity.returns.isEmpty {
+                    defaultCurrencyAmountWithoutReturns
+                } else {
+                    defaultCurrencyAmountWithReturns
+                }
             }
         }
         .textCase(nil)
@@ -177,6 +181,45 @@ struct SpendingView: View {
         }
         .scaledToFit()
         .minimumScaleFactor(0.01)
+    }
+    
+    private var defaultCurrencyAmountWithoutReturns: some View {
+        Text(
+            (entity.amountUSDWithReturns * (rvm.rates[defaultCurrency] ?? 1))
+                .formatted(.currency(code: defaultCurrency))
+        )
+        .font(.system(.body, design: .rounded))
+    }
+    
+    private var defaultCurrencyAmountWithReturns: some View {
+        HStack {
+            Text(
+                (entity.amountUSD * (rvm.rates[defaultCurrency] ?? 1))
+                    .formatted(.currency(code: defaultCurrency))
+            )
+            .font(.system(.body, design: .rounded))
+            .foregroundStyle(.secondary)
+            .roundedStrikeThrough(categoryColor, thickness: 1)
+            .onTapGesture {
+                editAction("amount")
+            }
+            
+            Image(systemName: "arrow.forward")
+                .font(.system(.caption, design: .rounded))
+                .foregroundStyle(.secondary)
+                .onTapGesture {
+                    editAction("amount")
+                }
+            
+            Text(
+                (entity.amountUSDWithReturns * (rvm.rates[defaultCurrency] ?? 1))
+                    .formatted(.currency(code: defaultCurrency))
+            )
+            .font(.system(.body, design: .rounded))
+            .onTapGesture {
+                editAction("amount")
+            }
+        }
     }
     
     private var commentSection: some View {

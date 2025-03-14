@@ -10,13 +10,15 @@ import SwiftUI
 struct OnboardingView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var cdm: CoreDataModel
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)], predicate: NSPredicate(format: "isShadowed = false"))
+    private var categories: FetchedResults<CategoryEntity>
     
     @State private var screen: Int = 0
-    @State private var selectedCurrency: String = UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
+    @State private var selectedCurrency: String = UserDefaults.standard.string(forKey: UDKey.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
     @State private var showOverlay: Bool = false
     @State private var transition: AnyTransition = .horizontalMoveForward
     
-    let finalScreenNumber: Int = 3
+    let finalScreenNumber: Int = 4
     let addSampleData: Bool = false
     
     var continueButtonText: LocalizedStringKey {
@@ -24,7 +26,7 @@ struct OnboardingView: View {
             return "Done"
         }
         
-        if screen ==   2 && cdm.savedCategories.isEmpty && addSampleData {
+        if screen ==   2 && categories.isEmpty && addSampleData {
             return "Continue with sample data"
         }
         
@@ -48,6 +50,10 @@ struct OnboardingView: View {
                     .animation(.smooth, value: screen)
             case 3:
                 screen3
+                    .transition(transition)
+                    .animation(.smooth, value: screen)
+            case 4:
+                screen4
                     .transition(transition)
                     .animation(.smooth, value: screen)
             default:
@@ -149,17 +155,17 @@ struct OnboardingView: View {
         if screen == 1 {
             UserDefaults.standard.addCurrency(selectedCurrency)
             
-            UserDefaults.standard.set(selectedCurrency, forKey: UDKeys.defaultCurrency.rawValue)
-            UserDefaults.standard.set(selectedCurrency, forKey: UDKeys.defaultSelectedCurrency.rawValue)
-            UserDefaults.standard.set(false, forKey: UDKeys.separateCurrencies.rawValue)
+            UserDefaults.standard.set(selectedCurrency, forKey: UDKey.defaultCurrency.rawValue)
+            UserDefaults.standard.set(selectedCurrency, forKey: UDKey.defaultSelectedCurrency.rawValue)
+            UserDefaults.standard.set(false, forKey: UDKey.separateCurrencies.rawValue)
             
             if let defaults = UserDefaults(suiteName: Vars.groupName) {
                 defaults.set(selectedCurrency, forKey: "defaultCurrency")
-                cdm.passSpendingsToSumWidget(data: cdm.statsListData)
+                cdm.passSpendingsToSumWidget()
             }
         }
         
-        if screen == 2 && cdm.savedCategories.isEmpty && addSampleData {
+        if screen == 2 && categories.isEmpty && addSampleData {
             DispatchQueue.main.async {
                 cdm.addTemplateData()
             }
@@ -198,6 +204,11 @@ struct OnboardingView: View {
     }
     
     private var screen3: some View {
+        OnboardingCloudSyncView()
+            .tint(.orange)
+    }
+    
+    private var screen4: some View {
         OnboardingGesturesTemplateView()
     }
 }

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 extension Bundle {
     var releaseVersionNumber: String? {
@@ -63,12 +64,6 @@ extension Calendar {
     }()
 }
 
-extension TimeZone {
-    func hoursFromGMT() -> Double {
-        return Double(self.secondsFromGMT() / 3600)
-    }
-}
-
 extension TimeInterval {
     static let hour: Self = 3600
     
@@ -94,5 +89,17 @@ extension NumberFormatter {
         formatter.minimumFractionDigits = 0
         formatter.decimalSeparator = Locale.current.decimalSeparator ?? "."
         return formatter
+    }
+}
+
+extension NSNotification.Name {
+    static let UpdatePieChart = NSNotification.Name("UpdatePieChart")
+}
+
+extension Set<AnyCancellable> {
+    func cancelAll() {
+        for item in self {
+            item.cancel()
+        }
     }
 }
