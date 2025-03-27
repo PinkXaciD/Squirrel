@@ -39,26 +39,7 @@ struct WhatsNewView: View {
                 
                 Spacer()
                 
-                getNavLinkRow(
-                    imageName: "icloud.fill",
-                    title: "iCloud sync",
-                    subtitle: "Backup your expenses seamlessly",
-                    destination: cloudSyncView
-                )
-                
-                getNavLinkRow(
-                    imageName: "globe.asia.australia.fill",
-                    title: "More timezone format options",
-                    subtitle: "You can now change timezone format on expense screen",
-                    destination: SettingsFormattingView().navigationBarTitleDisplayMode(.large)
-                )
-                
-                getNavLinkRow(
-                    imageName: "at",
-                    title: "Social Networks",
-                    subtitle: "More ways to reach us",
-                    destination: ContactUsView().navigationBarTitleDisplayMode(.large)
-                )
+                getRow(imageName: "line.3.horizontal.decrease", title: "Updated Filters", subtitle: "More date period options")
                 
                 Spacer()
                 

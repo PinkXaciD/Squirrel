@@ -5,7 +5,7 @@
 //  Created by PinkXaciD on R 6/02/27.
 //
 
-import SwiftUI
+import Foundation
 #if DEBUG
 import OSLog
 #endif
@@ -18,13 +18,19 @@ final class FiltersViewModel: ViewModel {
     @Published
     var filterCategories: [UUID]
     @Published
+    var currencies: [String]
+    @Published
+    var month: Int
+    @Published
+    var year: Int
+    @Published
+    var dateType: FiltersView.DateType
+    @Published
     var applyFilters: Bool
     @Published
     var updateList: Bool
     @Published
     var withReturns: Bool?
-    @Published
-    var currencies: [String]
     
     init() {
         self.applyFilters = false
@@ -32,6 +38,9 @@ final class FiltersViewModel: ViewModel {
         self.endFilterDate = .now
         self.filterCategories = []
         self.currencies = []
+        self.dateType = .multi
+        self.month = Calendar.current.component(.month, from: .now)
+        self.year = Calendar(identifier: .gregorian).component(.year, from: .now)
         self.updateList = false
         
         #if DEBUG
@@ -55,6 +64,9 @@ final class FiltersViewModel: ViewModel {
         self.updateList = true
         self.withReturns = nil
         self.currencies = []
+        self.dateType = .multi
+        self.year = Calendar(identifier: .gregorian).component(.year, from: .now)
+        self.month = Calendar.current.component(.month, from: .now)
     }
     
     func listUpdated() {

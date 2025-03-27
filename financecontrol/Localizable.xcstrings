@@ -17,16 +17,6 @@
         }
       }
     },
-    "%@ - %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ - %2$@"
-          }
-        }
-      }
-    },
     "%@ = %@" : {
       "localizations" : {
         "en" : {
@@ -206,6 +196,9 @@
         }
       }
     },
+    "Add New" : {
+
+    },
     "Add new category" : {
       "localizations" : {
         "en" : {
@@ -236,7 +229,10 @@
         }
       }
     },
-    "Always format without timezones" : {
+    "All Time" : {
+
+    },
+    "Always Format Without Timezones" : {
 
     },
     "Amount" : {
@@ -315,6 +311,9 @@
         }
       }
     },
+    "Archived Categories" : {
+
+    },
     "Automatic Dark Mode" : {
 
     },
@@ -329,9 +328,6 @@
       }
     },
     "Back" : {
-
-    },
-    "Backup your expenses seamlessly" : {
 
     },
     "Blue" : {
@@ -411,7 +407,7 @@
     "Create an issue on GitHub" : {
 
     },
-    "Create local backup" : {
+    "Create Local Backup" : {
 
     },
     "Currencies" : {
@@ -423,7 +419,7 @@
     "Currency name or ISO Code" : {
 
     },
-    "Current year" : {
+    "Custom" : {
 
     },
     "Dark Mode" : {
@@ -444,7 +440,7 @@
     "Delete" : {
 
     },
-    "Delete data from iCloud" : {
+    "Delete Data from iCloud" : {
 
     },
     "Delete this category?" : {
@@ -460,6 +456,9 @@
 
     },
     "Disable iCloud sync" : {
+
+    },
+    "Disable iCloud Sync" : {
 
     },
     "Disabled" : {
@@ -478,6 +477,9 @@
 
     },
     "Enable iCloud sync" : {
+
+    },
+    "Enable iCloud Sync" : {
 
     },
     "Enter name" : {
@@ -510,7 +512,7 @@
     "Export and Backup" : {
 
     },
-    "Export and backup data" : {
+    "Export and Backup Data" : {
 
     },
     "Export to CSV" : {
@@ -519,7 +521,7 @@
     "Export to JSON" : {
 
     },
-    "Export to spreadsheet" : {
+    "Export to Spreadsheet" : {
 
     },
     "Export with selected parameters" : {
@@ -580,10 +582,10 @@
     "Ghost" : {
 
     },
-    "Hide app content" : {
+    "Hide App Content" : {
 
     },
-    "Hide app content in app switcher" : {
+    "Hide App Content in App Switcher" : {
 
     },
     "Hide keyboard" : {
@@ -596,6 +598,9 @@
 
     },
     "iCloud sync" : {
+
+    },
+    "iCloud Sync" : {
 
     },
     "iCloud sync turned off" : {
@@ -613,7 +618,7 @@
     "Import from JSON" : {
 
     },
-    "Import local backup" : {
+    "Import Local Backup" : {
 
     },
     "Imported %lld expenses" : {
@@ -656,13 +661,13 @@
     "Mint" : {
 
     },
+    "Month" : {
+
+    },
     "More about policy changes" : {
 
     },
-    "More timezone format options" : {
-
-    },
-    "More ways to reach us" : {
+    "More date period options" : {
 
     },
     "More..." : {
@@ -761,7 +766,7 @@
     "Other" : {
 
     },
-    "Our website" : {
+    "Our Website" : {
 
     },
     "past-7-days-home" : {
@@ -871,6 +876,12 @@
     "Select currency" : {
 
     },
+    "Select month" : {
+
+    },
+    "Select year" : {
+
+    },
     "Selected as default" : {
 
     },
@@ -880,7 +891,7 @@
     "Selected category: %@" : {
 
     },
-    "Separate default and display currencies" : {
+    "Separate Default and Display Currencies" : {
 
     },
     "Set icon" : {
@@ -889,7 +900,7 @@
     "Settings" : {
 
     },
-    "Show onboarding" : {
+    "Show Onboarding" : {
 
     },
     "Sign in your iCloud account on device or allow Squirrel to use iCloud in settings." : {
@@ -904,6 +915,9 @@
           }
         }
       }
+    },
+    "Single Date" : {
+
     },
     "Skip" : {
 
@@ -944,7 +958,7 @@
     "Swipe from left to restore, swipe from right to delete" : {
 
     },
-    "Sync your expenses to iCloud" : {
+    "Sync Your Expenses to iCloud" : {
 
     },
     "Tap here to remove selection" : {
@@ -963,6 +977,9 @@
 
     },
     "Timezone format" : {
+
+    },
+    "Timezone Format" : {
 
     },
     "timezone-identifier" : {
@@ -1028,6 +1045,9 @@
         }
       }
     },
+    "Updated Filters" : {
+
+    },
     "Updating rates..." : {
 
     },
@@ -1046,7 +1066,7 @@
     "What's new in %@" : {
 
     },
-    "What's new?" : {
+    "What's New?" : {
 
     },
     "Winterized" : {
@@ -1059,6 +1079,9 @@
 
     },
     "Write" : {
+
+    },
+    "Year" : {
 
     },
     "Yes, that's his real name" : {
@@ -1097,9 +1120,6 @@
     "You can choose a currency to be selected by default, different from display currency" : {
 
     },
-    "You can now change timezone format on expense screen" : {
-
-    },
     "You can perform quick actions like editing or deleting via swipe actions or by holding row" : {
 
     },
@@ -1118,7 +1138,7 @@
     "Your data will be stored in your iCloud storage. We don't have access to your data." : {
 
     },
-    "Your expenses are syncing to iCloud" : {
+    "Your Expenses are Syncing to iCloud" : {
 
     },
     "Your favorite categories will be shown here" : {

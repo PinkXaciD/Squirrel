@@ -50,7 +50,7 @@ struct CategoriesEditView: View {
     
     private var manageCategoriesSection: some View {
         Section {
-            NavigationLink("Add new") {
+            NavigationLink("Add New") {
                 AddCategoryView(selectedCategory: .constant(.init()), insert: false)
             }
             
@@ -58,7 +58,7 @@ struct CategoriesEditView: View {
                 ShadowedCategoriesView(categories: shadowedCategories)
             } label: {
                 HStack {
-                    Text("Archived categories")
+                    Text("Archived Categories")
                     Spacer()
                     Text(shadowedCategories.count.formatted())
                         .foregroundStyle(.secondary)

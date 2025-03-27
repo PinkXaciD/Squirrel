@@ -80,6 +80,7 @@ struct SpendingView: View {
                 
                 Text(safeEntity.categoryName)
                     .foregroundColor(.secondary)
+                    .multilineTextAlignment(.trailing)
             }
             .onTapGesture {
                 editAction()
@@ -118,6 +119,7 @@ struct SpendingView: View {
                     .onTapGesture {
                         editAction("place")
                     }
+                    .multilineTextAlignment(.center)
             }
             
             if safeEntity.returns.isEmpty {

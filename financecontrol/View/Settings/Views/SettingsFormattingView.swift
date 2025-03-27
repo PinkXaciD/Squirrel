@@ -22,7 +22,7 @@ struct SettingsFormattingView: View {
     var body: some View {
         List {
             Section {
-                Toggle("Always format without timezones", isOn: $formatWithoutTimeZones)
+                Toggle("Always Format Without Timezones", isOn: $formatWithoutTimeZones)
             } footer: {
                 Text("format-without-timezones-description-key")
             }
@@ -48,7 +48,7 @@ struct SettingsFormattingView: View {
     private var timeZoneFormatSection: some View {
         Section {
             HStack {
-                Text("Timezone format")
+                Text("Timezone Format")
                 
                 Menu {
                     Picker("Timezone format", selection: $timeZoneFormat) {

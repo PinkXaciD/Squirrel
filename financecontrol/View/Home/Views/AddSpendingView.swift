@@ -38,6 +38,22 @@ struct AddSpendingView: View {
         case comment
     }
     
+    private struct WrappedCategory: ListHorizontalScrollRepresentable, Identifiable {
+        let category: CategoryEntity?
+        
+        var id: UUID {
+            category?.id ?? .init()
+        }
+        
+        var foregroundColor: Color {
+            Color[self.category?.color ?? "secondary"]
+        }
+        
+        var label: Text {
+            Text(category?.name ?? "Error")
+        }
+    }
+    
     @FocusState 
     private var focusedField: Field?
     
@@ -127,17 +143,23 @@ struct AddSpendingView: View {
             Text("Required")
         } footer: {
             if categories.count > 0 {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack {
-                        ForEach(categories.sorted(by: { $0.spendings?.count ?? 0 > $1.spendings?.count ?? 0 }).prefix(5)) { category in
-                            PopularCategoryButtonView(category: category)
-                                .environmentObject(vm)
-                        }
-                    }
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                .listRowInsets(.init(top: 10, leading: 0, bottom: 5, trailing: 0))
-                .listRowBackground(EmptyView())
+                ListHorizontalScroll(
+                    selection: $vm.selectedCategory,
+                    selectingValue: \WrappedCategory.category,
+                    data: categories.sorted(by: { $0.spendings?.count ?? 0 > $1.spendings?.count ?? 0 }).prefix(5).map({ WrappedCategory(category: $0) }),
+                    animation: .default
+                )
+//                ScrollView(.horizontal, showsIndicators: false) {
+//                    HStack {
+//                        ForEach(categories.sorted(by: { $0.spendings?.count ?? 0 > $1.spendings?.count ?? 0 }).prefix(5)) { category in
+//                            PopularCategoryButtonView(category: category)
+//                                .environmentObject(vm)
+//                        }
+//                    }
+//                }
+//                .clipShape(RoundedRectangle(cornerRadius: 10))
+//                .listRowInsets(.init(top: 10, leading: 0, bottom: 5, trailing: 0))
+//                .listRowBackground(EmptyView())
             }
             
             if !Calendar.current.isDateInToday(vm.date) && vm.currency != defaultCurrency {
@@ -147,6 +169,7 @@ struct AddSpendingView: View {
             }
         }
         .disabled(isLoading)
+        .animation(.default, value: vm.selectedCategory)
     }
     
     private var placeAndCommentSection: some View {

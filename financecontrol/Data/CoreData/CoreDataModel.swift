@@ -93,6 +93,8 @@ final class CoreDataModel: ObservableObject {
     
     var lastFetchDate: Date? = nil
     
+    var spendingsCount: Int = 0
+    
     var waitingForRatesToBeAvailable: Bool = false
 }
 

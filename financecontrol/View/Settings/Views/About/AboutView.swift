@@ -57,7 +57,7 @@ struct AboutView: View {
             }
             .normalizePadding()
             
-            Button("Our website") {
+            Button("Our Website") {
                 openURLButtonAction(.appWebsite)
             }
             
@@ -100,11 +100,11 @@ struct AboutView: View {
     
     private var onboardingSection: some View {
         Section {
-            Button("What's new?") {
+            Button("What's New?") {
                 showWhatsNew.toggle()
             }
             
-            Button("Show onboarding") {
+            Button("Show Onboarding") {
                 presentOnboarding = true
             }
         }

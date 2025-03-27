@@ -57,7 +57,7 @@ struct ExportAndBackupView: View {
         Button {
             presentExportCSVSheet.toggle()
         } label: {
-            buttonLabel(title: "Export to spreadsheet", subtitle: "Export to CSV", systemImage: "arrow.up.doc.fill")
+            buttonLabel(title: "Export to Spreadsheet", subtitle: "Export to CSV", systemImage: "arrow.up.doc.fill")
                 .clipShape(RoundedRectangle(cornerRadius: dynamicTypeSize > .xLarge ? 0 : 15))
                 .overlay {
                     if dynamicTypeSize > .xLarge {
@@ -80,7 +80,7 @@ struct ExportAndBackupView: View {
             Button {
                 exportJSON()
             } label: {
-                buttonLabel(title: "Create local backup", subtitle: "Export to JSON", systemImage: "arrow.up.doc.fill")
+                buttonLabel(title: "Create Local Backup", subtitle: "Export to JSON", systemImage: "arrow.up.doc.fill")
             }
             .buttonStyle(.plain)
             .overlay {
@@ -102,7 +102,7 @@ struct ExportAndBackupView: View {
             Button {
                 presentImportSheet.toggle()
             } label: {
-                buttonLabel(title: "Import local backup", subtitle: "Import from JSON", systemImage: "arrow.down.doc.fill")
+                buttonLabel(title: "Import Local Backup", subtitle: "Import from JSON", systemImage: "arrow.down.doc.fill")
             }
             .buttonStyle(.plain)
         }

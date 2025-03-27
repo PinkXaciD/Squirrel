@@ -23,14 +23,14 @@ struct ShadowedCategoriesView: View {
                     Text("Swipe from left to restore, swipe from right to delete")
                 }
             }
-            .navigationTitle("Archived categories")
+            .navigationTitle("Archived Categories")
         } else {
             CustomContentUnavailableView(
                 "No Archived Categories",
                 imageName: "archivebox.fill",
                 description: "You can archive categories in settings, they will be hidden from selection when you add new expenses, but all old expenses will be saved."
             )
-            .navigationTitle("Archived categories")
+            .navigationTitle("Archived Categories")
         }
     }
 }

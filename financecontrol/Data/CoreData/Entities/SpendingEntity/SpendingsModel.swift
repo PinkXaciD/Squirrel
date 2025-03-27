@@ -68,6 +68,7 @@ extension CoreDataModel {
             
             self.usedCurrencies = currencies
             self.pieChartSpendings = pieChartData
+            self.spendingsCount = spendings.count
             NotificationCenter.default.post(name: .UpdatePieChart, object: nil)
             lastFetchDate = Date()
             

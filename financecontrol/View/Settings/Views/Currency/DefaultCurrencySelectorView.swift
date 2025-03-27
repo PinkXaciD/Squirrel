@@ -57,7 +57,7 @@ struct DefaultCurrencySelectorView: View {
     
     private var separateCurrencySection: some View {
         Section {
-            Toggle("Separate default and display currencies", isOn: $separateCurrencies)
+            Toggle("Separate Default and Display Currencies", isOn: $separateCurrencies)
             
             if showNavLink {
                 NavigationLink {
@@ -109,7 +109,7 @@ struct DefaultCurrencySelectorView: View {
         NavigationLink {
             AddCurrencyView()
         } label: {
-            Label("Add new", systemImage: "plus")
+            Label("Add New", systemImage: "plus")
         }
     }
     

@@ -22,6 +22,8 @@ struct StatsView: View {
     @EnvironmentObject
     private var pcvm: PieChartViewModel
     @EnvironmentObject
+    private var cdm: CoreDataModel
+    @EnvironmentObject
     private var fvm: FiltersViewModel
     @EnvironmentObject
     private var listVM: StatsListViewModel
@@ -143,11 +145,8 @@ struct StatsView: View {
                 Button {
                     showFilters.toggle()
                 } label: {
-                    HStack(spacing: 5) {
-                        let dates = formatDateForFilterButton(fvm.startFilterDate, fvm.endFilterDate)
-                        Text("\(dates.0) - \(dates.1)")
-                    }
-                    .font(.footnote)
+                    Text(formatDateForFilterButton())
+                        .font(.footnote)
                 }
                 .buttonStyle(BorderedButtonStyle())
                 .hoverEffect()
@@ -164,7 +163,7 @@ struct StatsView: View {
     }
     
     private var filters: some View {
-        FiltersView()
+        FiltersView(startDate: max(cdm.firstSpendingDate ?? Date().getFirstDayOfMonth(), Date().getFirstDayOfMonth()), fvm: fvm)
             .environmentObject(fvm)
             .environmentObject(pcvm)
             .environmentObject(privacyMonitor)
@@ -172,17 +171,30 @@ struct StatsView: View {
 }
 
 extension StatsView {
-    private func formatDateForFilterButton(_ date1: Date, _ date2: Date) -> (String, String) {
+    private func formatDateForFilterButton() -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale.autoupdatingCurrent
         
-        if Calendar.current.isDate(date1, equalTo: date2, toGranularity: .year) {
-            formatter.setLocalizedDateFormatFromTemplate("Md")
-        } else {
-            formatter.setLocalizedDateFormatFromTemplate("yM")
+        switch fvm.dateType {
+        case .single:
+            formatter.dateStyle = .medium
+            formatter.timeStyle = .none
+            return formatter.string(from: fvm.endFilterDate)
+        case .month:
+            return (DateComponents(calendar: .init(identifier: .gregorian), year: fvm.year, month: fvm.month).date ?? Date()).formatted(.dateTime.month(.abbreviated).year())
+        case .year:
+            return (DateComponents(calendar: .init(identifier: .gregorian), year: fvm.year).date ?? Date()).formatted(.dateTime.year())
+        case .all:
+            return NSLocalizedString("All Time", comment: "")
+        default:
+            if Calendar.current.isDate(fvm.startFilterDate, equalTo: fvm.endFilterDate, toGranularity: .year) {
+                formatter.setLocalizedDateFormatFromTemplate("Md")
+            } else {
+                formatter.setLocalizedDateFormatFromTemplate("yM")
+            }
+            
+            return "\(formatter.string(from: fvm.startFilterDate)) - \(formatter.string(from: fvm.endFilterDate))"
         }
-        
-        return (formatter.string(from: date1), formatter.string(from: date2))
     }
     
     private func clearFilters() {
@@ -289,6 +301,8 @@ fileprivate struct IPadStatsView: View {
     @EnvironmentObject
     private var pcvm: PieChartViewModel
     @EnvironmentObject
+    private var cdm: CoreDataModel
+    @EnvironmentObject
     private var fvm: FiltersViewModel
     @EnvironmentObject
     private var privacyMonitor: PrivacyMonitor
@@ -351,7 +365,7 @@ fileprivate struct IPadStatsView: View {
     }
     
     private var filters: some View {
-        FiltersView()
+        FiltersView(startDate: max(cdm.firstSpendingDate ?? Date().getFirstDayOfMonth(), Date().getFirstDayOfMonth()), fvm: fvm)
             .environmentObject(fvm)
             .environmentObject(pcvm)
             .environmentObject(privacyMonitor)
@@ -379,8 +393,7 @@ fileprivate struct IPadStatsView: View {
                     showFilters.toggle()
                 } label: {
                     HStack(spacing: 5) {
-                        let dates = formatDateForFilterButton(fvm.startFilterDate, fvm.endFilterDate)
-                        Text("\(dates.0) - \(dates.1)")
+                        Text(formatDateForFilterButton())
                     }
                     .font(.footnote)
                 }
@@ -398,22 +411,33 @@ fileprivate struct IPadStatsView: View {
         }
     }
     
-    private func formatDateForFilterButton(_ date1: Date, _ date2: Date) -> (String, String) {
+    private func formatDateForFilterButton() -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale.autoupdatingCurrent
         
-        if horizontalSizeClass == .compact {
-            if Calendar.current.isDate(date1, equalTo: date2, toGranularity: .year) {
-                formatter.setLocalizedDateFormatFromTemplate("Md")
-            } else {
-                formatter.setLocalizedDateFormatFromTemplate("yM")
-            }
-        } else {
+        switch fvm.dateType {
+        case .single:
+            formatter.dateStyle = .short
             formatter.timeStyle = .none
-            formatter.dateStyle = .medium
+            return formatter.string(from: fvm.endFilterDate)
+        case .month:
+            return (DateComponents(calendar: .current, month: fvm.month).date ?? Date()).formatted(.dateTime.month(.wide))
+        case .year:
+            return (DateComponents(calendar: .init(identifier: .gregorian), year: fvm.year).date ?? Date()).formatted(.dateTime.year())
+        default:
+            if horizontalSizeClass == .compact {
+                if Calendar.current.isDate(fvm.startFilterDate, equalTo: fvm.endFilterDate, toGranularity: .year) {
+                    formatter.setLocalizedDateFormatFromTemplate("Md")
+                } else {
+                    formatter.setLocalizedDateFormatFromTemplate("yM")
+                }
+            } else {
+                formatter.timeStyle = .none
+                formatter.dateStyle = .medium
+            }
+            
+            return "\(formatter.string(from: fvm.startFilterDate)) - \(formatter.string(from: fvm.endFilterDate))"
         }
-        
-        return (formatter.string(from: date1), formatter.string(from: date2))
     }
     
     private func clearFilters() {
