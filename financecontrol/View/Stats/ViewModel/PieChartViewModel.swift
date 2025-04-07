@@ -21,6 +21,8 @@ final class PieChartViewModel: ViewModel {
     @Published var isScrollDisabled: Bool = false
     @Published var showOther: Bool = false
     
+    private var filtersWereEnabled: Bool = false
+    
     var cancellables = Set<AnyCancellable>()
     let id = UUID()
     
@@ -55,6 +57,13 @@ extension PieChartViewModel {
             
             let chartData: [ChartData] = {
                 if self.fvm.applyFilters {
+                    if !self.filtersWereEnabled {
+                        self.selection = 0
+                        self.isScrollDisabled = true
+                        self.selectedCategory = nil
+                        self.filtersWereEnabled = true
+                    }
+                    
                     return self.cdm.getNewFilteredChartData(
                         firstDate: self.fvm.startFilterDate,
                         secondDate: self.fvm.endFilterDate,
@@ -62,6 +71,12 @@ extension PieChartViewModel {
                         withReturns: self.fvm.withReturns,
                         currencies: self.fvm.currencies
                     )
+                }
+                
+                if self.filtersWereEnabled {
+                    self.selectedCategory = nil
+                    self.isScrollDisabled = false
+                    self.filtersWereEnabled = false
                 }
                 
                 return self.cdm.getNewChartData()

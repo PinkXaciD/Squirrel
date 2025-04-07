@@ -13,12 +13,14 @@ struct FiltersCurrenciesView: View {
     
     @EnvironmentObject
     private var fvm: FiltersViewModel
-    @EnvironmentObject
-    private var cdm: CoreDataModel
+    
+    let usedCurrencies: Set<Currency>
+//    @EnvironmentObject
+//    private var cdm: CoreDataModel
     
     var body: some View {
         List {
-            ForEach(cdm.usedCurrencies.sorted(by: <)) { currency in
+            ForEach(usedCurrencies.sorted(by: <)) { currency in
                 Button {
                     rowAction(currency.code)
                 } label: {
@@ -26,7 +28,7 @@ struct FiltersCurrenciesView: View {
                 }
             }
             
-            if !cdm.usedCurrencies.isEmpty {
+            if !usedCurrencies.isEmpty {
                 Section {
                     Button("Clear selection", role: .destructive) {
                         fvm.currencies = []
@@ -42,7 +44,7 @@ struct FiltersCurrenciesView: View {
             trailingToolbar
         }
         .overlay {
-            if cdm.usedCurrencies.isEmpty {
+            if usedCurrencies.isEmpty {
                 CustomContentUnavailableView("No Expenses", imageName: "list.bullet", description: "You can add expenses from home screen.")
             }
         }

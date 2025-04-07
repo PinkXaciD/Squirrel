@@ -9,113 +9,272 @@ import SwiftUI
 
 struct ExportCSVView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.editMode) private var editMode
+    @AppStorage(UDKey.color.rawValue) private var accentColor: String = "Orange"
     @ObservedObject private var cdm: CoreDataModel
     
     @StateObject private var vm: ExportCSVViewModel
+    @StateObject private var fvm: FiltersViewModel
     
     @State private var shareURL: URL = .init(string: "https://apple.com")!
+    @State private var startedExporting: Bool = false
     @State private var presentExportSheet: Bool = false
+    @State private var presentFiltersSheet: Bool = false
     
-    init(cdm: CoreDataModel) {
+    let showTimePicker: Bool
+    
+    let gregorianCalendar = Calendar(identifier: .gregorian)
+    let firstSpendingDate: Date
+    
+    init(cdm: CoreDataModel, predicate: NSPredicate? = nil, showTimePicker: Bool = true) {
         self._cdm = .init(wrappedValue: cdm)
-        self._vm = .init(wrappedValue: ExportCSVViewModel(cdm: cdm))
+        self._vm = .init(wrappedValue: ExportCSVViewModel(cdm: cdm, predicate: predicate))
+        self._fvm = .init(wrappedValue: .init(startFilterDate: cdm.firstSpendingDate ?? .firstAvailableDate, dateType: .all))
+        self.showTimePicker = showTimePicker
+        self.firstSpendingDate = cdm.firstSpendingDate ?? .firstAvailableDate
     }
     
     var body: some View {
-        NavigationView {
-            List {
-                Section {
-                    DatePicker("From", selection: $vm.dateFrom, in: .firstAvailableDate...vm.dateTo, displayedComponents: .date)
-                    
-                    DatePicker("To", selection: $vm.dateTo, in: vm.dateFrom...Date(), displayedComponents: .date)
+        List {
+            if showTimePicker {
+                filtersSection
+            }
+            
+            optionsSection
+            
+            columnsSection
+            
+            Section {
+                exportButton
+            }
+        }
+        .onChange(of: fvm.startFilterDate) { newValue in
+            if fvm.dateType == .all, !Calendar.current.isDate(newValue, inSameDayAs: FiltersView.DateType.all.dates.firstDate ?? .distantPast) {
+                fvm.dateType = .multi
+            }
+        }
+        .onChange(of: fvm.endFilterDate) { newValue in
+            if fvm.dateType == .all, !Calendar.current.isDate(newValue, inSameDayAs: FiltersView.DateType.all.dates.secondDate ?? .distantPast) {
+                fvm.dateType = .multi
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Cancel") {
+                    dismiss()
                 }
-                
-                Toggle("Use Amounts with Returns", isOn: $vm.withReturns)
-                
-                if vm.isTimeZoneSelected {
+                .disabled(startedExporting)
+            }
+            
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Export") {
+                    exportButtonAction()
+                }
+                .font(.body.bold())
+                .disabled(vm.selectedFieldsCount == 0 || startedExporting)
+            }
+        }
+        .disabled(presentExportSheet)
+        .interactiveDismissDisabled(presentExportSheet)
+        .sheet(isPresented: $presentExportSheet, onDismiss: deleteTempFile) {
+            CustomShareSheet(url: $shareURL)
+        }
+        .accentColor(colorIdentifier(color: accentColor))
+        .navigationTitle("Export to Speadsheet")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    private var filtersSection: some View {
+        Group {
+            Section {
+                switch fvm.dateType {
+                case .month:
                     HStack {
-                        Text("Timezone format")
+                        Text("Month")
                         
-                        Menu {
-                            Picker("Timezone format", selection: $vm.timeZoneFormat) {
-                                ForEach(ExportCSVViewModel.TimeZoneFormat.allCases, id: \.hashValue) { timeZoneFormat in
-                                    Button {} label: {
-                                        if #available(iOS 16, *) {
-                                            Text(timeZoneFormat.name)
-                                            
-                                            Text(timeZoneFormat.example)
-                                        } else {
-                                            Text("\(timeZoneFormat.name)\n\(timeZoneFormat.example)")
-                                        }
-                                    }
-                                    .tag(timeZoneFormat)
-                                }
-                            }
-                            .pickerStyle(.inline)
-                        } label: {
-                            HStack {
-                                Spacer()
-                                
-                                Text(vm.timeZoneFormat.name)
-                            }
-                        }
+                        MonthPicker(selection: $fvm.month, year: fvm.year, firstAvailableDate: firstSpendingDate, calendar: gregorianCalendar)
+                        
+                        YearPicker(selection: $fvm.year, addSpacer: false, firstAvailableDate: firstSpendingDate, calendar: gregorianCalendar)
+                    }
+                case .year:
+                    HStack {
+                        Text("Year")
+                        
+                        YearPicker(selection: $fvm.year, addSpacer: true, firstAvailableDate: firstSpendingDate, calendar: gregorianCalendar)
+                    }
+                case .single:
+                    DatePicker("Date", selection: $fvm.endFilterDate, in: (firstSpendingDate.addingTimeInterval(-1))...(Date().addingTimeInterval(1)), displayedComponents: .date)
+                default:
+                    Group {
+                        DatePicker("From", selection: $fvm.startFilterDate, in: (firstSpendingDate.addingTimeInterval(-1))...fvm.endFilterDate, displayedComponents: .date)
+                        
+                        DatePicker("To", selection: $fvm.endFilterDate, in: fvm.startFilterDate...(Date().addingTimeInterval(1)), displayedComponents: .date)
                     }
                 }
-                
-                Section {
-                    ForEach(vm.items) { item in
-                        HStack {
-                            Button {
-                                vm.toggleItemActiveState(item)
-                            } label: {
-                                if item.isActive {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundStyle(.tint)
-                                } else {
-                                    Image(systemName: "circle")
-                                        .foregroundStyle(.secondary)
-                                }
+            } header: {
+                Text("Filters")
+            } footer: {
+                ListHorizontalScroll(selection: $fvm.dateType, data: FiltersView.DateType.allCases, id: \.hashValue, animation: .default) { type in
+                    if let firstDate = type.dates.firstDate {
+                        fvm.startFilterDate = firstDate
+                    }
+                    
+                    if let secondDate = type.dates.secondDate {
+                        fvm.endFilterDate = secondDate
+                    }
+                }
+            }
+            
+            Section {
+                NavigationLink {
+                    FiltersView(
+                        startDate: cdm.firstSpendingDate ?? .firstAvailableDate,
+                        fvm: fvm,
+                        spendingsCount: cdm.spendingsCount,
+                        firstSpendingDate: cdm.firstSpendingDate ?? .firstAvailableDate,
+                        usedCurrencies: cdm.usedCurrencies,
+                        showDismissButton: false,
+                        showDateSelection: false
+                    )
+                    .environmentObject(fvm)
+                } label: {
+                    var text: Text {
+                        let count = (fvm.filterCategories.isEmpty ? 0 : 1) + (fvm.currencies.isEmpty ? 0 : 1) + (fvm.withReturns == nil ? 0 : 1)
+                        
+                        switch count {
+                        case 0:
+                            return Text("None Applied")
+                        case 1:
+                            if !fvm.filterCategories.isEmpty {
+                                return Text("\(fvm.filterCategories.count) Categories")
                             }
-                            .font(.title3)
                             
-                            Text(item.name)
-                                .foregroundStyle(item.isActive ? .primary : .secondary)
+                            if !fvm.currencies.isEmpty {
+                                return Text("\(fvm.currencies.count) Currencies")
+                            }
+                            
+                            if let withReturns = fvm.withReturns {
+                                return withReturns ? Text("With Returns") : Text("Without Returns")
+                            }
+                        default:
+                            return Text("\(count) Filters Applied")
+                        }
+                        
+                        return Text("")
+                    }
+                    
+//                    let count = (fvm.filterCategories.isEmpty ? 0 : 1) + (fvm.currencies.isEmpty ? 0 : 1) + (fvm.withReturns == nil ? 0 : 1)
+                    
+                    return HStack {
+                        Text("More Filters")
+                        
+                        Spacer()
+                        
+                        text
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+        }
+    }
+    
+    private var optionsSection: some View {
+        Section {
+            Toggle("Use Amounts with Returns", isOn: $vm.withReturns)
+            
+            HStack {
+                Text("Delimeter")
+                
+                Menu {
+                    Picker("Delimeter", selection: $vm.delimeter) {
+                        ForEach(ExportCSVViewModel.Delimeter.allCases, id: \.self) { delimeter in
+                            Text(delimeter.displayDescription)
+                                .tag(delimeter)
                         }
                     }
-                    .onMove { indexSet, int in
-                        vm.items.move(fromOffsets: indexSet, toOffset: int)
-                    }
-                }
-                
-                Section {
-                    exportButton
-                }
-            }
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
+                } label: {
+                    HStack {
+                        Spacer()
+                        
+                        Text(vm.delimeter.displayDescription)
                     }
                 }
             }
-            .disabled(presentExportSheet)
-            .interactiveDismissDisabled(presentExportSheet)
-            .sheet(isPresented: $presentExportSheet, onDismiss: deleteTempFile) {
-                CustomShareSheet(url: $shareURL)
+            .animation(.default, value: vm.delimeter)
+            
+            if vm.isTimeZoneSelected {
+                HStack {
+                    Text("Timezone Format")
+                    
+                    Menu {
+                        Picker("Timezone Format", selection: $vm.timeZoneFormat) {
+                            ForEach(ExportCSVViewModel.TimeZoneFormat.allCases, id: \.hashValue) { timeZoneFormat in
+                                Button {} label: {
+                                    if #available(iOS 16, *) {
+                                        Text(timeZoneFormat.name)
+                                        
+                                        Text(timeZoneFormat.example)
+                                    } else {
+                                        Text("\(timeZoneFormat.name)\n\(timeZoneFormat.example)")
+                                    }
+                                }
+                                .tag(timeZoneFormat)
+                            }
+                        }
+                        .pickerStyle(.inline)
+                    } label: {
+                        HStack {
+                            Spacer()
+                            
+                            Text(vm.timeZoneFormat.name)
+                        }
+                    }
+                }
             }
-            .navigationTitle("Export")
-            .navigationBarTitleDisplayMode(.inline)
-            .forceEditMode()
+        } header: {
+            Text("CSV Options")
+        }
+    }
+    
+    private var columnsSection: some View {
+        Section {
+            ForEach(vm.items) { item in
+                HStack {
+                    Button {
+                        vm.toggleItemActiveState(item)
+                    } label: {
+                        if item.isActive {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(.tint)
+                        } else {
+                            Image(systemName: "circle")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .font(.title3)
+                    
+                    Text(item.name)
+                        .foregroundStyle(item.isActive ? .primary : .secondary)
+                    
+                    if #available(iOS 16.0, *) {
+                        Spacer()
+                        
+                        Image(systemName: "line.3.horizontal")
+                            .foregroundStyle(.secondary.opacity(0.5))
+                            .font(.title2)
+                    }
+                }
+            }
+            .onMove { indexSet, int in
+                vm.items.move(fromOffsets: indexSet, toOffset: int)
+            }
+        } header: {
+            Text("Columns")
         }
     }
     
     private var exportButton: some View {
         Button {
-            if let url = vm.export() {
-                shareURL = url
-                presentExportSheet.toggle()
-            }
+            exportButtonAction()
         } label: {
             HStack {
                 Image(systemName: "arrow.up.doc.fill")
@@ -140,7 +299,7 @@ struct ExportCSVView: View {
         .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .overlay {
-            if presentExportSheet {
+            if startedExporting {
                 ZStack {
                     RoundedRectangle(cornerRadius: 10)
                         .fill(Color(uiColor: .secondarySystemGroupedBackground))
@@ -151,8 +310,22 @@ struct ExportCSVView: View {
             }
         }
         .disabled(vm.selectedFieldsCount == 0)
-        .animation(.default, value: presentExportSheet)
+        .animation(.default, value: startedExporting)
         .animation(.default, value: vm.selectedFieldsCount)
+    }
+    
+    private func exportButtonAction() {
+        startedExporting = true
+        
+        Task {
+            if let url = vm.export(predicate: vm.predicate ?? fvm.getPredicate()) {
+                await MainActor.run {
+                    shareURL = url
+                    presentExportSheet.toggle()
+                    startedExporting = false
+                }
+            }
+        }
     }
     
     private func deleteTempFile() {
@@ -166,8 +339,12 @@ struct ExportCSVView: View {
 }
 
 fileprivate extension View {
-    func forceEditMode() -> some View {
-        if #available(iOS 16.0, *) {
+    func forceEditMode(_ isActive: Bool = true) -> some View {
+        guard isActive else {
+            return self
+        }
+        
+        if #available(iOS 15.0, *) {
             return self.environment(\.editMode, .constant(.active))
         }
         

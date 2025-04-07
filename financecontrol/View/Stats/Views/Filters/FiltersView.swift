@@ -9,13 +9,10 @@ import SwiftUI
 
 struct FiltersView: View {
     @EnvironmentObject
-    private var cdm: CoreDataModel
-    @EnvironmentObject
     private var fvm: FiltersViewModel
-    @EnvironmentObject
-    private var pcvm: PieChartViewModel
-    @EnvironmentObject
-    private var privacyMonitor: PrivacyMonitor
+#warning("Turn back on")
+//    @EnvironmentObject
+//    private var privacyMonitor: PrivacyMonitor
     @Environment(\.dismiss)
     private var dismiss
     @AppStorage(UDKey.color.rawValue)
@@ -37,6 +34,11 @@ struct FiltersView: View {
     @State
     private var dateType: DateType
     
+    let spendingsCount: Int
+    let firstSpendingDate: Date
+    let usedCurrencies: Set<Currency>
+    let showDismissButton: Bool
+    let showDateSelection: Bool
     let gregorianCalendar = Calendar(identifier: .gregorian)
     
     enum DateType: CaseIterable, ListHorizontalScrollRepresentable {
@@ -79,41 +81,54 @@ struct FiltersView: View {
         }
     }
     
-    init(startDate: Date, fvm: FiltersViewModel) {
+    init(
+        startDate: Date,
+        fvm: FiltersViewModel,
+        spendingsCount: Int,
+        firstSpendingDate: Date,
+        usedCurrencies: Set<Currency>,
+        showDismissButton: Bool = true,
+        showDateSelection: Bool = true
+    ) {
         self._startDate = State(wrappedValue: fvm.startFilterDate)
         self._endDate = State(wrappedValue: fvm.endFilterDate)
         self._dateType = State(wrappedValue: fvm.dateType)
         self._year = State(wrappedValue: fvm.year)
         self._month = State(wrappedValue: fvm.month)
+        self.spendingsCount = spendingsCount
+        self.firstSpendingDate = firstSpendingDate
+        self.usedCurrencies = usedCurrencies
+        self.showDismissButton = showDismissButton
+        self.showDateSelection = showDateSelection
     }
     
     var body: some View {
-        NavigationView {
-            Group {
-                if cdm.spendingsCount == 0 {
-                    CustomContentUnavailableView("No Expenses", imageName: "list.bullet", description: "You can add expenses from home screen.")
-                } else {
-                    List {
+        Group {
+            if spendingsCount == 0 {
+                CustomContentUnavailableView("No Expenses", imageName: "list.bullet", description: "You can add expenses from home screen.")
+            } else {
+                List {
+                    if showDateSelection {
                         dateSection
                             .datePickerStyle(.compact)
-                        
-                        categoriesSection
-                        
-                        currenciesSection
-                        
-                        returnsSection
-                        
-                        clearButton
                     }
+                    
+                    categoriesSection
+                    
+                    currenciesSection
+                    
+                    returnsSection
+                    
+                    clearButton
                 }
             }
-            .navigationTitle("Filters")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                leadingToolbar
-                
-                trailingToolbar
-            }
+        }
+        .navigationTitle("Filters")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            leadingToolbar
+            
+            trailingToolbar
         }
         .accentColor(colorIdentifier(color: tint))
         .onChange(of: startDate) { newValue in
@@ -126,23 +141,16 @@ struct FiltersView: View {
                 dateType = .multi
             }
         }
-        .onChange(of: year) { newValue in
-            if newValue == gregorianCalendar.component(.year, from: Date()), month > gregorianCalendar.component(.month, from: Date()) {
-                month = gregorianCalendar.component(.month, from: Date())
-            } else if newValue == gregorianCalendar.component(.year, from: cdm.firstSpendingDate ?? .firstAvailableDate), month < gregorianCalendar.component(.month, from: cdm.firstSpendingDate ?? .firstAvailableDate) {
-                month = gregorianCalendar.component(.month, from: cdm.firstSpendingDate ?? .firstAvailableDate)
-            }
-        }
         .blur(radius: hideContent ? Vars.privacyBlur : 0)
-        .onChange(of: privacyMonitor.privacyScreenIsEnabled) { value in
-            let animation: Animation = value ? .default : .easeOut(duration: 0.2)
-            
-            if privacyScreenIsEnabled {
-                withAnimation(animation) {
-                    hideContent = value
-                }
-            }
-        }
+//        .onChange(of: privacyMonitor.privacyScreenIsEnabled) { value in
+//            let animation: Animation = value ? .default : .easeOut(duration: 0.2)
+//            
+//            if privacyScreenIsEnabled {
+//                withAnimation(animation) {
+//                    hideContent = value
+//                }
+//            }
+//        }
     }
     
     // MARK: Dates
@@ -153,25 +161,21 @@ struct FiltersView: View {
                 HStack {
                     Text("Month")
                     
-                    Spacer()
+                    MonthPicker(selection: $month, year: year, firstAvailableDate: firstSpendingDate, calendar: gregorianCalendar)
                     
-                    monthPicker
-                    
-                    yearPicker
+                    YearPicker(selection: $year, addSpacer: false, firstAvailableDate: firstSpendingDate, calendar: gregorianCalendar)
                 }
             case .year:
                 HStack {
                     Text("Year")
                     
-                    Spacer()
-                    
-                    yearPicker
+                    YearPicker(selection: $year, addSpacer: true, firstAvailableDate: firstSpendingDate, calendar: gregorianCalendar)
                 }
             case .single:
-                DatePicker("Date", selection: $endDate, in: (cdm.firstSpendingDate?.addingTimeInterval(-1) ?? .firstAvailableDate)...(Date().addingTimeInterval(1)), displayedComponents: .date)
+                DatePicker("Date", selection: $endDate, in: (firstSpendingDate.addingTimeInterval(-1))...(Date().addingTimeInterval(1)), displayedComponents: .date)
             default:
                 Group {
-                    DatePicker("From", selection: $startDate, in: (cdm.firstSpendingDate?.addingTimeInterval(-1) ?? .firstAvailableDate)...endDate, displayedComponents: .date)
+                    DatePicker("From", selection: $startDate, in: (firstSpendingDate.addingTimeInterval(-1))...endDate, displayedComponents: .date)
                     
                     DatePicker("To", selection: $endDate, in: startDate...(Date().addingTimeInterval(1)), displayedComponents: .date)
                 }
@@ -193,128 +197,6 @@ struct FiltersView: View {
     
     private var dateSectionHeader: some View {
         Text("Date")
-    }
-    
-//    private var firstDatePicker: some View {
-//        let firstDate: Date = cdm.firstSpendingDate ?? .firstAvailableDate
-//        
-//        return DatePicker("From", selection: $fvm.startFilterDate, in: firstDate...fvm.endFilterDate, displayedComponents: .date)
-//    }
-//    
-//    private var secondDatePicker: some View {
-//        DatePicker("To", selection: $fvm.endFilterDate, in: fvm.startFilterDate...(Calendar.current.date(byAdding: .minute, value: 1, to: Date()) ?? Date()), displayedComponents: .date)
-//    }
-//    
-//    private var currentYearButton: some View {
-//        Button {
-//            setCurrentYear()
-//        } label: {
-//            HStack {
-//                Text("Current year")
-//                
-//                Spacer()
-//                
-//                if fvm.startFilterDate == getFirstYearDate() && Calendar.current.isDate(fvm.endFilterDate, inSameDayAs: Date()) {
-//                    Image(systemName: "checkmark")
-//                        .font(.body.bold())
-//                }
-//            }
-//            .foregroundColor(.accentColor)
-//        }
-//        .buttonStyle(PlainButtonStyle())
-//    }
-    
-    private var monthPicker: some View {
-        Menu {
-            Picker("Select month", selection: $month){
-                ForEach(getMonths(), id: \.self) { month in
-                    Text((DateComponents(calendar: .current, month: month).date ?? Date()).formatted(.dateTime.month(.wide)))
-                        .tag(month)
-                }
-            }
-        } label: {
-            HStack {
-                Text((DateComponents(calendar: .current, month: self.month).date ?? Date()).formatted(.dateTime.month(.wide)))
-                    .foregroundColor(.primary)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 7)
-                    .background {
-                        RoundedRectangle(cornerRadius: 8)
-                            .foregroundColor(.secondary.opacity(0.15))
-                    }
-            }
-        }
-    }
-    
-    private var yearPicker: some View {
-        Menu {
-            Picker("Select year", selection: $year) {
-                ForEach(getYears(), id: \.self) { year in
-                    Text((DateComponents(calendar: gregorianCalendar, year: year).date ?? Date()).formatted(.dateTime.year()))
-                        .tag(year)
-                        .disabled(true)
-                }
-            }
-        } label: {
-            Text((DateComponents(calendar: gregorianCalendar, year: self.year).date ?? Date()).formatted(.dateTime.year()))
-                .foregroundColor(.primary)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 7)
-                .background {
-                    RoundedRectangle(cornerRadius: 8)
-                        .foregroundColor(.secondary.opacity(0.15))
-                }
-        }
-    }
-    
-    private func getMonths() -> [Int] {
-        let currentYear = gregorianCalendar.component(.year, from: Date())
-        
-        if year == currentYear {
-            let currentMonth = gregorianCalendar.component(.month, from: Date())
-            let firstMonth = gregorianCalendar.component(.month, from: cdm.firstSpendingDate ?? .firstAvailableDate)
-            
-            if currentMonth == 1 {
-                return [1]
-            }
-            
-            if firstMonth == currentMonth, gregorianCalendar.component(.year, from: cdm.firstSpendingDate ?? .firstAvailableDate) == currentYear {
-                return [currentMonth]
-            }
-            
-            let range = 1...gregorianCalendar.component(.month, from: Date())
-            
-            return range.map({ $0 })
-        }
-        
-        if let firstSpendingDate = cdm.firstSpendingDate, year == gregorianCalendar.component(.year, from: firstSpendingDate) {
-            let firstSpendingMonth = gregorianCalendar.component(.month, from: firstSpendingDate)
-            
-            if firstSpendingMonth == 12 {
-                return [12]
-            }
-            
-            let range = firstSpendingMonth...12
-            
-            return range.map({ $0 })
-        }
-        
-        let range = 1...12
-        
-        return range.map({ $0 })
-    }
-    
-    private func getYears() -> [Int] {
-        let startYear = gregorianCalendar.component(.year, from: cdm.firstSpendingDate ?? .firstAvailableDate)
-        let currentYear  = gregorianCalendar.component(.year, from: Date())
-        
-        guard currentYear > startYear else {
-            return [currentYear]
-        }
-        
-        let range = startYear...currentYear
-        
-        return range.map({ $0 }).reversed()
     }
     
     // MARK: Categories
@@ -346,6 +228,7 @@ struct FiltersView: View {
         Section {
             NavigationLink {
                 FiltersReturnsView(withReturns: fvm.withReturns)
+                    .environmentObject(fvm)
             } label: {
                 HStack {
                     Text("Returns")
@@ -375,7 +258,8 @@ struct FiltersView: View {
     private var currenciesSection: some View {
         Section {
             NavigationLink {
-                FiltersCurrenciesView()
+                FiltersCurrenciesView(usedCurrencies: usedCurrencies)
+                    .environmentObject(fvm)
             } label: {
                 HStack {
                     Text("Currencies")
@@ -400,8 +284,10 @@ struct FiltersView: View {
     
     private var leadingToolbar: ToolbarItem<(), some View> {
         ToolbarItem(placement: .topBarLeading) {
-            Button("Close") {
-                dismiss()
+            if showDismissButton {
+                Button("Close") {
+                    dismiss()
+                }
             }
         }
     }
@@ -412,7 +298,7 @@ struct FiltersView: View {
                 applyFilters()
             }
             .font(.body.bold())
-            .disabled(cdm.spendingsCount == 0)
+            .disabled(spendingsCount == 0)
         }
     }
 }
@@ -431,7 +317,7 @@ extension FiltersView {
                 return
             }
             
-            fvm.startFilterDate = max(startOfYear, cdm.firstSpendingDate ?? .firstAvailableDate)
+            fvm.startFilterDate = max(startOfYear, firstSpendingDate)
             fvm.endFilterDate = min(endOfYear, Date())
         case .month:
             let components = DateComponents(calendar: gregorianCalendar, year: year, month: month, day: 1, hour: 0, minute: 0, second: 0, nanosecond: 0)
@@ -444,7 +330,7 @@ extension FiltersView {
                 return
             }
             
-            fvm.startFilterDate = max(startOfMonth, cdm.firstSpendingDate ?? .firstAvailableDate)
+            fvm.startFilterDate = max(startOfMonth, firstSpendingDate)
             fvm.endFilterDate = min(endOfMonth, Date())
         case .single:
             guard let startOfDay = gregorianCalendar.date(bySettingHour: 0, minute: 0, second: 0, of: endDate) else {
@@ -455,7 +341,7 @@ extension FiltersView {
                 return
             }
             
-            fvm.startFilterDate = max(startOfDay, cdm.firstSpendingDate ?? .firstAvailableDate)
+            fvm.startFilterDate = max(startOfDay, firstSpendingDate)
             fvm.endFilterDate = min(endOfDay, Date())
         default:
             fvm.startFilterDate = startDate
@@ -468,7 +354,7 @@ extension FiltersView {
         
         fvm.applyFilters = true
         fvm.updateList = true
-        pcvm.applyFilters()
+        NotificationCenter.default.post(name: .UpdatePieChart, object: nil)
         dismiss()
     }
     
@@ -485,30 +371,9 @@ extension FiltersView {
             }
             
             fvm.clearFilters()
-            pcvm.disableFilters()
+            NotificationCenter.default.post(name: .UpdatePieChart, object: nil)
         }
     }
-    
-//    private func setCurrentMonth() {
-//        let firstDate: Date = cdm.firstSpendingDate ?? .firstAvailableDate
-//        
-//        fvm.startFilterDate = Date().getFirstDayOfMonth() < firstDate ? firstDate : Date().getFirstDayOfMonth()
-//        fvm.endFilterDate = Date()
-//    }
-//    
-//    private func setCurrentYear() {
-//        var components: DateComponents = Calendar.current.dateComponents([.year, .era], from: Date())
-//        components.calendar = Calendar.current
-//        
-//        guard let startDate = components.date else {
-//            return
-//        }
-//        
-//        let firstDate: Date = cdm.firstSpendingDate ?? .firstAvailableDate
-//        
-//        fvm.startFilterDate = startDate < firstDate ? firstDate : startDate
-//        fvm.endFilterDate = Date()
-//    }
     
     private func getFirstYearDate() -> Date {
         var components: DateComponents = Calendar.current.dateComponents([.year, .era], from: Date())
@@ -518,8 +383,130 @@ extension FiltersView {
             return Date()
         }
         
-        let firstDate: Date = cdm.firstSpendingDate ?? .firstAvailableDate
+        let firstDate: Date = firstSpendingDate
         
         return startDate < firstDate ? firstDate : startDate
+    }
+}
+
+struct MonthPicker: View {
+    @Binding var selection: Int
+    let year: Int
+    let firstAvailableDate: Date
+    let calendar: Calendar
+    
+    var body: some View {
+        Menu {
+            Picker("Select month", selection: $selection){
+                ForEach(getMonths(), id: \.self) { month in
+                    Text((DateComponents(calendar: .current, month: month).date ?? Date()).formatted(.dateTime.month(.wide)))
+                        .tag(month)
+                }
+            }
+        } label: {
+            HStack {
+                Spacer()
+                
+                Text((DateComponents(calendar: .current, month: self.selection).date ?? Date()).formatted(.dateTime.month(.wide)))
+                    .foregroundColor(.primary)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 7)
+                    .background {
+                        RoundedRectangle(cornerRadius: 8)
+                            .foregroundColor(.secondary.opacity(0.15))
+                    }
+            }
+        }
+        .onChange(of: year) { newValue in
+            if newValue == calendar.component(.year, from: Date()), selection > calendar.component(.month, from: Date()) {
+                selection = calendar.component(.month, from: Date())
+            } else if newValue == calendar.component(.year, from: firstAvailableDate), selection < calendar.component(.month, from: firstAvailableDate) {
+                selection = calendar.component(.month, from: firstAvailableDate)
+            }
+        }
+    }
+    
+    private func getMonths() -> [Int] {
+        let currentYear = calendar.component(.year, from: Date())
+        
+        if year == currentYear {
+            let currentMonth = calendar.component(.month, from: Date())
+            let firstMonth = calendar.component(.month, from: firstAvailableDate)
+            
+            if currentMonth == 1 {
+                return [1]
+            }
+            
+            if firstMonth == currentMonth, calendar.component(.year, from: firstAvailableDate) == currentYear {
+                return [currentMonth]
+            }
+            
+            let range = 1...calendar.component(.month, from: Date())
+            
+            return range.map({ $0 })
+        }
+        
+        if year == calendar.component(.year, from: firstAvailableDate) {
+            let firstSpendingMonth = calendar.component(.month, from: firstAvailableDate)
+            
+            if firstSpendingMonth == 12 {
+                return [12]
+            }
+            
+            let range = firstSpendingMonth...12
+            
+            return range.map({ $0 })
+        }
+        
+        let range = 1...12
+        
+        return range.map({ $0 })
+    }
+}
+
+struct YearPicker: View {
+    @Binding var selection: Int
+    let addSpacer: Bool
+    let firstAvailableDate: Date
+    let calendar: Calendar
+    
+    var body: some View {
+        Menu {
+            Picker("Select year", selection: $selection) {
+                ForEach(getYears(), id: \.self) { year in
+                    Text((DateComponents(calendar: calendar, year: year).date ?? Date()).formatted(.dateTime.year()))
+                        .tag(year)
+                        .disabled(true)
+                }
+            }
+        } label: {
+            HStack {
+                if addSpacer {
+                    Spacer()
+                }
+                
+                Text((DateComponents(calendar: calendar, year: self.selection).date ?? Date()).formatted(.dateTime.year()))
+                    .foregroundColor(.primary)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 7)
+                    .background {
+                        RoundedRectangle(cornerRadius: 8)
+                            .foregroundColor(.secondary.opacity(0.15))
+                    }
+            }
+        }
+    }
+    
+    private func getYears() -> [Int] {
+        let startYear = calendar.component(.year, from: firstAvailableDate)
+        let currentYear  = calendar.component(.year, from: Date())
+        
+        guard currentYear > startYear else {
+            return [currentYear]
+        }
+        
+        let range = startYear...currentYear
+        
+        return range.map({ $0 }).reversed()
     }
 }

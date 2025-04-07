@@ -210,6 +210,8 @@ struct ContentView: View {
     private var settingsTab: some View {
         SettingsView(presentOnboarding: $presentOnboarding, cloudSyncWasEnabled: cloudSyncWasEnabled, scrollToTop: $scrollToTop)
             .environmentObject(cloudKitKVSManager)
+            .environmentObject(privacyMonitor)
+            .environmentObject(pieChartViewModel)
             .tabItem {
                 Label("Settings", systemImage: "gearshape.fill")
             }

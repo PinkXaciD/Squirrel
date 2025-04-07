@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ListHorizontalScroll<Data, ID, Selection>: View where Data: RandomAccessCollection, Data.Element: ListHorizontalScrollRepresentable, ID: Hashable, Selection: Equatable {
+struct ListHorizontalScroll<Data, ID, Selection>: View where Data: RandomAccessCollection, Data.Element: ListHorizontalScrollRepresentable, ID: Hashable, Selection: Equatable, Selection: Hashable {
     let data: Data
     let id: KeyPath<Data.Element, ID>
     let selectingValue: KeyPath<Data.Element, Selection>
@@ -78,30 +78,47 @@ struct ListHorizontalScroll<Data, ID, Selection>: View where Data: RandomAccessC
     }
     
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack {
-                ForEach(data, id: id) { element in
-                    Button {
-                        withAnimation(animation) {
-                            selection = element[keyPath: selectingValue]
-                        }
-                        
-                        action(element)
-                    } label: {
-                        var isSelected: Bool {
-                            selection == element[keyPath: selectingValue]
-                        }
-                        
-                        return element.label
-                            .font(isSelected ? .body.bold() : .body)
-                            .foregroundColor(isSelected ? Color(uiColor: .secondarySystemGroupedBackground) : element.foregroundColor)
-                            .padding(.vertical, 6)
-                            .padding(.horizontal, 10)
-                            .background {
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(isSelected ? element.foregroundColor : Color(uiColor: .secondarySystemGroupedBackground))
+        ScrollViewReader { scroll in
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack {
+                    ForEach(data, id: id) { element in
+                        Button {
+                            withAnimation(animation) {
+                                selection = element[keyPath: selectingValue]
                             }
+                            
+                            withAnimation {
+                                scroll.scrollTo(element[keyPath: selectingValue])
+                            }
+                            
+                            action(element)
+                        } label: {
+                            var isSelected: Bool {
+                                selection == element[keyPath: selectingValue]
+                            }
+                            
+                            return element.label
+                                .font(isSelected ? .body.bold() : .body)
+                                .foregroundColor(isSelected ? Color(uiColor: .secondarySystemGroupedBackground) : element.foregroundColor)
+                                .padding(.vertical, 6)
+                                .padding(.horizontal, 10)
+                                .background {
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(isSelected ? element.foregroundColor : Color(uiColor: .secondarySystemGroupedBackground))
+                                }
+                        }
+                        .id(element[keyPath: selectingValue])
                     }
+                }
+            }
+            .onAppear {
+                withAnimation {
+                    scroll.scrollTo(selection)
+                }
+            }
+            .onChange(of: selection) { newValue in
+                withAnimation {
+                    scroll.scrollTo(newValue)
                 }
             }
         }

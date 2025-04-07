@@ -100,7 +100,7 @@ final class StatsListViewModel: ViewModel {
         }
     }
     
-    private func getPredicate() -> NSPredicate {
+    func getPredicate() -> NSPredicate {
         if pcvm.selection == 0, !fvm.applyFilters, pcvm.selectedCategory == nil, searchModel.search.isEmpty {
             return NSPredicate(value: true)
         }

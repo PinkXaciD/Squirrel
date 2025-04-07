@@ -47,7 +47,9 @@ struct ExportAndBackupView: View {
             importJSON(result)
         }
         .sheet(isPresented: $presentExportCSVSheet) {
-            ExportCSVView(cdm: cdm)
+            NavigationView {
+                ExportCSVView(cdm: cdm)
+            }
         }
         .navigationTitle("Export and Backup")
         .navigationBarTitleDisplayMode(.inline)

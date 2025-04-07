@@ -37,6 +37,28 @@
         }
       }
     },
+    "%lld Categories" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Category"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "new",
+                  "value" : "%lld Categories"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld characters left" : {
       "localizations" : {
         "en" : {
@@ -52,6 +74,28 @@
                 "stringUnit" : {
                   "state" : "new",
                   "value" : "%lld characters left"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld Currencies" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Currency"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "new",
+                  "value" : "%lld Currencies"
                 }
               }
             }
@@ -80,6 +124,9 @@
           }
         }
       }
+    },
+    "%lld Filters Applied" : {
+
     },
     "%lld returns" : {
       "localizations" : {
@@ -359,6 +406,9 @@
     "Check the spelling or try a new search." : {
 
     },
+    "Choose what gets included" : {
+
+    },
     "Clear" : {
 
     },
@@ -372,6 +422,12 @@
 
     },
     "Color and Icon" : {
+
+    },
+    "Columns" : {
+
+    },
+    "Comma ( , )" : {
 
     },
     "Comment" : {
@@ -408,6 +464,9 @@
 
     },
     "Create Local Backup" : {
+
+    },
+    "CSV Options" : {
 
     },
     "Currencies" : {
@@ -450,6 +509,9 @@
 
     },
     "Delete this return?" : {
+
+    },
+    "Delimeter" : {
 
     },
     "Disable" : {
@@ -515,10 +577,16 @@
     "Export and Backup Data" : {
 
     },
+    "Export from Stats" : {
+
+    },
     "Export to CSV" : {
 
     },
     "Export to JSON" : {
+
+    },
+    "Export to Speadsheet" : {
 
     },
     "Export to Spreadsheet" : {
@@ -551,6 +619,9 @@
     "Filters applied" : {
 
     },
+    "Filters in Export" : {
+
+    },
     "First Flight" : {
 
     },
@@ -573,7 +644,7 @@
     "Full changelog" : {
 
     },
-    "Full changelog on GitHub" : {
+    "Full Changelog on GitHub" : {
 
     },
     "Gestures" : {
@@ -670,6 +741,9 @@
     "More date period options" : {
 
     },
+    "More Filters" : {
+
+    },
     "More..." : {
 
     },
@@ -740,6 +814,9 @@
 
     },
     "No URL was found" : {
+
+    },
+    "None Applied" : {
 
     },
     "Nothing to import" : {
@@ -889,6 +966,9 @@
 
     },
     "Selected category: %@" : {
+
+    },
+    "Semicolon ( ; )" : {
 
     },
     "Separate Default and Display Currencies" : {
@@ -1063,6 +1143,9 @@
     "Welcome to" : {
 
     },
+    "What you see is what you get" : {
+
+    },
     "What's new in %@" : {
 
     },
@@ -1075,7 +1158,13 @@
     "With returns" : {
 
     },
+    "With Returns" : {
+
+    },
     "Without returns" : {
+
+    },
+    "Without Returns" : {
 
     },
     "Write" : {

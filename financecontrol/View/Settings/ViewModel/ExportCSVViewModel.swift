@@ -10,12 +10,12 @@ import SwiftUI
 final class ExportCSVViewModel: ViewModel {
     @Published var items: [Item]
     @Published var withReturns: Bool
-    @Published var dateFrom: Date
-    @Published var dateTo: Date
+    @Published var delimeter: Delimeter
     @Published var timeZoneFormat: TimeZoneFormat
     @Published var selectedFieldsCount: Int
     @Published var isTimeZoneSelected: Bool
-    var cdm: CoreDataModel
+    let predicate: NSPredicate?
+    let cdm: CoreDataModel
     
     struct Item: Identifiable, Hashable {
         let name: String
@@ -74,7 +74,40 @@ final class ExportCSVViewModel: ViewModel {
         }
     }
     
-    init(cdm: CoreDataModel) {
+    enum Delimeter: CaseIterable, RawRepresentable {
+        init?(rawValue: String) {
+            switch rawValue {
+            case ",":
+                self = .comma
+            case ";":
+                self = .semicolon
+            default:
+                return nil
+            }
+        }
+        
+        case comma, semicolon
+        
+        var rawValue: String {
+            switch self {
+            case .comma:
+                ","
+            case .semicolon:
+                ";"
+            }
+        }
+        
+        var displayDescription: String {
+            switch self {
+            case .comma:
+                NSLocalizedString("Comma ( , )", comment: "")
+            case .semicolon:
+                NSLocalizedString("Semicolon ( ; )", comment: "")
+            }
+        }
+    }
+    
+    init(cdm: CoreDataModel, predicate: NSPredicate? = nil) {
         let items = [
             Item(name: NSLocalizedString("Amount", comment: ""), id: "amount"),
             Item(name: NSLocalizedString("Currency", comment: ""), id: "currency"),
@@ -89,11 +122,11 @@ final class ExportCSVViewModel: ViewModel {
         self.items = items
         self.cdm = cdm
         self.withReturns = true
-        self.dateTo = Calendar.autoupdatingCurrent.startOfDay(for: Date())
-        self.dateFrom = Calendar.autoupdatingCurrent.startOfDay(for: cdm.firstSpendingDate ?? .firstAvailableDate)
+        self.delimeter = .comma
         self.timeZoneFormat = .gmt
         self.selectedFieldsCount = items.count(where: { $0.isActive })
         self.isTimeZoneSelected = false
+        self.predicate = predicate
     }
     
     func toggleItemActiveState(_ item: Item) {
@@ -116,14 +149,14 @@ final class ExportCSVViewModel: ViewModel {
         }
     }
     
-    func export() -> URL? {
+    func export(predicate: NSPredicate? = nil) -> URL? {
         do {
             return try cdm.exportCSV(
                 items: items.filter({ $0.isActive }),
-                dateFrom: dateFrom,
-                dateTo: Calendar.autoupdatingCurrent.date(byAdding: .day, value: 1, to: dateTo) ?? dateTo,
+                delimeter: delimeter,
                 withReturns: withReturns,
-                timeZoneFormat: timeZoneFormat
+                timeZoneFormat: timeZoneFormat,
+                predicate: predicate
             )
         } catch {
             ErrorType(error: error).publish()

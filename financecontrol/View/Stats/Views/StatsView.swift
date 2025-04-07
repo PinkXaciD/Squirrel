@@ -41,6 +41,8 @@ struct StatsView: View {
     private var spendingToDelete: SpendingEntity? = nil
     @State
     private var presentDeleteDialog: Bool = false
+    @State
+    private var presentExportSheet: Bool = false
     
     @Binding
     var scrollToTop: Int?
@@ -62,11 +64,6 @@ struct StatsView: View {
             IPadStatsView(size: size)
         } else {
             iPhoneStatsView
-#if DEBUG
-                .refreshable {
-                    NotificationCenter.default.post(name: .UpdatePieChart, object: nil)
-                }
-#endif
         }
     }
     
@@ -114,6 +111,16 @@ struct StatsView: View {
             }
         }
         .searchable(text: $searchModel.input, placement: .automatic, prompt: "Search by place or comment")
+#if DEBUG
+        .refreshable {
+            NotificationCenter.default.post(name: .UpdatePieChart, object: nil)
+        }
+#endif
+        .sheet(isPresented: $presentExportSheet) {
+            NavigationView {
+                ExportCSVView(cdm: cdm, predicate: listVM.getPredicate(), showTimePicker: false)
+            }
+        }
         .confirmationDialog("Delete this expense?", isPresented: $presentDeleteDialog, titleVisibility: .visible, presenting: spendingToDelete) { spending in
             Button("Delete", role: .destructive) {
                 DataManager.shared.deleteSpending(with: spending.objectID)
@@ -124,13 +131,29 @@ struct StatsView: View {
         .navigationViewStyle(.stack)
     }
     
-    private var leadingToolbar: ToolbarItem<Void, some View> {
-        ToolbarItem(placement: .topBarLeading) {
+    private var leadingToolbar: ToolbarItemGroup<some View> {
+        ToolbarItemGroup(placement: .topBarLeading) {
             if fvm.applyFilters {
-                Button {
-                    clearFilters()
-                } label: {
-                    Label("Clear filters", systemImage: "xmark")
+                Group {
+                    Button {
+                        clearFilters()
+                    } label: {
+                        Label("Clear filters", systemImage: "xmark")
+                    }
+                    
+                    if !listVM.data.isEmpty {
+                        Button {
+                            presentExportSheet.toggle()
+                        } label: {
+                            Label("Export", systemImage: "xmark")
+                                .opacity(0)
+                        }
+                        .overlay(alignment: .center) {
+                            Image(systemName: "arrow.up.doc")
+                                .font(.subheadline)
+                                .foregroundStyle(.tint)
+                        }
+                    }
                 }
                 .disabled(!fvm.applyFilters)
                 .buttonStyle(.bordered)
@@ -163,10 +186,18 @@ struct StatsView: View {
     }
     
     private var filters: some View {
-        FiltersView(startDate: max(cdm.firstSpendingDate ?? Date().getFirstDayOfMonth(), Date().getFirstDayOfMonth()), fvm: fvm)
-            .environmentObject(fvm)
-            .environmentObject(pcvm)
-            .environmentObject(privacyMonitor)
+        NavigationView {
+            FiltersView(
+                startDate: max(cdm.firstSpendingDate ?? Date().getFirstDayOfMonth(), Date().getFirstDayOfMonth()),
+                fvm: fvm,
+                spendingsCount: cdm.spendingsCount,
+                firstSpendingDate: cdm.firstSpendingDate ?? .firstAvailableDate,
+                usedCurrencies: cdm.usedCurrencies
+            )
+        }
+        .environmentObject(fvm)
+        .environmentObject(pcvm)
+        .environmentObject(privacyMonitor)
     }
 }
 
@@ -365,7 +396,13 @@ fileprivate struct IPadStatsView: View {
     }
     
     private var filters: some View {
-        FiltersView(startDate: max(cdm.firstSpendingDate ?? Date().getFirstDayOfMonth(), Date().getFirstDayOfMonth()), fvm: fvm)
+        FiltersView(
+            startDate: max(cdm.firstSpendingDate ?? Date().getFirstDayOfMonth(), Date().getFirstDayOfMonth()),
+            fvm: fvm,
+            spendingsCount: cdm.spendingsCount,
+            firstSpendingDate: cdm.firstSpendingDate ?? .firstAvailableDate,
+            usedCurrencies: cdm.usedCurrencies
+        )
             .environmentObject(fvm)
             .environmentObject(pcvm)
             .environmentObject(privacyMonitor)

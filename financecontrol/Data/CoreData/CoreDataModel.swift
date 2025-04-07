@@ -101,10 +101,10 @@ final class CoreDataModel: ObservableObject {
 extension CoreDataModel {
     func exportCSV(
         items: [ExportCSVViewModel.Item],
-        dateFrom: Date,
-        dateTo: Date,
+        delimeter: ExportCSVViewModel.Delimeter,
         withReturns: Bool,
-        timeZoneFormat: ExportCSVViewModel.TimeZoneFormat
+        timeZoneFormat: ExportCSVViewModel.TimeZoneFormat,
+        predicate: NSPredicate? = nil
     ) throws -> URL? {
         try context.performAndWait {
             var result = "\(items.map({ $0.name }).reduce("", reduce))\n"
@@ -148,7 +148,7 @@ extension CoreDataModel {
                         spendingRow += ""
                     }
                     
-                    spendingRow += ","
+                    spendingRow += delimeter.rawValue
                 }
                 
                 if !spendingRow.isEmpty {
@@ -156,15 +156,17 @@ extension CoreDataModel {
                     result += spendingRow + "\n"
                 }
             }
+            
             // safeSpending.wrappedDate >= firstDate, safeSpending.wrappedDate < secondDate
             let fetchRequest = SpendingEntity.fetchRequest()
             fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \SpendingEntity.date, ascending: false)]
+            if let predicate {
+                fetchRequest.predicate = predicate
+            }
             let fetchedSpendings = try? fetchRequest.execute()
             
             for spending in fetchedSpendings ?? [] {
-                if spending.wrappedDate >= dateFrom && spending.wrappedDate < dateTo {
-                    appendToResult(spending)
-                }
+                appendToResult(spending)
             }
             
             if let tempURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {

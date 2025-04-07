@@ -41,9 +41,13 @@ struct WhatsNewView: View {
                 
                 getRow(imageName: "line.3.horizontal.decrease", title: "Updated Filters", subtitle: "More date period options")
                 
+                getRow(imageName: "arrow.up.doc", title: "Filters in Export", subtitle: "Choose what gets included")
+                
+                getRow(imageName: "chart.pie", title: "Export from Stats", subtitle: "What you see is what you get")
+                
                 Spacer()
                 
-                Button("Full changelog on GitHub") {
+                Button("Full Changelog on GitHub") {
                     showConfirmationDialog.toggle()
                 }
             }
