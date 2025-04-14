@@ -30,7 +30,12 @@ struct FiltersCurrenciesView: View {
             
             if !usedCurrencies.isEmpty {
                 Section {
-                    Button("Clear selection", role: .destructive) {
+                    Button("Select All") {
+                        fvm.currencies = usedCurrencies.map { $0.code }
+                    }
+                    .disabled(fvm.currencies.count == usedCurrencies.count)
+                    
+                    Button("Clear Selection", role: .destructive) {
                         fvm.currencies = []
                     }
                     .disabled(fvm.currencies.isEmpty)

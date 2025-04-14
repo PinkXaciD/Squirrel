@@ -103,7 +103,7 @@ extension CoreDataModel {
         items: [ExportCSVViewModel.Item],
         delimeter: ExportCSVViewModel.Delimeter,
         withReturns: Bool,
-        timeZoneFormat: ExportCSVViewModel.TimeZoneFormat,
+        timeZoneFormat: TimeZone.Format,
         predicate: NSPredicate? = nil
     ) throws -> URL? {
         try context.performAndWait {
@@ -134,7 +134,7 @@ extension CoreDataModel {
                         spendingRow += quote + spending.wrappedDate.formatted(date: .numeric, time: .shortened) + quote
                     case "timezone":
                         if let timeZoneIdentifier = spending.timeZoneIdentifier, let timeZone = TimeZone(identifier: timeZoneIdentifier) {
-                            spendingRow += quote + timeZoneFormat.formatTimeZone(timeZone) + quote
+                            spendingRow += quote + timeZone.formatted(timeZoneFormat) + quote
                         } else {
                             spendingRow += ""
                         }
@@ -190,7 +190,7 @@ extension CoreDataModel {
     
     /// Exports all data in JSON file
     /// - Returns: URL to saved temporary file if save was successful
-    /// - Important: This method is not thread-safe
+    /// - Important: This method is thread-safe
     func exportJSON() throws -> URL? {
         try context.performAndWait {
             do {

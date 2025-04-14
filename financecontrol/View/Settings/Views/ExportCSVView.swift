@@ -8,17 +8,34 @@
 import SwiftUI
 
 struct ExportCSVView: View {
-    @Environment(\.dismiss) private var dismiss
-    @AppStorage(UDKey.color.rawValue) private var accentColor: String = "Orange"
-    @ObservedObject private var cdm: CoreDataModel
+    @Environment(\.dismiss)
+    private var dismiss
     
-    @StateObject private var vm: ExportCSVViewModel
-    @StateObject private var fvm: FiltersViewModel
+    @AppStorage(UDKey.color.rawValue) 
+    private var accentColor: String = "Orange"
+    @AppStorage(UDKey.privacyScreen.rawValue)
+    private var privacyScreenIsEnabled: Bool = false
     
-    @State private var shareURL: URL = .init(string: "https://apple.com")!
-    @State private var startedExporting: Bool = false
-    @State private var presentExportSheet: Bool = false
-    @State private var presentFiltersSheet: Bool = false
+    @EnvironmentObject
+    private var privacyMonitor: PrivacyMonitor
+    @ObservedObject
+    private var cdm: CoreDataModel
+    
+    @StateObject
+    private var vm: ExportCSVViewModel
+    @StateObject
+    private var fvm: FiltersViewModel
+    
+    @State
+    private var shareURL: URL = .init(string: "https://apple.com")!
+    @State
+    private var startedExporting: Bool = false
+    @State
+    private var presentExportSheet: Bool = false
+    @State
+    private var presentFiltersSheet: Bool = false
+    @State
+    private var hideContent: Bool = false
     
     let showTimePicker: Bool
     
@@ -47,6 +64,7 @@ struct ExportCSVView: View {
                 exportButton
             }
         }
+        .blur(radius: hideContent ? Vars.privacyBlur : 0)
         .onChange(of: fvm.startFilterDate) { newValue in
             if fvm.dateType == .all, !Calendar.current.isDate(newValue, inSameDayAs: FiltersView.DateType.all.dates.firstDate ?? .distantPast) {
                 fvm.dateType = .multi
@@ -55,6 +73,15 @@ struct ExportCSVView: View {
         .onChange(of: fvm.endFilterDate) { newValue in
             if fvm.dateType == .all, !Calendar.current.isDate(newValue, inSameDayAs: FiltersView.DateType.all.dates.secondDate ?? .distantPast) {
                 fvm.dateType = .multi
+            }
+        }
+        .onChange(of: privacyMonitor.privacyScreenIsEnabled) { value in
+            let animation: Animation = value ? .default : .easeOut(duration: 0.2)
+            
+            if privacyScreenIsEnabled {
+                withAnimation(animation) {
+                    hideContent = value
+                }
             }
         }
         .toolbar {
@@ -136,6 +163,7 @@ struct ExportCSVView: View {
                         showDateSelection: false
                     )
                     .environmentObject(fvm)
+                    .environmentObject(privacyMonitor)
                 } label: {
                     var text: Text {
                         let count = (fvm.filterCategories.isEmpty ? 0 : 1) + (fvm.currencies.isEmpty ? 0 : 1) + (fvm.withReturns == nil ? 0 : 1)
@@ -207,14 +235,14 @@ struct ExportCSVView: View {
                     
                     Menu {
                         Picker("Timezone Format", selection: $vm.timeZoneFormat) {
-                            ForEach(ExportCSVViewModel.TimeZoneFormat.allCases, id: \.hashValue) { timeZoneFormat in
+                            ForEach(TimeZone.Format.allCases, id: \.hashValue) { timeZoneFormat in
                                 Button {} label: {
                                     if #available(iOS 16, *) {
-                                        Text(timeZoneFormat.name)
+                                        Text(timeZoneFormat.localizedName)
                                         
-                                        Text(timeZoneFormat.example)
+                                        Text(TimeZone.autoupdatingCurrent.formatted(timeZoneFormat))
                                     } else {
-                                        Text("\(timeZoneFormat.name)\n\(timeZoneFormat.example)")
+                                        Text("\(timeZoneFormat.localizedName)\n\(TimeZone.autoupdatingCurrent.formatted(timeZoneFormat))")
                                     }
                                 }
                                 .tag(timeZoneFormat)
@@ -225,7 +253,7 @@ struct ExportCSVView: View {
                         HStack {
                             Spacer()
                             
-                            Text(vm.timeZoneFormat.name)
+                            Text(vm.timeZoneFormat.localizedName)
                         }
                     }
                 }

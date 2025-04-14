@@ -415,7 +415,7 @@
     "Clear filters" : {
 
     },
-    "Clear selection" : {
+    "Clear Selection" : {
 
     },
     "Close" : {
@@ -947,6 +947,9 @@
     "Select a tab from sidebar" : {
 
     },
+    "Select All" : {
+
+    },
     "Select at least one field" : {
 
     },
@@ -1064,11 +1067,23 @@
     },
     "timezone-identifier" : {
       "comment" : "Timezone identifier",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Identifier"
+          }
+        }
+      }
+    },
+    "timezone-location" : {
+      "comment" : "Timezone location",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Approximate location"
           }
         }
       }

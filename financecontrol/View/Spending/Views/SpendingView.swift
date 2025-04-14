@@ -40,6 +40,34 @@ struct SpendingView: View {
     @State
     private var alertIsPresented: Bool = false
     
+    var dateFormatStyle: Date.FormatStyle {
+        var formatStyle = Date.FormatStyle.dateTime
+            .year(.extended())
+            .month(.wide).day()
+            .hour()
+            .minute()
+        
+        if !formatWithoutTimeZones, let timeZone = safeEntity.timeZone, timeZone.hoursFromGMT() != TimeZone.autoupdatingCurrent.hoursFromGMT() {
+//            var timeZoneStyle: Date.FormatStyle.Symbol.TimeZone {
+//                switch timeZoneFormat {
+//                case 0:
+//                    return .localizedGMT(.short)
+//                case 1:
+//                    return .genericName(.long)
+//                case 2:
+//                    return .identifier(.long)
+//                default:
+//                    return .exemplarLocation
+//                }
+//            }
+            
+//            formatStyle = formatStyle.timeZone(timeZoneStyle)
+            formatStyle.timeZone = timeZone
+        }
+        
+        return formatStyle
+    }
+    
     var body: some View {
         List {
             infoSection
@@ -91,22 +119,27 @@ struct SpendingView: View {
                 
                 Spacer()
                 
-                if !formatWithoutTimeZones, let timeZone = safeEntity.timeZone, timeZone.secondsFromGMT() != TimeZone.autoupdatingCurrent.secondsFromGMT() {
-                    VStack(alignment: .trailing) {
-                        Text(safeEntity.dateAdjustedToTimeZone.formatted(date: .long, time: .shortened))
-                        
-                        Text(timeZone.formatted(TimeZone.Format(rawValue: timeZoneFormat)))
-                    }
+                Text(safeEntity.wrappedDate.formatted(dateFormatStyle))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.trailing)
-                } else {
-                    Text(safeEntity.wrappedDate.formatted(date: .long, time: .shortened))
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.trailing)
-                }
             }
             .onTapGesture {
                 editAction()
+            }
+            
+            if !formatWithoutTimeZones, let timeZone = safeEntity.timeZone, timeZone.hoursFromGMT() != TimeZone.autoupdatingCurrent.hoursFromGMT() {
+                HStack {
+                    Text("Timezone")
+                    
+                    Spacer()
+                    
+                    Text(timeZone.formatted(TimeZone.Format(rawValue: timeZoneFormat)))
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.trailing)
+                }
+                .onTapGesture {
+                    editAction()
+                }
             }
         }
     }

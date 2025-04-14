@@ -55,7 +55,7 @@ struct PieChartLegendView: View {
                 .transaction { transaction in
                     transaction.animation = nil
                 }
-                .transition(.maskFromTheBottom)
+                .transition(.maskFromTheBottomWithOpacity)
             }
         }
     }

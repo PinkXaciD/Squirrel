@@ -14,6 +14,8 @@ struct SettingsView: View {
     private var rvm: RatesViewModel
     @EnvironmentObject
     private var kvsManager: CloudKitKVSManager
+    @EnvironmentObject
+    private var privacyMonitor: PrivacyMonitor
     
     @AppStorage(UDKey.color.rawValue)
     var defaultColor: String = "Orange"
@@ -253,6 +255,7 @@ struct SettingsView: View {
             
             NavigationLink("Export and Backup Data") {
                 ExportAndBackupView()
+                    .environmentObject(privacyMonitor)
             }
         } header: {
             Text("Export and Backup")

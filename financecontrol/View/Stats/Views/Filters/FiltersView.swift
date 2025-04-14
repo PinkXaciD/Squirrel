@@ -10,9 +10,8 @@ import SwiftUI
 struct FiltersView: View {
     @EnvironmentObject
     private var fvm: FiltersViewModel
-#warning("Turn back on")
-//    @EnvironmentObject
-//    private var privacyMonitor: PrivacyMonitor
+    @EnvironmentObject
+    private var privacyMonitor: PrivacyMonitor
     @Environment(\.dismiss)
     private var dismiss
     @AppStorage(UDKey.color.rawValue)
@@ -142,15 +141,15 @@ struct FiltersView: View {
             }
         }
         .blur(radius: hideContent ? Vars.privacyBlur : 0)
-//        .onChange(of: privacyMonitor.privacyScreenIsEnabled) { value in
-//            let animation: Animation = value ? .default : .easeOut(duration: 0.2)
-//            
-//            if privacyScreenIsEnabled {
-//                withAnimation(animation) {
-//                    hideContent = value
-//                }
-//            }
-//        }
+        .onChange(of: privacyMonitor.privacyScreenIsEnabled) { value in
+            let animation: Animation = value ? .default : .easeOut(duration: 0.2)
+            
+            if privacyScreenIsEnabled {
+                withAnimation(animation) {
+                    hideContent = value
+                }
+            }
+        }
     }
     
     // MARK: Dates

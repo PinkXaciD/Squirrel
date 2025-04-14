@@ -8,12 +8,19 @@
 import SwiftUI
 
 final class ExportCSVViewModel: ViewModel {
-    @Published var items: [Item]
-    @Published var withReturns: Bool
-    @Published var delimeter: Delimeter
-    @Published var timeZoneFormat: TimeZoneFormat
-    @Published var selectedFieldsCount: Int
-    @Published var isTimeZoneSelected: Bool
+    @Published
+    var items: [Item]
+    @Published
+    var withReturns: Bool
+    @Published
+    var delimeter: Delimeter
+    @Published
+    var timeZoneFormat: TimeZone.Format
+    @Published
+    var selectedFieldsCount: Int
+    @Published
+    var isTimeZoneSelected: Bool
+    
     let predicate: NSPredicate?
     let cdm: CoreDataModel
     
@@ -30,47 +37,6 @@ final class ExportCSVViewModel: ViewModel {
         
         mutating func toggleActiveStatus() {
             self.isActive.toggle()
-        }
-    }
-    
-    enum TimeZoneFormat: CaseIterable {
-        case gmt, name, identifier
-        
-        var name: String {
-            switch self {
-            case .identifier:
-                NSLocalizedString("timezone-identifier", comment: "Timezone identifier")
-            case .gmt:
-                NSLocalizedString("timezone-offset-from-gmt", comment: "Timezone ofset from GMT")
-            case .name:
-                NSLocalizedString("timezone-name", comment: "Timezone name")
-            }
-        }
-        
-        var example: String {
-            switch self {
-            case .identifier:
-                TimeZone.autoupdatingCurrent.identifier
-            case .gmt:
-                Date().formatted(.dateTime.timeZone(.localizedGMT(.short)))
-            case .name:
-                TimeZone.autoupdatingCurrent.localizedName(for: .standard, locale: .autoupdatingCurrent) ?? "Error"
-            }
-        }
-        
-        func formatTimeZone(_ timeZone: TimeZone) -> String {
-            switch self {
-            case .identifier:
-                return timeZone.identifier
-            case .gmt:
-                if timeZone.secondsFromGMT() != 0 {
-                    return "GMT\(timeZone.hoursFromGMT().formatted(.number.sign(strategy: .always())))"
-                }
-                
-                return "GMT"
-            case .name:
-                return timeZone.localizedName(for: .standard, locale: .autoupdatingCurrent) ?? timeZone.identifier
-            }
         }
     }
     
@@ -123,7 +89,7 @@ final class ExportCSVViewModel: ViewModel {
         self.cdm = cdm
         self.withReturns = true
         self.delimeter = .comma
-        self.timeZoneFormat = .gmt
+        self.timeZoneFormat = TimeZone.Format(rawValue: UserDefaults.standard.integer(forKey: UDKey.timeZoneFormat.rawValue))
         self.selectedFieldsCount = items.count(where: { $0.isActive })
         self.isTimeZoneSelected = false
         self.predicate = predicate

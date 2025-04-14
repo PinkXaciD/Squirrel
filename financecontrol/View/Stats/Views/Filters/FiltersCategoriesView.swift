@@ -34,7 +34,12 @@ struct FiltersCategoriesView: View {
             
             if !fetchedCategories.isEmpty {
                 Section {
-                    Button("Clear selection", role: .destructive) {
+                    Button("Select All") {
+                        categories = fetchedCategories.map { $0.id ?? .init() }
+                    }
+                    .disabled(categories.count == fetchedCategories.count)
+                    
+                    Button("Clear Selection", role: .destructive) {
                         categories.removeAll()
                     }
                     .disabled(categories.isEmpty)

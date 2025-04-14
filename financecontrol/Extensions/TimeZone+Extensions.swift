@@ -9,7 +9,7 @@ import Foundation
 
 extension TimeZone {
     enum Format: RawRepresentable, CaseIterable {
-        case gmt, name, identifier
+        case gmt, name, location
         
         var rawValue: Int {
             switch self {
@@ -17,7 +17,7 @@ extension TimeZone {
                 0
             case .name:
                 1
-            case .identifier:
+            case .location:
                 2
             }
         }
@@ -28,10 +28,8 @@ extension TimeZone {
                 self = .gmt
             case 1:
                 self = .name
-            case 2:
-                self = .identifier
             default:
-                self = .gmt
+                self = .location
             }
         }
         
@@ -41,8 +39,8 @@ extension TimeZone {
                 String(localized: "timezone-offset-from-gmt", comment: "Timezone ofset from GMT")
             case .name:
                 String(localized: "timezone-name", comment: "Timezone name")
-            case .identifier:
-                String(localized: "timezone-identifier", comment: "Timezone identifier")
+            case .location:
+                String(localized: "timezone-location", comment: "Timezone location")
             }
         }
     }
@@ -55,8 +53,10 @@ extension TimeZone {
             return Date().formatted(formatStyle.timeZone(.localizedGMT(.short)))
         case .name:
             return self.localizedName(for: .standard, locale: .autoupdatingCurrent) ?? "Error"
-        case .identifier:
-            return self.identifier
+        case .location:
+            var formatStyle = Date.FormatStyle()
+            formatStyle.timeZone = self
+            return Date().formatted(formatStyle.timeZone(.exemplarLocation))
         }
     }
 }

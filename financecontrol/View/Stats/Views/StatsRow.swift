@@ -63,7 +63,7 @@ struct StatsRow: View {
             mainButtonLabel
         }
         .buttonStyle(ListButtonStyle())
-        .transition(.maskFromTheBottom)
+        .transition(.maskFromTheBottomWithOpacity)
         .contextMenu {
             editButton
             
@@ -135,15 +135,11 @@ struct StatsRow: View {
                         Image(systemName: "clock")
                             .foregroundColor(.secondary)
                             .font(.caption2)
-                        
-                        Text(data.date.formatted(date: .omitted, time: .shortened))
-                            .font(.caption)
-                            .foregroundColor(Color.secondary)
-                    } else {
-                        Text(data.date.formatted(date: .omitted, time: .shortened))
-                            .font(.caption)
-                            .foregroundColor(Color.secondary)
                     }
+                    
+                    Text(data.date.formatted(.dateTime.hour().minute()))
+                        .font(.caption)
+                        .foregroundColor(Color.secondary)
                 }
                 
                 HStack {
