@@ -131,16 +131,22 @@ struct StatsRow: View {
             
             VStack(alignment: .trailing, spacing: 5) {
                 HStack(spacing: 3) {
-                    if !formatWithoutTimeZones, data.showTimeZoneIcon {
-                        Image(systemName: "clock")
-                            .foregroundColor(.secondary)
+                    if !formatWithoutTimeZones, data.showTimeZoneIcon, let timeZoneIconName = TimeZone(identifier: data.entity.timeZoneIdentifier ?? "")?.getImage() {
+                        Image(systemName: timeZoneIconName)
                             .font(.caption2)
+                        
+                        Group {
+                            Text(data.dateAdjustedToTimezone.formatted(.dateTime.hour().minute()))
+                            
+                            Text(NSLocalizedString("time-timezone-separator-key", comment: "Stats row with/without timezone time separator"))
+                        }
+                        .font(.caption)
                     }
                     
                     Text(data.date.formatted(.dateTime.hour().minute()))
                         .font(.caption)
-                        .foregroundColor(Color.secondary)
                 }
+                .foregroundColor(Color.secondary)
                 
                 HStack {
                     if data.hasReturns {

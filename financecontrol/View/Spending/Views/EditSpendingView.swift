@@ -8,6 +8,11 @@
 import SwiftUI
 
 struct EditSpendingView: View {
+    @AppStorage(UDKey.formatWithoutTimeZones.rawValue)
+    private var formatWithoutTimeZones: Bool = false
+    @AppStorage(UDKey.timeZoneFormat.rawValue)
+    private var timeZoneFormat: Int = 0
+    
     @Environment(\.dismiss)
     private var dismiss
     
@@ -84,7 +89,7 @@ struct EditSpendingView: View {
     // MARK: Variables
     
     private var infoSection: some View {
-        Section(header: infoHeader) {
+        Section {
             HStack {
                 Text("Category")
                 
@@ -93,7 +98,29 @@ struct EditSpendingView: View {
             
             DatePicker("Date", selection: $vm.date, in: .firstAvailableDate...Date.now)
                 .datePickerStyle(.compact)
+        } header: {
+            infoHeader
+        } footer: {
+            if !formatWithoutTimeZones, let timeZoneID = entity.timeZoneIdentifier, timeZoneID != TimeZone.autoupdatingCurrent.identifier {
+                HStack {
+                    Spacer()
+                    
+                    Text(vm.date.formatted(getFormatStyle))
+                }
+            }
         }
+    }
+    
+    private var getFormatStyle: Date.FormatStyle {
+        var dateFormatStyle: Date.FormatStyle = .dateTime.day().month().year().hour().minute()
+        
+        if let timeZoneIdentifier = entity.timeZoneIdentifier, let entityTimeZone = TimeZone(identifier: timeZoneIdentifier) {
+            let timeZoneFormatStyle = TimeZone.Format(rawValue: timeZoneFormat)
+            dateFormatStyle.timeZone = entityTimeZone
+            dateFormatStyle = dateFormatStyle.timeZone(timeZoneFormatStyle.formatStyle)
+        }
+        
+        return dateFormatStyle
     }
     
     private var infoHeader: some View {

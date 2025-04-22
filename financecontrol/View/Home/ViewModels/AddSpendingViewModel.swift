@@ -31,6 +31,8 @@ final class AddSpendingViewModel: ViewModel {
     var comment: String
     @Published
     var dismiss: Bool = false
+    @Published
+    var timeZoneIdentifier: String = TimeZone.autoupdatingCurrent.identifier
     
     #if DEBUG
     let vmStateLogger: Logger
@@ -133,7 +135,7 @@ final class AddSpendingViewModel: ViewModel {
             
             if self.currency == "USD" {
                 spending.amountUSD = doubleAmount
-                cdm.addSpending(spending: spending)
+                cdm.addSpending(spending: spending, timeZoneIdentifier: self.timeZoneIdentifier)
                 DispatchQueue.main.async {
                     self.dismiss = true
                 }
@@ -147,7 +149,7 @@ final class AddSpendingViewModel: ViewModel {
             if Calendar.gmt.isDateInToday(date) {
                 spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
                 
-                cdm.addSpending(spending: spending)
+                cdm.addSpending(spending: spending, timeZoneIdentifier: self.timeZoneIdentifier)
                 DispatchQueue.main.async {
                     self.dismiss = true
                 }
@@ -165,7 +167,7 @@ final class AddSpendingViewModel: ViewModel {
                             spendingCopy.amountUSD = doubleAmount / (self.rvm.rates[self.currency] ?? 1)
                         }
                         
-                        self.cdm.addSpending(spending: spendingCopy, addToFetchQueue: isHistoricalRatesUnvailable)
+                        self.cdm.addSpending(spending: spendingCopy, timeZoneIdentifier: self.timeZoneIdentifier, addToFetchQueue: isHistoricalRatesUnvailable)
                         
                         self.dismissAction()
                     }

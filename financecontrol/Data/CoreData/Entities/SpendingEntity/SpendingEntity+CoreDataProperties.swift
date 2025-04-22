@@ -59,19 +59,20 @@ extension SpendingEntity {
         date ?? Date()
     }
     
-    @objc
     public var startOfDay: Date {
-        UserDefaults.standard.bool(forKey: UDKey.formatWithoutTimeZones.rawValue) ? Calendar.current.startOfDay(for: self.wrappedDate) : Calendar.current.startOfDay(for: self.dateAdjustedToTimeZone)
+        Calendar.current.startOfDay(for: self.wrappedDate)
     }
     
     public var dateAdjustedToTimeZone: Date {
-        guard let secondsFromExpenseTimeZone = TimeZone(identifier: self.timeZoneIdentifier ?? "")?.secondsFromGMT() else {
+        guard let timeZoneIdentifier = self.timeZoneIdentifier, let timeZone = TimeZone(identifier: timeZoneIdentifier) else {
             return self.wrappedDate
         }
         
-        let secondsFromCurrent = TimeZone.autoupdatingCurrent.secondsFromGMT()
+        let secondsFromSpendingTimeZone = timeZone.secondsFromGMT(for: self.wrappedDate)
         
-        guard let result = Calendar.autoupdatingCurrent.date(byAdding: .second, value: (secondsFromCurrent - secondsFromExpenseTimeZone) * -1, to: self.wrappedDate) else {
+        let secondsFromCurrent = TimeZone.autoupdatingCurrent.secondsFromGMT(for: self.wrappedDate)
+        
+        guard let result = Calendar.autoupdatingCurrent.date(byAdding: .second, value: (secondsFromCurrent - secondsFromSpendingTimeZone) * -1, to: self.wrappedDate) else {
             return self.wrappedDate
         }
         
@@ -215,13 +216,15 @@ struct TSSpendingEntity: ToUnsafeObject, Hashable, Identifiable {
     }
     
     var dateAdjustedToTimeZone: Date {
-        guard let secondsFromExpenseTimeZone = self.timeZone?.secondsFromGMT() else {
+        guard let timeZoneIdentifier = self.timeZoneIdentifier, let timeZone = TimeZone(identifier: timeZoneIdentifier) else {
             return self.wrappedDate
         }
         
-        let secondsFromCurrent = TimeZone.autoupdatingCurrent.secondsFromGMT()
+        let secondsFromSpendingTimeZone = timeZone.secondsFromGMT(for: self.wrappedDate)
         
-        guard let result = Calendar.autoupdatingCurrent.date(byAdding: .second, value: (secondsFromCurrent - secondsFromExpenseTimeZone) * -1, to: self.wrappedDate) else {
+        let secondsFromCurrent = TimeZone.autoupdatingCurrent.secondsFromGMT(for: self.wrappedDate)
+        
+        guard let result = Calendar.autoupdatingCurrent.date(byAdding: .second, value: (secondsFromCurrent - secondsFromSpendingTimeZone) * -1, to: self.wrappedDate) else {
             return self.wrappedDate
         }
         

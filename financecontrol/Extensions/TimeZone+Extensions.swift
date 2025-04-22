@@ -43,20 +43,38 @@ extension TimeZone {
                 String(localized: "timezone-location", comment: "Timezone location")
             }
         }
+        
+        var formatStyle: Date.FormatStyle.Symbol.TimeZone {
+            switch self {
+            case .gmt:
+                    .localizedGMT(.short)
+            case .name:
+                    .specificName(.long)
+            case .location:
+                    .genericLocation
+            }
+        }
     }
     
-    func formatted(_ style: Self.Format) -> String {
-        switch style {
-        case .gmt:
-            var formatStyle = Date.FormatStyle()
-            formatStyle.timeZone = self
-            return Date().formatted(formatStyle.timeZone(.localizedGMT(.short)))
-        case .name:
-            return self.localizedName(for: .standard, locale: .autoupdatingCurrent) ?? "Error"
-        case .location:
-            var formatStyle = Date.FormatStyle()
-            formatStyle.timeZone = self
-            return Date().formatted(formatStyle.timeZone(.exemplarLocation))
+    func formatted(_ style: Self.Format, for date: Date = Date()) -> String {
+        var formatStyle = Date.FormatStyle()
+        formatStyle.timeZone = self
+        
+        return date.formatted(formatStyle.timeZone(style.formatStyle))
+    }
+    
+    func getImage() -> String {
+        let offset = self.hoursFromGMT()
+        
+        switch offset {
+        case ...(-3):
+            return "globe.americas.fill"
+        case ...3:
+            return "globe.europe.africa.fill"
+        case ...7:
+            return "globe.central.south.asia.fill"
+        default:
+            return "globe.asia.australia.fill"
         }
     }
 }

@@ -47,21 +47,7 @@ struct SpendingView: View {
             .hour()
             .minute()
         
-        if !formatWithoutTimeZones, let timeZone = safeEntity.timeZone, timeZone.hoursFromGMT() != TimeZone.autoupdatingCurrent.hoursFromGMT() {
-//            var timeZoneStyle: Date.FormatStyle.Symbol.TimeZone {
-//                switch timeZoneFormat {
-//                case 0:
-//                    return .localizedGMT(.short)
-//                case 1:
-//                    return .genericName(.long)
-//                case 2:
-//                    return .identifier(.long)
-//                default:
-//                    return .exemplarLocation
-//                }
-//            }
-            
-//            formatStyle = formatStyle.timeZone(timeZoneStyle)
+        if !formatWithoutTimeZones, let timeZone = safeEntity.timeZone {
             formatStyle.timeZone = timeZone
         }
         
@@ -127,13 +113,13 @@ struct SpendingView: View {
                 editAction()
             }
             
-            if !formatWithoutTimeZones, let timeZone = safeEntity.timeZone, timeZone.hoursFromGMT() != TimeZone.autoupdatingCurrent.hoursFromGMT() {
+            if !formatWithoutTimeZones, let timeZone = safeEntity.timeZone, timeZone.identifier != TimeZone.autoupdatingCurrent.identifier {
                 HStack {
                     Text("Timezone")
                     
                     Spacer()
                     
-                    Text(timeZone.formatted(TimeZone.Format(rawValue: timeZoneFormat)))
+                    Text(timeZone.formatted(.init(rawValue: timeZoneFormat), for: self.entity.wrappedDate))
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.trailing)
                 }
@@ -284,6 +270,15 @@ struct SpendingView: View {
     #if DEBUG
     private var debugSection: some View {
         Section {
+            HStack {
+                Text(verbatim: "Date adjusted to tz")
+                
+                Spacer()
+                
+                Text(entity.dateAdjustedToTimeZone.formatted(.dateTime.day().month(.defaultDigits).year(.defaultDigits).hour().minute()))
+                    .foregroundStyle(.secondary)
+            }
+            
             HStack {
                 Text(verbatim: "Amount in USD:")
                 

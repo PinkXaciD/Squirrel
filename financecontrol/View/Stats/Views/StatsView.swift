@@ -229,14 +229,6 @@ extension StatsView {
     }
     
     private func clearFilters() {
-        #if DEBUG
-        let startDate: Date = Date()
-        
-        defer {
-            logger.log("\(#fileID) \(#function) completed within \(Date().timeIntervalSince(startDate)) seconds")
-        }
-        #endif
-        
         withAnimation {
             pcvm.selectedCategory = nil
             fvm.clearFilters()

@@ -195,6 +195,7 @@ struct StatsRowData: Identifiable {
     let currency: String
     let categoryName: String
     let date: Date
+    let dateAdjustedToTimezone: Date
     let place: String?
     let showTimeZoneIcon: Bool
     let hasReturns: Bool
@@ -208,15 +209,16 @@ struct StatsRowData: Identifiable {
         self.amount = entity.amountWithReturns
         self.currency = entity.wrappedCurrency
         self.categoryName = entity.categoryName
-        self.date = entity.dateAdjustedToTimeZone
+        self.date = entity.wrappedDate
+        self.dateAdjustedToTimezone = entity.dateAdjustedToTimeZone
         self.place = entity.place
         self.hasReturns = !(entity.returns?.allObjects.isEmpty ?? true)
         
-        guard let entityTimeZoneID = entity.timeZoneIdentifier, let entityTimeZoneOffset = TimeZone(identifier: entityTimeZoneID)?.secondsFromGMT() else {
+        guard let entityTimeZoneID = entity.timeZoneIdentifier else {
             self.showTimeZoneIcon = false
             return
         }
         
-        self.showTimeZoneIcon = entityTimeZoneOffset != Calendar.autoupdatingCurrent.timeZone.secondsFromGMT()
+        self.showTimeZoneIcon = entityTimeZoneID != TimeZone.autoupdatingCurrent.identifier
     }
 }
