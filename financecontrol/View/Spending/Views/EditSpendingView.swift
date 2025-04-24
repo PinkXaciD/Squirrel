@@ -83,7 +83,6 @@ struct EditSpendingView: View {
         .navigationBarTitleDisplayMode(.inline)
         .onAppear(perform: appearActions)
         .disabled(vm.isLoading)
-        .interactiveDismissDisabled(true)
     }
     
     // MARK: Variables

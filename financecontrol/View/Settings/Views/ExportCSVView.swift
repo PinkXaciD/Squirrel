@@ -106,7 +106,7 @@ struct ExportCSVView: View {
             CustomShareSheet(url: $shareURL)
         }
         .accentColor(colorIdentifier(color: accentColor))
-        .navigationTitle("Export to Speadsheet")
+        .navigationTitle("Export to Spreadsheet")
         .navigationBarTitleDisplayMode(.inline)
     }
     

@@ -32,6 +32,12 @@ struct FiltersView: View {
     private var year: Int = Calendar(identifier: .gregorian).component(.year, from: .now)
     @State
     private var dateType: DateType
+    @State
+    private var filterCategories: [UUID]
+    @State
+    private var currencies: [String]
+    @State
+    private var withReturns: Bool?
     
     let spendingsCount: Int
     let firstSpendingDate: Date
@@ -94,6 +100,9 @@ struct FiltersView: View {
         self._dateType = State(wrappedValue: fvm.dateType)
         self._year = State(wrappedValue: fvm.year)
         self._month = State(wrappedValue: fvm.month)
+        self._filterCategories = State(wrappedValue: fvm.filterCategories)
+        self._currencies = State(wrappedValue: fvm.currencies)
+        self._withReturns = State(wrappedValue: fvm.withReturns)
         self.spendingsCount = spendingsCount
         self.firstSpendingDate = firstSpendingDate
         self.usedCurrencies = usedCurrencies
@@ -202,7 +211,7 @@ struct FiltersView: View {
     private var categoriesSection: some View {
         Section {
             NavigationLink {
-                FiltersCategoriesView(categories: $fvm.filterCategories, applyFilters: $fvm.applyFilters)
+                FiltersCategoriesView(categories: $filterCategories, applyFilters: $fvm.applyFilters)
             } label: {
                 categoriesPickerLabel
             }
@@ -217,7 +226,7 @@ struct FiltersView: View {
             
             Spacer()
             
-            Text("\(fvm.filterCategories.count) selected")
+            Text("\(filterCategories.count) selected")
                 .foregroundColor(.secondary)
         }
     }
@@ -226,15 +235,14 @@ struct FiltersView: View {
     private var returnsSection: some View {
         Section {
             NavigationLink {
-                FiltersReturnsView(withReturns: fvm.withReturns)
-                    .environmentObject(fvm)
+                FiltersReturnsView(withReturns: $withReturns)
             } label: {
                 HStack {
                     Text("Returns")
                     
                     Spacer()
                     
-                    switch fvm.withReturns {
+                    switch withReturns {
                     case nil:
                         Text("Disabled")
                             .foregroundColor(.secondary)
@@ -257,7 +265,7 @@ struct FiltersView: View {
     private var currenciesSection: some View {
         Section {
             NavigationLink {
-                FiltersCurrenciesView(usedCurrencies: usedCurrencies)
+                FiltersCurrenciesView(currencies: $currencies, usedCurrencies: usedCurrencies)
                     .environmentObject(fvm)
             } label: {
                 HStack {
@@ -265,7 +273,7 @@ struct FiltersView: View {
                     
                     Spacer()
                     
-                    Text("\(fvm.currencies.count) selected")
+                    Text("\(currencies.count) selected")
                         .foregroundColor(.secondary)
                 }
             }
@@ -278,7 +286,7 @@ struct FiltersView: View {
         Button("Clear", role: .destructive) {
             clearFilters()
         }
-        .disabled(!fvm.applyFilters)
+        .disabled(disableClearButton)
     }
     
     private var leadingToolbar: ToolbarItem<(), some View> {
@@ -350,6 +358,9 @@ extension FiltersView {
         fvm.dateType = dateType
         fvm.year = year
         fvm.month = month
+        fvm.filterCategories = filterCategories
+        fvm.currencies = currencies
+        fvm.withReturns = withReturns
         
         fvm.applyFilters = true
         fvm.updateList = true
@@ -369,22 +380,21 @@ extension FiltersView {
                 endDate = secondDate
             }
             
+            self.filterCategories = []
+            self.currencies = []
+            self.withReturns = nil
             fvm.clearFilters()
             NotificationCenter.default.post(name: .UpdatePieChart, object: nil)
         }
     }
     
-    private func getFirstYearDate() -> Date {
-        var components: DateComponents = Calendar.current.dateComponents([.year, .era], from: Date())
-        components.calendar = Calendar.current
-        
-        guard let startDate = components.date else {
-            return Date()
-        }
-        
-        let firstDate: Date = firstSpendingDate
-        
-        return startDate < firstDate ? firstDate : startDate
+    private var disableClearButton: Bool {
+        return (
+            self.filterCategories.isEmpty &&
+            self.withReturns == nil &&
+            self.currencies.isEmpty &&
+            self.dateType == .multi
+        )
     }
 }
 
