@@ -406,9 +406,6 @@
     "Check the spelling or try a new search." : {
 
     },
-    "Choose what gets included" : {
-
-    },
     "Clear" : {
 
     },
@@ -616,9 +613,6 @@
     "Filters applied" : {
 
     },
-    "Filters in Export" : {
-
-    },
     "First Flight" : {
 
     },
@@ -711,6 +705,9 @@
         }
       }
     },
+    "Improved Timezone Tracking" : {
+
+    },
     "Indigo" : {
 
     },
@@ -735,7 +732,7 @@
     "More about policy changes" : {
 
     },
-    "More date period options" : {
+    "More date period options and filters in export" : {
 
     },
     "More Filters" : {
@@ -817,6 +814,9 @@
 
     },
     "Nothing to import" : {
+
+    },
+    "Now with DST support and UI improvements" : {
 
     },
     "Off" : {

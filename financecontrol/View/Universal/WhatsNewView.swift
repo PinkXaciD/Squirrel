@@ -39,11 +39,11 @@ struct WhatsNewView: View {
                 
                 Spacer()
                 
-                getRow(imageName: "line.3.horizontal.decrease", title: "Updated Filters", subtitle: "More date period options")
-                
-                getRow(imageName: "arrow.up.doc", title: "Filters in Export", subtitle: "Choose what gets included")
+                getRow(imageName: "line.3.horizontal.decrease.circle", title: "Updated Filters", subtitle: "More date period options and filters in export")
                 
                 getRow(imageName: "chart.pie", title: "Export from Stats", subtitle: "What you see is what you get")
+                
+                getRow(imageName: "clock", title: "Improved Timezone Tracking", subtitle: "Now with DST support and UI improvements")
                 
                 Spacer()
                 
