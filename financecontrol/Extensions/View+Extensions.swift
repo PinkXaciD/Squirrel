@@ -175,11 +175,12 @@ fileprivate struct DynamicTypeListStylingViewModifier: ViewModifier {
 
 struct MaskFromTheBottomModifier: ViewModifier {
     let isActive: Bool
+    let withOpacity: Bool
     
     func body(content: Content) -> some View {
         content
             .zIndex(isActive ? -1 : 1)
-            .opacity(isActive ? 0 : 1)
+            .opacity((isActive && withOpacity) ? 0 : 1)
             .mask {
                 VStack(spacing: 0) {
                     Rectangle()

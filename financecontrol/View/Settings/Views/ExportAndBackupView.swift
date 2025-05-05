@@ -8,18 +8,30 @@
 import SwiftUI
 
 struct ExportAndBackupView: View {
-    @EnvironmentObject private var cdm: CoreDataModel
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.dynamicTypeSize)
+    private var dynamicTypeSize
     
-    @AppStorage(UDKey.color.rawValue) private var tint: String = "Orange"
+    @AppStorage(UDKey.color.rawValue) 
+    private var tint: String = "Orange"
+    
+    @EnvironmentObject
+    private var cdm: CoreDataModel
+    @EnvironmentObject
+    private var privacyMonitor: PrivacyMonitor
     
     @FetchRequest(sortDescriptors: [SortDescriptor(\SpendingEntity.date)])
     private var spendings: FetchedResults<SpendingEntity>
     
-    @State private var shareURL: URL = .init(string: "https://apple.com")!
-    @State private var presentExportSheet: Bool = false
-    @State private var presentExportCSVSheet: Bool = false
-    @State private var presentImportSheet: Bool = false
+    @State
+    private var shareURL: URL = .init(string: "https://apple.com")!
+    @State
+    private var exportStarted: Bool = false
+    @State
+    private var presentExportSheet: Bool = false
+    @State
+    private var presentExportCSVSheet: Bool = false
+    @State
+    private var presentImportSheet: Bool = false
     
     var body: some View {
         VStack {
@@ -47,7 +59,10 @@ struct ExportAndBackupView: View {
             importJSON(result)
         }
         .sheet(isPresented: $presentExportCSVSheet) {
-            ExportCSVView(cdm: cdm)
+            NavigationView {
+                ExportCSVView(cdm: cdm)
+            }
+            .environmentObject(privacyMonitor)
         }
         .navigationTitle("Export and Backup")
         .navigationBarTitleDisplayMode(.inline)
@@ -57,7 +72,7 @@ struct ExportAndBackupView: View {
         Button {
             presentExportCSVSheet.toggle()
         } label: {
-            buttonLabel(title: "Export to spreadsheet", subtitle: "Export to CSV", systemImage: "arrow.up.doc.fill")
+            buttonLabel(title: "Export to Spreadsheet", subtitle: "Export to CSV", systemImage: "arrow.up.doc.fill")
                 .clipShape(RoundedRectangle(cornerRadius: dynamicTypeSize > .xLarge ? 0 : 15))
                 .overlay {
                     if dynamicTypeSize > .xLarge {
@@ -80,11 +95,11 @@ struct ExportAndBackupView: View {
             Button {
                 exportJSON()
             } label: {
-                buttonLabel(title: "Create local backup", subtitle: "Export to JSON", systemImage: "arrow.up.doc.fill")
+                buttonLabel(title: "Create Local Backup", subtitle: "Export to JSON", systemImage: "arrow.up.doc.fill")
             }
             .buttonStyle(.plain)
             .overlay {
-                if presentExportSheet {
+                if exportStarted {
                     ZStack {
                         Rectangle()
                             .fill(Color(uiColor: .secondarySystemGroupedBackground))
@@ -94,15 +109,15 @@ struct ExportAndBackupView: View {
                     }
                 }
             }
-            .animation(.default, value: presentExportSheet)
-            .disabled(spendings.isEmpty)
+            .animation(.default, value: exportStarted)
+            .disabled(spendings.isEmpty || exportStarted)
             
             Divider()
             
             Button {
                 presentImportSheet.toggle()
             } label: {
-                buttonLabel(title: "Import local backup", subtitle: "Import from JSON", systemImage: "arrow.down.doc.fill")
+                buttonLabel(title: "Import Local Backup", subtitle: "Import from JSON", systemImage: "arrow.down.doc.fill")
             }
             .buttonStyle(.plain)
         }
@@ -154,15 +169,20 @@ struct ExportAndBackupView: View {
 extension ExportAndBackupView {
     private func exportJSON() {
         do {
-            presentExportSheet.toggle()
+            exportStarted.toggle()
             
-            if let url = try cdm.exportJSON() {
-                shareURL = url
-            } else {
-                presentExportSheet.toggle()
+            Task {
+                if let url = try cdm.exportJSON() {
+                    await MainActor.run {
+                        shareURL = url
+                        presentExportSheet.toggle()
+                    }
+                } else {
+                    await MainActor.run {
+                        exportStarted.toggle()
+                    }
+                }
             }
-        } catch {
-            ErrorType(error: error).publish()
         }
     }
     
@@ -182,6 +202,8 @@ extension ExportAndBackupView {
     }
     
     private func deleteTempFile() {
+        exportStarted = false
+        
         do {
             try FileManager.default.removeItem(at: shareURL)
         } catch {

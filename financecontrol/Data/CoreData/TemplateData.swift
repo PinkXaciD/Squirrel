@@ -80,23 +80,23 @@ extension CoreDataModel {
             ]
             
             for spending in restaurantsSpendings {
-                addSpending(spending: spending, playHaptic: false)
+                addSpending(spending: spending, timeZoneIdentifier: TimeZone.autoupdatingCurrent.identifier, playHaptic: false)
             }
             
             for spending in groceriesSpendings {
-                addSpending(spending: spending, playHaptic: false)
+                addSpending(spending: spending, timeZoneIdentifier: TimeZone.autoupdatingCurrent.identifier, playHaptic: false)
             }
             
             for spending in subscriptionsSpendings {
-                addSpending(spending: spending, playHaptic: false)
+                addSpending(spending: spending, timeZoneIdentifier: TimeZone.autoupdatingCurrent.identifier, playHaptic: false)
             }
             
             for spending in transportSpendings {
-                addSpending(spending: spending, playHaptic: false)
+                addSpending(spending: spending, timeZoneIdentifier: TimeZone.autoupdatingCurrent.identifier, playHaptic: false)
             }
             
             for spending in travelSpendings {
-                addSpending(spending: spending, playHaptic: false)
+                addSpending(spending: spending, timeZoneIdentifier: TimeZone.autoupdatingCurrent.identifier, playHaptic: false)
             }
         }
         

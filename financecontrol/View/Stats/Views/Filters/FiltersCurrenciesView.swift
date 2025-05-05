@@ -11,14 +11,14 @@ struct FiltersCurrenciesView: View {
     @Environment(\.dismiss)
     private var dismiss
     
-    @EnvironmentObject
-    private var fvm: FiltersViewModel
-    @EnvironmentObject
-    private var cdm: CoreDataModel
+    @Binding var currencies: [String]
+    let usedCurrencies: Set<Currency>
+//    @EnvironmentObject
+//    private var cdm: CoreDataModel
     
     var body: some View {
         List {
-            ForEach(cdm.usedCurrencies.sorted(by: <)) { currency in
+            ForEach(usedCurrencies.sorted(by: <)) { currency in
                 Button {
                     rowAction(currency.code)
                 } label: {
@@ -26,13 +26,18 @@ struct FiltersCurrenciesView: View {
                 }
             }
             
-            if !cdm.usedCurrencies.isEmpty {
+            if !usedCurrencies.isEmpty {
                 Section {
-                    Button("Clear selection", role: .destructive) {
-                        fvm.currencies = []
+                    Button("Select All") {
+                        currencies = usedCurrencies.map { $0.code }
                     }
-                    .disabled(fvm.currencies.isEmpty)
-                    .animation(.default.speed(3), value: fvm.currencies)
+                    .disabled(currencies.count == usedCurrencies.count)
+                    
+                    Button("Clear Selection", role: .destructive) {
+                        currencies = []
+                    }
+                    .disabled(currencies.isEmpty)
+                    .animation(.default.speed(3), value: currencies)
                 }
             }
         }
@@ -42,7 +47,7 @@ struct FiltersCurrenciesView: View {
             trailingToolbar
         }
         .overlay {
-            if cdm.usedCurrencies.isEmpty {
+            if usedCurrencies.isEmpty {
                 CustomContentUnavailableView("No Expenses", imageName: "list.bullet", description: "You can add expenses from home screen.")
             }
         }
@@ -69,17 +74,17 @@ struct FiltersCurrenciesView: View {
             
             Image(systemName: "checkmark")
                 .font(.body.bold())
-                .opacity(fvm.currencies.contains(currency.code) ? 1 : 0)
-                .animation(.default.speed(3), value: fvm.currencies)
+                .opacity(currencies.contains(currency.code) ? 1 : 0)
+                .animation(.default.speed(3), value: currencies)
         }
     }
     
     private func rowAction(_ code: String) {
-        if let index = fvm.currencies.firstIndex(of: code) {
-            fvm.currencies.remove(at: index)
+        if let index = currencies.firstIndex(of: code) {
+            currencies.remove(at: index)
             return
         }
         
-        fvm.currencies.append(code)
+        currencies.append(code)
     }
 }

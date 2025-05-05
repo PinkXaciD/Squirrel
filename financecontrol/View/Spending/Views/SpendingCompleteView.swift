@@ -97,6 +97,7 @@ struct SpendingCompleteView: View {
         .onReceive(NotificationCenter.default.publisher(for: Notification.Name("DismissEditSpendingView"))) { _ in
             edit = false
         }
+        .interactiveDismissDisabled(edit)
     }
     
     func editToggle() {

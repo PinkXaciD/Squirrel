@@ -38,6 +38,22 @@ struct AddSpendingView: View {
         case comment
     }
     
+    private struct WrappedCategory: ListHorizontalScrollRepresentable, Identifiable {
+        let category: CategoryEntity?
+        
+        var id: UUID {
+            category?.id ?? .init()
+        }
+        
+        var foregroundColor: Color {
+            Color[self.category?.color ?? "secondary"]
+        }
+        
+        var label: Text {
+            Text(category?.name ?? "Error")
+        }
+    }
+    
     @FocusState 
     private var focusedField: Field?
     
@@ -56,6 +72,10 @@ struct AddSpendingView: View {
                 reqiredSection
                 
                 placeAndCommentSection
+                
+#if DEBUG
+                debugSection
+#endif
             }
             .toolbar {
                 keyboardToolbar
@@ -127,17 +147,12 @@ struct AddSpendingView: View {
             Text("Required")
         } footer: {
             if categories.count > 0 {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack {
-                        ForEach(categories.sorted(by: { $0.spendings?.count ?? 0 > $1.spendings?.count ?? 0 }).prefix(5)) { category in
-                            PopularCategoryButtonView(category: category)
-                                .environmentObject(vm)
-                        }
-                    }
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                .listRowInsets(.init(top: 10, leading: 0, bottom: 5, trailing: 0))
-                .listRowBackground(EmptyView())
+                ListHorizontalScroll(
+                    selection: $vm.selectedCategory,
+                    selectingValue: \WrappedCategory.category,
+                    data: categories.sorted(by: { $0.spendings?.count ?? 0 > $1.spendings?.count ?? 0 }).prefix(5).map({ WrappedCategory(category: $0) }),
+                    animation: .default
+                )
             }
             
             if !Calendar.current.isDateInToday(vm.date) && vm.currency != defaultCurrency {
@@ -147,6 +162,7 @@ struct AddSpendingView: View {
             }
         }
         .disabled(isLoading)
+        .animation(.default, value: vm.selectedCategory)
     }
     
     private var placeAndCommentSection: some View {
@@ -206,6 +222,16 @@ struct AddSpendingView: View {
             }
         }
     }
+    
+#if DEBUG
+    private var debugSection: some View {
+        Section {
+            TextField("Timezone identifier", text: $vm.timeZoneIdentifier)
+        } header: {
+            Text(verbatim: "Debug")
+        }
+    }
+#endif
     
 // MARK: Toolbars
     
@@ -277,48 +303,48 @@ extension AddSpendingView {
     }
 }
 
-fileprivate struct PopularCategoryButtonView: View {
-    @EnvironmentObject private var vm: AddSpendingViewModel
-    let category: CategoryEntity
-    @State private var isFocused: Bool = false
-    
-    var body: some View {
-        Button {
-            withAnimation {
-                vm.selectedCategory = category
-            }
-        } label: {
-            Text(category.name ?? "Error")
-                .font(.body)
-                .fontWeight(vm.selectedCategory?.id == category.id ? .semibold : .regular)
-                .foregroundColor(vm.selectedCategory?.id == category.id ? Color(uiColor: .secondarySystemGroupedBackground) : Color[category.color ?? ""])
-                .padding(.vertical, 6)
-                .padding(.horizontal, 12)
-                .background {
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(getBackgroundColor())
-                }
-                .brightness(isFocused ? 0.05 : 0)
-                .animation(.default, value: vm.selectedCategory)
-        }
-        .buttonStyle(PlainButtonStyle())
-        .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 10))
-        .hoverEffect()
-        .onHover { value in
-            withAnimation {
-                isFocused = value
-            }
-        }
-    }
-    
-    private func getBackgroundColor() -> Color {
-        if vm.selectedCategory?.id == category.id {
-            return Color[category.color ?? ""]
-        } else {
-            return Color(uiColor: .secondarySystemGroupedBackground)
-        }
-    }
-}
+//fileprivate struct PopularCategoryButtonView: View {
+//    @EnvironmentObject private var vm: AddSpendingViewModel
+//    let category: CategoryEntity
+//    @State private var isFocused: Bool = false
+//    
+//    var body: some View {
+//        Button {
+//            withAnimation {
+//                vm.selectedCategory = category
+//            }
+//        } label: {
+//            Text(category.name ?? "Error")
+//                .font(.body)
+//                .fontWeight(vm.selectedCategory?.id == category.id ? .semibold : .regular)
+//                .foregroundColor(vm.selectedCategory?.id == category.id ? Color(uiColor: .secondarySystemGroupedBackground) : Color[category.color ?? ""])
+//                .padding(.vertical, 6)
+//                .padding(.horizontal, 12)
+//                .background {
+//                    RoundedRectangle(cornerRadius: 10)
+//                        .fill(getBackgroundColor())
+//                }
+//                .brightness(isFocused ? 0.05 : 0)
+//                .animation(.default, value: vm.selectedCategory)
+//        }
+//        .buttonStyle(PlainButtonStyle())
+//        .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 10))
+//        .hoverEffect()
+//        .onHover { value in
+//            withAnimation {
+//                isFocused = value
+//            }
+//        }
+//    }
+//    
+//    private func getBackgroundColor() -> Color {
+//        if vm.selectedCategory?.id == category.id {
+//            return Color[category.color ?? ""]
+//        } else {
+//            return Color(uiColor: .secondarySystemGroupedBackground)
+//        }
+//    }
+//}
 
 // MARK: Preview
 struct AmountInput_Previews: PreviewProvider {

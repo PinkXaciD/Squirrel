@@ -63,7 +63,7 @@ struct StatsRow: View {
             mainButtonLabel
         }
         .buttonStyle(ListButtonStyle())
-        .transition(.maskFromTheBottom)
+        .transition(.maskFromTheBottomWithOpacity)
         .contextMenu {
             editButton
             
@@ -131,20 +131,22 @@ struct StatsRow: View {
             
             VStack(alignment: .trailing, spacing: 5) {
                 HStack(spacing: 3) {
-                    if !formatWithoutTimeZones, data.showTimeZoneIcon {
-                        Image(systemName: "clock")
-                            .foregroundColor(.secondary)
+                    if !formatWithoutTimeZones, data.showTimeZoneIcon, let timeZoneIconName = TimeZone(identifier: data.entity.timeZoneIdentifier ?? "")?.getImage() {
+                        Image(systemName: timeZoneIconName)
                             .font(.caption2)
                         
-                        Text(data.date.formatted(date: .omitted, time: .shortened))
-                            .font(.caption)
-                            .foregroundColor(Color.secondary)
-                    } else {
-                        Text(data.date.formatted(date: .omitted, time: .shortened))
-                            .font(.caption)
-                            .foregroundColor(Color.secondary)
+                        Group {
+                            Text(data.dateAdjustedToTimezone.formatted(.dateTime.hour().minute()))
+                            
+                            Text(NSLocalizedString("time-timezone-separator-key", comment: "Stats row with/without timezone time separator"))
+                        }
+                        .font(.caption)
                     }
+                    
+                    Text(data.date.formatted(.dateTime.hour().minute()))
+                        .font(.caption)
                 }
+                .foregroundColor(Color.secondary)
                 
                 HStack {
                     if data.hasReturns {

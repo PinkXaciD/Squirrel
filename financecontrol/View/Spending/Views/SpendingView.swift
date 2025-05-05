@@ -40,6 +40,20 @@ struct SpendingView: View {
     @State
     private var alertIsPresented: Bool = false
     
+    var dateFormatStyle: Date.FormatStyle {
+        var formatStyle = Date.FormatStyle.dateTime
+            .year(.extended())
+            .month(.wide).day()
+            .hour()
+            .minute()
+        
+        if !formatWithoutTimeZones, let timeZone = safeEntity.timeZone {
+            formatStyle.timeZone = timeZone
+        }
+        
+        return formatStyle
+    }
+    
     var body: some View {
         List {
             infoSection
@@ -80,6 +94,7 @@ struct SpendingView: View {
                 
                 Text(safeEntity.categoryName)
                     .foregroundColor(.secondary)
+                    .multilineTextAlignment(.trailing)
             }
             .onTapGesture {
                 editAction()
@@ -90,22 +105,27 @@ struct SpendingView: View {
                 
                 Spacer()
                 
-                if !formatWithoutTimeZones, let timeZone = safeEntity.timeZone, timeZone.secondsFromGMT() != TimeZone.autoupdatingCurrent.secondsFromGMT() {
-                    VStack(alignment: .trailing) {
-                        Text(safeEntity.dateAdjustedToTimeZone.formatted(date: .long, time: .shortened))
-                        
-                        Text(timeZone.formatted(TimeZone.Format(rawValue: timeZoneFormat)))
-                    }
+                Text(safeEntity.wrappedDate.formatted(dateFormatStyle))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.trailing)
-                } else {
-                    Text(safeEntity.wrappedDate.formatted(date: .long, time: .shortened))
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.trailing)
-                }
             }
             .onTapGesture {
                 editAction()
+            }
+            
+            if !formatWithoutTimeZones, let timeZone = safeEntity.timeZone, timeZone.identifier != TimeZone.autoupdatingCurrent.identifier {
+                HStack {
+                    Text("Timezone")
+                    
+                    Spacer()
+                    
+                    Text(timeZone.formatted(.init(rawValue: timeZoneFormat), for: self.entity.wrappedDate))
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.trailing)
+                }
+                .onTapGesture {
+                    editAction()
+                }
             }
         }
     }
@@ -118,6 +138,7 @@ struct SpendingView: View {
                     .onTapGesture {
                         editAction("place")
                     }
+                    .multilineTextAlignment(.center)
             }
             
             if safeEntity.returns.isEmpty {
@@ -249,6 +270,15 @@ struct SpendingView: View {
     #if DEBUG
     private var debugSection: some View {
         Section {
+            HStack {
+                Text(verbatim: "Date adjusted to tz")
+                
+                Spacer()
+                
+                Text(entity.dateAdjustedToTimeZone.formatted(.dateTime.day().month(.defaultDigits).year(.defaultDigits).hour().minute()))
+                    .foregroundStyle(.secondary)
+            }
+            
             HStack {
                 Text(verbatim: "Amount in USD:")
                 

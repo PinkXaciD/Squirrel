@@ -68,6 +68,7 @@ extension CoreDataModel {
             
             self.usedCurrencies = currencies
             self.pieChartSpendings = pieChartData
+            self.spendingsCount = spendings.count
             NotificationCenter.default.post(name: .UpdatePieChart, object: nil)
             lastFetchDate = Date()
             
@@ -161,7 +162,7 @@ extension CoreDataModel {
     ///   - playHaptic: Indicates whether to play haptic on success
     ///
     /// This method is thread-safe
-    func addSpending(spending: SpendingEntityLocal, playHaptic: Bool = true, addToFetchQueue: Bool = false) {
+    func addSpending(spending: SpendingEntityLocal, timeZoneIdentifier: String, playHaptic: Bool = true, addToFetchQueue: Bool = false) {
         context.performAndWait {
             guard let description = NSEntityDescription.entity(forEntityName: "SpendingEntity", in: context) else {
                 ErrorType(CoreDataError.failedToGetEntityDescription).publish()
@@ -181,7 +182,7 @@ extension CoreDataModel {
             newSpending.amountUSD = spending.amountUSD
             newSpending.currency = spending.currency
             newSpending.date = spending.date
-            newSpending.timeZoneIdentifier = TimeZone.autoupdatingCurrent.identifier
+            newSpending.timeZoneIdentifier = timeZoneIdentifier
             newSpending.place = spending.place
             newSpending.comment = spending.comment
             
@@ -212,7 +213,7 @@ extension CoreDataModel {
             }
             
             self.addSpending(
-                spending: .init(
+                spending: SpendingEntityLocal(
                     amountUSD: 1,
                     amount: 1,
                     amountWithReturns: 1,
@@ -222,7 +223,8 @@ extension CoreDataModel {
                     date: Date(),
                     place: "Test place",
                     categoryId: randomCategory
-                )
+                ), 
+                timeZoneIdentifier: TimeZone.autoupdatingCurrent.identifier
             )
         }
     }

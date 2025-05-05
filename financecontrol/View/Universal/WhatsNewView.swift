@@ -39,30 +39,15 @@ struct WhatsNewView: View {
                 
                 Spacer()
                 
-                getNavLinkRow(
-                    imageName: "icloud.fill",
-                    title: "iCloud sync",
-                    subtitle: "Backup your expenses seamlessly",
-                    destination: cloudSyncView
-                )
+                getRow(imageName: "line.3.horizontal.decrease.circle", title: "Updated Filters", subtitle: "More date period options and filters in export")
                 
-                getNavLinkRow(
-                    imageName: "globe.asia.australia.fill",
-                    title: "More timezone format options",
-                    subtitle: "You can now change timezone format on expense screen",
-                    destination: SettingsFormattingView().navigationBarTitleDisplayMode(.large)
-                )
+                getRow(imageName: "chart.pie", title: "Export from Stats", subtitle: "What you see is what you get")
                 
-                getNavLinkRow(
-                    imageName: "at",
-                    title: "Social Networks",
-                    subtitle: "More ways to reach us",
-                    destination: ContactUsView().navigationBarTitleDisplayMode(.large)
-                )
+                getRow(imageName: "clock", title: "Improved Timezone Tracking", subtitle: "Now with DST support and UI improvements")
                 
                 Spacer()
                 
-                Button("Full changelog on GitHub") {
+                Button("Full Changelog on GitHub") {
                     showConfirmationDialog.toggle()
                 }
             }

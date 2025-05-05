@@ -93,16 +93,18 @@ final class CoreDataModel: ObservableObject {
     
     var lastFetchDate: Date? = nil
     
+    var spendingsCount: Int = 0
+    
     var waitingForRatesToBeAvailable: Bool = false
 }
 
 extension CoreDataModel {
     func exportCSV(
         items: [ExportCSVViewModel.Item],
-        dateFrom: Date,
-        dateTo: Date,
+        delimeter: ExportCSVViewModel.Delimeter,
         withReturns: Bool,
-        timeZoneFormat: ExportCSVViewModel.TimeZoneFormat
+        timeZoneFormat: TimeZone.Format,
+        predicate: NSPredicate? = nil
     ) throws -> URL? {
         try context.performAndWait {
             var result = "\(items.map({ $0.name }).reduce("", reduce))\n"
@@ -132,7 +134,7 @@ extension CoreDataModel {
                         spendingRow += quote + spending.wrappedDate.formatted(date: .numeric, time: .shortened) + quote
                     case "timezone":
                         if let timeZoneIdentifier = spending.timeZoneIdentifier, let timeZone = TimeZone(identifier: timeZoneIdentifier) {
-                            spendingRow += quote + timeZoneFormat.formatTimeZone(timeZone) + quote
+                            spendingRow += quote + timeZone.formatted(timeZoneFormat) + quote
                         } else {
                             spendingRow += ""
                         }
@@ -146,7 +148,7 @@ extension CoreDataModel {
                         spendingRow += ""
                     }
                     
-                    spendingRow += ","
+                    spendingRow += delimeter.rawValue
                 }
                 
                 if !spendingRow.isEmpty {
@@ -154,15 +156,17 @@ extension CoreDataModel {
                     result += spendingRow + "\n"
                 }
             }
+            
             // safeSpending.wrappedDate >= firstDate, safeSpending.wrappedDate < secondDate
             let fetchRequest = SpendingEntity.fetchRequest()
             fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \SpendingEntity.date, ascending: false)]
+            if let predicate {
+                fetchRequest.predicate = predicate
+            }
             let fetchedSpendings = try? fetchRequest.execute()
             
             for spending in fetchedSpendings ?? [] {
-                if spending.wrappedDate >= dateFrom && spending.wrappedDate < dateTo {
-                    appendToResult(spending)
-                }
+                appendToResult(spending)
             }
             
             if let tempURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
@@ -186,7 +190,7 @@ extension CoreDataModel {
     
     /// Exports all data in JSON file
     /// - Returns: URL to saved temporary file if save was successful
-    /// - Important: This method is not thread-safe
+    /// - Important: This method is thread-safe
     func exportJSON() throws -> URL? {
         try context.performAndWait {
             do {

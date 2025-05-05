@@ -8,14 +8,21 @@
 import SwiftUI
 
 final class ExportCSVViewModel: ViewModel {
-    @Published var items: [Item]
-    @Published var withReturns: Bool
-    @Published var dateFrom: Date
-    @Published var dateTo: Date
-    @Published var timeZoneFormat: TimeZoneFormat
-    @Published var selectedFieldsCount: Int
-    @Published var isTimeZoneSelected: Bool
-    var cdm: CoreDataModel
+    @Published
+    var items: [Item]
+    @Published
+    var withReturns: Bool
+    @Published
+    var delimeter: Delimeter
+    @Published
+    var timeZoneFormat: TimeZone.Format
+    @Published
+    var selectedFieldsCount: Int
+    @Published
+    var isTimeZoneSelected: Bool
+    
+    let predicate: NSPredicate?
+    let cdm: CoreDataModel
     
     struct Item: Identifiable, Hashable {
         let name: String
@@ -33,48 +40,40 @@ final class ExportCSVViewModel: ViewModel {
         }
     }
     
-    enum TimeZoneFormat: CaseIterable {
-        case gmt, name, identifier
-        
-        var name: String {
-            switch self {
-            case .identifier:
-                NSLocalizedString("timezone-identifier", comment: "Timezone identifier")
-            case .gmt:
-                NSLocalizedString("timezone-offset-from-gmt", comment: "Timezone ofset from GMT")
-            case .name:
-                NSLocalizedString("timezone-name", comment: "Timezone name")
+    enum Delimeter: CaseIterable, RawRepresentable {
+        init?(rawValue: String) {
+            switch rawValue {
+            case ",":
+                self = .comma
+            case ";":
+                self = .semicolon
+            default:
+                return nil
             }
         }
         
-        var example: String {
+        case comma, semicolon
+        
+        var rawValue: String {
             switch self {
-            case .identifier:
-                TimeZone.autoupdatingCurrent.identifier
-            case .gmt:
-                Date().formatted(.dateTime.timeZone(.localizedGMT(.short)))
-            case .name:
-                TimeZone.autoupdatingCurrent.localizedName(for: .standard, locale: .autoupdatingCurrent) ?? "Error"
+            case .comma:
+                ","
+            case .semicolon:
+                ";"
             }
         }
         
-        func formatTimeZone(_ timeZone: TimeZone) -> String {
+        var displayDescription: String {
             switch self {
-            case .identifier:
-                return timeZone.identifier
-            case .gmt:
-                if timeZone.secondsFromGMT() != 0 {
-                    return "GMT\(timeZone.hoursFromGMT().formatted(.number.sign(strategy: .always())))"
-                }
-                
-                return "GMT"
-            case .name:
-                return timeZone.localizedName(for: .standard, locale: .autoupdatingCurrent) ?? timeZone.identifier
+            case .comma:
+                NSLocalizedString("Comma ( , )", comment: "")
+            case .semicolon:
+                NSLocalizedString("Semicolon ( ; )", comment: "")
             }
         }
     }
     
-    init(cdm: CoreDataModel) {
+    init(cdm: CoreDataModel, predicate: NSPredicate? = nil) {
         let items = [
             Item(name: NSLocalizedString("Amount", comment: ""), id: "amount"),
             Item(name: NSLocalizedString("Currency", comment: ""), id: "currency"),
@@ -89,11 +88,11 @@ final class ExportCSVViewModel: ViewModel {
         self.items = items
         self.cdm = cdm
         self.withReturns = true
-        self.dateTo = Calendar.autoupdatingCurrent.startOfDay(for: Date())
-        self.dateFrom = Calendar.autoupdatingCurrent.startOfDay(for: cdm.firstSpendingDate ?? .firstAvailableDate)
-        self.timeZoneFormat = .gmt
+        self.delimeter = .comma
+        self.timeZoneFormat = TimeZone.Format(rawValue: UserDefaults.standard.integer(forKey: UDKey.timeZoneFormat.rawValue))
         self.selectedFieldsCount = items.count(where: { $0.isActive })
         self.isTimeZoneSelected = false
+        self.predicate = predicate
     }
     
     func toggleItemActiveState(_ item: Item) {
@@ -116,14 +115,14 @@ final class ExportCSVViewModel: ViewModel {
         }
     }
     
-    func export() -> URL? {
+    func export(predicate: NSPredicate? = nil) -> URL? {
         do {
             return try cdm.exportCSV(
                 items: items.filter({ $0.isActive }),
-                dateFrom: dateFrom,
-                dateTo: Calendar.autoupdatingCurrent.date(byAdding: .day, value: 1, to: dateTo) ?? dateTo,
+                delimeter: delimeter,
                 withReturns: withReturns,
-                timeZoneFormat: timeZoneFormat
+                timeZoneFormat: timeZoneFormat,
+                predicate: predicate
             )
         } catch {
             ErrorType(error: error).publish()

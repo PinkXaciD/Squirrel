@@ -35,7 +35,7 @@ struct ICloudSyncView: View {
                         .padding(15)
                         .wrappedContentTransition()
                     
-                    Text(kvsManager.iCloudSync ? "Your expenses are syncing to iCloud" : "Sync your expenses to iCloud")
+                    Text(kvsManager.iCloudSync ? "Your Expenses are Syncing to iCloud" : "Sync Your Expenses to iCloud")
                         .font(.title2)
                         .fontWeight(.bold)
                     
@@ -50,7 +50,7 @@ struct ICloudSyncView: View {
             }
             
             Section {
-                Button(kvsManager.iCloudSync ? "Disable iCloud sync" : "Enable iCloud sync") {
+                Button(kvsManager.iCloudSync ? "Disable iCloud Sync" : "Enable iCloud Sync") {
                     kvsManager.iCloudSync.toggle()
                 }
                 .disabled(CloudKitManager.shared.accountStatus != .available)
@@ -68,7 +68,7 @@ struct ICloudSyncView: View {
             
             if !kvsManager.iCloudSync, vm.dataStoredInCloudKit {
                 Section {
-                    Button("Delete data from iCloud", role: .destructive) {
+                    Button("Delete Data from iCloud", role: .destructive) {
                         Task {
                             do {
                                 try await CloudKitManager.shared.dropUserDataFromPublicDatabase()
@@ -87,7 +87,7 @@ struct ICloudSyncView: View {
                 }
             }
         }
-        .navigationTitle("iCloud sync")
+        .navigationTitle("iCloud Sync")
         .navigationBarTitleDisplayMode(.inline)
         .animation(.default, value: kvsManager.iCloudSync)
         .animation(.default, value: vm.dataStoredInCloudKit)

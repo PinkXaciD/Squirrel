@@ -17,16 +17,6 @@
         }
       }
     },
-    "%@ - %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ - %2$@"
-          }
-        }
-      }
-    },
     "%@ = %@" : {
       "localizations" : {
         "en" : {
@@ -47,6 +37,28 @@
         }
       }
     },
+    "%lld Categories" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Category"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "new",
+                  "value" : "%lld Categories"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld characters left" : {
       "localizations" : {
         "en" : {
@@ -62,6 +74,28 @@
                 "stringUnit" : {
                   "state" : "new",
                   "value" : "%lld characters left"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld Currencies" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Currency"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "new",
+                  "value" : "%lld Currencies"
                 }
               }
             }
@@ -90,6 +124,9 @@
           }
         }
       }
+    },
+    "%lld Filters Applied" : {
+
     },
     "%lld returns" : {
       "localizations" : {
@@ -206,6 +243,9 @@
         }
       }
     },
+    "Add New" : {
+
+    },
     "Add new category" : {
       "localizations" : {
         "en" : {
@@ -236,7 +276,10 @@
         }
       }
     },
-    "Always format without timezones" : {
+    "All Time" : {
+
+    },
+    "Always Format Without Timezones" : {
 
     },
     "Amount" : {
@@ -315,6 +358,9 @@
         }
       }
     },
+    "Archived Categories" : {
+
+    },
     "Automatic Dark Mode" : {
 
     },
@@ -329,9 +375,6 @@
       }
     },
     "Back" : {
-
-    },
-    "Backup your expenses seamlessly" : {
 
     },
     "Blue" : {
@@ -369,13 +412,19 @@
     "Clear filters" : {
 
     },
-    "Clear selection" : {
+    "Clear Selection" : {
 
     },
     "Close" : {
 
     },
     "Color and Icon" : {
+
+    },
+    "Columns" : {
+
+    },
+    "Comma ( , )" : {
 
     },
     "Comment" : {
@@ -411,7 +460,10 @@
     "Create an issue on GitHub" : {
 
     },
-    "Create local backup" : {
+    "Create Local Backup" : {
+
+    },
+    "CSV Options" : {
 
     },
     "Currencies" : {
@@ -423,7 +475,7 @@
     "Currency name or ISO Code" : {
 
     },
-    "Current year" : {
+    "Custom" : {
 
     },
     "Dark Mode" : {
@@ -444,7 +496,7 @@
     "Delete" : {
 
     },
-    "Delete data from iCloud" : {
+    "Delete Data from iCloud" : {
 
     },
     "Delete this category?" : {
@@ -456,10 +508,16 @@
     "Delete this return?" : {
 
     },
+    "Delimeter" : {
+
+    },
     "Disable" : {
 
     },
     "Disable iCloud sync" : {
+
+    },
+    "Disable iCloud Sync" : {
 
     },
     "Disabled" : {
@@ -478,6 +536,9 @@
 
     },
     "Enable iCloud sync" : {
+
+    },
+    "Enable iCloud Sync" : {
 
     },
     "Enter name" : {
@@ -510,7 +571,10 @@
     "Export and Backup" : {
 
     },
-    "Export and backup data" : {
+    "Export and Backup Data" : {
+
+    },
+    "Export from Stats" : {
 
     },
     "Export to CSV" : {
@@ -519,7 +583,7 @@
     "Export to JSON" : {
 
     },
-    "Export to spreadsheet" : {
+    "Export to Spreadsheet" : {
 
     },
     "Export with selected parameters" : {
@@ -571,7 +635,7 @@
     "Full changelog" : {
 
     },
-    "Full changelog on GitHub" : {
+    "Full Changelog on GitHub" : {
 
     },
     "Gestures" : {
@@ -580,10 +644,10 @@
     "Ghost" : {
 
     },
-    "Hide app content" : {
+    "Hide App Content" : {
 
     },
-    "Hide app content in app switcher" : {
+    "Hide App Content in App Switcher" : {
 
     },
     "Hide keyboard" : {
@@ -596,6 +660,9 @@
 
     },
     "iCloud sync" : {
+
+    },
+    "iCloud Sync" : {
 
     },
     "iCloud sync turned off" : {
@@ -613,7 +680,7 @@
     "Import from JSON" : {
 
     },
-    "Import local backup" : {
+    "Import Local Backup" : {
 
     },
     "Imported %lld expenses" : {
@@ -638,6 +705,9 @@
         }
       }
     },
+    "Improved Timezone Tracking" : {
+
+    },
     "Indigo" : {
 
     },
@@ -656,13 +726,16 @@
     "Mint" : {
 
     },
+    "Month" : {
+
+    },
     "More about policy changes" : {
 
     },
-    "More timezone format options" : {
+    "More date period options and filters in export" : {
 
     },
-    "More ways to reach us" : {
+    "More Filters" : {
 
     },
     "More..." : {
@@ -737,7 +810,13 @@
     "No URL was found" : {
 
     },
+    "None Applied" : {
+
+    },
     "Nothing to import" : {
+
+    },
+    "Now with DST support and UI improvements" : {
 
     },
     "Off" : {
@@ -761,7 +840,7 @@
     "Other" : {
 
     },
-    "Our website" : {
+    "Our Website" : {
 
     },
     "past-7-days-home" : {
@@ -865,10 +944,19 @@
     "Select a tab from sidebar" : {
 
     },
+    "Select All" : {
+
+    },
     "Select at least one field" : {
 
     },
     "Select currency" : {
+
+    },
+    "Select month" : {
+
+    },
+    "Select year" : {
 
     },
     "Selected as default" : {
@@ -880,7 +968,10 @@
     "Selected category: %@" : {
 
     },
-    "Separate default and display currencies" : {
+    "Semicolon ( ; )" : {
+
+    },
+    "Separate Default and Display Currencies" : {
 
     },
     "Set icon" : {
@@ -889,7 +980,7 @@
     "Settings" : {
 
     },
-    "Show onboarding" : {
+    "Show Onboarding" : {
 
     },
     "Sign in your iCloud account on device or allow Squirrel to use iCloud in settings." : {
@@ -904,6 +995,9 @@
           }
         }
       }
+    },
+    "Single Date" : {
+
     },
     "Skip" : {
 
@@ -944,7 +1038,7 @@
     "Swipe from left to restore, swipe from right to delete" : {
 
     },
-    "Sync your expenses to iCloud" : {
+    "Sync Your Expenses to iCloud" : {
 
     },
     "Tap here to remove selection" : {
@@ -959,19 +1053,33 @@
     "This policy is valid for this version of the app." : {
 
     },
+    "time-timezone-separator-key" : {
+      "comment" : "Stats row with/without timezone time separator",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "/"
+          }
+        }
+      }
+    },
     "Timezone" : {
 
     },
     "Timezone format" : {
 
     },
-    "timezone-identifier" : {
-      "comment" : "Timezone identifier",
+    "Timezone Format" : {
+
+    },
+    "timezone-location" : {
+      "comment" : "Timezone location",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Identifier"
+            "value" : "Approximate location"
           }
         }
       }
@@ -1028,6 +1136,9 @@
         }
       }
     },
+    "Updated Filters" : {
+
+    },
     "Updating rates..." : {
 
     },
@@ -1043,10 +1154,13 @@
     "Welcome to" : {
 
     },
+    "What you see is what you get" : {
+
+    },
     "What's new in %@" : {
 
     },
-    "What's new?" : {
+    "What's New?" : {
 
     },
     "Winterized" : {
@@ -1055,10 +1169,19 @@
     "With returns" : {
 
     },
+    "With Returns" : {
+
+    },
     "Without returns" : {
 
     },
+    "Without Returns" : {
+
+    },
     "Write" : {
+
+    },
+    "Year" : {
 
     },
     "Yes, that's his real name" : {
@@ -1097,9 +1220,6 @@
     "You can choose a currency to be selected by default, different from display currency" : {
 
     },
-    "You can now change timezone format on expense screen" : {
-
-    },
     "You can perform quick actions like editing or deleting via swipe actions or by holding row" : {
 
     },
@@ -1118,7 +1238,7 @@
     "Your data will be stored in your iCloud storage. We don't have access to your data." : {
 
     },
-    "Your expenses are syncing to iCloud" : {
+    "Your Expenses are Syncing to iCloud" : {
 
     },
     "Your favorite categories will be shown here" : {

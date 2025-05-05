@@ -22,6 +22,8 @@ struct StatsView: View {
     @EnvironmentObject
     private var pcvm: PieChartViewModel
     @EnvironmentObject
+    private var cdm: CoreDataModel
+    @EnvironmentObject
     private var fvm: FiltersViewModel
     @EnvironmentObject
     private var listVM: StatsListViewModel
@@ -39,6 +41,8 @@ struct StatsView: View {
     private var spendingToDelete: SpendingEntity? = nil
     @State
     private var presentDeleteDialog: Bool = false
+    @State
+    private var presentExportSheet: Bool = false
     
     @Binding
     var scrollToTop: Int?
@@ -60,11 +64,6 @@ struct StatsView: View {
             IPadStatsView(size: size)
         } else {
             iPhoneStatsView
-#if DEBUG
-                .refreshable {
-                    NotificationCenter.default.post(name: .UpdatePieChart, object: nil)
-                }
-#endif
         }
     }
     
@@ -112,6 +111,16 @@ struct StatsView: View {
             }
         }
         .searchable(text: $searchModel.input, placement: .automatic, prompt: "Search by place or comment")
+#if DEBUG
+        .refreshable {
+            NotificationCenter.default.post(name: .UpdatePieChart, object: nil)
+        }
+#endif
+        .sheet(isPresented: $presentExportSheet) {
+            NavigationView {
+                ExportCSVView(cdm: cdm, predicate: listVM.getPredicate(), showTimePicker: false)
+            }
+        }
         .confirmationDialog("Delete this expense?", isPresented: $presentDeleteDialog, titleVisibility: .visible, presenting: spendingToDelete) { spending in
             Button("Delete", role: .destructive) {
                 DataManager.shared.deleteSpending(with: spending.objectID)
@@ -122,13 +131,29 @@ struct StatsView: View {
         .navigationViewStyle(.stack)
     }
     
-    private var leadingToolbar: ToolbarItem<Void, some View> {
-        ToolbarItem(placement: .topBarLeading) {
+    private var leadingToolbar: ToolbarItemGroup<some View> {
+        ToolbarItemGroup(placement: .topBarLeading) {
             if fvm.applyFilters {
-                Button {
-                    clearFilters()
-                } label: {
-                    Label("Clear filters", systemImage: "xmark")
+                Group {
+                    Button {
+                        clearFilters()
+                    } label: {
+                        Label("Clear filters", systemImage: "xmark")
+                    }
+                    
+                    if !listVM.data.isEmpty {
+                        Button {
+                            presentExportSheet.toggle()
+                        } label: {
+                            Label("Export", systemImage: "xmark")
+                                .opacity(0)
+                        }
+                        .overlay(alignment: .center) {
+                            Image(systemName: "arrow.up.doc")
+                                .font(.subheadline)
+                                .foregroundStyle(.tint)
+                        }
+                    }
                 }
                 .disabled(!fvm.applyFilters)
                 .buttonStyle(.bordered)
@@ -143,11 +168,8 @@ struct StatsView: View {
                 Button {
                     showFilters.toggle()
                 } label: {
-                    HStack(spacing: 5) {
-                        let dates = formatDateForFilterButton(fvm.startFilterDate, fvm.endFilterDate)
-                        Text("\(dates.0) - \(dates.1)")
-                    }
-                    .font(.footnote)
+                    Text(formatDateForFilterButton())
+                        .font(.footnote)
                 }
                 .buttonStyle(BorderedButtonStyle())
                 .hoverEffect()
@@ -164,36 +186,49 @@ struct StatsView: View {
     }
     
     private var filters: some View {
-        FiltersView()
-            .environmentObject(fvm)
-            .environmentObject(pcvm)
-            .environmentObject(privacyMonitor)
+        NavigationView {
+            FiltersView(
+                startDate: max(cdm.firstSpendingDate ?? Date().getFirstDayOfMonth(), Date().getFirstDayOfMonth()),
+                fvm: fvm,
+                spendingsCount: cdm.spendingsCount,
+                firstSpendingDate: cdm.firstSpendingDate ?? .firstAvailableDate,
+                usedCurrencies: cdm.usedCurrencies
+            )
+        }
+        .environmentObject(fvm)
+        .environmentObject(pcvm)
+        .environmentObject(privacyMonitor)
     }
 }
 
 extension StatsView {
-    private func formatDateForFilterButton(_ date1: Date, _ date2: Date) -> (String, String) {
+    private func formatDateForFilterButton() -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale.autoupdatingCurrent
         
-        if Calendar.current.isDate(date1, equalTo: date2, toGranularity: .year) {
-            formatter.setLocalizedDateFormatFromTemplate("Md")
-        } else {
-            formatter.setLocalizedDateFormatFromTemplate("yM")
+        switch fvm.dateType {
+        case .single:
+            formatter.dateStyle = .medium
+            formatter.timeStyle = .none
+            return formatter.string(from: fvm.endFilterDate)
+        case .month:
+            return (DateComponents(calendar: .init(identifier: .gregorian), year: fvm.year, month: fvm.month).date ?? Date()).formatted(.dateTime.month(.abbreviated).year())
+        case .year:
+            return (DateComponents(calendar: .init(identifier: .gregorian), year: fvm.year).date ?? Date()).formatted(.dateTime.year())
+        case .all:
+            return NSLocalizedString("All Time", comment: "")
+        default:
+            if Calendar.current.isDate(fvm.startFilterDate, equalTo: fvm.endFilterDate, toGranularity: .year) {
+                formatter.setLocalizedDateFormatFromTemplate("Md")
+            } else {
+                formatter.setLocalizedDateFormatFromTemplate("yM")
+            }
+            
+            return "\(formatter.string(from: fvm.startFilterDate)) - \(formatter.string(from: fvm.endFilterDate))"
         }
-        
-        return (formatter.string(from: date1), formatter.string(from: date2))
     }
     
     private func clearFilters() {
-        #if DEBUG
-        let startDate: Date = Date()
-        
-        defer {
-            logger.log("\(#fileID) \(#function) completed within \(Date().timeIntervalSince(startDate)) seconds")
-        }
-        #endif
-        
         withAnimation {
             pcvm.selectedCategory = nil
             fvm.clearFilters()
@@ -289,6 +324,8 @@ fileprivate struct IPadStatsView: View {
     @EnvironmentObject
     private var pcvm: PieChartViewModel
     @EnvironmentObject
+    private var cdm: CoreDataModel
+    @EnvironmentObject
     private var fvm: FiltersViewModel
     @EnvironmentObject
     private var privacyMonitor: PrivacyMonitor
@@ -351,7 +388,13 @@ fileprivate struct IPadStatsView: View {
     }
     
     private var filters: some View {
-        FiltersView()
+        FiltersView(
+            startDate: max(cdm.firstSpendingDate ?? Date().getFirstDayOfMonth(), Date().getFirstDayOfMonth()),
+            fvm: fvm,
+            spendingsCount: cdm.spendingsCount,
+            firstSpendingDate: cdm.firstSpendingDate ?? .firstAvailableDate,
+            usedCurrencies: cdm.usedCurrencies
+        )
             .environmentObject(fvm)
             .environmentObject(pcvm)
             .environmentObject(privacyMonitor)
@@ -379,8 +422,7 @@ fileprivate struct IPadStatsView: View {
                     showFilters.toggle()
                 } label: {
                     HStack(spacing: 5) {
-                        let dates = formatDateForFilterButton(fvm.startFilterDate, fvm.endFilterDate)
-                        Text("\(dates.0) - \(dates.1)")
+                        Text(formatDateForFilterButton())
                     }
                     .font(.footnote)
                 }
@@ -398,22 +440,33 @@ fileprivate struct IPadStatsView: View {
         }
     }
     
-    private func formatDateForFilterButton(_ date1: Date, _ date2: Date) -> (String, String) {
+    private func formatDateForFilterButton() -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale.autoupdatingCurrent
         
-        if horizontalSizeClass == .compact {
-            if Calendar.current.isDate(date1, equalTo: date2, toGranularity: .year) {
-                formatter.setLocalizedDateFormatFromTemplate("Md")
-            } else {
-                formatter.setLocalizedDateFormatFromTemplate("yM")
-            }
-        } else {
+        switch fvm.dateType {
+        case .single:
+            formatter.dateStyle = .short
             formatter.timeStyle = .none
-            formatter.dateStyle = .medium
+            return formatter.string(from: fvm.endFilterDate)
+        case .month:
+            return (DateComponents(calendar: .current, month: fvm.month).date ?? Date()).formatted(.dateTime.month(.wide))
+        case .year:
+            return (DateComponents(calendar: .init(identifier: .gregorian), year: fvm.year).date ?? Date()).formatted(.dateTime.year())
+        default:
+            if horizontalSizeClass == .compact {
+                if Calendar.current.isDate(fvm.startFilterDate, equalTo: fvm.endFilterDate, toGranularity: .year) {
+                    formatter.setLocalizedDateFormatFromTemplate("Md")
+                } else {
+                    formatter.setLocalizedDateFormatFromTemplate("yM")
+                }
+            } else {
+                formatter.timeStyle = .none
+                formatter.dateStyle = .medium
+            }
+            
+            return "\(formatter.string(from: fvm.startFilterDate)) - \(formatter.string(from: fvm.endFilterDate))"
         }
-        
-        return (formatter.string(from: date1), formatter.string(from: date2))
     }
     
     private func clearFilters() {

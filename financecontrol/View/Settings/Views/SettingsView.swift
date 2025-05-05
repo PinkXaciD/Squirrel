@@ -14,6 +14,8 @@ struct SettingsView: View {
     private var rvm: RatesViewModel
     @EnvironmentObject
     private var kvsManager: CloudKitKVSManager
+    @EnvironmentObject
+    private var privacyMonitor: PrivacyMonitor
     
     @AppStorage(UDKey.color.rawValue)
     var defaultColor: String = "Orange"
@@ -209,17 +211,17 @@ struct SettingsView: View {
     
     private var privacySection: some View {
         Section {
-            NavigationLink("Hide app content") {
+            NavigationLink("Hide App Content") {
                 List {
                     Section {
-                        Toggle("Hide app content in app switcher", isOn: $privacyScreenIsEnabled)
+                        Toggle("Hide App Content in App Switcher", isOn: $privacyScreenIsEnabled)
                     } header: {
                         BlurContentExample()
                     } footer: {
                         Text("Content will be blurred when you minimize the app")
                     }
                 }
-                .navigationTitle("Hide app content")
+                .navigationTitle("Hide App Content")
                 .navigationBarTitleDisplayMode(.inline)
             }
         } header: {
@@ -231,9 +233,10 @@ struct SettingsView: View {
         Section {
             NavigationLink {
                 ICloudSyncView(cloudSyncWasEnabled: cloudSyncWasEnabled)
+                    .environmentObject(kvsManager) // Crash without
             } label: {
                 HStack {
-                    Text("iCloud sync")
+                    Text("iCloud Sync")
                     
                     Spacer()
                     
@@ -250,8 +253,9 @@ struct SettingsView: View {
                 }
             }
             
-            NavigationLink("Export and backup data") {
+            NavigationLink("Export and Backup Data") {
                 ExportAndBackupView()
+                    .environmentObject(privacyMonitor)
             }
         } header: {
             Text("Export and Backup")

@@ -15,12 +15,12 @@ Available for iOS 15 and later.
 
 ## Main functions:
 - ### Simple and clear charts
-![Charts](README/Screenshots/GitHubCharts_v110.png)
+![Charts](README/Screenshots/GitHubCharts_v121.png)
 
 - ### Track expenses in different currencies with exchange rates updated every hour.
-![Currencies](README/Screenshots/GitHubCurrencies_v110.png)
+![Currencies](README/Screenshots/GitHubCurrencies_v121.png)
 
 - ### Advanced filters and data export
-![Filters and Export](README/Screenshots/GitHubFiltersAndExport_v110.png)
+![Filters and Export](README/Screenshots/GitHubFiltersAndExport_v121.png)
 
 *This code is available under a GPL v3 license. [Learn more.](LICENSE)*
