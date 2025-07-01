@@ -39,11 +39,9 @@ struct WhatsNewView: View {
                 
                 Spacer()
                 
-                getRow(imageName: "line.3.horizontal.decrease.circle", title: "Updated Filters", subtitle: "More date period options and filters in export")
+                getRow(imageName: "tablecells", title: "More CSV Options", subtitle: "You can now change the number formatting")
                 
-                getRow(imageName: "chart.pie", title: "Export from Stats", subtitle: "What you see is what you get")
-                
-                getRow(imageName: "clock", title: "Improved Timezone Tracking", subtitle: "Now with DST support and UI improvements")
+                getRow(imageName: "gearshape.2", title: "Bug Fixes", subtitle: "Small bug fixes in CSV export")
                 
                 Spacer()
                 

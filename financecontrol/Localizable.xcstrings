@@ -380,6 +380,9 @@
     "Blue" : {
 
     },
+    "Bug Fixes" : {
+
+    },
     "Build: %@" : {
 
     },
@@ -487,6 +490,9 @@
     "Dawn of Squipan" : {
 
     },
+    "Decimal Separator" : {
+
+    },
     "Default" : {
 
     },
@@ -508,7 +514,7 @@
     "Delete this return?" : {
 
     },
-    "Delimeter" : {
+    "Delimiter" : {
 
     },
     "Disable" : {
@@ -574,9 +580,6 @@
     "Export and Backup Data" : {
 
     },
-    "Export from Stats" : {
-
-    },
     "Export to CSV" : {
 
     },
@@ -604,6 +607,9 @@
     "Favorite categories" : {
 
     },
+    "File Options" : {
+
+    },
     "Filter" : {
 
     },
@@ -614,6 +620,9 @@
 
     },
     "First Flight" : {
+
+    },
+    "Format Example: %@" : {
 
     },
     "format-without-timezones-description-key" : {
@@ -642,6 +651,9 @@
 
     },
     "Ghost" : {
+
+    },
+    "Grouping Separator" : {
 
     },
     "Hide App Content" : {
@@ -705,9 +717,6 @@
         }
       }
     },
-    "Improved Timezone Tracking" : {
-
-    },
     "Indigo" : {
 
     },
@@ -732,7 +741,7 @@
     "More about policy changes" : {
 
     },
-    "More date period options and filters in export" : {
+    "More CSV Options" : {
 
     },
     "More Filters" : {
@@ -816,7 +825,7 @@
     "Nothing to import" : {
 
     },
-    "Now with DST support and UI improvements" : {
+    "Number Formatting" : {
 
     },
     "Off" : {
@@ -1002,6 +1011,9 @@
     "Skip" : {
 
     },
+    "Small bug fixes in CSV export" : {
+
+    },
     "Social Networks" : {
 
     },
@@ -1136,9 +1148,6 @@
         }
       }
     },
-    "Updated Filters" : {
-
-    },
     "Updating rates..." : {
 
     },
@@ -1152,9 +1161,6 @@
 
     },
     "Welcome to" : {
-
-    },
-    "What you see is what you get" : {
 
     },
     "What's new in %@" : {
@@ -1218,6 +1224,9 @@
 
     },
     "You can choose a currency to be selected by default, different from display currency" : {
+
+    },
+    "You can now change the number formatting" : {
 
     },
     "You can perform quick actions like editing or deleting via swipe actions or by holding row" : {

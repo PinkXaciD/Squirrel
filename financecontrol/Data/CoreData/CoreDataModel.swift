@@ -101,7 +101,9 @@ final class CoreDataModel: ObservableObject {
 extension CoreDataModel {
     func exportCSV(
         items: [ExportCSVViewModel.Item],
-        delimeter: ExportCSVViewModel.Delimeter,
+        delimiter: ExportCSVViewModel.Delimiter,
+        decimalSeparator: ExportCSVViewModel.Separator,
+        groupingSeparator: ExportCSVViewModel.Separator,
         withReturns: Bool,
         timeZoneFormat: TimeZone.Format,
         predicate: NSPredicate? = nil
@@ -109,25 +111,34 @@ extension CoreDataModel {
         try context.performAndWait {
             var result = "\(items.map({ $0.name }).reduce("", reduce))\n"
             
+            let quote = "\""
+            let escapingQuote = "\"\""
+            
             func reduce(_ initialResult: String, _ nextPartialResult: String) -> String {
                 if initialResult != "" {
-                    return initialResult + "," + nextPartialResult
+                    return initialResult + delimiter.rawValue + nextPartialResult
                 }
                 
                 return nextPartialResult
             }
             
+            let formatter = Locale.autoupdatingCurrent.currencyFormatter
+            formatter.numberStyle = .currency
+            formatter.currencyDecimalSeparator = decimalSeparator.rawValue
+            formatter.currencyGroupingSeparator = groupingSeparator.rawValue
+            formatter.currencySymbol = ""
+            formatter.minimumFractionDigits = 2
+            formatter.maximumFractionDigits = 2
+            
             func appendToResult(_ spending: SpendingEntity) {
-                let quote = "\""
-                let escapingQuote = "\"\""
                 var spendingRow = String()
                 
                 for item in items {
                     switch item.id {
                     case "amount":
-                        spendingRow += quote + (Locale.autoupdatingCurrent.currencyNarrowFormat(withReturns ? spending.amountWithReturns : spending.amount, currency: spending.wrappedCurrency) ?? spending.amount.formatted()) + quote
+                        spendingRow += quote + (formatter.string(from: (withReturns ? spending.amountWithReturns : spending.amount) as NSNumber) ?? spending.amount.formatted()) + quote
                     case "amountUSD":
-                        spendingRow += quote + (Locale.autoupdatingCurrent.currencyNarrowFormat(withReturns ? spending.amountUSDWithReturns : spending.amountUSD, currency: "USD") ?? spending.amount.formatted()) + quote
+                        spendingRow += quote + (formatter.string(from: (withReturns ? spending.amountUSDWithReturns : spending.amountUSD) as NSNumber) ?? spending.amountUSD.formatted()) + quote
                     case "currency":
                         spendingRow += spending.wrappedCurrency
                     case "date":
@@ -148,7 +159,7 @@ extension CoreDataModel {
                         spendingRow += ""
                     }
                     
-                    spendingRow += delimeter.rawValue
+                    spendingRow += delimiter.rawValue
                 }
                 
                 if !spendingRow.isEmpty {

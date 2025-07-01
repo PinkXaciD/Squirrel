@@ -209,25 +209,10 @@ struct ExportCSVView: View {
         Section {
             Toggle("Use Amounts with Returns", isOn: $vm.withReturns)
             
-            HStack {
-                Text("Delimeter")
-                
-                Menu {
-                    Picker("Delimeter", selection: $vm.delimeter) {
-                        ForEach(ExportCSVViewModel.Delimeter.allCases, id: \.self) { delimeter in
-                            Text(delimeter.displayDescription)
-                                .tag(delimeter)
-                        }
-                    }
-                } label: {
-                    HStack {
-                        Spacer()
-                        
-                        Text(vm.delimeter.displayDescription)
-                    }
-                }
+            NavigationLink("CSV Options") {
+                CSVOptionsView()
+                    .environmentObject(vm)
             }
-            .animation(.default, value: vm.delimeter)
             
             if vm.isTimeZoneSelected {
                 HStack {

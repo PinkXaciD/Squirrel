@@ -79,6 +79,49 @@ final class FiltersViewModel: ViewModel {
     
     func getPredicate() -> NSPredicate {
         var predicates = [NSPredicate]()
+        let gregorianCalendar = Calendar(identifier: .gregorian)
+        
+        switch dateType {
+        case .year:
+            let components = DateComponents(calendar: gregorianCalendar, year: year, month: 1, day: 1, hour: 0, minute: 0, second: 0, nanosecond: 0)
+            
+            guard let startOfYear = components.date else {
+                return NSPredicate(value: false)
+            }
+            
+            guard let endOfYear = gregorianCalendar.date(byAdding: .year, value: 1, to: startOfYear)?.addingTimeInterval(-1) else {
+                return NSPredicate(value: false)
+            }
+            
+            startFilterDate = max(startOfYear, .firstAvailableDate)
+            endFilterDate = min(endOfYear, Date())
+        case .month:
+            let components = DateComponents(calendar: gregorianCalendar, year: year, month: month, day: 1, hour: 0, minute: 0, second: 0, nanosecond: 0)
+            
+            guard let startOfMonth = components.date else {
+                return NSPredicate(value: false)
+            }
+            
+            guard let endOfMonth = gregorianCalendar.date(byAdding: .month, value: 1, to: startOfMonth)?.addingTimeInterval(-1) else {
+                return NSPredicate(value: false)
+            }
+            
+            startFilterDate = max(startOfMonth, .firstAvailableDate)
+            endFilterDate = min(endOfMonth, Date())
+        case .single:
+            guard let startOfDay = gregorianCalendar.date(bySettingHour: 0, minute: 0, second: 0, of: self.endFilterDate) else {
+                return NSPredicate(value: false)
+            }
+            
+            guard let endOfDay = gregorianCalendar.date(byAdding: .day, value: 1, to: startOfDay)?.addingTimeInterval(-1) else {
+                return NSPredicate(value: false)
+            }
+            
+            startFilterDate = max(startOfDay, .firstAvailableDate)
+            endFilterDate = min(endOfDay, Date())
+        default:
+            _ = 0
+        }
         
         let datePredicate = NSPredicate(format: "date >= %@ AND date < %@", self.startFilterDate as CVarArg, self.endFilterDate as CVarArg)
         predicates.append(datePredicate)

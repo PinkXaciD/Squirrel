@@ -13,7 +13,11 @@ final class ExportCSVViewModel: ViewModel {
     @Published
     var withReturns: Bool
     @Published
-    var delimeter: Delimeter
+    var delimiter: Delimiter
+    @Published
+    var decimalSeparator: Separator
+    @Published
+    var groupingSeparator: Separator
     @Published
     var timeZoneFormat: TimeZone.Format
     @Published
@@ -40,7 +44,7 @@ final class ExportCSVViewModel: ViewModel {
         }
     }
     
-    enum Delimeter: CaseIterable, RawRepresentable {
+    enum Delimiter: CaseIterable, RawRepresentable {
         init?(rawValue: String) {
             switch rawValue {
             case ",":
@@ -73,6 +77,49 @@ final class ExportCSVViewModel: ViewModel {
         }
     }
     
+    enum Separator: CaseIterable, RawRepresentable {
+        case comma, dot, space, none
+        
+        var rawValue: String {
+            switch self {
+            case .comma:
+                ","
+            case .dot:
+                "."
+            case .space:
+                " "
+            case .none:
+                ""
+            }
+        }
+        
+        init?(rawValue: String) {
+            switch rawValue {
+            case ",":
+                self = .comma
+            case ".":
+                self = .dot
+            case " ":
+                self = .space
+            default:
+                self = .none
+            }
+        }
+        
+        var displayDescription: String {
+            switch self {
+            case .comma:
+                "Comma"
+            case .dot:
+                "Dot"
+            case .space:
+                "Space"
+            case .none:
+                "None"
+            }
+        }
+    }
+    
     init(cdm: CoreDataModel, predicate: NSPredicate? = nil) {
         let items = [
             Item(name: NSLocalizedString("Amount", comment: ""), id: "amount"),
@@ -88,7 +135,9 @@ final class ExportCSVViewModel: ViewModel {
         self.items = items
         self.cdm = cdm
         self.withReturns = true
-        self.delimeter = .comma
+        self.delimiter = .comma
+        self.decimalSeparator = .init(rawValue: Locale.autoupdatingCurrent.decimalSeparator ?? ",") ?? .comma
+        self.groupingSeparator = .init(rawValue: Locale.autoupdatingCurrent.groupingSeparator ?? ".") ?? .dot
         self.timeZoneFormat = TimeZone.Format(rawValue: UserDefaults.standard.integer(forKey: UDKey.timeZoneFormat.rawValue))
         self.selectedFieldsCount = items.count(where: { $0.isActive })
         self.isTimeZoneSelected = false
@@ -119,7 +168,9 @@ final class ExportCSVViewModel: ViewModel {
         do {
             return try cdm.exportCSV(
                 items: items.filter({ $0.isActive }),
-                delimeter: delimeter,
+                delimiter: delimiter,
+                decimalSeparator: decimalSeparator,
+                groupingSeparator: groupingSeparator,
                 withReturns: withReturns,
                 timeZoneFormat: timeZoneFormat,
                 predicate: predicate
