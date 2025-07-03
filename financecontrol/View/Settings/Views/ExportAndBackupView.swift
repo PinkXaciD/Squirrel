@@ -63,6 +63,7 @@ struct ExportAndBackupView: View {
                 ExportCSVView(cdm: cdm)
             }
             .environmentObject(privacyMonitor)
+            .accentColor(colorIdentifier(color: tint))
         }
         .navigationTitle("Export and Backup")
         .navigationBarTitleDisplayMode(.inline)

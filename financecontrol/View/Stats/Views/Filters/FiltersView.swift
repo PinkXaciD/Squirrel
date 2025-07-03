@@ -58,9 +58,13 @@ struct FiltersView: View {
                 let startOfMonth = DateComponents(calendar: gregorianCalendar, year: gregorianCalendar.component(.year, from: .now), month: Calendar.current.component(.month, from: .now), day: 1, hour: 0, minute: 0, second: 0, nanosecond: 0).date ?? Date()
                 return (startOfMonth, .now)
             case .month:
-                return (nil, nil)
+                let gregorianCalendar = Calendar(identifier: .gregorian)
+                let startOfMonth = DateComponents(calendar: gregorianCalendar, year: gregorianCalendar.component(.year, from: .now), month: Calendar.current.component(.month, from: .now), day: 1, hour: 0, minute: 0, second: 0, nanosecond: 0).date ?? Date()
+                return (startOfMonth, .now)
             case .year:
-                return (nil, nil)
+                let gregorianCalendar = Calendar(identifier: .gregorian)
+                let startOfMonth = DateComponents(calendar: gregorianCalendar, year: gregorianCalendar.component(.year, from: .now), month: 1, day: 1, hour: 0, minute: 0, second: 0, nanosecond: 0).date ?? Date()
+                return (startOfMonth, .now)
             case .all:
                 return (.firstAvailableDate, .now)
             }
@@ -138,7 +142,6 @@ struct FiltersView: View {
             
             trailingToolbar
         }
-        .accentColor(colorIdentifier(color: tint))
         .onChange(of: startDate) { newValue in
             if dateType == .all, !Calendar.current.isDate(newValue, inSameDayAs: DateType.all.dates.firstDate ?? .distantPast) {
                 dateType = .multi
