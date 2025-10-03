@@ -21,9 +21,11 @@ struct ShadowedCategoriesRow: View {
         categoryInfo
             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                 getDeleteButton(isSwipeAction: true)
+                    .labelStyle(.iconOnly)
             }
             .swipeActions(edge: .leading) {
                 getRestoreButton(isSwipeAction: true)
+                    .labelStyle(.iconOnly)
             }
             .contextMenu {
                 getRestoreButton(isSwipeAction: false)

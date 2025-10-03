@@ -55,6 +55,7 @@ struct HomeView: View {
                             } icon: {
                                 Image(systemName: "ladybug.fill")
                             }
+                            .labelStyle(.iconOnly)
                         }
                     }
                     #endif

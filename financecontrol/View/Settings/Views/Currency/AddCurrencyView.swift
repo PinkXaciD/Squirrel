@@ -47,6 +47,7 @@ struct AddCurrencyView: View {
         .searchable(
             text: $search,
             placement: .navigationBarDrawer(displayMode: .always),
+//            placement: .automatic, iOS 26
             prompt: "Currency name or ISO Code"
         )
         .navigationTitle("Add Currency")

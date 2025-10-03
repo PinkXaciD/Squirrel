@@ -13,6 +13,15 @@ struct OnboardingCurrencyView: View {
     @State private var search: String = ""
     @State private var showButton: Bool = false
     @FocusState private var searchIsFocused: Bool
+    @Namespace var namespace
+    
+    private var topPadding: CGFloat {
+        if #available(iOS 26.0, *) {
+            return 50
+        }
+        
+        return 40
+    }
     
     var body: some View {
         GeometryReader { geometry in
@@ -20,7 +29,7 @@ struct OnboardingCurrencyView: View {
                 header
                     .padding(.horizontal)
                     .padding(.top)
-                    .padding(.top, 40)
+                    .padding(.top, topPadding)
                 
                 List {
                     if search.isEmpty {
@@ -62,7 +71,11 @@ struct OnboardingCurrencyView: View {
         VStack(alignment: .leading, spacing: 15) {
             OnboardingHeaderView(header: "Select currency", description: "You can change the default currency or add more later in settings")
             
-            searchBar
+            if #available(iOS 26.0, *) {
+                newSearchBar
+            } else {
+                searchBar
+            }
         }
     }
     
@@ -103,6 +116,59 @@ struct OnboardingCurrencyView: View {
             RoundedRectangle(cornerRadius: 15)
                 .fill(Color(uiColor: .secondarySystemGroupedBackground))
         }
+    }
+    
+    @available(iOS 26.0, *)
+    private var newSearchBar: some View {
+        GlassEffectContainer {
+            HStack {
+                HStack(spacing: 5) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.body.bold())
+                        .foregroundColor(.secondary.opacity(0.5))
+                        .animation(.default, value: showButton)
+                    
+                    TextField("Search", text: $search)
+                        .focused($searchIsFocused)
+                        .tint(.orange)
+                        .accentColor(.orange)
+                }
+                .padding(9)
+                .padding(.horizontal, 3)
+                .background {
+                    Capsule()
+                        .fill(Color(uiColor: .secondarySystemGroupedBackground))
+                }
+                .glassEffect(.regular, in: Capsule())
+                .glassEffectID("Bar", in: namespace)
+                
+                if showButton {
+                    Button {
+                        search = ""
+                        withAnimation {
+                            searchIsFocused = false
+                        }
+                    } label: {
+                        Label("Cancel", systemImage: "xmark")
+                            .labelStyle(.iconOnly)
+                            .font(.title3)
+                            .foregroundStyle(Color.primary)
+                            .padding(10)
+                            .background {
+                                Circle()
+                                    .fill(Color(uiColor: .secondarySystemGroupedBackground))
+                            }
+                    }
+                    .disabled(!showButton)
+                    .contentShape(.hoverEffect, Circle())
+                    .hoverEffect()
+                    .glassEffect(.regular, in: Circle())
+                    .glassEffectID("Button", in: namespace)
+                    .glassEffectTransition(.materialize)
+                }
+            }
+        }
+        .animation(.default, value: showButton)
     }
     
     private var recommendedSection: some View {

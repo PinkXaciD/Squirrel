@@ -87,9 +87,9 @@ struct ListHorizontalScroll<Data, ID, Selection>: View where Data: RandomAccessC
                                 selection = element[keyPath: selectingValue]
                             }
                             
-                            withAnimation {
-                                scroll.scrollTo(element[keyPath: selectingValue])
-                            }
+//                            withAnimation {
+//                                scroll.scrollTo(element[keyPath: selectingValue], anchor: .leading)
+//                            }
                             
                             action(element)
                         } label: {
@@ -100,29 +100,70 @@ struct ListHorizontalScroll<Data, ID, Selection>: View where Data: RandomAccessC
                             return element.label
                                 .font(isSelected ? .body.bold() : .body)
                                 .foregroundColor(isSelected ? Color(uiColor: .secondarySystemGroupedBackground) : element.foregroundColor)
-                                .padding(.vertical, 6)
-                                .padding(.horizontal, 10)
+                                .addButtonPadding()
                                 .background {
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .fill(isSelected ? element.foregroundColor : Color(uiColor: .secondarySystemGroupedBackground))
+                                    if #unavailable(iOS 26.0){
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .fill(isSelected ? element.foregroundColor : Color(uiColor: .secondarySystemGroupedBackground))
+                                    }
                                 }
                         }
                         .id(element[keyPath: selectingValue])
+//                        .padding(.vertical, 7)
+//                        .padding(.horizontal, 12)
+                        .addLiquidGlass(color: selection == element[keyPath: selectingValue] ? element.foregroundColor : .init(uiColor: .secondarySystemGroupedBackground))
                     }
                 }
+//                .padding(.vertical, 5)
+//                .padding(.horizontal, 9)
             }
             .onAppear {
                 withAnimation {
-                    scroll.scrollTo(selection)
+                    scroll.scrollTo(selection, anchor: .leading)
                 }
             }
             .onChange(of: selection) { newValue in
                 withAnimation {
-                    scroll.scrollTo(newValue)
+                    scroll.scrollTo(newValue, anchor: .center)
                 }
             }
         }
-        .clipShape(RoundedRectangle(cornerRadius: 10))
         .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 0))
+        .clipShape(RoundedRectangle(cornerRadius: Self.listCornerRadius))
+    }
+}
+
+fileprivate extension View {
+    @ViewBuilder
+    func addClipShape() -> some View {
+        if #available(iOS 26, *) {
+            self
+        }
+        
+        self
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+    
+    @ViewBuilder
+    func addLiquidGlass(color: Color) -> some View {
+        if #available(iOS 26, *) {
+            self
+                .padding(.vertical, 7)
+                .padding(.horizontal, 12)
+                .glassEffect(.clear.tint(color))
+        } else {
+            self
+        }
+    }
+    
+    @ViewBuilder
+    func addButtonPadding() -> some View {
+        if #available(iOS 26.0, *) {
+            self
+        } else {
+            self
+                .padding(.vertical, 6)
+                .padding(.horizontal, 10)
+        }
     }
 }

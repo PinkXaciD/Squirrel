@@ -62,7 +62,11 @@ struct OnboardingView: View {
         }
         .overlay(alignment:.topLeading) {
             if screen > 1, showOverlay {
-                backButton
+                if #available(iOS 26.0, *) {
+                    newBackButton
+                } else {
+                    backButton
+                }
             }
         }
         .overlay(alignment: .bottom) {
@@ -127,6 +131,21 @@ struct OnboardingView: View {
         .padding(8)
     }
     
+    @available(iOS 26.0, *)
+    private var newBackButton: some View {
+        Button("Back") {
+            backButtonAction()
+        }
+        .tint(.orange)
+        .accentColor(.orange)
+        .transition(.opacity)
+        .padding(.vertical, 9)
+        .padding(.horizontal, 10)
+        .buttonStyle(.glass)
+        .hoverEffect(.automatic)
+        .padding(12)
+    }
+    
     private var continueButton: some View {
         Button {
             continueButtonAction()
@@ -136,6 +155,7 @@ struct OnboardingView: View {
         .frame(maxHeight: 50)
         .contentShape(.hoverEffect, Capsule())
         .hoverEffect(.automatic)
+        .addLiquidGlass()
     }
     
     private var continueButtonLabel: some View {
@@ -210,6 +230,17 @@ struct OnboardingView: View {
     
     private var screen4: some View {
         OnboardingGesturesTemplateView()
+    }
+}
+
+fileprivate extension View {
+    @ViewBuilder
+    func addLiquidGlass() -> some View {
+        if #available(iOS 26, *) {
+            self.glassEffect(.clear.interactive())
+        } else {
+            self
+        }
     }
 }
 

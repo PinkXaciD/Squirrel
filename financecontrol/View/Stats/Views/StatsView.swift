@@ -140,23 +140,34 @@ struct StatsView: View {
                     } label: {
                         Label("Clear filters", systemImage: "xmark")
                     }
+                    .addFiltersButtonStyle()
                     
                     if !listVM.data.isEmpty {
-                        Button {
-                            presentExportSheet.toggle()
-                        } label: {
-                            Label("Export", systemImage: "xmark")
-                                .opacity(0)
-                        }
-                        .overlay(alignment: .center) {
-                            Image(systemName: "arrow.up.doc")
-                                .font(.subheadline)
-                                .foregroundStyle(.tint)
+                        if #available(iOS 26.0, *) {
+                            Button {
+                                presentExportSheet.toggle()
+                            } label: {
+                                Label("Export", systemImage: "arrow.up.doc")
+                                    .opacity(0)
+                            }
+                            .addFiltersButtonStyle()
+                        } else {
+                            Button {
+                                presentExportSheet.toggle()
+                            } label: {
+                                Label("Export", systemImage: "xmark")
+                                    .opacity(0)
+                            }
+                            .addFiltersButtonStyle()
+                            .overlay(alignment: .center) {
+                                Image(systemName: "arrow.up.doc")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.tint)
+                            }
                         }
                     }
                 }
                 .disabled(!fvm.applyFilters)
-                .buttonStyle(.bordered)
                 .hoverEffect()
             }
         }
@@ -169,9 +180,9 @@ struct StatsView: View {
                     showFilters.toggle()
                 } label: {
                     Text(formatDateForFilterButton())
-                        .font(.footnote)
+//                        .font(.footnote)
                 }
-                .buttonStyle(BorderedButtonStyle())
+                .addFiltersButtonStyle()
                 .hoverEffect()
             } else {
                 Button {
@@ -179,7 +190,7 @@ struct StatsView: View {
                 } label: {
                     Label("Filter", systemImage: "line.3.horizontal.decrease")
                 }
-                .buttonStyle(BorderedButtonStyle())
+                .addFiltersButtonStyle()
                 .hoverEffect()
             }
         }
@@ -198,6 +209,16 @@ struct StatsView: View {
         .environmentObject(fvm)
         .environmentObject(pcvm)
         .environmentObject(privacyMonitor)
+    }
+}
+
+fileprivate extension View {
+    func addFiltersButtonStyle() -> some View {
+        if #available(iOS 26.0, *) {
+            return self.buttonStyle(.automatic)
+        }
+        
+        return self.buttonStyle(.bordered)
     }
 }
 

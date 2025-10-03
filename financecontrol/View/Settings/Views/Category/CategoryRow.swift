@@ -24,9 +24,11 @@ struct CategoryRow: View {
         }
         .swipeActions(edge: .leading) {
             favoriteButton
+                .labelStyle(.iconOnly)
         }
         .swipeActions(edge: .trailing) {
             getDeleteButton(isSwipeAction: true)
+                .labelStyle(.iconOnly)
         }
         .contextMenu {
             favoriteButton

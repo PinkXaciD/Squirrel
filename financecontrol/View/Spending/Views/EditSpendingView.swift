@@ -156,44 +156,62 @@ struct EditSpendingView: View {
     
     private var returnAndDeleteButtons: some View {
         HStack(spacing: 15) {
-            Button {
-                entityToAddReturn = entity
-            } label: {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 10)
-                        .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
+            if #available(iOS 26.0, *) {
+                GlassEffectContainer {
+                    getReturnButton(cornerRadius: 25)
+                        .glassEffect(.clear)
                     
-                    Text(entity.amountWithReturns == 0 ? "Returned" : "Add return")
-                        .padding(10)
-                        .font(.body)
+                    getDeleteButton(cornerRadius: 25)
+                        .glassEffect(.clear)
                 }
+            } else {
+                getReturnButton(cornerRadius: 10)
+                    .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 10))
+                    .hoverEffect()
+                    .padding(.top, 10)
+                
+                getDeleteButton(cornerRadius: 10)
+                    .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 10))
+                    .hoverEffect()
+                    .padding(.top, 10)
             }
-            .foregroundColor(entity.amountWithReturns == 0 ? .secondary : .green)
-            .disabled(entity.amountWithReturns == 0)
-            .frame(maxWidth: .infinity)
-            .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 10))
-            .hoverEffect()
-            .padding(.top, 10)
-            
-            Button(role: .destructive) {
-                confirmationDialogIsPresented.toggle()
-            } label: {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 10)
-                        .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
-                    
-                    Text("Delete")
-                        .padding(10)
-                        .font(.body)
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 10))
-            .hoverEffect()
-            .padding(.top, 10)
         }
         .listRowInsets(.init(top: 15, leading: 0, bottom: 15, trailing: 0))
         .frame(height: 30)
+    }
+    
+    private func getReturnButton(cornerRadius: CGFloat) -> some View {
+        Button {
+            entityToAddReturn = entity
+        } label: {
+            ZStack {
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
+                
+                Text(entity.amountWithReturns == 0 ? "Returned" : "Add return")
+                    .padding(10)
+                    .font(.body)
+            }
+        }
+        .foregroundColor(entity.amountWithReturns == 0 ? .secondary : .green)
+        .disabled(entity.amountWithReturns == 0)
+        .frame(maxWidth: .infinity)
+    }
+    
+    private func getDeleteButton(cornerRadius: CGFloat) -> some View {
+        Button(role: .destructive) {
+            confirmationDialogIsPresented.toggle()
+        } label: {
+            ZStack {
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
+                
+                Text("Delete")
+                    .padding(10)
+                    .font(.body)
+            }
+        }
+        .frame(maxWidth: .infinity)
     }
     
     private var returnsSection: some View {

@@ -54,6 +54,7 @@ struct CategorySelector: View {
             Spacer()
             
             Text(selectedCategory?.name ?? "Select Category")
+                .multilineTextAlignment(.trailing)
         }
         .background {
             Group {
