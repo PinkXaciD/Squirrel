@@ -123,7 +123,7 @@ struct StatsRow: View {
                         }
                         
                         var deleteButtonScale: CGFloat {
-                            min(abs(min(vm.hOffset + 20, 0)) / 80, 1) * 2 - 1
+                            min(abs(min(vm.hOffset + 10, 0)) / 80, 1) * 2 - 1
                         }
                         
                         var returnButtonOpacity: CGFloat {

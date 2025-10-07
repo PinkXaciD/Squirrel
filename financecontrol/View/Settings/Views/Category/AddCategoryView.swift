@@ -29,9 +29,12 @@ struct AddCategoryView: View {
         }
         .navigationTitle("New Category")
         .toolbar {
-            keyboardToolbar
+//            keyboardToolbar
             
             trailingToolbar
+        }
+        .addKeyboardToolbar(showToolbar: isFocused) {
+            clearFocus()
         }
     }
     

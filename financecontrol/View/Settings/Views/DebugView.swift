@@ -280,7 +280,7 @@ struct DebugView: View {
                 
                 Spacer()
                 
-                Text("\(NetworkMonitor.shared.status)")
+                Text("\(NetworkMonitor.shared.status.description)")
                     .foregroundStyle(.secondary)
             }
         } header: {

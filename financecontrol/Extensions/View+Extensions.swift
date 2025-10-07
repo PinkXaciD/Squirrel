@@ -84,6 +84,51 @@ extension View {
         return self
     }
     
+    func addKeyboardToolbar(showToolbar: Bool, _ action: @escaping () -> Void) -> some View {
+        if #available(iOS 26.0, *) {
+            return self
+                .overlay(alignment: .bottomTrailing) {
+                    if showToolbar {
+                        Button(action: action) {
+                            Label("Hide Keyboard", systemImage: "keyboard.chevron.compact.down")
+                                .imageScale(.large)
+                                .labelStyle(.iconOnly)
+                        }
+                        .buttonStyle(.glass)
+                        .padding(.horizontal)
+                        .padding(.vertical, 7)
+                        .transition(.scale.combined(with: .moveFromBottom))
+                    }
+                }
+                .animation(.bouncy, value: showToolbar)
+        }
+        
+        return self
+            .overlay(alignment: .bottomTrailing) {
+                if showToolbar {
+                    Button(action: action) {
+                        Label("Hide Keyboard", systemImage: "keyboard.chevron.compact.down")
+                            .imageScale(.large)
+                            .labelStyle(.iconOnly)
+                    }
+                    .padding(.vertical, 7)
+                    .padding(.horizontal, 9)
+                    .background {
+                        RoundedRectangle(cornerRadius: 5)
+                            .fill(Color(uiColor: .secondarySystemGroupedBackground))
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 5)
+                                    .stroke(.secondary, lineWidth: 1)
+                                    .opacity(0.3)
+                            }
+                    }
+                    .padding()
+                    .transition(.moveFromBottom)
+                }
+            }
+            .animation(.smooth, value: showToolbar)
+    }
+    
     static var listCornerRadius: CGFloat {
         if #available(iOS 26, *) {
             return 25

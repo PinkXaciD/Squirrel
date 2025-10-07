@@ -203,6 +203,7 @@ struct FiltersView: View {
                     endDate = secondDate
                 }
             }
+            .accentColor(colorIdentifier(color: tint))
         }
     }
     

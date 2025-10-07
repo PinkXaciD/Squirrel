@@ -56,9 +56,12 @@ struct CategoryEditSubView: View {
             spendingsSection
         }
         .toolbar {
-            keyboardToolbar
+//            keyboardToolbar
             
             trailingToolbar
+        }
+        .addKeyboardToolbar(showToolbar: nameIsFocused) {
+            clearFocus()
         }
     }
     

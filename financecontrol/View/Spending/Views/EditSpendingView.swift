@@ -63,11 +63,14 @@ struct EditSpendingView: View {
             }
         }
         .toolbar {
-            keyboardToolbar
+//            keyboardToolbar
             
             trailingToolbar
             
             leadingToolbar
+        }
+        .addKeyboardToolbar(showToolbar: focusedField != nil) {
+            clearFocus()
         }
         .confirmationDialog("Delete this expense?", isPresented: $confirmationDialogIsPresented, titleVisibility: .visible) {
             Button("Delete", role: .destructive) {

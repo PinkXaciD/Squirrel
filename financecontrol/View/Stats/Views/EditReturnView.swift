@@ -33,11 +33,14 @@ struct EditReturnView: View {
                 deleteButton
             }
             .toolbar {
-                keyboardToolbar
+//                keyboardToolbar
                 
                 leadingToolbar
                 
                 trailingToolbar
+            }
+            .addKeyboardToolbar(showToolbar: focusedField != nil) {
+                clearFocus()
             }
             .navigationBarTitleDisplayMode(.inline)
             .confirmationDialog("Delete this return?", isPresented: $showConfirmationDialog, titleVisibility: .visible) {

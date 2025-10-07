@@ -59,7 +59,7 @@ struct CustomColorSelector: View {
                     .opacity(colorDescription == colorSelectedDescription ? 1 : 0)
                     .scaleEffect(colorDescription == colorSelectedDescription ? 0.8 : 1)
             }
-            .glassEffect(.regular.interactive(), in: Circle())
+            .glassEffect(.regular, in: Circle())
             .frame(minWidth: 35, maxWidth: 50, minHeight: 35, maxHeight: 50)
     }
     

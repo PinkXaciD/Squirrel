@@ -12,6 +12,8 @@ struct WhatsNewView: View {
     private var dismiss
     @Environment(\.openURL)
     private var openURL
+    @Environment(\.dynamicTypeSize)
+    private var dynamicTypeSize
     
     @AppStorage(UDKey.color.rawValue)
     private var tint: String = "Orange"
@@ -31,7 +33,7 @@ struct WhatsNewView: View {
     var body: some View {
         NavigationView {
             VStack(alignment: .center) {
-                if showSmallHeader {
+                if showSmallHeader || dynamicTypeSize > .xLarge {
                     Spacer()
                     
                     smallHeader
@@ -69,8 +71,6 @@ struct WhatsNewView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
         }
-        .tint(.orange)
-        .accentColor(.orange)
         .confirmationDialog(URL.githubChangelog.absoluteString, isPresented: $showConfirmationDialog, titleVisibility: .visible) {
             Button("Open in Browser") {
                 openURL(URL.githubChangelog)
@@ -82,6 +82,8 @@ struct WhatsNewView: View {
         } message: {
             Text("Full Changelog")
         }
+        .tint(.orange)
+        .accentColor(.orange)
     }
     
     private var smallHeader: some View {
@@ -120,11 +122,15 @@ struct WhatsNewView: View {
         VStack {
             if #available(iOS 26.0, *) {
                 Image(.onboarding)
+                    .resizable()
                     .clipShape(RoundedRectangle(cornerRadius: 30))
+                    .aspectRatio(contentMode: .fit)
                     .glassEffect(.clear.interactive(), in: RoundedRectangle(cornerRadius: 30))
+                    .minimumScaleFactor(0.5)
                 
             } else {
                 Image(.onboarding)
+                    .resizable()
                     .clipShape(RoundedRectangle(cornerRadius: 30))
                     .overlay {
                         RoundedRectangle(cornerRadius: 30)
@@ -132,6 +138,8 @@ struct WhatsNewView: View {
                             .foregroundColor(.primary)
                             .opacity(0.3)
                     }
+                    .aspectRatio(contentMode: .fit)
+                    .minimumScaleFactor(0.5)
             }
             
             Text("What's new in \(Text("Squirrel \(Bundle.main.releaseVersionNumber ?? "")").foregroundColor(.orange))")

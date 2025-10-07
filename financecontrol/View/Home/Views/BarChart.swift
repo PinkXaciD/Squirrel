@@ -16,6 +16,14 @@ struct BarChart: View {
     @Binding var itemSelected: Int
     @Binding var showAverage: Bool
     
+    var cornerRadius: CGFloat {
+        if #available(iOS 26.0, *) {
+            return 10
+        }
+        
+        return 5
+    }
+    
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .bottom) {
@@ -35,9 +43,10 @@ struct BarChart: View {
                                 index: countIndex(data.key),
                                 data: (key: data.key, value: countBarHeight(maxHeight: geometry.size.height - 25, value: data.value)),
                                 isActive: isActive(index: countIndex(data.key)),
-                                maxHeight: geometry.size.height - 25
+                                maxHeight: geometry.size.height - 25,
+                                cornerRadius: cornerRadius
                             )
-                            .clipShape(RoundedRectangle(cornerRadius: 5.01)) // Doesn't work with cornerRadius of 5
+                            .clipShape(RoundedRectangle(cornerRadius: cornerRadius + 0.01)) // Doesn't work with cornerRadius of 5
                             .onTapGesture {
                                 tapActions(index: countIndex(data.key))
                             }

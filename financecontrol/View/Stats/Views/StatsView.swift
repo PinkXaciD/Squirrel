@@ -135,23 +135,31 @@ struct StatsView: View {
         ToolbarItemGroup(placement: .topBarLeading) {
             if fvm.applyFilters {
                 Group {
-                    Button {
-                        clearFilters()
-                    } label: {
-                        Label("Clear filters", systemImage: "xmark")
-                    }
-                    .addFiltersButtonStyle()
-                    
-                    if !listVM.data.isEmpty {
-                        if #available(iOS 26.0, *) {
+                    if #available(iOS 26.0, *) {
+                        Button {
+                            clearFilters()
+                        } label: {
+                            Label("Clear filters", systemImage: "xmark")
+                        }
+                        .addFiltersButtonStyle()
+                        
+                        if !listVM.data.isEmpty {
                             Button {
                                 presentExportSheet.toggle()
                             } label: {
                                 Label("Export", systemImage: "arrow.up.doc")
-                                    .opacity(0)
                             }
                             .addFiltersButtonStyle()
-                        } else {
+                        }
+                    } else {
+                        Button {
+                            clearFilters()
+                        } label: {
+                            Label("Clear filters", systemImage: "xmark")
+                        }
+                        .addFiltersButtonStyle()
+                        
+                        if !listVM.data.isEmpty {
                             Button {
                                 presentExportSheet.toggle()
                             } label: {
@@ -175,23 +183,38 @@ struct StatsView: View {
     
     private var trailingToolbar: ToolbarItemGroup<some View> {
         ToolbarItemGroup(placement: .topBarTrailing) {
-            if fvm.applyFilters {
+            if #available(iOS 26.0, *) {
                 Button {
                     showFilters.toggle()
                 } label: {
-                    Text(formatDateForFilterButton())
-//                        .font(.footnote)
+                    if fvm.applyFilters {
+                        Text(formatDateForFilterButton())
+                    } else {
+                        Label("Filter", systemImage: "line.3.horizontal.decrease")
+                    }
                 }
                 .addFiltersButtonStyle()
                 .hoverEffect()
+                .animation(.default, value: fvm.applyFilters)
             } else {
-                Button {
-                    showFilters.toggle()
-                } label: {
-                    Label("Filter", systemImage: "line.3.horizontal.decrease")
+                if fvm.applyFilters {
+                    Button {
+                        showFilters.toggle()
+                    } label: {
+                        Text(formatDateForFilterButton())
+                            .font(.footnote)
+                    }
+                    .addFiltersButtonStyle()
+                    .hoverEffect()
+                } else {
+                    Button {
+                        showFilters.toggle()
+                    } label: {
+                        Label("Filter", systemImage: "line.3.horizontal.decrease")
+                    }
+                    .addFiltersButtonStyle()
+                    .hoverEffect()
                 }
-                .addFiltersButtonStyle()
-                .hoverEffect()
             }
         }
     }
