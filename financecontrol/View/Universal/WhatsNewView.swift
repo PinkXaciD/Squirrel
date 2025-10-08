@@ -47,7 +47,7 @@ struct WhatsNewView: View {
                 
                 getRow(imageName: "capsule.fill", title: "Liquid Glass", subtitle: "New elements made out of Liguid Glass")
                 
-                getRow(imageName: "play.circle.fill", title: "Updated Animations", subtitle: "Updated new animations to fit the new design")
+                getRow(imageName: "play.circle.fill", title: "Updated Animations", subtitle: "Updated animations to fit the new design")
                 
                 Spacer()
                 
@@ -121,13 +121,40 @@ struct WhatsNewView: View {
     private var largeHeader: some View {
         VStack {
             if #available(iOS 26.0, *) {
-                Image(.onboarding)
-                    .resizable()
-                    .clipShape(RoundedRectangle(cornerRadius: 30))
-                    .aspectRatio(contentMode: .fit)
-                    .glassEffect(.clear.interactive(), in: RoundedRectangle(cornerRadius: 30))
-                    .minimumScaleFactor(0.5)
+                ViewThatFits {
+                    Image(.onboarding)
+                        .clipShape(RoundedRectangle(cornerRadius: 30))
+                        .glassEffect(.clear.interactive(), in: RoundedRectangle(cornerRadius: 30))
+                    
+                    Image(.onboarding)
+                        .resizable()
+                        .clipShape(RoundedRectangle(cornerRadius: 30))
+                        .aspectRatio(contentMode: .fit)
+                        .glassEffect(.clear.interactive(), in: RoundedRectangle(cornerRadius: 30))
+                }
                 
+            } else if #available(iOS 16.0, *) {
+                ViewThatFits {
+                    Image(.onboarding)
+                        .clipShape(RoundedRectangle(cornerRadius: 30))
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 30)
+                                .stroke(lineWidth: 1)
+                                .foregroundColor(.primary)
+                                .opacity(0.3)
+                        }
+                    
+                    Image(.onboarding)
+                        .resizable()
+                        .clipShape(RoundedRectangle(cornerRadius: 30))
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 30)
+                                .stroke(lineWidth: 1)
+                                .foregroundColor(.primary)
+                                .opacity(0.3)
+                        }
+                        .aspectRatio(contentMode: .fit)
+                }
             } else {
                 Image(.onboarding)
                     .resizable()
@@ -139,7 +166,6 @@ struct WhatsNewView: View {
                             .opacity(0.3)
                     }
                     .aspectRatio(contentMode: .fit)
-                    .minimumScaleFactor(0.5)
             }
             
             Text("What's new in \(Text("Squirrel \(Bundle.main.releaseVersionNumber ?? "")").foregroundColor(.orange))")

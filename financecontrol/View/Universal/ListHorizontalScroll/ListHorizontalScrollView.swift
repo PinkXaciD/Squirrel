@@ -87,10 +87,6 @@ struct ListHorizontalScroll<Data, ID, Selection>: View where Data: RandomAccessC
                                 selection = element[keyPath: selectingValue]
                             }
                             
-//                            withAnimation {
-//                                scroll.scrollTo(element[keyPath: selectingValue], anchor: .leading)
-//                            }
-                            
                             action(element)
                         } label: {
                             var isSelected: Bool {
@@ -102,24 +98,18 @@ struct ListHorizontalScroll<Data, ID, Selection>: View where Data: RandomAccessC
                                 .foregroundColor(isSelected ? Color(uiColor: .secondarySystemGroupedBackground) : element.foregroundColor)
                                 .addButtonPadding()
                                 .background {
-                                    if #unavailable(iOS 26.0){
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .fill(isSelected ? element.foregroundColor : Color(uiColor: .secondarySystemGroupedBackground))
-                                    }
+                                    RoundedRectangle(cornerRadius: Self.listCornerRadius)
+                                        .fill(isSelected ? element.foregroundColor : Color(uiColor: .secondarySystemGroupedBackground))
                                 }
                         }
                         .id(element[keyPath: selectingValue])
-//                        .padding(.vertical, 7)
-//                        .padding(.horizontal, 12)
-                        .addLiquidGlass(color: selection == element[keyPath: selectingValue] ? element.foregroundColor : .init(uiColor: .secondarySystemGroupedBackground))
+                        .buttonStyle(.plain)
                     }
                 }
-//                .padding(.vertical, 5)
-//                .padding(.horizontal, 9)
             }
             .onAppear {
                 withAnimation {
-                    scroll.scrollTo(selection, anchor: .leading)
+                    scroll.scrollTo(selection, anchor: .center)
                 }
             }
             .onChange(of: selection) { newValue in
@@ -160,6 +150,8 @@ fileprivate extension View {
     func addButtonPadding() -> some View {
         if #available(iOS 26.0, *) {
             self
+                .padding(.vertical, 8)
+                .padding(.horizontal, 12)
         } else {
             self
                 .padding(.vertical, 6)

@@ -97,7 +97,7 @@ extension View {
                         .buttonStyle(.glass)
                         .padding(.horizontal)
                         .padding(.vertical, 7)
-                        .transition(.scale.combined(with: .moveFromBottom))
+                        .transition(.scale(scale: 0.2).combined(with: .moveFromBottom))
                     }
                 }
                 .animation(.bouncy, value: showToolbar)
@@ -110,20 +110,22 @@ extension View {
                         Label("Hide Keyboard", systemImage: "keyboard.chevron.compact.down")
                             .imageScale(.large)
                             .labelStyle(.iconOnly)
+                            .foregroundStyle(.tint)
                     }
                     .padding(.vertical, 7)
                     .padding(.horizontal, 9)
                     .background {
-                        RoundedRectangle(cornerRadius: 5)
+                        RoundedRectangle(cornerRadius: 7)
                             .fill(Color(uiColor: .secondarySystemGroupedBackground))
                             .overlay {
-                                RoundedRectangle(cornerRadius: 5)
+                                RoundedRectangle(cornerRadius: 7)
                                     .stroke(.secondary, lineWidth: 1)
                                     .opacity(0.3)
                             }
                     }
                     .padding()
                     .transition(.moveFromBottom)
+                    .buttonStyle(.plain)
                 }
             }
             .animation(.smooth, value: showToolbar)

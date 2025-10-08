@@ -56,8 +56,6 @@ struct CategoryEditSubView: View {
             spendingsSection
         }
         .toolbar {
-//            keyboardToolbar
-            
             trailingToolbar
         }
         .addKeyboardToolbar(showToolbar: nameIsFocused) {
@@ -127,12 +125,6 @@ struct CategoryEditSubView: View {
             }
         } header: {
             Text("Expenses")
-        }
-    }
-    
-    private var keyboardToolbar: ToolbarItemGroup<some View> {
-        hideKeyboardToolbar {
-            clearFocus()
         }
     }
     

@@ -86,6 +86,7 @@ struct PieChartLegendRowView: View {
                     .opacity(0.3)
             }
         }
+        .buttonStyle(.plain)
         .glassEffect(.clear.interactive(), in: RoundedRectangle(cornerRadius: 20))
         .tint(Color[category.color])
         .hoverEffect()

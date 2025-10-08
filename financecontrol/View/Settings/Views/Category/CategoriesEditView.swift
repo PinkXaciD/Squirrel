@@ -8,13 +8,40 @@
 import SwiftUI
 
 struct CategoriesEditView: View {
-//    @EnvironmentObject var cdm: CoreDataModel
     @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)], predicate: NSPredicate(format: "isShadowed == false"), animation: .default)
     private var categories: FetchedResults<CategoryEntity>
     @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)], predicate: NSPredicate(format: "isShadowed == true"), animation: .default)
     private var shadowedCategories: FetchedResults<CategoryEntity>
     
     var body: some View {
+        if #available(iOS 26.0, *) {
+            content
+                .toolbar {
+                    ToolbarItem {
+                        shadowedCategoriesToolbarButton
+                    }
+                    
+                    ToolbarSpacer(.fixed)
+
+                    ToolbarItem {
+                        addNewToolbarButton
+                    }
+                }
+        } else {
+            content
+                .toolbar {
+                    ToolbarItem {
+                        shadowedCategoriesToolbarButton
+                    }
+
+                    ToolbarItem {
+                        addNewToolbarButton
+                    }
+                }
+        }
+    }
+    
+    private var content: some View {
         List {
             if !categories.isEmpty {
                 Section {
@@ -37,15 +64,6 @@ struct CategoriesEditView: View {
         }
         .navigationTitle("Categories")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem {
-                shadowedCategoriesToolbarButton
-            }
-
-            ToolbarItem {
-                addNewToolbarButton
-            }
-        }
     }
     
     private var manageCategoriesSection: some View {

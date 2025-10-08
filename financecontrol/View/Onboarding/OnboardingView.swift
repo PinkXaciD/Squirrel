@@ -153,6 +153,7 @@ struct OnboardingView: View {
             continueButtonLabel
         }
         .frame(maxHeight: 50)
+        .buttonStyle(.plain)
         .contentShape(.hoverEffect, Capsule())
         .hoverEffect(.automatic)
         .addLiquidGlass()

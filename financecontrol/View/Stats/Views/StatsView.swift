@@ -63,12 +63,40 @@ struct StatsView: View {
         if UIDevice.current.isIPad {
             IPadStatsView(size: size)
         } else {
-            iPhoneStatsView
+            NavigationView {
+                if #available(iOS 26.0, *) {
+                    iPhoneStatsView
+                        .toolbar {
+                            ToolbarItem(placement: .topBarLeading) {
+                                if fvm.applyFilters {
+                                    clearToolbarButton
+                                }
+                            }
+                            
+                            ToolbarSpacer(.fixed, placement: .topBarLeading)
+                            
+                            ToolbarItem(placement: .topBarLeading) {
+                                if fvm.applyFilters, !listVM.data.isEmpty {
+                                    exportToolbarButton
+                                }
+                            }
+                            
+                            newTrailingToolbar
+                        }
+                } else {
+                    iPhoneStatsView
+                        .toolbar {
+                            leadingToolbar
+                            
+                            trailingToolbar
+                        }
+                }
+            }
         }
     }
     
     private var iPhoneStatsView: some View {
-        NavigationView {
+//        NavigationView {
             ZStack {
                 Color(uiColor: .systemGroupedBackground)
                     .ignoresSafeArea(.all)
@@ -86,11 +114,11 @@ struct StatsView: View {
                             StatsListView(spendingToDelete: $spendingToDelete, presentDeleteDialog: $presentDeleteDialog)
                         }
                         .padding()
-                        .toolbar {
-                            leadingToolbar
-                            
-                            trailingToolbar
-                        }
+//                        .toolbar {
+//                            leadingToolbar
+//                            
+//                            trailingToolbar
+//                        }
                         .sheet(isPresented: $showFilters) {
                             filters
                         }
@@ -109,7 +137,7 @@ struct StatsView: View {
                     }
                 }
             }
-        }
+//        }
         .searchable(text: $searchModel.input, placement: .automatic, prompt: "Search by place or comment")
 #if DEBUG
         .refreshable {
@@ -131,47 +159,53 @@ struct StatsView: View {
         .navigationViewStyle(.stack)
     }
     
-    private var leadingToolbar: ToolbarItemGroup<some View> {
+    @available(iOS 26.0, *)
+    private var clearToolbarButton: some View {
+        Button {
+            clearFilters()
+        } label: {
+            Label("Clear filters", systemImage: "xmark")
+        }
+        .addFiltersButtonStyle()
+        .animation(.default, value: fvm.applyFilters)
+        .hoverEffect()
+    }
+    
+    @available(iOS 26.0, *)
+    private var exportToolbarButton: some View {
+        Button {
+            presentExportSheet.toggle()
+        } label: {
+            Label("Export", systemImage: "arrow.up.doc")
+        }
+        .addFiltersButtonStyle()
+        .animation(.default, value: fvm.applyFilters)
+        .hoverEffect()
+    }
+    
+    private var leadingToolbar: some ToolbarContent {
         ToolbarItemGroup(placement: .topBarLeading) {
             if fvm.applyFilters {
                 Group {
-                    if #available(iOS 26.0, *) {
+                    Button {
+                        clearFilters()
+                    } label: {
+                        Label("Clear filters", systemImage: "xmark")
+                    }
+                    .addFiltersButtonStyle()
+                    
+                    if !listVM.data.isEmpty {
                         Button {
-                            clearFilters()
+                            presentExportSheet.toggle()
                         } label: {
-                            Label("Clear filters", systemImage: "xmark")
+                            Label("Export", systemImage: "xmark")
+                                .opacity(0)
                         }
                         .addFiltersButtonStyle()
-                        
-                        if !listVM.data.isEmpty {
-                            Button {
-                                presentExportSheet.toggle()
-                            } label: {
-                                Label("Export", systemImage: "arrow.up.doc")
-                            }
-                            .addFiltersButtonStyle()
-                        }
-                    } else {
-                        Button {
-                            clearFilters()
-                        } label: {
-                            Label("Clear filters", systemImage: "xmark")
-                        }
-                        .addFiltersButtonStyle()
-                        
-                        if !listVM.data.isEmpty {
-                            Button {
-                                presentExportSheet.toggle()
-                            } label: {
-                                Label("Export", systemImage: "xmark")
-                                    .opacity(0)
-                            }
-                            .addFiltersButtonStyle()
-                            .overlay(alignment: .center) {
-                                Image(systemName: "arrow.up.doc")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.tint)
-                            }
+                        .overlay(alignment: .center) {
+                            Image(systemName: "arrow.up.doc")
+                                .font(.subheadline)
+                                .foregroundStyle(.tint)
                         }
                     }
                 }
@@ -181,40 +215,43 @@ struct StatsView: View {
         }
     }
     
-    private var trailingToolbar: ToolbarItemGroup<some View> {
+    @available(iOS 26.0, *)
+    private var newTrailingToolbar: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            Button {
+                showFilters.toggle()
+            } label: {
+                if fvm.applyFilters {
+                    Text(formatDateForFilterButton())
+                } else {
+                    Label("Filter", systemImage: "line.3.horizontal.decrease")
+                }
+            }
+            .addFiltersButtonStyle()
+            .hoverEffect()
+            .animation(.default, value: fvm.applyFilters)
+        }
+    }
+    
+    private var trailingToolbar: some ToolbarContent {
         ToolbarItemGroup(placement: .topBarTrailing) {
-            if #available(iOS 26.0, *) {
+            if fvm.applyFilters {
                 Button {
                     showFilters.toggle()
                 } label: {
-                    if fvm.applyFilters {
-                        Text(formatDateForFilterButton())
-                    } else {
-                        Label("Filter", systemImage: "line.3.horizontal.decrease")
-                    }
+                    Text(formatDateForFilterButton())
+                        .font(.footnote)
                 }
                 .addFiltersButtonStyle()
                 .hoverEffect()
-                .animation(.default, value: fvm.applyFilters)
             } else {
-                if fvm.applyFilters {
-                    Button {
-                        showFilters.toggle()
-                    } label: {
-                        Text(formatDateForFilterButton())
-                            .font(.footnote)
-                    }
-                    .addFiltersButtonStyle()
-                    .hoverEffect()
-                } else {
-                    Button {
-                        showFilters.toggle()
-                    } label: {
-                        Label("Filter", systemImage: "line.3.horizontal.decrease")
-                    }
-                    .addFiltersButtonStyle()
-                    .hoverEffect()
+                Button {
+                    showFilters.toggle()
+                } label: {
+                    Label("Filter", systemImage: "line.3.horizontal.decrease")
                 }
+                .addFiltersButtonStyle()
+                .hoverEffect()
             }
         }
     }

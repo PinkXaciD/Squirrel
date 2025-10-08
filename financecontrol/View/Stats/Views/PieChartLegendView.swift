@@ -30,11 +30,13 @@ struct PieChartLegendView: View {
         Group {
             if minimize {
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 10) {
-                        content
+                    WrappedGlassEffectContainer {
+                        HStack(spacing: 10) {
+                            content
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 2)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 2)
                 }
                 .font(.system(size: 14))
                 .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 0))
@@ -43,8 +45,10 @@ struct PieChartLegendView: View {
                 }
             } else {
                 HStack(spacing: 0) {
-                    VStack(alignment: .leading, spacing: 10) {
-                        content
+                    WrappedGlassEffectContainer {
+                        VStack(alignment: .leading, spacing: 10) {
+                            content
+                        }
                     }
                     
                     Spacer()
@@ -82,6 +86,20 @@ struct PieChartLegendView: View {
                     PieChartLegendRowView(category: category)
                 }
             }
+        }
+    }
+}
+
+fileprivate struct WrappedGlassEffectContainer<Content>: View where Content: View {
+    let content: () -> Content
+    
+    var body: some View {
+        if #available(iOS 26.0, *) {
+            GlassEffectContainer {
+                content()
+            }
+        } else {
+            content()
         }
     }
 }

@@ -338,25 +338,15 @@ struct SpendingView: View {
     
     private var returnAndDeleteButtons: some View {
         HStack(spacing: 15) {
-            if #available(iOS 26.0, *) {
-                GlassEffectContainer {
-                    getReturnButton(cornerRadius: 25)
-                        .glassEffect(.clear)
-                    
-                    getDeleteButton(cornerRadius: 25)
-                        .glassEffect(.clear)
-                }
-            } else {
-                getReturnButton(cornerRadius: 10)
-                    .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 10))
-                    .hoverEffect()
-                    .padding(.top, 10)
-                
-                getDeleteButton(cornerRadius: 10)
-                    .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 10))
-                    .hoverEffect()
-                    .padding(.top, 10)
-            }
+            getReturnButton(cornerRadius: Self.listCornerRadius)
+                .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: Self.listCornerRadius))
+                .hoverEffect()
+                .padding(.top, 10)
+            
+            getDeleteButton(cornerRadius: Self.listCornerRadius)
+                .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: Self.listCornerRadius))
+                .hoverEffect()
+                .padding(.top, 10)
         }
         .listRowInsets(.init(top: 15, leading: 0, bottom: 15, trailing: 0))
         .frame(height: 30)
@@ -376,6 +366,7 @@ struct SpendingView: View {
             }
         }
         .foregroundColor(entity.amountWithReturns == 0 ? .secondary : .green)
+        .buttonStyle(.plain)
         .disabled(entity.amountWithReturns == 0)
         .frame(maxWidth: .infinity)
     }
@@ -391,8 +382,10 @@ struct SpendingView: View {
                 Text("Delete")
                     .padding(10)
                     .font(.body)
+                    .foregroundColor(.red)
             }
         }
+        .buttonStyle(.plain)
         .frame(maxWidth: .infinity)
     }
     

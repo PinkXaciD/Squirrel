@@ -72,6 +72,7 @@ struct CloudSyncView: View {
         } label: {
             Text(kvsManager.iCloudSync ? "Disable iCloud sync" : "Enable iCloud sync")
                 .font(.body)
+                .foregroundColor(CloudKitManager.shared.accountStatus != .available ? .secondary : .orange)
                 .padding(.horizontal)
                 .padding(.vertical, padding)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -81,6 +82,7 @@ struct CloudSyncView: View {
                 }
         }
         .disabled(CloudKitManager.shared.accountStatus != .available)
+        .buttonStyle(.plain)
         
         if CloudKitManager.shared.accountStatus != .available {
             Text("sign-in-to-icloud-key")

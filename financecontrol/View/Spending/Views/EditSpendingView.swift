@@ -197,6 +197,7 @@ struct EditSpendingView: View {
             }
         }
         .foregroundColor(entity.amountWithReturns == 0 ? .secondary : .green)
+        .buttonStyle(.plain)
         .disabled(entity.amountWithReturns == 0)
         .frame(maxWidth: .infinity)
     }
@@ -212,8 +213,10 @@ struct EditSpendingView: View {
                 Text("Delete")
                     .padding(10)
                     .font(.body)
+                    .foregroundColor(.red)
             }
         }
+        .buttonStyle(.plain)
         .frame(maxWidth: .infinity)
     }
     
