@@ -16,6 +16,14 @@ struct PieChartLegendView: View {
     @Binding
     var selection: Int
     
+    private var verticalPadding: CGFloat {
+        if #available(iOS 26, *) {
+            return 14
+        }
+        
+        return 10
+    }
+    
     var body: some View {
         let data = pcvm.data[(selection >= pcvm.data.count || selection < 0) ? 0 : selection]
         
@@ -35,14 +43,14 @@ struct PieChartLegendView: View {
                             content
                         }
                         .padding(.horizontal, 20)
-                        .padding(.vertical, 2)
+                        .padding(.vertical, verticalPadding)
                     }
                 }
                 .font(.system(size: 14))
-                .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 0))
                 .transaction { transaction in
                     transaction.animation = nil
                 }
+                .transition(.opacity)
             } else {
                 HStack(spacing: 0) {
                     WrappedGlassEffectContainer {
@@ -55,7 +63,7 @@ struct PieChartLegendView: View {
                 }
                 .font(.system(size: 14))
                 .padding(.horizontal, 20)
-                .padding(.vertical, 2)
+                .padding(.vertical, verticalPadding)
                 .transaction { transaction in
                     transaction.animation = nil
                 }

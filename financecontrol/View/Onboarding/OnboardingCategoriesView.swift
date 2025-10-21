@@ -38,6 +38,10 @@ struct OnboardingCategoriesView: View {
                         addSection
                         
                         categoriesSection
+                        
+//                        Button("Add Template Data") {
+//                            cdm.addTemplateData()
+//                        }
                     }
                     .fileImporter(isPresented: $presentImportSheet, allowedContentTypes: [.json]) { result in
                         importJSON(result)

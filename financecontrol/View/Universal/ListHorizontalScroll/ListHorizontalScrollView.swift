@@ -108,12 +108,12 @@ struct ListHorizontalScroll<Data, ID, Selection>: View where Data: RandomAccessC
                 }
             }
             .onAppear {
-                withAnimation {
+                withAnimation(.snappy) {
                     scroll.scrollTo(selection, anchor: .center)
                 }
             }
             .onChange(of: selection) { newValue in
-                withAnimation {
+                withAnimation(.snappy) {
                     scroll.scrollTo(newValue, anchor: .center)
                 }
             }

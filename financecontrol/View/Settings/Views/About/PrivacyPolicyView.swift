@@ -30,46 +30,11 @@ struct PrivacyPolicyView: View {
                         expensesStorageText
                     }
                     
-                    VStack(alignment: .leading) {
-                        Text("This policy is valid for this version of the app.")
-                            .animation(.none, value: showMore)
-                        
-                        if !showMore {
-                            Button("More...") {
-                                withAnimation {
-                                    showMore = true
-                                }
-                            }
-                            .font(.footnote)
-                            .foregroundColor(.accentColor)
-                        }
-                        
-                        
-                        if showMore {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(Color(uiColor: colorScheme == .dark ? .systemGray5 : .systemGray6))
-                                
-                                VStack(alignment: .leading) {
-                                    Text ("More about policy changes")
-                                        .font(.body.bold())
-                                        .padding(.vertical, 5)
-                                    
-                                    Text("We respect your privacy and will not change our stance on tracking or storing data in your control. This clarification is here so that if we add any opt-in features this policy will be updated to reflect that.")
-                                        .font(.subheadline)
-                                }
-                                .padding(.horizontal)
-                            }
-                            #if DEBUG
-                            .onTapGesture {
-                                withAnimation {
-                                    showMore = false
-                                }
-                            }
-                            #endif
-                        }
+                    if #available(iOS 26.0, *) {
+                        newPrivacyPolicyChanges
+                    } else {
+                        oldPrivacyPolicyChanges
                     }
-                    .padding(.vertical, showMore ? 7 : 0)
                 }
                 
                 Section {
@@ -98,6 +63,91 @@ struct PrivacyPolicyView: View {
         }
         .navigationTitle("Privacy Policy")
         .navigationBarTitleDisplayMode(.large)
+    }
+    
+    private var newPrivacyPolicyChanges: some View {
+        VStack(alignment: .leading) {
+            Text("This policy is valid for this version of the app.")
+                .animation(.none, value: showMore)
+            
+            if !showMore {
+                Button("More...") {
+                    withAnimation {
+                        showMore = true
+                    }
+                }
+                .font(.footnote)
+                .foregroundColor(.accentColor)
+            }
+            
+            
+            if showMore {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color(uiColor: colorScheme == .dark ? .systemGray5 : .systemGray6))
+                    
+                    VStack(alignment: .leading) {
+                        Text ("More about policy changes")
+                            .font(.body.bold())
+                            .padding(.bottom, 5)
+                        
+                        Text("We respect your privacy and will not change our stance on tracking or storing data in your control. This clarification is here so that if we add any opt-in features this policy will be updated to reflect that.")
+                            .font(.subheadline)
+                    }
+                    .padding()
+                }
+                #if DEBUG
+                .onTapGesture {
+                    withAnimation {
+                        showMore = false
+                    }
+                }
+                #endif
+            }
+        }
+    }
+    
+    private var oldPrivacyPolicyChanges: some View {
+        VStack(alignment: .leading) {
+            Text("This policy is valid for this version of the app.")
+                .animation(.none, value: showMore)
+            
+            if !showMore {
+                Button("More...") {
+                    withAnimation {
+                        showMore = true
+                    }
+                }
+                .font(.footnote)
+                .foregroundColor(.accentColor)
+            }
+            
+            
+            if showMore {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color(uiColor: colorScheme == .dark ? .systemGray5 : .systemGray6))
+                    
+                    VStack(alignment: .leading) {
+                        Text ("More about policy changes")
+                            .font(.body.bold())
+                            .padding(.vertical, 5)
+                        
+                        Text("We respect your privacy and will not change our stance on tracking or storing data in your control. This clarification is here so that if we add any opt-in features this policy will be updated to reflect that.")
+                            .font(.subheadline)
+                    }
+                    .padding(.horizontal)
+                }
+                #if DEBUG
+                .onTapGesture {
+                    withAnimation {
+                        showMore = false
+                    }
+                }
+                #endif
+            }
+        }
+        .padding(.vertical, showMore ? 7 : 0)
     }
     
     private var expensesStorageText: some View {

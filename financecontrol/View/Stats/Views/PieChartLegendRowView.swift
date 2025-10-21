@@ -70,7 +70,7 @@ struct PieChartLegendRowView: View {
                     .padding(.vertical, 6)
                     .foregroundColor(.white)
                     .background {
-                        RoundedRectangle(cornerRadius: 17)
+                        RoundedRectangle(cornerRadius: 16)
                             .fill(Color[category.color])
                     }
                 
@@ -80,14 +80,9 @@ struct PieChartLegendRowView: View {
             .padding(.vertical, 3)
             .padding(.trailing, 12)
             .padding(.leading, 3)
-            .background {
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color[category.color])
-                    .opacity(0.3)
-            }
         }
         .buttonStyle(.plain)
-        .glassEffect(.clear.interactive(), in: RoundedRectangle(cornerRadius: 20))
+        .glassEffect(.regular.tint(Color[category.color].opacity(0.3)).interactive(), in: RoundedRectangle(cornerRadius: 19))
         .tint(Color[category.color])
         .hoverEffect()
     }

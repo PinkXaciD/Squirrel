@@ -38,15 +38,16 @@ struct PieChartView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 0) {
             chart
                 .frame(height: size * 1.1)
                 .disabled(pcvm.isScrollDisabled)
                 .clipped()
+                .padding(.bottom, padding)
             
             legend
         }
-        .padding(.vertical, padding)
+        .padding(.top, padding)
         .background {
             RoundedRectangle(cornerRadius: Self.listCornerRadius)
                 .foregroundStyle(Color(uiColor: .secondarySystemGroupedBackground))
