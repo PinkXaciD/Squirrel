@@ -72,6 +72,7 @@ struct RatesRowView: View, Identifiable {
 struct CurrencyConvertView: View {
     @EnvironmentObject private var rvm: RatesViewModel
     
+//    @AppStorage("FirstCurrencyConverterWheelValue") private var firstWheelCurrency: String = UserDefaults.defaultCurrency()
     @State private var firstWheelCurrency: String = UserDefaults.defaultCurrency()
     @State private var firstPickerCurrency: String = UserDefaults.defaultCurrency()
     @State private var firstTabSelection: Int = 0
@@ -84,6 +85,7 @@ struct CurrencyConvertView: View {
         return firstWheelCurrency
     }
     
+//    @AppStorage("SecondCurrencyConverterWheelValue") private var secondWheelCurrency: String = UserDefaults.standard.string(forKey: UDKey.defaultSelectedCurrency.rawValue) ?? "USD"
     @State private var secondWheelCurrency: String = UserDefaults.standard.string(forKey: UDKey.defaultSelectedCurrency.rawValue) ?? "USD"
     @State private var secondPickerCurrency: String = UserDefaults.standard.string(forKey: UDKey.defaultSelectedCurrency.rawValue) ?? "USD"
     @State private var secondTabSelection: Int = 0
