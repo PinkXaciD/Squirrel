@@ -12,6 +12,8 @@ struct WhatsNewView: View {
     private var dismiss
     @Environment(\.openURL)
     private var openURL
+    @Environment(\.dynamicTypeSize)
+    private var dynamicTypeSize
     
     @AppStorage(UDKey.color.rawValue)
     private var tint: String = "Orange"
@@ -31,7 +33,9 @@ struct WhatsNewView: View {
     var body: some View {
         NavigationView {
             VStack(alignment: .center) {
-                if showSmallHeader {
+                if showSmallHeader || dynamicTypeSize > .xLarge {
+                    Spacer()
+                    
                     smallHeader
                 } else {
                     largeHeader
@@ -39,11 +43,18 @@ struct WhatsNewView: View {
                 
                 Spacer()
                 
-                getRow(imageName: "tablecells", title: "More CSV Options", subtitle: "You can now change the number formatting")
+                getRow(imageName: "sparkles", title: "New Design", subtitle: "Updated design to match the new iOS 26")
                 
-                getRow(imageName: "gearshape.2", title: "Bug Fixes", subtitle: "Small bug fixes in CSV export")
+                getRow(imageName: "capsule.fill", title: "Liquid Glass", subtitle: "New elements made out of Liguid Glass")
+                
+                getRow(imageName: "play.circle.fill", title: "Updated Animations", subtitle: "Updated animations to fit the new design")
                 
                 Spacer()
+                
+                Text("Some features are only available with iOS 26 and newer")
+                    .foregroundStyle(.secondary)
+                    .font(.footnote)
+                    .padding(.bottom)
                 
                 Button("Full Changelog on GitHub") {
                     showConfirmationDialog.toggle()
@@ -60,34 +71,44 @@ struct WhatsNewView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
         }
-        .tint(.orange)
-        .accentColor(.orange)
-        .confirmationDialog("\(URL.githubChangelog)", isPresented: $showConfirmationDialog, titleVisibility: .visible) {
-            Button("Open in browser") {
+        .confirmationDialog(URL.githubChangelog.absoluteString, isPresented: $showConfirmationDialog, titleVisibility: .visible) {
+            Button("Open in Browser") {
                 openURL(URL.githubChangelog)
             }
             
-            Button("Copy to clipboard") {
+            Button("Copy to Clipboard") {
                 UIPasteboard.general.url = URL.githubChangelog
             }
         } message: {
-            Text("Full changelog")
+            Text("Full Changelog")
         }
+        .tint(.orange)
+        .accentColor(.orange)
     }
     
     private var smallHeader: some View {
         HStack {
-            Image(.onboarding)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 80, height: 80)
-                .clipShape(RoundedRectangle(cornerRadius: 15))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 15)
-                        .stroke(lineWidth: 1)
-                        .foregroundColor(.primary)
-                        .opacity(0.3)
-                }
+            if #available(iOS 26.0, *) {
+                Image(.onboarding)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 80, height: 80)
+                    .clipShape(RoundedRectangle(cornerRadius: 15))
+                    .glassEffect(.clear.interactive(), in: RoundedRectangle(cornerRadius: 15))
+                
+            } else {
+                Image(.onboarding)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 80, height: 80)
+                    .clipShape(RoundedRectangle(cornerRadius: 15))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 15)
+                            .stroke(lineWidth: 1)
+                            .foregroundColor(.primary)
+                            .opacity(0.3)
+                    }
+            }
             
             Text("What's new in \(Text("Squirrel \(Bundle.main.releaseVersionNumber ?? "")").foregroundColor(.orange))")
                 .font(.largeTitle)
@@ -99,14 +120,53 @@ struct WhatsNewView: View {
     
     private var largeHeader: some View {
         VStack {
-            Image(.onboarding)
-                .clipShape(RoundedRectangle(cornerRadius: 30))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 30)
-                        .stroke(lineWidth: 1)
-                        .foregroundColor(.primary)
-                        .opacity(0.3)
+            if #available(iOS 26.0, *) {
+                ViewThatFits {
+                    Image(.onboarding)
+                        .clipShape(RoundedRectangle(cornerRadius: 30))
+                        .glassEffect(.clear.interactive(), in: RoundedRectangle(cornerRadius: 30))
+                    
+                    Image(.onboarding)
+                        .resizable()
+                        .clipShape(RoundedRectangle(cornerRadius: 30))
+                        .aspectRatio(contentMode: .fit)
+                        .glassEffect(.clear.interactive(), in: RoundedRectangle(cornerRadius: 30))
                 }
+                
+            } else if #available(iOS 16.0, *) {
+                ViewThatFits {
+                    Image(.onboarding)
+                        .clipShape(RoundedRectangle(cornerRadius: 30))
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 30)
+                                .stroke(lineWidth: 1)
+                                .foregroundColor(.primary)
+                                .opacity(0.3)
+                        }
+                    
+                    Image(.onboarding)
+                        .resizable()
+                        .clipShape(RoundedRectangle(cornerRadius: 30))
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 30)
+                                .stroke(lineWidth: 1)
+                                .foregroundColor(.primary)
+                                .opacity(0.3)
+                        }
+                        .aspectRatio(contentMode: .fit)
+                }
+            } else {
+                Image(.onboarding)
+                    .resizable()
+                    .clipShape(RoundedRectangle(cornerRadius: 30))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 30)
+                            .stroke(lineWidth: 1)
+                            .foregroundColor(.primary)
+                            .opacity(0.3)
+                    }
+                    .aspectRatio(contentMode: .fit)
+            }
             
             Text("What's new in \(Text("Squirrel \(Bundle.main.releaseVersionNumber ?? "")").foregroundColor(.orange))")
                 .font(.largeTitle)

@@ -37,6 +37,7 @@ struct DefaultCurrencySelectorView: View {
                     .buttonStyle(.plain)
                     .swipeActions(edge: .trailing) {
                         deleteButton(currency)
+                            .labelStyle(.iconOnly)
                     }
                     .contextMenu {
                         deleteButton(currency)

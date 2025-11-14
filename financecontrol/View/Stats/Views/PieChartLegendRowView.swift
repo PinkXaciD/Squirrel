@@ -20,18 +20,16 @@ struct PieChartLegendRowView: View {
     let category: any SuitableForChart
     
     var body: some View {
+        if #available(iOS 26.0, *) {
+            newButton
+        } else {
+            oldButton
+        }
+    }
+    
+    var oldButton: some View {
         Button {
-            if !pcvm.showOther, category.isOther {
-                DispatchQueue.main.async {
-                    pcvm.showOther = true
-                }
-            } else if !category.isPlace, let trueCategory = category as? ChartCategory {
-                if pcvm.selectedCategory == nil {
-                    pcvm.selectedCategory = trueCategory
-                }
-            } else {
-                pcvm.selectedCategory = nil
-            }
+            buttonAction()
         } label: {
             HStack {
                 Text(category.name)
@@ -59,6 +57,49 @@ struct PieChartLegendRowView: View {
         .hoverEffect()
     }
     
+    @available(iOS 26.0, *)
+    private var newButton: some View {
+        Button {
+            buttonAction()
+        } label: {
+            HStack {
+                Text(category.name)
+                    .font(.system(size: 14).bold())
+                    .multilineTextAlignment(.leading)
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 6)
+                    .foregroundColor(.white)
+                    .background {
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color[category.color])
+                    }
+                
+                Text(category.sum.formatted(.currency(code: defaultCurrency)))
+                    .foregroundStyle(Color.primary)
+            }
+            .padding(.vertical, 3)
+            .padding(.trailing, 12)
+            .padding(.leading, 3)
+        }
+        .buttonStyle(.plain)
+        .glassEffect(.regular.tint(Color[category.color].opacity(0.3)).interactive(), in: RoundedRectangle(cornerRadius: 19))
+        .tint(Color[category.color])
+        .hoverEffect()
+    }
+    
+    private func buttonAction() {
+        if !pcvm.showOther, category.isOther {
+            DispatchQueue.main.async {
+                pcvm.showOther = true
+            }
+        } else if !category.isPlace, let trueCategory = category as? ChartCategory {
+            if pcvm.selectedCategory == nil {
+                pcvm.selectedCategory = trueCategory
+            }
+        } else {
+            pcvm.selectedCategory = nil
+        }
+    }
     
     private func addToFilter(_ category: CategoryEntity) {
         if let id = category.id, !fvm.filterCategories.contains(id) {

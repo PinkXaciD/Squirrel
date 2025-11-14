@@ -78,11 +78,12 @@ struct AddSpendingView: View {
 #endif
             }
             .toolbar {
-                keyboardToolbar
-                
                 leadingToolbar
                 
                 trailingToolbar
+            }
+            .addKeyboardToolbar(showToolbar: focusedField != nil) {
+                clearFocus()
             }
             .navigationTitle("Add Expense")
             .navigationBarTitleDisplayMode(.inline)
@@ -136,6 +137,7 @@ struct AddSpendingView: View {
             
             DatePicker("Date", selection: $vm.date, in: .firstAvailableDate...Date.now)
                 .datePickerStyle(.compact)
+                .padding(.vertical, -10)
             
             HStack {
                 Text("Category")

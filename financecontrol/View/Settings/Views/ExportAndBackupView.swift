@@ -74,7 +74,7 @@ struct ExportAndBackupView: View {
             presentExportCSVSheet.toggle()
         } label: {
             buttonLabel(title: "Export to Spreadsheet", subtitle: "Export to CSV", systemImage: "arrow.up.doc.fill")
-                .clipShape(RoundedRectangle(cornerRadius: dynamicTypeSize > .xLarge ? 0 : 15))
+                .clipShape(RoundedRectangle(cornerRadius: dynamicTypeSize > .xLarge ? 0 : Self.listCornerRadius))
                 .overlay {
                     if dynamicTypeSize > .xLarge {
                         VStack {
@@ -122,7 +122,7 @@ struct ExportAndBackupView: View {
             }
             .buttonStyle(.plain)
         }
-        .clipShape(RoundedRectangle(cornerRadius: dynamicTypeSize > .xLarge ? 0 : 15))
+        .clipShape(RoundedRectangle(cornerRadius: dynamicTypeSize > .xLarge ? 0 : Self.listCornerRadius))
         .overlay {
             if dynamicTypeSize > .xLarge {
                 VStack {

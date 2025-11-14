@@ -16,6 +16,14 @@ struct OnboardingCategoriesView: View {
     
     @State private var presentImportSheet: Bool = false
     
+    private var topPadding: CGFloat {
+        if #available(iOS 26.0, *) {
+            return 50
+        }
+        
+        return 40
+    }
+    
     var body: some View {
         GeometryReader { geometry in
             NavigationView {
@@ -23,13 +31,17 @@ struct OnboardingCategoriesView: View {
                     header
                         .padding(.horizontal)
                         .padding(.top)
-                        .padding(.top, 40)
+                        .padding(.top, topPadding)
                         .padding(.bottom, 10)
                     
                     List {
                         addSection
                         
                         categoriesSection
+                        
+//                        Button("Add Template Data") {
+//                            cdm.addTemplateData()
+//                        }
                     }
                     .fileImporter(isPresented: $presentImportSheet, allowedContentTypes: [.json]) { result in
                         importJSON(result)

@@ -198,6 +198,8 @@ struct SettingsView: View {
             }
             
             NavigationLink("Rates", destination: RatesView())
+            
+//            NavigationLink("Currency Converter", destination: CurrencyConvertView())
         }
     }
     
@@ -303,7 +305,7 @@ extension SettingsView {
                 .blur(radius: blur)
             }
             .background {
-                RoundedRectangle(cornerRadius: 15)
+                RoundedRectangle(cornerRadius: Self.listCornerRadius + 5)
                     .fill(Color(uiColor: .secondarySystemGroupedBackground))
                     .shadow(radius: 5)
             }

@@ -95,7 +95,7 @@ struct OtherCurrencySelector: View {
         }
         .navigationTitle("Select currency")
         .navigationBarTitleDisplayMode(.inline)
-        .searchable(text: $search, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search by name or ISO code")
+        .searchable(text: $search, placement: getSearchBarPlacement(), prompt: "Search by name or ISO code")
     }
     
     private func section(_ key: String, _ content: [Currency]) -> some View {
@@ -136,6 +136,14 @@ struct OtherCurrencySelector: View {
             }
         }
         .buttonStyle(PlainButtonStyle())
+    }
+    
+    private func getSearchBarPlacement() -> SearchFieldPlacement {
+        if #available(iOS 26.0, *) {
+            return .automatic
+        }
+        
+        return .navigationBarDrawer(displayMode: .always)
     }
     
     private func searchFunc() -> [String : [Currency]] {

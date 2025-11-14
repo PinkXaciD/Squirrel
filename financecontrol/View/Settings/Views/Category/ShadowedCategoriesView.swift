@@ -13,25 +13,35 @@ struct ShadowedCategoriesView: View {
     let categories: FetchedResults<CategoryEntity>
     
     var body: some View {
-        if !categories.isEmpty {
+        Group {
             List {
-                Section {
-                    ForEach(categories) { category in
-                        ShadowedCategoriesRow(category: category, safeCategory: category.safeObject())
+                if !categories.isEmpty {
+                    Section {
+                        ForEach(categories) { category in
+                            ShadowedCategoriesRow(category: category, safeCategory: category.safeObject())
+                        }
+                    } footer: {
+                        Text("Swipe from left to restore, swipe from right to delete")
                     }
-                } footer: {
-                    Text("Swipe from left to restore, swipe from right to delete")
+                }
+            }
+            .overlay {
+                if categories.isEmpty {
+                    ZStack {
+                        Color(uiColor: .systemGroupedBackground)
+                        
+                        CustomContentUnavailableView(
+                            "No Archived Categories",
+                            imageName: "archivebox.fill",
+                            description: "You can archive categories in settings, they will be hidden from selection when you add new expenses, but all old expenses will be saved."
+                        )
+                    }
+                    .ignoresSafeArea()
                 }
             }
             .navigationTitle("Archived Categories")
-        } else {
-            CustomContentUnavailableView(
-                "No Archived Categories",
-                imageName: "archivebox.fill",
-                description: "You can archive categories in settings, they will be hidden from selection when you add new expenses, but all old expenses will be saved."
-            )
-            .navigationTitle("Archived Categories")
         }
+        .animation(.default, value: categories.count)
     }
 }
 

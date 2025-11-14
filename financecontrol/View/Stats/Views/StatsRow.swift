@@ -38,7 +38,14 @@ struct StatsRow: View {
         rowDragging != nil && rowDragging == data.id
     }
     
-    let buttonWidth: CGFloat = 70
+    let buttonWidth: CGFloat = {
+        if #available(iOS 26.0, *) {
+            return 80
+        }
+        
+        return 70
+    }()
+    
     let leadingTreshhold: CGFloat = ((UIApplication.shared.keyWindow?.bounds.width) ?? 300) * 0.5 - 10
     let trailingTreshhold: CGFloat = ((UIApplication.shared.keyWindow?.bounds.width) ?? 300) * -(2/3) + 10
     
@@ -53,6 +60,26 @@ struct StatsRow: View {
         self._presentDeleteDialog = presentDeleteDialog
     }
     
+    private var listPadding: CGFloat {
+        if #available(iOS 26.0, *) {
+            return 5
+        }
+        
+        return 0
+    }
+    
+    private var cornerRadius: CGFloat {
+        if #available(iOS 26.0, *) {
+            return 25
+        }
+        
+        return 0
+    }
+    
+    private var animation: Animation {
+        .snappy
+    }
+    
     var body: some View {
         button
     }
@@ -61,6 +88,7 @@ struct StatsRow: View {
     private var button: some View {
         Button(action: mainButtonAction) {
             mainButtonLabel
+                .padding(.vertical, listPadding)
         }
         .buttonStyle(ListButtonStyle())
         .transition(.maskFromTheBottomWithOpacity)
@@ -71,35 +99,108 @@ struct StatsRow: View {
             
             deleteButton
         }
+        .cornerRadius(isDragging || vm.showTrailingButtons == data.id || vm.showLeadingButtons == data.id ? cornerRadius : 0)
         .offset(x: offset)
         .background(alignment: .trailing) {
             if isDragging || vm.showTrailingButtons == data.id, vm.hOffset < 0 {
-                HStack(spacing: 0) {
-                    if vm.triggerTrailingAction != self.data.id {
-                        returnButton
-                            .buttonStyle(SwipeButtonStyle(alignment: .trailing))
-                            .transition(.move(edge: .leading))
+                if #available(iOS 26.0, *) {
+                    HStack(spacing: 0) {
+                        var deleteButtonWidth: CGFloat {
+                            if vm.triggerTrailingAction == self.data.id {
+                                let valueAfter = self.vm.hOffset + 170
+                                return abs(-170 + valueAfter * 0.2)
+                            }
+                            
+                            if vm.hOffset < -160 {
+                                return abs(vm.hOffset + 90)
+                            }
+                            
+                            return 70
+                        }
+                        
+                        var returnButtonScale: CGFloat {
+                            min(abs(vm.hOffset + 80) / 80, 1) * 2 - 1
+                        }
+                        
+                        var deleteButtonScale: CGFloat {
+                            min(abs(min(vm.hOffset + 10, 0)) / 80, 1) * 2 - 1
+                        }
+                        
+                        var returnButtonOpacity: CGFloat {
+                            deleteButtonWidth == 70 ? 1 : 0.7
+                        }
+                        
+                        if (vm.hOffset < -80) {
+                            returnButton
+                                .buttonStyle(SwipeButtonStyle(alignment: .trailing, isTriggered: false))
+                                .scaleEffect(x: returnButtonScale, y: returnButtonScale)
+                                .opacity(returnButtonScale)
+                                .animation(.bouncy, value: returnButtonScale)
+                                .frame(maxWidth: 70)
+                                .opacity(returnButtonOpacity)
+                                .animation(.default, value: returnButtonOpacity)
+                                .padding(.horizontal, 5)
+                        }
+                        
+                        deleteButton
+                            .buttonStyle(SwipeButtonStyle(alignment: .trailing, isTriggered: vm.triggerTrailingAction == self.data.id))
+                            .scaleEffect(x: deleteButtonScale, y: deleteButtonScale)
+                            .opacity(deleteButtonScale)
+                            .animation(.bouncy, value: deleteButtonScale)
+                            .frame(maxWidth: deleteButtonWidth)
+                            .padding(.horizontal, 5)
                     }
-                    
-                    deleteButton
-                        .buttonStyle(SwipeButtonStyle(alignment: .trailing))
+                } else {
+                    HStack(spacing: 0) {
+                        if vm.triggerTrailingAction != self.data.id {
+                            returnButton
+                                .buttonStyle(SwipeButtonStyle(alignment: .trailing, isTriggered: true))
+                                .transition(.move(edge: .leading))
+                        }
+                        
+                        deleteButton
+                            .buttonStyle(SwipeButtonStyle(alignment: .trailing, isTriggered: true))
+                    }
+                    .frame(width: abs(offset))
+                    .transition(.move(edge: .trailing))
+                    .clipped()
                 }
-                .frame(width: abs(offset))
-                .transition(.move(edge: .trailing))
-                .clipped()
             }
         }
         .background(alignment: .leading) {
             if isDragging || vm.showLeadingButtons == data.id, vm.hOffset > 0 {
-                editButton
-                    .frame(width: abs(offset), alignment: .trailing)
-                    .transition(.move(edge: .leading))
-                    .buttonStyle(SingleSwipeButtonStyle(alignment: .leading, isActive: vm.triggerLeadingAction == self.data.id))
+                if #available(iOS 26.0, *) {
+                    var editButtonWidth: CGFloat {
+                        if vm.triggerLeadingAction == self.data.id {
+                            let valueAfter = self.vm.hOffset - leadingTreshhold
+                            return abs(leadingTreshhold + valueAfter * 0.2)
+                        }
+                        
+                        return max(buttonWidth, abs(vm.hOffset))
+                    }
+                    
+                    var editButtonScale: CGFloat {
+                        min(abs(max(vm.hOffset, 0)) / 80, 1) * 2 - 1
+                    }
+                    
+                    editButton
+                        .padding(.horizontal, 10)
+                        .frame(width: editButtonWidth)
+                        .scaleEffect(x: editButtonScale, y: editButtonScale)
+                        .opacity(editButtonScale)
+                        .buttonStyle(SingleSwipeButtonStyle(alignment: .leading, isActive: false))
+                        .animation(.bouncy, value: editButtonScale)
+                } else {
+                    editButton
+                        .frame(width: abs(offset), alignment: .trailing)
+                        .transition(.move(edge: .leading))
+                        .buttonStyle(SingleSwipeButtonStyle(alignment: .leading, isActive: vm.triggerLeadingAction == self.data.id))
+                }
             }
         }
-        .animation(.default, value: isDragging)
-        .animation(.default, value: vm.triggerLeadingAction)
-        .animation(.default, value: vm.triggerTrailingAction)
+        .animation(animation, value: isDragging)
+        .animation(animation, value: vm.triggerLeadingAction)
+        .animation(animation, value: vm.triggerTrailingAction)
         .highPriorityGesture(dragGesture)
         .onDisappear {
             withAnimation {
@@ -381,29 +482,58 @@ struct StatsRow: View {
         private var isEnabled
         
         let alignment: Self.Alignment
+        let isTriggered: Bool
         
         func makeBody(configuration: Configuration) -> some View {
-            ZStack(alignment: alignment.trueAligniment) {
-                if isEnabled {
-                    Rectangle()
-                        .fill(.tint)
-                } else {
-                    Rectangle()
-                        .fill(.secondary)
-                }
-                
-                ZStack {
-                    Rectangle()
-                        .fill(.clear)
-                        .frame(width: 70)
+            if #available(iOS 26.0, *) {
+                ZStack(alignment: isTriggered ? alignment.trueAligniment : .center) {
+                    Group {
+                        if isEnabled {
+                            Capsule()
+                                .fill(.tint)
+                        } else {
+                            Capsule()
+                                .fill(.secondary)
+                        }
+                    }
+                    .frame(maxHeight: 50)
                     
-                    configuration.label
-                        .opacity(isEnabled ? 1 : 0.7)
+                    ZStack {
+                        Rectangle()
+                            .fill(.clear)
+                            .frame(maxWidth: 60, maxHeight: 50)
+                        
+                        configuration.label
+                            .opacity(isEnabled ? 1 : 0.7)
+                            .scaleEffect(0.9)
+                    }
+                    .labelStyle(.iconOnly)
+                    .font(.title2)
+                    .foregroundStyle(.white)
                 }
-                .labelStyle(.iconOnly)
-                .font(.title2)
-                .frame(minWidth: .zero, alignment: alignment.trueAligniment)
-                .foregroundStyle(.white)
+            } else {
+                ZStack(alignment: alignment.trueAligniment) {
+                    if isEnabled {
+                        Rectangle()
+                            .fill(.tint)
+                    } else {
+                        Rectangle()
+                            .fill(.secondary)
+                    }
+                    
+                    ZStack {
+                        Rectangle()
+                            .fill(.clear)
+                            .frame(width: 70)
+                        
+                        configuration.label
+                            .opacity(isEnabled ? 1 : 0.7)
+                    }
+                    .labelStyle(.iconOnly)
+                    .font(.title2)
+                    .frame(minWidth: .zero, alignment: alignment.trueAligniment)
+                    .foregroundStyle(.white)
+                }
             }
         }
         
@@ -426,21 +556,41 @@ struct StatsRow: View {
         let isActive: Bool
         
         func makeBody(configuration: Configuration) -> some View {
-            ZStack {
-                Rectangle()
-                    .fill(.tint)
-                
+            if #available(iOS 26.0, *) {
+                ZStack(alignment: .center) {
+                    Capsule()
+                        .fill(.tint)
+                        .frame(maxHeight: 50)
+                    
+                    ZStack {
+                        Rectangle()
+                            .fill(.clear)
+                            .frame(maxWidth: 60, maxHeight: 50)
+                        
+                        configuration.label
+                            .scaleEffect(0.9)
+                    }
+                    .labelStyle(.iconOnly)
+                    .font(.title2)
+                    .foregroundStyle(.white)
+                }
+            } else {
                 ZStack {
                     Rectangle()
-                        .fill(.clear)
-                        .frame(width: 70)
+                        .fill(.tint)
                     
-                    configuration.label
+                    ZStack {
+                        Rectangle()
+                            .fill(.clear)
+                            .frame(width: 70)
+                        
+                        configuration.label
+                    }
+                    .labelStyle(.iconOnly)
+                    .font(.title2)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity, alignment: isActive ? .trailing : .leading)
                 }
-                .labelStyle(.iconOnly)
-                .font(.title2)
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity, alignment: isActive ? .trailing : .leading)
             }
         }
         

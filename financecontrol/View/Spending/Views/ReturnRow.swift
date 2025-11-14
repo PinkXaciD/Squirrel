@@ -41,9 +41,11 @@ struct ReturnRow: View {
         .foregroundColor(.primary)
         .swipeActions(edge: .leading) {
             getEditButton(returnEntity)
+                .labelStyle(.iconOnly)
         }
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             getDeleteButton(returnEntity)
+                .labelStyle(.iconOnly)
         }
         .contextMenu {
             getEditButton(returnEntity)

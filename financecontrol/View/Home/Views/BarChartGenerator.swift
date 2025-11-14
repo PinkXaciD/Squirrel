@@ -36,6 +36,7 @@ struct BarChartGenerator: View {
             }
             .buttonStyle(.plain)
         }
+        .padding(.vertical, -5)
         .onDisappear {
             itemSelected = -1
         }

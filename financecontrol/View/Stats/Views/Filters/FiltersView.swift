@@ -203,6 +203,7 @@ struct FiltersView: View {
                     endDate = secondDate
                 }
             }
+            .accentColor(colorIdentifier(color: tint))
         }
     }
     
@@ -246,9 +247,6 @@ struct FiltersView: View {
                     Spacer()
                     
                     switch withReturns {
-                    case nil:
-                        Text("Disabled")
-                            .foregroundColor(.secondary)
                     case true:
                         Text("With returns")
                             .foregroundColor(.secondary)
@@ -256,7 +254,8 @@ struct FiltersView: View {
                         Text("Without returns")
                             .foregroundColor(.secondary)
                     default:
-                        Text("")
+                        Text("Disabled")
+                            .foregroundColor(.secondary)
                     }
                 }
             }
@@ -407,6 +406,14 @@ struct MonthPicker: View {
     let firstAvailableDate: Date
     let calendar: Calendar
     
+    var cornerRadius: CGFloat {
+        if #available(iOS 26.0, *) {
+            return 20
+        }
+        
+        return 8
+    }
+    
     var body: some View {
         Menu {
             Picker("Select month", selection: $selection){
@@ -424,7 +431,7 @@ struct MonthPicker: View {
                     .padding(.horizontal, 10)
                     .padding(.vertical, 7)
                     .background {
-                        RoundedRectangle(cornerRadius: 8)
+                        RoundedRectangle(cornerRadius: cornerRadius)
                             .foregroundColor(.secondary.opacity(0.15))
                     }
             }
@@ -482,6 +489,14 @@ struct YearPicker: View {
     let firstAvailableDate: Date
     let calendar: Calendar
     
+    var cornerRadius: CGFloat {
+        if #available(iOS 26.0, *) {
+            return 20
+        }
+        
+        return 8
+    }
+    
     var body: some View {
         Menu {
             Picker("Select year", selection: $selection) {
@@ -502,7 +517,7 @@ struct YearPicker: View {
                     .padding(.horizontal, 10)
                     .padding(.vertical, 7)
                     .background {
-                        RoundedRectangle(cornerRadius: 8)
+                        RoundedRectangle(cornerRadius: cornerRadius)
                             .foregroundColor(.secondary.opacity(0.15))
                     }
             }

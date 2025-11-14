@@ -24,6 +24,14 @@ struct StatsListView: View {
     @Binding
     var presentDeleteDialog: Bool
     
+    private var headerFont: Font {
+        if #available(iOS 26.0, *) {
+            return .body.bold()
+        }
+        
+        return .subheadline.bold()
+    }
+    
     var body: some View {
         if !vm.data.isEmpty {
             list
@@ -38,7 +46,7 @@ struct StatsListView: View {
             VStack(alignment: .leading) {
                 dateFormatForList(section.key)
                     .textCase(nil)
-                    .font(.subheadline.bold())
+                    .font(headerFont)
                     .foregroundStyle(.secondary)
                     .padding(.horizontal)
                     .padding(.top)
@@ -53,7 +61,7 @@ struct StatsListView: View {
                         }
                     }
                 }
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .clipShape(RoundedRectangle(cornerRadius: Self.listCornerRadius))
             }
         }
     }

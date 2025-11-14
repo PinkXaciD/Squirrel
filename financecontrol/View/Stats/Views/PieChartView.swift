@@ -29,20 +29,30 @@ struct PieChartView: View {
     @Namespace
     var namespace
     
+    private var padding: CGFloat {
+        if #available(iOS 26, *) {
+            return 14
+        }
+        
+        return 8
+    }
+    
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 0) {
             chart
                 .frame(height: size * 1.1)
                 .disabled(pcvm.isScrollDisabled)
                 .clipped()
+                .padding(.bottom, padding)
             
             legend
         }
-        .padding(.vertical, 8)
+        .padding(.top, padding)
         .background {
-            RoundedRectangle(cornerRadius: 10)
+            RoundedRectangle(cornerRadius: Self.listCornerRadius)
                 .foregroundStyle(Color(uiColor: .secondarySystemGroupedBackground))
         }
+        .clipShape(RoundedRectangle(cornerRadius: Self.listCornerRadius))
         .onChange(of: pcvm.selection) { _ in
             if pcvm.showOther {
                 pcvm.showOther = false

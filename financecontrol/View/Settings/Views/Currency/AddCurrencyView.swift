@@ -37,7 +37,7 @@ struct AddCurrencyView: View {
             .overlay {
                 if searchResult.isEmpty {
                     if search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                        CustomContentUnavailableView("No currencies", imageName: "questionmark", description: "No currencies found. Maybe you added all of them?")
+                        CustomContentUnavailableView("No currencies", imageName: "questionmark", description: "No currencies found. Maybe you have added all of them?")
                     } else {
                         CustomContentUnavailableView.search(search.trimmingCharacters(in: .whitespacesAndNewlines))
                     }
@@ -46,7 +46,8 @@ struct AddCurrencyView: View {
         }
         .searchable(
             text: $search,
-            placement: .navigationBarDrawer(displayMode: .always),
+            placement: getSearchBarPlacement(),
+//            placement: .automatic, iOS 26
             prompt: "Currency name or ISO Code"
         )
         .navigationTitle("Add Currency")
@@ -72,6 +73,14 @@ struct AddCurrencyView: View {
             }
             .filter { !$0.value.isEmpty }
         }
+    }
+    
+    private func getSearchBarPlacement() -> SearchFieldPlacement {
+        if #available(iOS 26.0, *) {
+            return .automatic
+        }
+        
+        return .navigationBarDrawer(displayMode: .always)
     }
 }
 

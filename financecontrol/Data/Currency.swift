@@ -45,7 +45,7 @@ extension Locale {
             if #available(iOS 16, *) {
                 return self.currency?.identifier
             } else {
-                return  self.currencyCode
+                return self.currencyCode
             }
         }()
         

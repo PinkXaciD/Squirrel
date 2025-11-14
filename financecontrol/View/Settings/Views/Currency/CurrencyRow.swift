@@ -37,7 +37,7 @@ struct CurrencyRow: View {
         }
         .background {
             Rectangle()
-                .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
+                .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground).opacity(0.001))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .padding(.vertical, 1) /// Strange behavior without padding

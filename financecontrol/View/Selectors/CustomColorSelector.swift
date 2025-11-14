@@ -22,7 +22,11 @@ struct CustomColorSelector: View {
                 Button {
                     buttonAction(colorDescription)
                 } label: {
-                    buttonLabel(colorDescription)
+                    if #available(iOS 26.0, *) {
+                        newButtonLabel(colorDescription)
+                    } else {
+                        buttonLabel(colorDescription)
+                    }
                 }
                 .buttonStyle(.plain)
                 .contentShape(.hoverEffect, Circle())
@@ -41,6 +45,21 @@ struct CustomColorSelector: View {
                     .opacity(colorDescription == colorSelectedDescription ? 1 : 0)
                     .scaleEffect(colorDescription == colorSelectedDescription ? 0.8 : 1)
             }
+            .frame(minWidth: 35, maxWidth: 50, minHeight: 35, maxHeight: 50)
+    }
+    
+    @available(iOS 26.0, *)
+    private func newButtonLabel(_ colorDescription: String) -> some View {
+        Circle()
+            .fill(colors[colorDescription] ?? .black)
+            .overlay {
+                Circle()
+                    .stroke(lineWidth: colorDescription == colorSelectedDescription ? 3 : 0)
+                    .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
+                    .opacity(colorDescription == colorSelectedDescription ? 1 : 0)
+                    .scaleEffect(colorDescription == colorSelectedDescription ? 0.8 : 1)
+            }
+            .glassEffect(.regular, in: Circle())
             .frame(minWidth: 35, maxWidth: 50, minHeight: 35, maxHeight: 50)
     }
     

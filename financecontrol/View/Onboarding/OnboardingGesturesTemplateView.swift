@@ -11,13 +11,21 @@ struct OnboardingGesturesTemplateView: View {
     @State private var categoryIsFavorite: Bool = false
     @State private var spendingDeleted: Bool = false
     
+    private var topPadding: CGFloat {
+        if #available(iOS 26.0, *) {
+            return 50
+        }
+        
+        return 40
+    }
+    
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
                 header
                     .padding(.horizontal)
                     .padding(.top)
-                    .padding(.top, 40)
+                    .padding(.top, topPadding)
                 
                 List {
                     categorySection
@@ -67,9 +75,11 @@ struct OnboardingGesturesTemplateView: View {
             }
             .swipeActions(edge: .trailing) {
                 archiveButton
+                    .labelStyle(.iconOnly)
             }
             .swipeActions(edge: .leading) {
                 favoriteButton
+                    .labelStyle(.iconOnly)
             }
             .contextMenu {
                 favoriteButton
@@ -130,12 +140,16 @@ struct OnboardingGesturesTemplateView: View {
                 }
             }
             .swipeActions(edge: .trailing) {
-                deleteButton
-                
-                addReturnButton
+                Group {
+                    deleteButton
+                    
+                    addReturnButton
+                }
+                .labelStyle(.iconOnly)
             }
             .swipeActions(edge: .leading) {
                 editButton
+                    .labelStyle(.iconOnly)
             }
             .contextMenu {
                 editButton

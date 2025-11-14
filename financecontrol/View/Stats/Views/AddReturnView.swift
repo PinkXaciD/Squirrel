@@ -29,11 +29,14 @@ struct AddReturnView: View {
                 addFullButton
             }
             .toolbar {
-                keyboardToolbar
+//                keyboardToolbar
                 
                 leadingToolbar
                 
                 trailingToolbar
+            }
+            .addKeyboardToolbar(showToolbar: focusedField != nil) {
+                clearFocus()
             }
             .navigationBarTitleDisplayMode(.inline)
         }

@@ -54,6 +54,7 @@ struct CategorySelector: View {
             Spacer()
             
             Text(selectedCategory?.name ?? "Select Category")
+                .multilineTextAlignment(.trailing)
         }
         .background {
             Group {
@@ -123,7 +124,7 @@ fileprivate struct OtherCategorySelector: View {
                 }
             }
         }
-        .searchable(text: $search, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search by name")
+        .searchable(text: $search, placement: getSearchBarPlacement(), prompt: "Search by name")
         .navigationTitle("Other")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -137,6 +138,14 @@ fileprivate struct OtherCategorySelector: View {
             }
 
         }
+    }
+    
+    private func getSearchBarPlacement() -> SearchFieldPlacement {
+        if #available(iOS 26.0, *) {
+            return .automatic
+        }
+        
+        return .navigationBarDrawer(displayMode: .always)
     }
     
     private func searchFunc(_ searchString: String) -> [CategoryEntity] {

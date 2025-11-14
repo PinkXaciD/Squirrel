@@ -13,6 +13,14 @@ struct OnboardingCloudSyncView: View {
     
     private let showHeader: Bool
     
+    private var topPadding: CGFloat {
+        if #available(iOS 26.0, *) {
+            return 50
+        }
+        
+        return 40
+    }
+    
     init(showHeader: Bool = true) {
         self.showHeader = showHeader
     }
@@ -21,7 +29,7 @@ struct OnboardingCloudSyncView: View {
         VStack(alignment: .leading) {
             if showHeader{
                 OnboardingHeaderView(header: "iCloud sync", description: "You can change this later in settings")
-                    .padding(.top, 40)
+                    .padding(.top, topPadding)
             }
             
             Spacer()
@@ -44,6 +52,14 @@ struct CloudSyncView: View {
     @EnvironmentObject
     private var kvsManager: CloudKitKVSManager
     
+    private var padding: CGFloat {
+        if #available(iOS 26.0, *) {
+            return 16
+        }
+        
+        return 11
+    }
+    
     var body: some View {
         ICloudLogoAnimatedView(isEnabled: kvsManager.iCloudSync)
             .frame(maxWidth: .infinity)
@@ -56,15 +72,17 @@ struct CloudSyncView: View {
         } label: {
             Text(kvsManager.iCloudSync ? "Disable iCloud sync" : "Enable iCloud sync")
                 .font(.body)
+                .foregroundColor(CloudKitManager.shared.accountStatus != .available ? .secondary : .orange)
                 .padding(.horizontal)
-                .padding(.vertical, 11)
+                .padding(.vertical, padding)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background {
-                    RoundedRectangle(cornerRadius: 10)
+                    RoundedRectangle(cornerRadius: Self.listCornerRadius)
                         .fill(Color(uiColor: .secondarySystemGroupedBackground))
                 }
         }
         .disabled(CloudKitManager.shared.accountStatus != .available)
+        .buttonStyle(.plain)
         
         if CloudKitManager.shared.accountStatus != .available {
             Text("sign-in-to-icloud-key")

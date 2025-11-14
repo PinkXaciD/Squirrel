@@ -380,9 +380,6 @@
     "Blue" : {
 
     },
-    "Bug Fixes" : {
-
-    },
     "Build: %@" : {
 
     },
@@ -457,6 +454,9 @@
     "Copy to clipboard" : {
 
     },
+    "Copy to Clipboard" : {
+
+    },
     "Copy username to clipboard" : {
 
     },
@@ -473,6 +473,15 @@
 
     },
     "Currency" : {
+
+    },
+    "Currency 1" : {
+
+    },
+    "Currency 2" : {
+
+    },
+    "Currency convert" : {
 
     },
     "Currency name or ISO Code" : {
@@ -641,7 +650,7 @@
     "From" : {
 
     },
-    "Full changelog" : {
+    "Full Changelog" : {
 
     },
     "Full Changelog on GitHub" : {
@@ -663,6 +672,9 @@
 
     },
     "Hide keyboard" : {
+
+    },
+    "Hide Keyboard" : {
 
     },
     "Historical exchange rates are presented as the stock exchange closed on the requested day" : {
@@ -729,6 +741,9 @@
     "It's probably all LED's nowadays" : {
 
     },
+    "Liquid Glass" : {
+
+    },
     "Minimize" : {
 
     },
@@ -739,9 +754,6 @@
 
     },
     "More about policy changes" : {
-
-    },
-    "More CSV Options" : {
 
     },
     "More Filters" : {
@@ -762,6 +774,12 @@
     "New Category" : {
 
     },
+    "New Design" : {
+
+    },
+    "New elements made out of Liguid Glass" : {
+
+    },
     "No API key was found" : {
 
     },
@@ -780,7 +798,7 @@
     "No currencies" : {
 
     },
-    "No currencies found. Maybe you added all of them?" : {
+    "No currencies found. Maybe you have added all of them?" : {
 
     },
     "No expenses" : {
@@ -840,6 +858,9 @@
     "Open in browser" : {
 
     },
+    "Open in Browser" : {
+
+    },
     "Optional" : {
 
     },
@@ -847,6 +868,9 @@
 
     },
     "Other" : {
+
+    },
+    "Other Currencies" : {
 
     },
     "Our Website" : {
@@ -1011,9 +1035,6 @@
     "Skip" : {
 
     },
-    "Small bug fixes in CSV export" : {
-
-    },
     "Social Networks" : {
 
     },
@@ -1021,6 +1042,9 @@
 
     },
     "Some expense" : {
+
+    },
+    "Some features are only available with iOS 26 and newer" : {
 
     },
     "Some place" : {
@@ -1047,7 +1071,13 @@
     "Success" : {
 
     },
+    "Swap" : {
+
+    },
     "Swipe from left to restore, swipe from right to delete" : {
+
+    },
+    "Switch" : {
 
     },
     "Sync Your Expenses to iCloud" : {
@@ -1148,6 +1178,15 @@
         }
       }
     },
+    "Updated Animations" : {
+
+    },
+    "Updated animations to fit the new design" : {
+
+    },
+    "Updated design to match the new iOS 26" : {
+
+    },
     "Updating rates..." : {
 
     },
@@ -1226,9 +1265,6 @@
     "You can choose a currency to be selected by default, different from display currency" : {
 
     },
-    "You can now change the number formatting" : {
-
-    },
     "You can perform quick actions like editing or deleting via swipe actions or by holding row" : {
 
     },
@@ -1239,6 +1275,9 @@
 
     },
     "You will be able to delete your data after restarting the app" : {
+
+    },
+    "Your Currencies" : {
 
     },
     "Your data is stored in your iCloud storage. We don't have access to your data." : {

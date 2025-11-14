@@ -63,6 +63,81 @@ extension View {
         return self
             .modifier(DynamicTypeListStylingViewModifier())
     }
+    
+    func fixWheelPicker() -> some View {
+        if #available(iOS 16.0, *) {
+            return self
+        }
+        
+        return self
+            .frame(minWidth: .zero)
+            .compositingGroup()
+            .clipped()
+    }
+    
+    func contentTransitionNumericText() -> some View {
+        if #available(iOS 16.0, *) {
+            return self
+                .contentTransition(.numericText())
+        }
+        
+        return self
+    }
+    
+    func addKeyboardToolbar(showToolbar: Bool, _ action: @escaping () -> Void) -> some View {
+        if #available(iOS 26.0, *) {
+            return self
+                .overlay(alignment: .bottomTrailing) {
+                    if showToolbar {
+                        Button(action: action) {
+                            Label("Hide Keyboard", systemImage: "keyboard.chevron.compact.down")
+                                .imageScale(.large)
+                                .labelStyle(.iconOnly)
+                        }
+                        .buttonStyle(.glass)
+                        .padding(.horizontal)
+                        .padding(.vertical, 7)
+                        .transition(.scale(scale: 0.2).combined(with: .moveFromBottom))
+                    }
+                }
+                .animation(.bouncy, value: showToolbar)
+        }
+        
+        return self
+            .overlay(alignment: .bottomTrailing) {
+                if showToolbar {
+                    Button(action: action) {
+                        Label("Hide Keyboard", systemImage: "keyboard.chevron.compact.down")
+                            .imageScale(.large)
+                            .labelStyle(.iconOnly)
+                            .foregroundStyle(.tint)
+                    }
+                    .padding(.vertical, 7)
+                    .padding(.horizontal, 9)
+                    .background {
+                        RoundedRectangle(cornerRadius: 7)
+                            .fill(Color(uiColor: .secondarySystemGroupedBackground))
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 7)
+                                    .stroke(.secondary, lineWidth: 1)
+                                    .opacity(0.3)
+                            }
+                    }
+                    .padding()
+                    .transition(.moveFromBottom)
+                    .buttonStyle(.plain)
+                }
+            }
+            .animation(.smooth, value: showToolbar)
+    }
+    
+    static var listCornerRadius: CGFloat {
+        if #available(iOS 26, *) {
+            return 25
+        }
+        
+        return 10
+    }
 }
 
 extension Text {
@@ -112,28 +187,38 @@ fileprivate struct SpendingPlaceTextFieldStyleModifier: ViewModifier {
         content
             .font(.title2.bold())
             .multilineTextAlignment(.center)
+            .padding(.horizontal, Content.listCornerRadius - 10)
             .overlay(overlay)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .clipShape(RoundedRectangle(cornerRadius: Content.listCornerRadius))
     }
     
     private var overlay: some View {
-        RoundedRectangle(cornerRadius: 10)
+        RoundedRectangle(cornerRadius: Content.listCornerRadius)
             .stroke(Color(uiColor: UIColor.secondarySystemGroupedBackground), lineWidth: 1)
     }
 }
 
 fileprivate struct SpendingAmountTextFieldStyleModifier: ViewModifier {
+    private var cornerRadius: CGFloat {
+        if #available(iOS 26.0, *) {
+            return 25
+        }
+        
+        return 10
+    }
+    
     func body(content: Content) -> some View {
         content
             .font(.system(.largeTitle, design: .rounded).bold())
             .multilineTextAlignment(.center)
+            .padding(.horizontal, cornerRadius - 10)
             .overlay(overlay)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
             .keyboardType(.decimalPad)
     }
     
     private var overlay: some View {
-        RoundedRectangle(cornerRadius: 10)
+        RoundedRectangle(cornerRadius: cornerRadius)
             .stroke(Color(uiColor: UIColor.secondarySystemGroupedBackground), lineWidth: 1)
     }
 }
