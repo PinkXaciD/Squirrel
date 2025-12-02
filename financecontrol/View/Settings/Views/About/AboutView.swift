@@ -22,6 +22,14 @@ struct AboutView: View {
     @State
     private var showWhatsNew: Bool = false
     
+    private var iconCornerRadius: CGFloat {
+        if #available(iOS 26.0, *) {
+            return 16.5
+        }
+        
+        return 15
+    }
+    
     var body: some View {
         List {
             aboutSection
@@ -73,7 +81,7 @@ struct AboutView: View {
             let appName = Bundle.main.displayName ?? "Squirrel"
             
             Image(imageName, bundle: .main)
-                .cornerRadius(15)
+                .cornerRadius(iconCornerRadius)
                 .overlay { iconOverlay }
             
             Text("\(appName), version \(version)")
@@ -92,7 +100,7 @@ struct AboutView: View {
     }
     
     private var iconOverlay: some View {
-        RoundedRectangle(cornerRadius: 15)
+        RoundedRectangle(cornerRadius: iconCornerRadius)
             .stroke(lineWidth: 1)
             .foregroundColor(.primary)
             .opacity(0.3)

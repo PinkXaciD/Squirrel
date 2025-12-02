@@ -96,48 +96,41 @@ struct StatsView: View {
     }
     
     private var iPhoneStatsView: some View {
-//        NavigationView {
-            ZStack {
-                Color(uiColor: .systemGroupedBackground)
-                    .ignoresSafeArea(.all)
-                
-                ScrollViewReader { scroll in
-                    ScrollView (.vertical) {
-                        LazyVStack {
-                            if !isSearching, searchModel.input.isEmpty {
-                                VStack {
-                                    PieChartView(size: size, showMinimizeButton: true)
-                                }
-                                .id(0)
+        ZStack {
+            Color(uiColor: .systemGroupedBackground)
+                .ignoresSafeArea(.all)
+            
+            ScrollViewReader { scroll in
+                ScrollView (.vertical) {
+                    LazyVStack {
+                        if !isSearching, searchModel.input.isEmpty {
+                            VStack {
+                                PieChartView(size: size, showMinimizeButton: true)
                             }
-                            
-                            StatsListView(spendingToDelete: $spendingToDelete, presentDeleteDialog: $presentDeleteDialog)
+                            .id(0)
                         }
-                        .padding()
-//                        .toolbar {
-//                            leadingToolbar
-//                            
-//                            trailingToolbar
-//                        }
-                        .sheet(isPresented: $showFilters) {
-                            filters
+                        
+                        StatsListView(spendingToDelete: $spendingToDelete, presentDeleteDialog: $presentDeleteDialog)
+                    }
+                    .padding()
+                    .sheet(isPresented: $showFilters) {
+                        filters
+                    }
+                    .navigationTitle("Stats")
+                    .onChange(of: scrollToTop) { value in
+                        guard value == 1 else {
+                            return
                         }
-                        .navigationTitle("Stats")
-                        .onChange(of: scrollToTop) { value in
-                            guard value == 1 else {
-                                return
-                            }
-                            
-                            withAnimation {
-                                scroll.scrollTo(0, anchor: .bottom)
-                            }
-                            
-                            self.scrollToTop = nil
+                        
+                        withAnimation {
+                            scroll.scrollTo(0, anchor: .bottom)
                         }
+                        
+                        self.scrollToTop = nil
                     }
                 }
             }
-//        }
+        }
         .searchable(text: $searchModel.input, placement: .automatic, prompt: "Search by place or comment")
 #if DEBUG
         .refreshable {

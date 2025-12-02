@@ -19,6 +19,16 @@ struct PieChartLegendRowView: View {
     
     let category: any SuitableForChart
     
+    @ScaledMetric
+    private var categoryNameSize: CGFloat = 14
+    @ScaledMetric
+    private var categorySumSize: CGFloat = 14
+    
+    @available(iOS 26.0, *)
+    private var glass: Glass {
+        .regular.tint(Color[category.color].opacity(0.3)).interactive()
+    }
+    
     var body: some View {
         if #available(iOS 26.0, *) {
             newButton
@@ -33,7 +43,7 @@ struct PieChartLegendRowView: View {
         } label: {
             HStack {
                 Text(category.name)
-                    .font(.system(size: 14).bold())
+                    .font(.system(size: categoryNameSize, weight: .semibold))
                     .padding(.horizontal, 6)
                     .padding(.vertical, 3)
                     .foregroundColor(.white)
@@ -43,6 +53,7 @@ struct PieChartLegendRowView: View {
                     }
                 
                 Text(category.sum.formatted(.currency(code: defaultCurrency)))
+                    .font(.system(size: categorySumSize))
             }
             .padding(.vertical, 3)
             .padding(.trailing, 6)
@@ -64,7 +75,7 @@ struct PieChartLegendRowView: View {
         } label: {
             HStack {
                 Text(category.name)
-                    .font(.system(size: 14).bold())
+                    .font(.system(size: categoryNameSize, weight: .semibold))
                     .multilineTextAlignment(.leading)
                     .padding(.horizontal, 9)
                     .padding(.vertical, 6)
@@ -75,6 +86,7 @@ struct PieChartLegendRowView: View {
                     }
                 
                 Text(category.sum.formatted(.currency(code: defaultCurrency)))
+                    .font(.system(size: categorySumSize))
                     .foregroundStyle(Color.primary)
             }
             .padding(.vertical, 3)
@@ -82,7 +94,7 @@ struct PieChartLegendRowView: View {
             .padding(.leading, 3)
         }
         .buttonStyle(.plain)
-        .glassEffect(.regular.tint(Color[category.color].opacity(0.3)).interactive(), in: RoundedRectangle(cornerRadius: 19))
+        .glassEffect(glass, in: RoundedRectangle(cornerRadius: 19))
         .tint(Color[category.color])
         .hoverEffect()
     }

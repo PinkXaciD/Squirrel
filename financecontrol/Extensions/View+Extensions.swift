@@ -25,13 +25,20 @@ extension View {
     }
     
     func smallSheet(_ fraction: CGFloat? = nil) -> some View {
+        if #available(iOS 26.0, *) {
+            return self
+                .presentationDetents([.fraction(fraction ?? 0.5), .large])
+                .presentationDragIndicator(.hidden)
+                .presentationBackground(Color(uiColor: .systemGroupedBackground))
+        }
+        
         if #available(iOS 16.0, *) {
             return self
                 .presentationDetents([.fraction(fraction ?? 0.5), .large])
                 .presentationDragIndicator(.hidden)
-        } else {
-            return self
         }
+        
+        return self
     }
     
     func spendingAmountTextFieldStyle() -> some View {
@@ -88,16 +95,20 @@ extension View {
         if #available(iOS 26.0, *) {
             return self
                 .overlay(alignment: .bottomTrailing) {
-                    if showToolbar {
-                        Button(action: action) {
-                            Label("Hide Keyboard", systemImage: "keyboard.chevron.compact.down")
-                                .imageScale(.large)
-                                .labelStyle(.iconOnly)
+                    GlassEffectContainer {
+                        if showToolbar {
+                            Button(action: action) {
+                                Label("Hide Keyboard", systemImage: "keyboard.chevron.compact.down")
+                                    .imageScale(.large)
+                                    .labelStyle(.iconOnly)
+                            }
+                            .buttonStyle(.glass)
+                            .padding(.horizontal)
+                            .padding(.vertical, 7)
+                            .glassEffectTransition(.materialize)
+                            .dynamicTypeSize(...DynamicTypeSize.xxLarge)
+                            .accessibilityShowsLargeContentViewer()
                         }
-                        .buttonStyle(.glass)
-                        .padding(.horizontal)
-                        .padding(.vertical, 7)
-                        .transition(.scale(scale: 0.2).combined(with: .moveFromBottom))
                     }
                 }
                 .animation(.bouncy, value: showToolbar)
@@ -116,16 +127,17 @@ extension View {
                     .padding(.horizontal, 9)
                     .background {
                         RoundedRectangle(cornerRadius: 7)
-                            .fill(Color(uiColor: .secondarySystemGroupedBackground))
+                            .fill(Material.bar)
                             .overlay {
                                 RoundedRectangle(cornerRadius: 7)
-                                    .stroke(.secondary, lineWidth: 1)
-                                    .opacity(0.3)
+                                    .stroke(.secondary.opacity(0.3), lineWidth: 1)
                             }
                     }
                     .padding()
                     .transition(.moveFromBottom)
                     .buttonStyle(.plain)
+                    .dynamicTypeSize(...DynamicTypeSize.xxLarge)
+                    .accessibilityShowsLargeContentViewer()
                 }
             }
             .animation(.smooth, value: showToolbar)
@@ -211,7 +223,7 @@ fileprivate struct SpendingAmountTextFieldStyleModifier: ViewModifier {
         content
             .font(.system(.largeTitle, design: .rounded).bold())
             .multilineTextAlignment(.center)
-            .padding(.horizontal, cornerRadius - 10)
+            .padding(.horizontal, (cornerRadius - 10) / 3)
             .overlay(overlay)
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
             .keyboardType(.decimalPad)

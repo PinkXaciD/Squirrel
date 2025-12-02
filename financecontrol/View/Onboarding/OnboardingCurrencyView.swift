@@ -52,6 +52,15 @@ struct OnboardingCurrencyView: View {
                 }
             }
             .background(Color(uiColor: .systemGroupedBackground))
+            .overlay(alignment: .bottom) {
+                if #available(iOS 26.0, *) {
+                    newSearchBar
+                        .padding(.bottom, searchIsFocused ? nil : 100)
+                        .padding(.horizontal)
+                        .padding(.horizontal, searchIsFocused ? 0 : 10)
+                        .animation(.snappy, value: searchIsFocused)
+                }
+            }
             .onChange(of: search) { value in
                 if value.isEmpty {
                     showButton = false
@@ -71,9 +80,7 @@ struct OnboardingCurrencyView: View {
         VStack(alignment: .leading, spacing: 15) {
             OnboardingHeaderView(header: "Select currency", description: "You can change the default currency or add more later in settings")
             
-            if #available(iOS 26.0, *) {
-                newSearchBar
-            } else {
+            if #unavailable(iOS 26.0) {
                 searchBar
             }
         }
@@ -120,12 +127,14 @@ struct OnboardingCurrencyView: View {
     
     @available(iOS 26.0, *)
     private var newSearchBar: some View {
-        GlassEffectContainer {
+        let glass = Glass.regular.tint(Color(uiColor: .secondarySystemGroupedBackground).opacity(0.5))
+        
+        return GlassEffectContainer {
             HStack {
                 HStack(spacing: 5) {
                     Image(systemName: "magnifyingglass")
                         .font(.body.bold())
-                        .foregroundColor(.secondary.opacity(0.5))
+                        .foregroundColor(.secondary)
                         .animation(.default, value: showButton)
                     
                     TextField("Search", text: $search)
@@ -133,13 +142,9 @@ struct OnboardingCurrencyView: View {
                         .tint(.orange)
                         .accentColor(.orange)
                 }
-                .padding(9)
+                .padding(12)
                 .padding(.horizontal, 3)
-                .background {
-                    Capsule()
-                        .fill(Color(uiColor: .secondarySystemGroupedBackground))
-                }
-                .glassEffect(.regular, in: Capsule())
+                .glassEffect(glass, in: Capsule())
                 .glassEffectID("Bar", in: namespace)
                 
                 if showButton {
@@ -153,18 +158,14 @@ struct OnboardingCurrencyView: View {
                             .labelStyle(.iconOnly)
                             .font(.title3)
                             .foregroundStyle(Color.primary)
-                            .padding(10)
-                            .background {
-                                Circle()
-                                    .fill(Color(uiColor: .secondarySystemGroupedBackground))
-                            }
+                            .padding(13)
                     }
                     .disabled(!showButton)
                     .contentShape(.hoverEffect, Circle())
                     .hoverEffect()
-                    .glassEffect(.regular, in: Circle())
+                    .glassEffect(glass, in: Circle())
                     .glassEffectID("Button", in: namespace)
-                    .glassEffectTransition(.materialize)
+                    .glassEffectTransition(.matchedGeometry)
                 }
             }
         }

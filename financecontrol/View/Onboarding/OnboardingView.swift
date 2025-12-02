@@ -117,8 +117,11 @@ struct OnboardingView: View {
     }
     
     private var backButton: some View {
-        Button("Back") {
+        Button {
             backButtonAction()
+        } label: {
+            Label("Back", systemImage: "chevron.backward")
+                .labelStyle(.titleOnly)
         }
         .tint(.orange)
         .accentColor(.orange)
@@ -129,12 +132,19 @@ struct OnboardingView: View {
         .hoverEffect(.automatic)
         .background(Color(uiColor: .systemGroupedBackground).opacity(0.0001))
         .padding(8)
+        .dynamicTypeSize(...DynamicTypeSize.xxLarge)
+        .accessibilityShowsLargeContentViewer {
+            Label("Back", systemImage: "chevron.backward")
+        }
     }
     
     @available(iOS 26.0, *)
     private var newBackButton: some View {
-        Button("Back") {
+        Button {
             backButtonAction()
+        } label: {
+            Label("Back", systemImage: "chevron.backward")
+                .labelStyle(.titleOnly)
         }
         .tint(.orange)
         .accentColor(.orange)
@@ -144,6 +154,10 @@ struct OnboardingView: View {
         .buttonStyle(.glass)
         .hoverEffect(.automatic)
         .padding(12)
+        .dynamicTypeSize(...DynamicTypeSize.xxLarge)
+        .accessibilityShowsLargeContentViewer {
+            Label("Back", systemImage: "chevron.backward")
+        }
     }
     
     private var continueButton: some View {

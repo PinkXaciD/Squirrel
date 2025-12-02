@@ -46,7 +46,6 @@ struct PieChartLegendView: View {
                         .padding(.vertical, verticalPadding)
                     }
                 }
-                .font(.system(size: 14))
                 .transaction { transaction in
                     transaction.animation = nil
                 }
@@ -61,7 +60,6 @@ struct PieChartLegendView: View {
                     
                     Spacer()
                 }
-                .font(.system(size: 14))
                 .padding(.horizontal, 20)
                 .padding(.vertical, verticalPadding)
                 .transaction { transaction in
@@ -79,19 +77,23 @@ struct PieChartLegendView: View {
         if let selectedCategory = pcvm.selectedCategory {
             ForEach(data.categoriesDict[selectedCategory.id]?.places ?? []) { place in
                 PieChartLegendRowView(category: place)
+                    .fixedSize(horizontal: true, vertical: false)
             }
         } else {
             ForEach(data.categories) { category in
                 PieChartLegendRowView(category: category)
+                    .fixedSize(horizontal: true, vertical: false)
             }
             
             if let otherCategory = data.otherCategory, !pcvm.showOther {
                 PieChartLegendRowView(category: otherCategory)
+                    .fixedSize(horizontal: true, vertical: false)
             }
             
             if pcvm.showOther {
                 ForEach(data.otherCategories) { category in
                     PieChartLegendRowView(category: category)
+                        .fixedSize(horizontal: true, vertical: false)
                 }
             }
         }

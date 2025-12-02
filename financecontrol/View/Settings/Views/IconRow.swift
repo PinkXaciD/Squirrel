@@ -11,7 +11,14 @@ struct IconRow: View {
     @StateObject private var vm: IconRowViewModel
     @Binding var selectedIcon: String?
     private let iconSize: CGFloat = 60
-    private let cornerRadius: CGFloat = 13.5
+    
+    private var cornerRadius: CGFloat {
+        if #available(iOS 26.0, *) {
+            return 16
+        }
+        
+        return 13.5
+    }
     
     var body: some View {
         Button(action: vm.setIcon, label: label)

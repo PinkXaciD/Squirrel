@@ -14,11 +14,18 @@ struct CustomAlertView: View {
     
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Material.regular)
-                .shadow(radius: 5)
+            if #available(iOS 26.0, *) {
+                RoundedRectangle(cornerRadius: 30)
+                    .fill(Material.regular)
+                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 30))
+                    .shadow(color: .black.opacity(0.1), radius: 5)
+            } else {
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Material.regular)
+                    .shadow(color: .black.opacity(0.2), radius: 5)
+            }
             
-            HStack {
+            HStack(spacing: 0) {
                 Image(systemName: data.systemImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)

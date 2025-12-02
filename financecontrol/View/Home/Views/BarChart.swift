@@ -16,6 +16,8 @@ struct BarChart: View {
     @Binding var itemSelected: Int
     @Binding var showAverage: Bool
     
+    @ScaledMetric(relativeTo: .footnote) private var avgOffset: CGFloat = 25
+    
     var cornerRadius: CGFloat {
         if #available(iOS 26.0, *) {
             return 10
@@ -26,13 +28,15 @@ struct BarChart: View {
     
     var body: some View {
         GeometryReader { geometry in
-            ZStack(alignment: .bottom) {
+            ZStack(alignment: .top) {
                 // MARK: Avg dashed line
+                let maxBarHeight = geometry.size.height - avgOffset
+                
                 if !vm.data.sum.isZero {
                     Line()
                         .stroke(style: StrokeStyle(lineWidth: (showAverage ? 1.5 : 1), dash: [5]))
                         .frame(height: 2)
-                        .offset(y: -(10 + countAvgBarHeight()))
+                        .offset(y: countAvgBarHeight(maxHeight: maxBarHeight))
                         .foregroundColor(.secondary.opacity(showAverage ? 0.7 : 0.3))
                 }
                 
@@ -41,9 +45,9 @@ struct BarChart: View {
                         ForEach(vm.data.bars.sorted(by: { $0.key < $1.key }), id: \.key) { data in
                             BarChartBar(
                                 index: countIndex(data.key),
-                                data: (key: data.key, value: countBarHeight(maxHeight: geometry.size.height - 25, value: data.value)),
+                                data: (key: data.key, value: countBarHeight(maxHeight: maxBarHeight, value: data.value)),
                                 isActive: isActive(index: countIndex(data.key)),
-                                maxHeight: geometry.size.height - 25,
+                                maxHeight: maxBarHeight,
                                 cornerRadius: cornerRadius
                             )
                             .clipShape(RoundedRectangle(cornerRadius: cornerRadius + 0.01)) // Doesn't work with cornerRadius of 5
@@ -115,10 +119,9 @@ struct BarChart: View {
         return Calendar.current.dateComponents([.day], from: date, to: today).day ?? 0
     }
     
-    private func countAvgBarHeight() -> Double {
-        let avg = vm.data.sum/7
-        let height = max(UIScreen.main.bounds.height, UIScreen.main.bounds.width)
-        return (height / 5 + 10) / vm.data.max * avg
+    private func countAvgBarHeight(maxHeight: CGFloat) -> Double {
+        let avg = vm.data.sum / 7
+        return maxHeight - (maxHeight / vm.data.max * avg)
     }
 }
 
