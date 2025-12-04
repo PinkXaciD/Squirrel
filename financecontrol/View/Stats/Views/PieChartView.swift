@@ -131,9 +131,10 @@ struct PieChartView: View {
 
 extension PieChartView {
     private func toggleLegend() {
-        withAnimation {
+        withAnimation(UIAccessibility.prefersCrossFadeTransitions ? .linear(duration: 0) : .default) {
             minimizeLegend.toggle()
         }
+        
         UserDefaults.standard.set(minimizeLegend, forKey: UDKey.minimizeLegend.rawValue)
     }
     
@@ -142,7 +143,7 @@ extension PieChartView {
             if minimizeLegend {
                 Text("Expand")
                     .fixedSize()
-                    .matchedGeometryEffect(id: "MinimizeButtonText", in: namespace)
+                    .matchedGeometryEffect(id: UIAccessibility.prefersCrossFadeTransitions ? "None" : "MinimizeButtonText", in: namespace)
             } else {
                 Text("Minimize")
                     .fixedSize()
