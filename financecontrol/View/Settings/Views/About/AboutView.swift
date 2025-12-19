@@ -81,8 +81,6 @@ struct AboutView: View {
             let appName = Bundle.main.displayName ?? "Squirrel"
             
             Image(imageName, bundle: .main)
-                .cornerRadius(iconCornerRadius)
-                .overlay { iconOverlay }
             
             Text("\(appName), version \(version)")
                 .font(.body.bold())

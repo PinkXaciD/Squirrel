@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct IconRow: View {
+    @Environment(\.colorScheme) private var colorScheme
     @StateObject private var vm: IconRowViewModel
     @Binding var selectedIcon: String?
     private let iconSize: CGFloat = 60
@@ -49,17 +50,9 @@ struct IconRow: View {
         vm.getIconImage()
             .resizable()
             .frame(width: iconSize, height: iconSize)
-            .cornerRadius(cornerRadius)
             .setDarkModeForIcon()
-            .overlay(iconOverlay)
             .hoverEffect(.lift)
-    }
-    
-    private var iconOverlay: some View {
-        RoundedRectangle(cornerRadius: cornerRadius)
-            .stroke(lineWidth: 1)
-            .foregroundColor(.primary)
-            .opacity(0.3)
+            .shadow(color: .black.opacity(0.2), radius: 5, y: 2)
     }
     
     private var text: some View {
@@ -97,5 +90,15 @@ fileprivate extension View {
         }
         
         return self
+    }
+}
+
+#Preview {
+    NavigationView {
+        List {
+            ForEach(CustomIcon.allCases, id: \.imageName) { icon in
+                IconRow(icon, selection: .constant(nil))
+            }
+        }
     }
 }

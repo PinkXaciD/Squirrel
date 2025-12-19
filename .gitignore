@@ -2,7 +2,7 @@ Info.plist
 Icon.png
 /.vscode/settings.json
 
-financecontrol/Assets.xcassets/AppIcon.appiconset/iOS_AppIcon_Default.png
+financecontrol/Icons/AppIcon.icon
 financecontrol/Assets.xcassets/AppIcon_Image.imageset/*.png
 
 financecontrol/Assets.xcassets/Icons/AppIcon_FirstFlight.appiconset/iOS_AppIcon_First_Flight.png

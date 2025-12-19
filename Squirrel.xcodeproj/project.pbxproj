@@ -129,6 +129,7 @@
 		8D9DD6712D317EE60061DA6B /* WhatsNewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D9DD6702D317EE60061DA6B /* WhatsNewView.swift */; };
 		8D9E22D82AE6A1BD00801932 /* CustomShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D9E22D72AE6A1BD00801932 /* CustomShareSheet.swift */; };
 		8D9F30E92B4D7C3E00A0B8C3 /* WidgetsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D9F30E82B4D7C3E00A0B8C3 /* WidgetsManager.swift */; };
+		8DA2DC6B2EE1D34100EE3B47 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 8DA2DC6A2EE1D34100EE3B47 /* AppIcon.icon */; };
 		8DA2E5102C24662F00FA7FDB /* ReturnRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA2E50F2C24662F00FA7FDB /* ReturnRow.swift */; };
 		8DAA0E1F2B48367D0076B81E /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DAA0E1E2B48367D0076B81E /* WidgetKit.framework */; };
 		8DAA0E212B48367D0076B81E /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DAA0E202B48367D0076B81E /* SwiftUI.framework */; };
@@ -339,6 +340,7 @@
 		8D9DD6702D317EE60061DA6B /* WhatsNewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsNewView.swift; sourceTree = "<group>"; };
 		8D9E22D72AE6A1BD00801932 /* CustomShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomShareSheet.swift; sourceTree = "<group>"; };
 		8D9F30E82B4D7C3E00A0B8C3 /* WidgetsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetsManager.swift; sourceTree = "<group>"; };
+		8DA2DC6A2EE1D34100EE3B47 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		8DA2E50F2C24662F00FA7FDB /* ReturnRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReturnRow.swift; sourceTree = "<group>"; };
 		8DAA0E1C2B48367D0076B81E /* SquirrelWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SquirrelWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		8DAA0E1E2B48367D0076B81E /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
@@ -738,6 +740,14 @@
 			path = ChartData;
 			sourceTree = "<group>";
 		};
+		8DA2DC692EE1D32000EE3B47 /* Icons */ = {
+			isa = PBXGroup;
+			children = (
+				8DA2DC6A2EE1D34100EE3B47 /* AppIcon.icon */,
+			);
+			path = Icons;
+			sourceTree = "<group>";
+		};
 		8DA8BA992B3B4B1A001C5215 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
@@ -956,9 +966,10 @@
 			children = (
 				8DAA0E322B4871F40076B81E /* financecontrol.entitlements */,
 				8D9B50132AC1BE9700C7732B /* Info.plist */,
-				8DBFEBCD2A49ED4800165414 /* financecontrolApp.swift */,
-				8DBFEBD12A49ED4900165414 /* Assets.xcassets */,
 				8D7FCA542B16A59C009AAAEB /* Localizable.xcstrings */,
+				8DBFEBD12A49ED4900165414 /* Assets.xcassets */,
+				8DA2DC692EE1D32000EE3B47 /* Icons */,
+				8DBFEBCD2A49ED4800165414 /* financecontrolApp.swift */,
 				8DBFEBF72A49ED7600165414 /* View */,
 				8D2240B92B0F947B00D5572B /* ViewModel */,
 				8DD0526B2C133E24002F752E /* Protocols */,
@@ -1134,6 +1145,7 @@
 				8DF8AE9C2AB47334006D287B /* .gitignore in Resources */,
 				8D4FE3002BA9D954001009F2 /* PrivacyInfo.xcprivacy in Resources */,
 				8D7FCA552B16A59C009AAAEB /* Localizable.xcstrings in Resources */,
+				8DA2DC6B2EE1D34100EE3B47 /* AppIcon.icon in Resources */,
 				8D1A7FB72C99DD2E00BAF6A0 /* LICENSE in Resources */,
 				8D4927672AB2128F008E6347 /* README.md in Resources */,
 				8DBFEBD22A49ED4900165414 /* Assets.xcassets in Resources */,
@@ -1407,7 +1419,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 70;
+				CURRENT_PROJECT_VERSION = 73;
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1446,7 +1458,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 70;
+				CURRENT_PROJECT_VERSION = 73;
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1600,13 +1612,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = AppIcon_FirstFlight;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon_FirstFlight;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 70;
+				CURRENT_PROJECT_VERSION = 73;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
@@ -1650,7 +1662,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 70;
+				CURRENT_PROJECT_VERSION = 73;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;

@@ -541,6 +541,9 @@
     "Done" : {
 
     },
+    "Dynamic Type" : {
+
+    },
     "Edit" : {
 
     },
@@ -729,6 +732,9 @@
         }
       }
     },
+    "Improved large text size support" : {
+
+    },
     "Indigo" : {
 
     },
@@ -739,9 +745,6 @@
 
     },
     "It's probably all LED's nowadays" : {
-
-    },
-    "Liquid Glass" : {
 
     },
     "Minimize" : {
@@ -772,12 +775,6 @@
 
     },
     "New Category" : {
-
-    },
-    "New Design" : {
-
-    },
-    "New elements made out of Liguid Glass" : {
 
     },
     "No API key was found" : {
@@ -938,6 +935,12 @@
     "Recommended" : {
 
     },
+    "Reduce Motion" : {
+
+    },
+    "Refreshed Icons" : {
+
+    },
     "Remove from favorites" : {
 
     },
@@ -1044,9 +1047,6 @@
     "Some expense" : {
 
     },
-    "Some features are only available with iOS 26 and newer" : {
-
-    },
     "Some place" : {
 
     },
@@ -1060,6 +1060,9 @@
 
     },
     "Squirrel does not send any data or identifiers from your device." : {
+
+    },
+    "Squirrel now better supports \"Reduce Motion\" setting" : {
 
     },
     "Sqwoorl" : {
@@ -1178,13 +1181,7 @@
         }
       }
     },
-    "Updated Animations" : {
-
-    },
-    "Updated animations to fit the new design" : {
-
-    },
-    "Updated design to match the new iOS 26" : {
+    "Updated icons with Liquid Glass" : {
 
     },
     "Updating rates..." : {
@@ -1257,9 +1254,6 @@
 
     },
     "You can change this later in settings" : {
-
-    },
-    "You can change this setting later in settings. App reload will be required" : {
 
     },
     "You can choose a currency to be selected by default, different from display currency" : {
