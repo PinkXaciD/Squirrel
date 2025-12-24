@@ -72,14 +72,6 @@ struct EditSpendingView: View {
         .addKeyboardToolbar(showToolbar: focusedField != nil) {
             clearFocus()
         }
-        .confirmationDialog("Delete this expense?", isPresented: $confirmationDialogIsPresented, titleVisibility: .visible) {
-            Button("Delete", role: .destructive) {
-                dismiss()
-                vm.cdm.deleteSpending(entity)
-            }
-        } message: {
-            Text("You can't undo this action.")
-        }
         .onChange(of: toDismiss) { _ in
             cancelButtonAction()
         }
@@ -202,6 +194,14 @@ struct EditSpendingView: View {
         .buttonStyle(SpendingListRowButtonStyle())
         .tint(.red)
         .frame(maxWidth: .infinity)
+        .confirmationDialog("Delete this expense?", isPresented: $confirmationDialogIsPresented, titleVisibility: .visible) {
+            Button("Delete", role: .destructive) {
+                dismiss()
+                vm.cdm.deleteSpending(entity)
+            }
+        } message: {
+            Text("You can't undo this action.")
+        }
     }
     
     private var returnsSection: some View {

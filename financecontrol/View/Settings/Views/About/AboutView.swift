@@ -42,15 +42,6 @@ struct AboutView: View {
             debugSection
             #endif
         }
-        .confirmationDialog("\(urlToOpen?.absoluteString ?? "")", isPresented: $showConfirmationDialog, titleVisibility: .visible, presenting: urlToOpen) { url in
-            Button("Open in browser") {
-                openURL(url)
-            }
-            
-            Button("Copy to clipboard") {
-                UIPasteboard.general.url = url
-            }
-        }
         .sheet(isPresented: $showWhatsNew) {
             WhatsNewView()
         }
@@ -67,6 +58,15 @@ struct AboutView: View {
             
             Button("Our Website") {
                 openURLButtonAction(.appWebsite)
+            }
+            .confirmationDialog("\(urlToOpen?.absoluteString ?? "")", isPresented: $showConfirmationDialog, titleVisibility: .visible, presenting: urlToOpen) { url in
+                Button("Open in browser") {
+                    openURL(url)
+                }
+                
+                Button("Copy to clipboard") {
+                    UIPasteboard.general.url = url
+                }
             }
             
             NavigationLink("Privacy Policy") {

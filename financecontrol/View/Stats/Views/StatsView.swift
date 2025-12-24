@@ -38,10 +38,6 @@ struct StatsView: View {
     private var showFilters: Bool = false
     
     @State
-    private var spendingToDelete: SpendingEntity? = nil
-    @State
-    private var presentDeleteDialog: Bool = false
-    @State
     private var presentExportSheet: Bool = false
     
     @Binding
@@ -110,7 +106,7 @@ struct StatsView: View {
                             .id(0)
                         }
                         
-                        StatsListView(spendingToDelete: $spendingToDelete, presentDeleteDialog: $presentDeleteDialog)
+                        StatsListView()
                     }
                     .padding()
                     .sheet(isPresented: $showFilters) {
@@ -123,7 +119,7 @@ struct StatsView: View {
                         }
                         
                         withAnimation {
-                            scroll.scrollTo(0, anchor: .bottom)
+                            scroll.scrollTo(0, anchor: .top)
                         }
                         
                         self.scrollToTop = nil
@@ -141,13 +137,6 @@ struct StatsView: View {
             NavigationView {
                 ExportCSVView(cdm: cdm, predicate: listVM.getPredicate(), showTimePicker: false)
             }
-        }
-        .confirmationDialog("Delete this expense?", isPresented: $presentDeleteDialog, titleVisibility: .visible, presenting: spendingToDelete) { spending in
-            Button("Delete", role: .destructive) {
-                DataManager.shared.deleteSpending(with: spending.objectID)
-            }
-        } message: { _ in
-            Text("You can't undo this action.")
         }
         .navigationViewStyle(.stack)
     }
@@ -448,7 +437,7 @@ fileprivate struct IPadStatsView: View {
     }
     
     private var listView: some View {
-        StatsListView(spendingToDelete: .constant(nil), presentDeleteDialog: .constant(false)
+        StatsListView(
 //            spendings: SectionedFetchRequest(
 //                sectionIdentifier: \SpendingEntity.startOfDay,
 //                sortDescriptors: [

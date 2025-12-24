@@ -19,11 +19,6 @@ struct StatsListView: View {
     @GestureState
     private var draggingRow: UUID? = nil
     
-    @Binding
-    var spendingToDelete: SpendingEntity?
-    @Binding
-    var presentDeleteDialog: Bool
-    
     private var headerFont: Font {
         if #available(iOS 26.0, *) {
             return .body.bold()
@@ -53,7 +48,7 @@ struct StatsListView: View {
                 
                 VStack(spacing: 0) {
                     ForEach(section.value) { spending in
-                        StatsRow(state: $draggingRow, data: spending, spendingToDelete: $spendingToDelete, presentDeleteDialog: $presentDeleteDialog)
+                        StatsRow(state: $draggingRow, data: spending)
                             .environmentObject(rowVM)
                         
                         if spending.id != section.value.last?.id {

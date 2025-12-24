@@ -70,14 +70,6 @@ struct SpendingView: View {
             debugSection
             #endif
         }
-        .confirmationDialog("Delete this expense?", isPresented: $alertIsPresented, titleVisibility: .visible) {
-            Button("Delete", role: .destructive) {
-                dismiss()
-                cdm.deleteSpending(entity)
-            }
-        } message: {
-            Text("You can't undo this action.")
-        }
         .toolbar {
             closeToolbar
             
@@ -384,6 +376,14 @@ struct SpendingView: View {
         .buttonStyle(SpendingListRowButtonStyle())
         .tint(.red)
         .frame(maxWidth: .infinity)
+        .confirmationDialog("Delete this expense?", isPresented: $alertIsPresented, titleVisibility: .visible) {
+            Button("Delete", role: .destructive) {
+                dismiss()
+                cdm.deleteSpending(entity)
+            }
+        } message: {
+            Text("You can't undo this action.")
+        }
     }
     
     private var editToolbar: ToolbarItem<(), some View> {

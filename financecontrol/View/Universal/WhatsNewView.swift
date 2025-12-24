@@ -43,17 +43,31 @@ struct WhatsNewView: View {
                 
                 Spacer()
                 
-//                getRow(imageName: "app.fill", title: "Refreshed Icons", subtitle: "Updated icons with Liquid Glass")
                 NewIconRow()
                 
                 getRow(imageName: "textformat.size", title: "Dynamic Type", subtitle: "Improved large text size support")
                 
-                getRow(imageName: "circle.dotted.and.circle", title: "Reduce Motion", subtitle: "Squirrel now better supports \"Reduce Motion\" setting")
+                if #available(iOS 17.0, *) {
+                    getRow(imageName: "circle.dotted.and.circle", title: "Reduce Motion", subtitle: "Squirrel now better supports \"Reduce Motion\" setting")
+                } else {
+                    getRow(imageName: "circle.dotted", title: "Reduce Motion", subtitle: "Squirrel now supports \"Reduce Motion\" setting")
+                }
                 
                 Spacer()
                 
                 Button("Full Changelog on GitHub") {
                     showConfirmationDialog.toggle()
+                }
+                .confirmationDialog(URL.githubChangelog.absoluteString, isPresented: $showConfirmationDialog, titleVisibility: .visible) {
+                    Button("Open in Browser") {
+                        openURL(URL.githubChangelog)
+                    }
+                    
+                    Button("Copy to Clipboard") {
+                        UIPasteboard.general.url = URL.githubChangelog
+                    }
+                } message: {
+                    Text("Full Changelog")
                 }
             }
             .padding()
@@ -66,17 +80,6 @@ struct WhatsNewView: View {
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
-        }
-        .confirmationDialog(URL.githubChangelog.absoluteString, isPresented: $showConfirmationDialog, titleVisibility: .visible) {
-            Button("Open in Browser") {
-                openURL(URL.githubChangelog)
-            }
-            
-            Button("Copy to Clipboard") {
-                UIPasteboard.general.url = URL.githubChangelog
-            }
-        } message: {
-            Text("Full Changelog")
         }
         .tint(.orange)
         .accentColor(.orange)
