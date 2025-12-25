@@ -2,7 +2,7 @@
 //  SpendingCompleteView.swift
 //  financecontrol
 //
-//  Created by PinkXaciD on R 5/08/11.
+//  Created by PinkXaciD on 2022/08/11.
 //
 
 import SwiftUI
@@ -14,6 +14,10 @@ struct SpendingCompleteView: View {
     private var privacyScreenIsEnabled: Bool = false
     @EnvironmentObject
     private var privacyMonitor: PrivacyMonitor
+    @EnvironmentObject
+    private var cdm: CoreDataModel
+    @EnvironmentObject
+    private var rvm: RatesViewModel
     
     @Binding var edit: Bool
     
@@ -23,9 +27,6 @@ struct SpendingCompleteView: View {
     @State private var returnToEdit: ReturnEntity? = nil
     @State private var toDismiss: Bool = false
     @State private var hideContent: Bool = false
-    
-    @EnvironmentObject private var cdm: CoreDataModel
-    @EnvironmentObject private var rvm: RatesViewModel
     
     var body: some View {
         let categoryColor = CustomColor.nordAurora[entity.category?.color ?? ""] ?? .secondary.opacity(0)
@@ -106,6 +107,58 @@ struct SpendingCompleteView: View {
     
     func dismissAction() {
         toDismiss.toggle()
+    }
+}
+
+struct SpendingListRowButtonStyle: ButtonStyle {
+    @Environment(\.dynamicTypeSize)
+    private var dynamicTypeSize
+    @Environment(\.horizontalSizeClass)
+    private var horizontalSizeClass
+    
+    func makeBody(configuration: Configuration) -> some View {
+        if dynamicTypeSize > .xLarge, horizontalSizeClass == .compact {
+            accesabilityLabel(configuration)
+                .overlay {
+                    VStack {
+                        Divider()
+                        
+                        Spacer()
+                        
+                        Divider()
+                    }
+                }
+        } else {
+            label(configuration)
+        }
+    }
+    
+    private func accesabilityLabel(_ configuration: Configuration) -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 0)
+                .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
+            
+            configuration.label
+                .padding(10)
+                .font(.body)
+                .foregroundStyle(.tint)
+        }
+        .contentShape(.hoverEffect, Rectangle())
+        .hoverEffect()
+    }
+    
+    private func label(_ configuration: Configuration) -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: Text.listCornerRadius)
+                .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
+            
+            configuration.label
+                .padding(10)
+                .font(.body)
+                .foregroundStyle(.tint)
+        }
+        .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: Text.listCornerRadius))
+        .hoverEffect()
     }
 }
 

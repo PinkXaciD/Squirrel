@@ -52,6 +52,7 @@ struct CustomPagingScrollView: View {
 
 fileprivate struct InternalCustomPagingScrollView: View {
     @Environment(\.layoutDirection) private var layoutDirection
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @EnvironmentObject private var fvm: FiltersViewModel
     
     @Binding private var selection: Int
@@ -59,7 +60,13 @@ fileprivate struct InternalCustomPagingScrollView: View {
     @State private var reset: Bool = false
     let data: [ChartData]
     
-    let scrollAnimation: Animation = .smooth(duration: 0.3)
+    var scrollAnimation: Animation {
+        if UIAccessibility.prefersCrossFadeTransitions {
+            return .linear(duration: 0)
+        }
+        
+        return .smooth(duration: 0.3)
+    }
     
     init(selection: Binding<Int>, data: [ChartData], geometry: GeometryProxy, invert: Bool, viewScale: CGFloat) {
         self._selection = selection

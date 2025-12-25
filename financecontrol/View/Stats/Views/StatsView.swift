@@ -38,10 +38,6 @@ struct StatsView: View {
     private var showFilters: Bool = false
     
     @State
-    private var spendingToDelete: SpendingEntity? = nil
-    @State
-    private var presentDeleteDialog: Bool = false
-    @State
     private var presentExportSheet: Bool = false
     
     @Binding
@@ -96,48 +92,41 @@ struct StatsView: View {
     }
     
     private var iPhoneStatsView: some View {
-//        NavigationView {
-            ZStack {
-                Color(uiColor: .systemGroupedBackground)
-                    .ignoresSafeArea(.all)
-                
-                ScrollViewReader { scroll in
-                    ScrollView (.vertical) {
-                        LazyVStack {
-                            if !isSearching, searchModel.input.isEmpty {
-                                VStack {
-                                    PieChartView(size: size, showMinimizeButton: true)
-                                }
-                                .id(0)
+        ZStack {
+            Color(uiColor: .systemGroupedBackground)
+                .ignoresSafeArea(.all)
+            
+            ScrollViewReader { scroll in
+                ScrollView (.vertical) {
+                    LazyVStack {
+                        if !isSearching, searchModel.input.isEmpty {
+                            VStack {
+                                PieChartView(size: size, showMinimizeButton: true)
                             }
-                            
-                            StatsListView(spendingToDelete: $spendingToDelete, presentDeleteDialog: $presentDeleteDialog)
+                            .id(0)
                         }
-                        .padding()
-//                        .toolbar {
-//                            leadingToolbar
-//                            
-//                            trailingToolbar
-//                        }
-                        .sheet(isPresented: $showFilters) {
-                            filters
+                        
+                        StatsListView()
+                    }
+                    .padding()
+                    .sheet(isPresented: $showFilters) {
+                        filters
+                    }
+                    .navigationTitle("Stats")
+                    .onChange(of: scrollToTop) { value in
+                        guard value == 1 else {
+                            return
                         }
-                        .navigationTitle("Stats")
-                        .onChange(of: scrollToTop) { value in
-                            guard value == 1 else {
-                                return
-                            }
-                            
-                            withAnimation {
-                                scroll.scrollTo(0, anchor: .bottom)
-                            }
-                            
-                            self.scrollToTop = nil
+                        
+                        withAnimation {
+                            scroll.scrollTo(0, anchor: .top)
                         }
+                        
+                        self.scrollToTop = nil
                     }
                 }
             }
-//        }
+        }
         .searchable(text: $searchModel.input, placement: .automatic, prompt: "Search by place or comment")
 #if DEBUG
         .refreshable {
@@ -148,13 +137,6 @@ struct StatsView: View {
             NavigationView {
                 ExportCSVView(cdm: cdm, predicate: listVM.getPredicate(), showTimePicker: false)
             }
-        }
-        .confirmationDialog("Delete this expense?", isPresented: $presentDeleteDialog, titleVisibility: .visible, presenting: spendingToDelete) { spending in
-            Button("Delete", role: .destructive) {
-                DataManager.shared.deleteSpending(with: spending.objectID)
-            }
-        } message: { _ in
-            Text("You can't undo this action.")
         }
         .navigationViewStyle(.stack)
     }
@@ -455,7 +437,7 @@ fileprivate struct IPadStatsView: View {
     }
     
     private var listView: some View {
-        StatsListView(spendingToDelete: .constant(nil), presentDeleteDialog: .constant(false)
+        StatsListView(
 //            spendings: SectionedFetchRequest(
 //                sectionIdentifier: \SpendingEntity.startOfDay,
 //                sortDescriptors: [

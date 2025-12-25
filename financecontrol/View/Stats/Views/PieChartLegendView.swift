@@ -46,7 +46,6 @@ struct PieChartLegendView: View {
                         .padding(.vertical, verticalPadding)
                     }
                 }
-                .font(.system(size: 14))
                 .transaction { transaction in
                     transaction.animation = nil
                 }
@@ -61,13 +60,12 @@ struct PieChartLegendView: View {
                     
                     Spacer()
                 }
-                .font(.system(size: 14))
                 .padding(.horizontal, 20)
                 .padding(.vertical, verticalPadding)
                 .transaction { transaction in
                     transaction.animation = nil
                 }
-                .transition(.maskFromTheBottomWithOpacity)
+                .transition(.opacity)
             }
         }
     }
@@ -77,21 +75,27 @@ struct PieChartLegendView: View {
         let data = pcvm.data[(selection >= pcvm.data.count || selection < 0) ? 0 : selection]
         
         if let selectedCategory = pcvm.selectedCategory {
-            ForEach(data.categoriesDict[selectedCategory.id]?.places ?? []) { place in
+            let places = data.categoriesDict[selectedCategory.id]?.places ?? []
+            
+            ForEach(places) { place in
                 PieChartLegendRowView(category: place)
+                    .fixedSize(horizontal: minimize, vertical: false)
             }
         } else {
             ForEach(data.categories) { category in
                 PieChartLegendRowView(category: category)
+                    .fixedSize(horizontal: minimize, vertical: false)
             }
             
             if let otherCategory = data.otherCategory, !pcvm.showOther {
                 PieChartLegendRowView(category: otherCategory)
+                    .fixedSize(horizontal: minimize, vertical: false)
             }
             
             if pcvm.showOther {
                 ForEach(data.otherCategories) { category in
                     PieChartLegendRowView(category: category)
+                        .fixedSize(horizontal: minimize, vertical: false)
                 }
             }
         }

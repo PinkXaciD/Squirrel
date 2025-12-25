@@ -18,11 +18,9 @@ struct ContactUsView: View {
     @State
     private var showEmailConfirmationDialog: Bool = false
     @State
-    private var mailToOpen: String? = nil
+    private var showGitHubURLConfirmationDialog: Bool = false
     @State
-    private var showURLConfirmationDialog: Bool = false
-    @State
-    private var urlToOpen: URL? = nil
+    private var showGitHubIssueURLConfirmationDialog: Bool = false
     
     var socialNetworks: [SocialNetworkModel] {
         guard let data = UserDefaults.standard.data(forKey: UDKey.socialNetworksJSON.rawValue) else {
@@ -42,7 +40,18 @@ struct ContactUsView: View {
         List {
             Section {
                 Button("Email") {
-                    openEmailButtonAction(URL.appEmail)
+                    showEmailConfirmationDialog = true
+                }
+                .confirmationDialog(URL.appEmail, isPresented: $showEmailConfirmationDialog, titleVisibility: .visible) {
+                    Button("Write") {
+                        if let mailURL = URL(string: "mailto:\(URL.appEmail)") {
+                            openURL(mailURL)
+                        }
+                    }
+                    
+                    Button("Copy to clipboard") {
+                        UIPasteboard.general.string = URL.appEmail
+                    }
                 }
             } header: {
                 Text("Email")
@@ -50,13 +59,31 @@ struct ContactUsView: View {
             
             Section {
                 Button {
-                    openURLButtonAction(.github)
+                    showGitHubURLConfirmationDialog = true
                 } label: {
                     Text(verbatim: "GitHub")
                 }
+                .confirmationDialog(URL.github.absoluteString, isPresented: $showGitHubURLConfirmationDialog, titleVisibility: .visible) {
+                    Button("Open in browser") {
+                        openURL(.github)
+                    }
+                    
+                    Button("Copy to clipboard") {
+                        UIPasteboard.general.url = .github
+                    }
+                }
                 
                 Button("Create an issue on GitHub") {
-                    openURLButtonAction(.newGithubIssue)
+                    showGitHubIssueURLConfirmationDialog = true
+                }
+                .confirmationDialog(URL.newGithubIssue.absoluteString, isPresented: $showGitHubIssueURLConfirmationDialog, titleVisibility: .visible) {
+                    Button("Open in browser") {
+                        openURL(.newGithubIssue)
+                    }
+                    
+                    Button("Copy to clipboard") {
+                        UIPasteboard.general.url = .newGithubIssue
+                    }
                 }
             } header: {
                 Text(verbatim: "GitHub")
@@ -65,9 +92,7 @@ struct ContactUsView: View {
             if !socialNetworks.isEmpty {
                 Section {
                     ForEach(socialNetworks, id:\.name) { network in
-                        Button(network.name) {
-                            openSocailNetworkButtonAction(network)
-                        }
+                        SocialNetworkRow(network: network)
                     }
                 } header: {
                     Text("Social Networks")
@@ -79,61 +104,42 @@ struct ContactUsView: View {
             await CloudKitManager.shared.updateCloudKitContent(forceUpdate: true)
         }
         #endif
-        .confirmationDialog("\(socialNetworkToOpen?.name ?? "")", isPresented: $showSocialNetworkConfirmationDialog, titleVisibility: .visible, presenting: socialNetworkToOpen) { socialNetwork in
+        .navigationTitle("Contact Us")
+    }
+}
+
+fileprivate struct SocialNetworkRow: View {
+    @Environment(\.openURL)
+    private var openURL
+    
+    @State
+    private var showConfirmationDialog: Bool = false
+    
+    let network: SocialNetworkModel
+    
+    var body: some View {
+        Button(network.name) {
+            showConfirmationDialog = true
+        }
+        .confirmationDialog("\(network.name)", isPresented: $showConfirmationDialog, titleVisibility: .visible) {
             Button("Open in browser") {
-                if let url = socialNetwork.getURL() {
+                if let url = network.getURL() {
                     openURL(url)
                 }
             }
             
             Button("Copy username to clipboard") {
-                UIPasteboard.general.string = socialNetwork.displayUsername
+                UIPasteboard.general.string = network.displayUsername
             }
             
             Button("Copy link to clipboard") {
-                if let url = socialNetwork.getURL() {
+                if let url = network.getURL() {
                     UIPasteboard.general.url = url
                 }
             }
-        } message: { socialNetwork in
-            Text(socialNetwork.displayUsername)
+        } message: {
+            Text(network.displayUsername)
         }
-        .confirmationDialog("\(urlToOpen?.absoluteString ?? "")", isPresented: $showURLConfirmationDialog, titleVisibility: .visible, presenting: urlToOpen) { url in
-            Button("Open in browser") {
-                openURL(url)
-            }
-            
-            Button("Copy to clipboard") {
-                UIPasteboard.general.url = url
-            }
-        }
-        .confirmationDialog("\(mailToOpen ?? "")", isPresented: $showEmailConfirmationDialog, titleVisibility: .visible, presenting: mailToOpen) { mailString in
-            Button("Write") {
-                if let mailURL = URL(string: "mailto:\(mailString)") {
-                    openURL(mailURL)
-                }
-            }
-            
-            Button("Copy to clipboard") {
-                UIPasteboard.general.string = mailString
-            }
-        }
-        .navigationTitle("Contact Us")
-    }
-    
-    private func openEmailButtonAction(_ mail: String) {
-        mailToOpen = mail
-        showEmailConfirmationDialog.toggle()
-    }
-    
-    private func openURLButtonAction(_ url: URL) {
-        urlToOpen = url
-        showURLConfirmationDialog.toggle()
-    }
-    
-    private func openSocailNetworkButtonAction(_ socialNetwork: SocialNetworkModel) {
-        socialNetworkToOpen = socialNetwork
-        showSocialNetworkConfirmationDialog.toggle()
     }
 }
 

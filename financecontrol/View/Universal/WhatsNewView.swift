@@ -43,21 +43,31 @@ struct WhatsNewView: View {
                 
                 Spacer()
                 
-                getRow(imageName: "sparkles", title: "New Design", subtitle: "Updated design to match the new iOS 26")
+                NewIconRow()
                 
-                getRow(imageName: "capsule.fill", title: "Liquid Glass", subtitle: "New elements made out of Liguid Glass")
+                getRow(imageName: "textformat.size", title: "Dynamic Type", subtitle: "Improved large text size support")
                 
-                getRow(imageName: "play.circle.fill", title: "Updated Animations", subtitle: "Updated animations to fit the new design")
+                if #available(iOS 17.0, *) {
+                    getRow(imageName: "circle.dotted.and.circle", title: "Reduce Motion", subtitle: "Squirrel now better supports \"Reduce Motion\" setting")
+                } else {
+                    getRow(imageName: "circle.dotted", title: "Reduce Motion", subtitle: "Squirrel now supports \"Reduce Motion\" setting")
+                }
                 
                 Spacer()
                 
-                Text("Some features are only available with iOS 26 and newer")
-                    .foregroundStyle(.secondary)
-                    .font(.footnote)
-                    .padding(.bottom)
-                
                 Button("Full Changelog on GitHub") {
                     showConfirmationDialog.toggle()
+                }
+                .confirmationDialog(URL.githubChangelog.absoluteString, isPresented: $showConfirmationDialog, titleVisibility: .visible) {
+                    Button("Open in Browser") {
+                        openURL(URL.githubChangelog)
+                    }
+                    
+                    Button("Copy to Clipboard") {
+                        UIPasteboard.general.url = URL.githubChangelog
+                    }
+                } message: {
+                    Text("Full Changelog")
                 }
             }
             .padding()
@@ -70,17 +80,6 @@ struct WhatsNewView: View {
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
-        }
-        .confirmationDialog(URL.githubChangelog.absoluteString, isPresented: $showConfirmationDialog, titleVisibility: .visible) {
-            Button("Open in Browser") {
-                openURL(URL.githubChangelog)
-            }
-            
-            Button("Copy to Clipboard") {
-                UIPasteboard.general.url = URL.githubChangelog
-            }
-        } message: {
-            Text("Full Changelog")
         }
         .tint(.orange)
         .accentColor(.orange)
@@ -233,21 +232,6 @@ struct WhatsNewView: View {
 //        .minimumScaleFactor(0.8)
     }
     
-    private var cloudSyncView: some View {
-        ZStack {
-            Color(uiColor: .systemGroupedBackground)
-                .ignoresSafeArea()
-            
-            VStack(alignment: .leading) {
-                OnboardingHeaderView(header: "iCloud sync", description: "You can change this setting later in settings. App reload will be required")
-                    .padding(.bottom, 50)
-                
-                CloudSyncView()
-            }
-            .padding(.horizontal)
-        }
-    }
-    
     struct CustomButtonStyle: ButtonStyle {
         func makeBody(configuration: Configuration) -> some View {
             configuration.label
@@ -256,60 +240,45 @@ struct WhatsNewView: View {
     }
 }
 
-struct WhatsNewCloudSyncView: View {
-    @EnvironmentObject
-    private var kvsManager: CloudKitKVSManager
+fileprivate struct NewIconRow: View {
+    @ScaledMetric
+    private var imageSize: CGFloat = 50
+    @State
+    private var imageResource: ImageResource = .appIcon
     
-    private let showHeader: Bool
-    
-    init(showHeader: Bool = true) {
-        self.showHeader = showHeader
-    }
+    let timer = Timer.publish(every: 2, on: .main, in: .common).autoconnect()
     
     var body: some View {
-        VStack(alignment: .leading) {
-            if showHeader{
-                OnboardingHeaderView(header: "iCloud sync", description: "You can change this later in settings")
-                    .padding(.top, 40)
-            }
+        HStack(spacing: 15) {
+            Image(imageResource)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: imageSize, height: imageSize)
+                .foregroundStyle(.tint)
+                .shadow(color: .black.opacity(0.2), radius: 2.5, y: 1)
+                .animation(.default, value: imageResource)
             
-            Spacer()
-            
-            ICloudLogoAnimatedView(isEnabled: kvsManager.iCloudSync)
-                .frame(maxWidth: .infinity)
-                .padding(.bottom, 40)
-            
-            Button {
-                kvsManager.iCloudSync.toggle()
+            VStack(alignment: .leading) {
+                Text("Refreshed Icons")
+                    .font(.title3.bold())
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.leading)
                 
-                HapticManager.shared.impact(.rigid)
-            } label: {
-                Text(kvsManager.iCloudSync ? "Disable iCloud sync" : "Enable iCloud sync")
-                    .font(.body)
-                    .padding(.horizontal)
-                    .padding(.vertical, 11)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background {
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(Color(uiColor: .secondarySystemGroupedBackground))
-                    }
+                Text("Updated icons with Liquid Glass")
+                    .foregroundColor(.secondary)
             }
-            
-            Text("Your data will be stored in your iCloud storage. We don't have access to your data.")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal)
-                .padding(.top, 1)
             
             Spacer()
         }
         .padding()
-        .padding(.bottom, 60)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background {
-            ZStack {
-                Color(uiColor: .systemGroupedBackground)
-                    .ignoresSafeArea(.all)
+        .onReceive(timer) { _ in
+            switch imageResource {
+            case .appIcon:
+                imageResource = .appIconFirstFlight
+            case .appIconFirstFlight:
+                imageResource = .appIconNA
+            default:
+                imageResource = .appIcon
             }
         }
     }

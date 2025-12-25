@@ -27,8 +27,9 @@ struct SettingsView: View {
     private var darkMode: Bool = false
     @AppStorage(UDKey.privacyScreen.rawValue)
     private var privacyScreenIsEnabled: Bool = false
+    
     @State
-    private var showDarkModeToggle: Bool = false
+    var showDarkModeToggle: Bool
     
     @Binding
     var presentOnboarding: Bool
@@ -70,22 +71,12 @@ struct SettingsView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                .onAppear {
-                    withAnimation {
-                        showDarkModeToggle = !autoDarkMode
-                    }
-                }
             }
         } else {
             NavigationView {
                 list
             }
             .navigationViewStyle(.stack)
-            .onAppear {
-                withAnimation {
-                    showDarkModeToggle = !autoDarkMode
-                }
-            }
         }
     }
     
@@ -323,7 +314,7 @@ extension SettingsView {
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView(presentOnboarding: .constant(false), cloudSyncWasEnabled: false, scrollToTop: .constant(nil))
+        SettingsView(showDarkModeToggle: false, presentOnboarding: .constant(false), cloudSyncWasEnabled: false, scrollToTop: .constant(nil))
             .environmentObject(CoreDataModel())
             .environmentObject(RatesViewModel())
     }

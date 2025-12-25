@@ -90,6 +90,7 @@ struct CloudSyncView: View {
                 .foregroundStyle(.red)
                 .padding(.horizontal)
                 .padding(.top, 1)
+                .accessibilityShowsLargeContentViewer()
         }
         
         Text("Your data will be stored in your iCloud storage. We don't have access to your data.")
@@ -97,6 +98,7 @@ struct CloudSyncView: View {
             .foregroundStyle(.secondary)
             .padding(.horizontal)
             .padding(.top, 1)
+            .accessibilityShowsLargeContentViewer()
         
         Spacer()
     }

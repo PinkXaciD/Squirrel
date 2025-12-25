@@ -60,6 +60,39 @@ struct DebugView: View {
         Section {
             NavigationLink("Errors") {
                 List {
+                    Button("Add success alert") {
+                        CustomAlertManager.shared.addAlert(
+                            .init(
+                                type: .success,
+                                title: "Success",
+                                description: "Test success alert presented",
+                                systemImage: "checkmark.circle"
+                            )
+                        )
+                    }
+                    
+                    Button("Add warning alert") {
+                        CustomAlertManager.shared.addAlert(
+                            .init(
+                                type: .warning,
+                                title: "Warning",
+                                description: "Test warning alert presented",
+                                systemImage: "exclamationmark.circle"
+                            )
+                        )
+                    }
+                    
+                    Button("Add error alert") {
+                        CustomAlertManager.shared.addAlert(
+                            .init(
+                                type: .error,
+                                title: "Error",
+                                description: "Test error alert presented",
+                                systemImage: "xmark.circle"
+                            )
+                        )
+                    }
+                    
                     infoPlistSection
                     
                     ratesFetchErrorSection
@@ -515,6 +548,8 @@ struct UserDefaultsValuesView: View {
 }
 
 #Preview {
-    DebugView()
+    NavigationView {
+        DebugView()
+    }
 }
 #endif

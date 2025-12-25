@@ -15,6 +15,8 @@ struct EditSpendingView: View {
     
     @Environment(\.dismiss)
     private var dismiss
+    @Environment(\.dynamicTypeSize)
+    private var dynamicTypeSize
     
     @StateObject
     private var vm: EditSpendingViewModel
@@ -63,22 +65,12 @@ struct EditSpendingView: View {
             }
         }
         .toolbar {
-//            keyboardToolbar
-            
             trailingToolbar
             
             leadingToolbar
         }
         .addKeyboardToolbar(showToolbar: focusedField != nil) {
             clearFocus()
-        }
-        .confirmationDialog("Delete this expense?", isPresented: $confirmationDialogIsPresented, titleVisibility: .visible) {
-            Button("Delete", role: .destructive) {
-                dismiss()
-                vm.cdm.deleteSpending(entity)
-            }
-        } message: {
-            Text("You can't undo this action.")
         }
         .onChange(of: toDismiss) { _ in
             cancelButtonAction()
@@ -158,66 +150,58 @@ struct EditSpendingView: View {
     }
     
     private var returnAndDeleteButtons: some View {
-        HStack(spacing: 15) {
-            if #available(iOS 26.0, *) {
-                GlassEffectContainer {
-                    getReturnButton(cornerRadius: 25)
-                        .glassEffect(.clear)
+        Group {
+            if dynamicTypeSize < .accessibility2 {
+                HStack(spacing: dynamicTypeSize < .xxLarge ? 15 : 0) {
+                    returnButton
                     
-                    getDeleteButton(cornerRadius: 25)
-                        .glassEffect(.clear)
+                    if dynamicTypeSize > .xLarge {
+                        Divider()
+                    }
+                    
+                    deleteButton
                 }
             } else {
-                getReturnButton(cornerRadius: 10)
-                    .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 10))
-                    .hoverEffect()
-                    .padding(.top, 10)
-                
-                getDeleteButton(cornerRadius: 10)
-                    .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 10))
-                    .hoverEffect()
-                    .padding(.top, 10)
+                VStack {
+                    returnButton
+                    
+                    deleteButton
+                }
+                .padding(.top, 10)
             }
         }
         .listRowInsets(.init(top: 15, leading: 0, bottom: 15, trailing: 0))
-        .frame(height: 30)
     }
     
-    private func getReturnButton(cornerRadius: CGFloat) -> some View {
+    private var returnButton: some View {
         Button {
             entityToAddReturn = entity
         } label: {
-            ZStack {
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
-                
-                Text(entity.amountWithReturns == 0 ? "Returned" : "Add return")
-                    .padding(10)
-                    .font(.body)
-            }
+            Text(entity.amountWithReturns == 0 ? "Returned" : "Add return")
         }
-        .foregroundColor(entity.amountWithReturns == 0 ? .secondary : .green)
-        .buttonStyle(.plain)
+        .tint(entity.amountWithReturns == 0 ? .secondary : .green)
+        .buttonStyle(SpendingListRowButtonStyle())
         .disabled(entity.amountWithReturns == 0)
         .frame(maxWidth: .infinity)
     }
     
-    private func getDeleteButton(cornerRadius: CGFloat) -> some View {
+    private var deleteButton: some View {
         Button(role: .destructive) {
             confirmationDialogIsPresented.toggle()
         } label: {
-            ZStack {
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
-                
-                Text("Delete")
-                    .padding(10)
-                    .font(.body)
-                    .foregroundColor(.red)
-            }
+            Text("Delete")
         }
-        .buttonStyle(.plain)
+        .buttonStyle(SpendingListRowButtonStyle())
+        .tint(.red)
         .frame(maxWidth: .infinity)
+        .confirmationDialog("Delete this expense?", isPresented: $confirmationDialogIsPresented, titleVisibility: .visible) {
+            Button("Delete", role: .destructive) {
+                dismiss()
+                vm.cdm.deleteSpending(entity)
+            }
+        } message: {
+            Text("You can't undo this action.")
+        }
     }
     
     private var returnsSection: some View {
@@ -234,12 +218,6 @@ struct EditSpendingView: View {
         }
     }
     
-    private var keyboardToolbar: ToolbarItemGroup<some View> {
-        hideKeyboardToolbar {
-            clearFocus()
-        }
-    }
-    
     private var trailingToolbar: ToolbarItem<Void, some View> {
         ToolbarItem(placement: .navigationBarTrailing) {
             Button(action: doneButtonAction) {
@@ -248,8 +226,14 @@ struct EditSpendingView: View {
                         .tint(.secondary)
                         .accentColor(.secondary)
                 } else {
-                    Text("Save")
-                        .fontWeight(.semibold)
+                    Label {
+                        Text("Save")
+                            .fontWeight(.semibold)
+                    } icon: {
+                        Image(systemName: "checkmark")
+                    }
+                    .labelStyle(.titleOnly)
+
                 }
             }
             .foregroundStyle(isTrailingButtonDisabled ? Color.secondary.opacity(0.7) : categoryColor)
@@ -264,7 +248,12 @@ struct EditSpendingView: View {
     
     private var leadingToolbar: ToolbarItem<Void, some View> {
         ToolbarItem(placement: .navigationBarLeading) {
-            Button("Cancel", action: cancelButtonAction)
+            Button {
+                cancelButtonAction()
+            } label: {
+                Label("Cancel", systemImage: "xmark")
+                    .labelStyle(.titleOnly)
+            }
         }
     }
 }
@@ -312,8 +301,12 @@ extension EditSpendingView {
     }
     
     private func cancelButtonAction() {
-        edit.toggle()
-        vm.clear()
+        clearFocus()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + (focusedField == nil ? 0 : 0.1)) {
+            edit.toggle()
+            vm.clear()
+        }
     }
     
     private func appearActions() {

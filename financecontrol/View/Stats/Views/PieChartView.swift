@@ -8,7 +8,10 @@
 import SwiftUI
 
 struct PieChartView: View {
-    @EnvironmentObject 
+    @Environment(\.dynamicTypeSize)
+    private var dynamicTypeSize
+    
+    @EnvironmentObject
     private var cdm: CoreDataModel
     @EnvironmentObject
     private var rvm: RatesViewModel
@@ -72,36 +75,66 @@ struct PieChartView: View {
         PieChartLegendView(minimize: showMinimizeButton ? $minimizeLegend : .constant(true), selection: $pcvm.selection)
     }
     
+    @ViewBuilder
     private var footer: some View {
-        HStack(alignment: .center) {
-            if let name = pcvm.selectedCategory?.name {
-                Button {
-                    removeSelection()
-                } label: {
-                    VStack(alignment: .leading) {
-                        Text("Selected category: \(name)")
-                        
-                        Text("Tap here to remove selection")
+        if dynamicTypeSize > .accessibility1 {
+            HStack(spacing: 0) {
+                VStack(alignment: .leading) {
+                    if let name = pcvm.selectedCategory?.name {
+                        Button {
+                            removeSelection()
+                        } label: {
+                            VStack(alignment: .leading) {
+                                Text("Selected category: \(name)")
+                                
+                                Text("Tap here to remove selection")
+                            }
+                            .foregroundStyle(.secondary)
+                            .font(.footnote)
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .foregroundStyle(.secondary)
-                    .font(.footnote)
+                    
+                    Spacer()
+                    
+                    Button(action: toggleLegend, label: expandButtonLabel)
                 }
-                .buttonStyle(.plain)
+                .padding(.horizontal)
+                
+                Spacer()
             }
-            
-            Spacer()
-            
-            Button(action: toggleLegend, label: expandButtonLabel)
+        } else {
+            HStack(alignment: .center) {
+                if let name = pcvm.selectedCategory?.name {
+                    Button {
+                        removeSelection()
+                    } label: {
+                        VStack(alignment: .leading) {
+                            Text("Selected category: \(name)")
+                            
+                            Text("Tap here to remove selection")
+                        }
+                        .foregroundStyle(.secondary)
+                        .font(.footnote)
+                    }
+                    .buttonStyle(.plain)
+                }
+                
+                Spacer()
+                
+                Button(action: toggleLegend, label: expandButtonLabel)
+            }
+            .padding(.horizontal)
         }
-        .padding(.horizontal)
     }
 }
 
 extension PieChartView {
     private func toggleLegend() {
-        withAnimation {
+        withAnimation(UIAccessibility.prefersCrossFadeTransitions ? .linear(duration: 0) : .default) {
             minimizeLegend.toggle()
         }
+        
         UserDefaults.standard.set(minimizeLegend, forKey: UDKey.minimizeLegend.rawValue)
     }
     
@@ -110,7 +143,7 @@ extension PieChartView {
             if minimizeLegend {
                 Text("Expand")
                     .fixedSize()
-                    .matchedGeometryEffect(id: "MinimizeButtonText", in: namespace)
+                    .matchedGeometryEffect(id: UIAccessibility.prefersCrossFadeTransitions ? "None" : "MinimizeButtonText", in: namespace)
             } else {
                 Text("Minimize")
                     .fixedSize()

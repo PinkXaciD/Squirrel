@@ -43,14 +43,6 @@ struct EditReturnView: View {
                 clearFocus()
             }
             .navigationBarTitleDisplayMode(.inline)
-            .confirmationDialog("Delete this return?", isPresented: $showConfirmationDialog, titleVisibility: .visible) {
-                Button("Delete", role: .destructive) {
-                    dismiss()
-                    cdm.deleteReturn(spendingReturn: vm.returnEntity)
-                }
-            } message: {
-                Text("You can't undo this action.")
-            }
 
         }
     }
@@ -106,6 +98,14 @@ struct EditReturnView: View {
         Section {
             Button("Delete", role: .destructive) {
                 showConfirmationDialog.toggle()
+            }
+            .confirmationDialog("Delete this return?", isPresented: $showConfirmationDialog, titleVisibility: .visible) {
+                Button("Delete", role: .destructive) {
+                    dismiss()
+                    cdm.deleteReturn(spendingReturn: vm.returnEntity)
+                }
+            } message: {
+                Text("You can't undo this action.")
             }
         }
     }

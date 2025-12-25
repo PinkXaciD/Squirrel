@@ -131,7 +131,7 @@ struct OtherCurrencySelector: View {
             }
             .background {
                 Rectangle()
-                    .fill(Color(uiColor: .secondarySystemGroupedBackground))
+                    .fill(Color(uiColor: .secondarySystemGroupedBackground).opacity(0.001))
                     .frame(maxWidth: .infinity)
             }
         }

@@ -38,6 +38,9 @@ struct AddReturnView: View {
             .addKeyboardToolbar(showToolbar: focusedField != nil) {
                 clearFocus()
             }
+            .onAppear {
+                focusedField = .amount
+            }
             .navigationBarTitleDisplayMode(.inline)
         }
     }
@@ -56,9 +59,6 @@ struct AddReturnView: View {
                 .focused($focusedField, equals: .amount)
                 .currencyFormatted($vm.amount, currencyCode: vm.currency)
                 .spendingAmountTextFieldStyle()
-                .onAppear {
-                    focusedField = .amount
-                }
             
             CurrencySelector(currency: $vm.currency, spacer: false)
                 .font(.body)

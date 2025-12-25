@@ -18,7 +18,6 @@ struct ColorAndIconView: View {
     
     let colors: [(LocalizedStringKey, Color)] = [
         ("Orange", Color.orange),
-//        ("Red", Color.red),
         ("Pink", Color.pink),
         ("Purple", Color.purple),
         ("Indigo", Color.indigo),

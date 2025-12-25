@@ -22,6 +22,14 @@ struct AboutView: View {
     @State
     private var showWhatsNew: Bool = false
     
+    private var iconCornerRadius: CGFloat {
+        if #available(iOS 26.0, *) {
+            return 16.5
+        }
+        
+        return 15
+    }
+    
     var body: some View {
         List {
             aboutSection
@@ -33,15 +41,6 @@ struct AboutView: View {
             #if DEBUG
             debugSection
             #endif
-        }
-        .confirmationDialog("\(urlToOpen?.absoluteString ?? "")", isPresented: $showConfirmationDialog, titleVisibility: .visible, presenting: urlToOpen) { url in
-            Button("Open in browser") {
-                openURL(url)
-            }
-            
-            Button("Copy to clipboard") {
-                UIPasteboard.general.url = url
-            }
         }
         .sheet(isPresented: $showWhatsNew) {
             WhatsNewView()
@@ -60,6 +59,15 @@ struct AboutView: View {
             Button("Our Website") {
                 openURLButtonAction(.appWebsite)
             }
+            .confirmationDialog("\(urlToOpen?.absoluteString ?? "")", isPresented: $showConfirmationDialog, titleVisibility: .visible, presenting: urlToOpen) { url in
+                Button("Open in browser") {
+                    openURL(url)
+                }
+                
+                Button("Copy to clipboard") {
+                    UIPasteboard.general.url = url
+                }
+            }
             
             NavigationLink("Privacy Policy") {
                 PrivacyPolicyView()
@@ -73,8 +81,6 @@ struct AboutView: View {
             let appName = Bundle.main.displayName ?? "Squirrel"
             
             Image(imageName, bundle: .main)
-                .cornerRadius(15)
-                .overlay { iconOverlay }
             
             Text("\(appName), version \(version)")
                 .font(.body.bold())
@@ -92,7 +98,7 @@ struct AboutView: View {
     }
     
     private var iconOverlay: some View {
-        RoundedRectangle(cornerRadius: 15)
+        RoundedRectangle(cornerRadius: iconCornerRadius)
             .stroke(lineWidth: 1)
             .foregroundColor(.primary)
             .opacity(0.3)

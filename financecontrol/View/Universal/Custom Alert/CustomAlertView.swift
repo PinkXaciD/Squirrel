@@ -13,34 +13,22 @@ struct CustomAlertView: View {
     @State private var animate: Bool = false
     
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Material.regular)
-                .shadow(radius: 5)
-            
-            HStack {
-                Image(systemName: data.systemImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .scaleEffect(animate ? 1 : 0.1)
-                    .foregroundColor(data.type.color)
-                    .padding()
-                
-                HStack {
-                    VStack(alignment: .leading) {
-                        Text(data.title)
-                            .fontWeight(.bold)
-                            .minimumScaleFactor(0.5)
-                        
-                        if let description = data.description {
-                            Text(description)
-                                .lineLimit(2)
-                                .minimumScaleFactor(0.5)
-                        }
-                    }
-                    .padding(.vertical, 5)
+        Group {
+            if #available(iOS 26.0, *) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 30)
+                        .fill(.black.opacity(0.001))
                     
-                    Spacer()
+                    content
+                }
+                .glassEffect(.regular.tint(Color(uiColor: .secondarySystemGroupedBackground).opacity(0.5)).interactive(), in: RoundedRectangle(cornerRadius: 30))
+            } else {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Material.regular)
+                        .shadow(color: .black.opacity(0.1), radius: 5)
+                    
+                    content
                 }
             }
         }
@@ -67,6 +55,34 @@ struct CustomAlertView: View {
                 }
         )
         .transition(.opacity.combined(with: .scale).combined(with: .move(edge: .top)))
+    }
+    
+    private var content: some View {
+        HStack(spacing: 0) {
+            Image(systemName: data.systemImage)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .scaleEffect(animate ? 1 : 0.1)
+                .foregroundColor(data.type.color)
+                .padding()
+            
+            HStack {
+                VStack(alignment: .leading) {
+                    Text(data.title)
+                        .fontWeight(.bold)
+                        .minimumScaleFactor(0.5)
+                    
+                    if let description = data.description {
+                        Text(description)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.5)
+                    }
+                }
+                .padding(.vertical, 5)
+                
+                Spacer()
+            }
+        }
     }
     
     init(data: CustomAlertData) {

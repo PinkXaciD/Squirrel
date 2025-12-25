@@ -29,6 +29,8 @@ struct SpendingView: View {
     
     @Environment(\.dismiss) 
     private var dismiss
+    @Environment(\.dynamicTypeSize)
+    private var dynamicTypeSize
     
     @AppStorage(UDKey.defaultCurrency.rawValue) 
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
@@ -68,16 +70,9 @@ struct SpendingView: View {
             debugSection
             #endif
         }
-        .confirmationDialog("Delete this expense?", isPresented: $alertIsPresented, titleVisibility: .visible) {
-            Button("Delete", role: .destructive) {
-                dismiss()
-                cdm.deleteSpending(entity)
-            }
-        } message: {
-            Text("You can't undo this action.")
-        }
         .toolbar {
             closeToolbar
+            
             editToolbar
         }
         .navigationBarTitleDisplayMode(.inline)
@@ -248,7 +243,7 @@ struct SpendingView: View {
             if let comment = safeEntity.comment, !comment.isEmpty {
                 ZStack(alignment: .leading) {
                     Rectangle()
-                        .foregroundColor(.init(uiColor: .secondarySystemGroupedBackground))
+                        .foregroundColor(.init(uiColor: .secondarySystemGroupedBackground).opacity(0.001))
                     
                     Text(comment)
                 }
@@ -337,56 +332,58 @@ struct SpendingView: View {
     }
     
     private var returnAndDeleteButtons: some View {
-        HStack(spacing: 15) {
-            getReturnButton(cornerRadius: Self.listCornerRadius)
-                .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: Self.listCornerRadius))
-                .hoverEffect()
+        Group {
+            if dynamicTypeSize < .accessibility2 {
+                HStack(spacing: dynamicTypeSize < .xxLarge ? 15 : 0) {
+                    returnButton
+                    
+                    if dynamicTypeSize > .xLarge {
+                        Divider()
+                    }
+                    
+                    deleteButton
+                }
+            } else {
+                VStack {
+                    returnButton
+                    
+                    deleteButton
+                }
                 .padding(.top, 10)
-            
-            getDeleteButton(cornerRadius: Self.listCornerRadius)
-                .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: Self.listCornerRadius))
-                .hoverEffect()
-                .padding(.top, 10)
+            }
         }
         .listRowInsets(.init(top: 15, leading: 0, bottom: 15, trailing: 0))
-        .frame(height: 30)
     }
     
-    private func getReturnButton(cornerRadius: CGFloat) -> some View {
+    private var returnButton: some View {
         Button {
             entityToAddReturn = entity
         } label: {
-            ZStack {
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
-                
-                Text(entity.amountWithReturns == 0 ? "Returned" : "Add return")
-                    .padding(10)
-                    .font(.body)
-            }
+            Text(entity.amountWithReturns == 0 ? "Returned" : "Add return")
         }
-        .foregroundColor(entity.amountWithReturns == 0 ? .secondary : .green)
-        .buttonStyle(.plain)
+        .tint(entity.amountWithReturns == 0 ? .secondary : .green)
+        .buttonStyle(SpendingListRowButtonStyle())
         .disabled(entity.amountWithReturns == 0)
         .frame(maxWidth: .infinity)
     }
     
-    private func getDeleteButton(cornerRadius: CGFloat) -> some View {
+    private var deleteButton: some View {
         Button(role: .destructive) {
             alertIsPresented.toggle()
         } label: {
-            ZStack {
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
-                
-                Text("Delete")
-                    .padding(10)
-                    .font(.body)
-                    .foregroundColor(.red)
-            }
+            Text("Delete")
         }
-        .buttonStyle(.plain)
+        .buttonStyle(SpendingListRowButtonStyle())
+        .tint(.red)
         .frame(maxWidth: .infinity)
+        .confirmationDialog("Delete this expense?", isPresented: $alertIsPresented, titleVisibility: .visible) {
+            Button("Delete", role: .destructive) {
+                dismiss()
+                cdm.deleteSpending(entity)
+            }
+        } message: {
+            Text("You can't undo this action.")
+        }
     }
     
     private var editToolbar: ToolbarItem<(), some View> {
@@ -394,15 +391,19 @@ struct SpendingView: View {
             Button {
                 editAction()
             } label: {
-                Text("Edit")
+                Label("Edit", systemImage: "pencil")
+                    .labelStyle(.titleOnly)
             }
         }
     }
     
     private var closeToolbar: ToolbarItem<(), some View> {
         ToolbarItem(placement: .navigationBarLeading) {
-            Button("Close") {
+            Button {
                 dismiss()
+            } label: {
+                Label("Close", systemImage: "xmark")
+                    .labelStyle(.titleOnly)
             }
         }
     }

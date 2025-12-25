@@ -27,10 +27,8 @@ struct StatsRow: View {
     @GestureState
     var rowDragging: UUID?
     
-    @Binding
-    var spendingToDelete: SpendingEntity?
-    @Binding
-    var presentDeleteDialog: Bool
+    @State
+    private var presentConfirmationDialog: Bool = false
     
     let data: StatsRowData
     
@@ -53,11 +51,9 @@ struct StatsRow: View {
     let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
     #endif
     
-    init(state: GestureState<UUID?>, data: StatsRowData, spendingToDelete: Binding<SpendingEntity?>, presentDeleteDialog: Binding<Bool>) {
+    init(state: GestureState<UUID?>, data: StatsRowData) {
         self._rowDragging = state
         self.data = data
-        self._spendingToDelete = spendingToDelete
-        self._presentDeleteDialog = presentDeleteDialog
     }
     
     private var listPadding: CGFloat {
@@ -101,6 +97,13 @@ struct StatsRow: View {
         }
         .cornerRadius(isDragging || vm.showTrailingButtons == data.id || vm.showLeadingButtons == data.id ? cornerRadius : 0)
         .offset(x: offset)
+        .confirmationDialog("Delete this expense?", isPresented: $presentConfirmationDialog, titleVisibility: .visible) {
+            Button("Delete", role: .destructive) {
+                DataManager.shared.deleteSpending(with: data.entity.objectID)
+            }
+        } message: {
+            Text("You can't undo this action.")
+        }
         .background(alignment: .trailing) {
             if isDragging || vm.showTrailingButtons == data.id, vm.hOffset < 0 {
                 if #available(iOS 26.0, *) {
@@ -324,8 +327,9 @@ struct StatsRow: View {
     
     private func deleteButtonAction() {
 //        deleteSpending(entity)
-        spendingToDelete = data.entity
-        presentDeleteDialog = true
+//        spendingToDelete = data.entity
+//        presentDeleteDialog = true
+        presentConfirmationDialog = true
         
         breakGesture()
     }
