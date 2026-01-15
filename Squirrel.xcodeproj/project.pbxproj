@@ -26,6 +26,7 @@
 		8D0763A82A4B257F00D2C3FF /* CurrencySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0763A72A4B257F00D2C3FF /* CurrencySelector.swift */; };
 		8D0DF54F2AE80C2400C3CC1F /* CustomAlertType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0DF54E2AE80C2400C3CC1F /* CustomAlertType.swift */; };
 		8D0DF5512AE80D5F00C3CC1F /* CustomAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0DF5502AE80D5F00C3CC1F /* CustomAlertView.swift */; };
+		8D0F2FA92F193E7800F7E96E /* Place.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0F2FA82F193E7800F7E96E /* Place.swift */; };
 		8D10D7872B504D2C0038C8AD /* SumWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D10D7852B504D000038C8AD /* SumWidgetView.swift */; };
 		8D1A7FB72C99DD2E00BAF6A0 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 8D1A7FB62C99DD2E00BAF6A0 /* LICENSE */; };
 		8D1A7FB82C99DD2E00BAF6A0 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 8D1A7FB62C99DD2E00BAF6A0 /* LICENSE */; };
@@ -42,7 +43,6 @@
 		8D2AD7D02BA1CE28001DCC61 /* OnboardingCurrencyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AD7CF2BA1CE28001DCC61 /* OnboardingCurrencyView.swift */; };
 		8D2AD7D22BA1CE6E001DCC61 /* OnboardingGesturesTemplateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AD7D12BA1CE6E001DCC61 /* OnboardingGesturesTemplateView.swift */; };
 		8D2AD7D42BA1CEA6001DCC61 /* OnboardingCategoriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AD7D32BA1CEA6001DCC61 /* OnboardingCategoriesView.swift */; };
-		8D2AD7D62BA21152001DCC61 /* Transition+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D2AD7D52BA21152001DCC61 /* Transition+Extensions.swift */; };
 		8D3542DC2D3ECE850065A5CE /* BarChartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D3542DB2D3ECE850065A5CE /* BarChartViewModel.swift */; };
 		8D35AC962B0E62DE0030F7DF /* AddSpendingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D35AC952B0E62DE0030F7DF /* AddSpendingViewModel.swift */; };
 		8D3876632A740F960005FFAF /* InputUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D3876622A740F960005FFAF /* InputUtils.swift */; };
@@ -241,6 +241,7 @@
 		8D0763A72A4B257F00D2C3FF /* CurrencySelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencySelector.swift; sourceTree = "<group>"; };
 		8D0DF54E2AE80C2400C3CC1F /* CustomAlertType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertType.swift; sourceTree = "<group>"; };
 		8D0DF5502AE80D5F00C3CC1F /* CustomAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertView.swift; sourceTree = "<group>"; };
+		8D0F2FA82F193E7800F7E96E /* Place.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Place.swift; sourceTree = "<group>"; };
 		8D10D7852B504D000038C8AD /* SumWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SumWidgetView.swift; sourceTree = "<group>"; };
 		8D1A7FB62C99DD2E00BAF6A0 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		8D1E71E22AAEFED6004A17B4 /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
@@ -257,7 +258,6 @@
 		8D2AD7CF2BA1CE28001DCC61 /* OnboardingCurrencyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCurrencyView.swift; sourceTree = "<group>"; };
 		8D2AD7D12BA1CE6E001DCC61 /* OnboardingGesturesTemplateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingGesturesTemplateView.swift; sourceTree = "<group>"; };
 		8D2AD7D32BA1CEA6001DCC61 /* OnboardingCategoriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingCategoriesView.swift; sourceTree = "<group>"; };
-		8D2AD7D52BA21152001DCC61 /* Transition+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Transition+Extensions.swift"; sourceTree = "<group>"; };
 		8D3542DB2D3ECE850065A5CE /* BarChartViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarChartViewModel.swift; sourceTree = "<group>"; };
 		8D35AC952B0E62DE0030F7DF /* AddSpendingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddSpendingViewModel.swift; sourceTree = "<group>"; };
 		8D3876622A740F960005FFAF /* InputUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputUtils.swift; sourceTree = "<group>"; };
@@ -598,6 +598,7 @@
 				8D6059E02AB874C30043A293 /* Rates */,
 				8D4E081B2AAA163800B3544F /* Currency.swift */,
 				8D8439E82CD120E700D2054D /* SocialNetworkModel.swift */,
+				8D0F2FA82F193E7800F7E96E /* Place.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -692,7 +693,6 @@
 				8DB294B92A7C0FF800170BA2 /* NumbersViewModifier.swift */,
 				8D7EFB0A2A85096B009797E8 /* Date+Extensions.swift */,
 				8D1E71E22AAEFED6004A17B4 /* Color+Extensions.swift */,
-				8D2AD7D52BA21152001DCC61 /* Transition+Extensions.swift */,
 				8D4113482C77925100613308 /* Locale+Extensions.swift */,
 				8DBD9B272CC9210300C77567 /* URL+Extensions.swift */,
 				8DB9F9B82BB6F811000AF853 /* UserDefaults+Extensions.swift */,
@@ -1237,6 +1237,7 @@
 				8DB294BA2A7C0FF800170BA2 /* NumbersViewModifier.swift in Sources */,
 				8DBFEBD02A49ED4800165414 /* ContentView.swift in Sources */,
 				8D6E441D2B18D63600FDFF9D /* AddReturnView.swift in Sources */,
+				8D0F2FA92F193E7800F7E96E /* Place.swift in Sources */,
 				8D0DF54F2AE80C2400C3CC1F /* CustomAlertType.swift in Sources */,
 				8D1E71E52AAF1C1A004A17B4 /* CategoryEditView.swift in Sources */,
 				8DB9F9B92BB6F811000AF853 /* UserDefaults+Extensions.swift in Sources */,
@@ -1276,7 +1277,6 @@
 				8DCA25E42A9F4E5300A5BC31 /* ShadowedCategoriesView.swift in Sources */,
 				8D59A2512C860D0B007E40E9 /* SettingsFormattingView.swift in Sources */,
 				8DBA96A62AD48DB800F900C4 /* AboutView.swift in Sources */,
-				8D2AD7D62BA21152001DCC61 /* Transition+Extensions.swift in Sources */,
 				8D06810E2B6D461600195205 /* PieChartViewModel.swift in Sources */,
 				8D4113492C77925100613308 /* Locale+Extensions.swift in Sources */,
 				8D9F30E92B4D7C3E00A0B8C3 /* WidgetsManager.swift in Sources */,
@@ -1419,7 +1419,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 75;
+				CURRENT_PROJECT_VERSION = 76;
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1434,7 +1434,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.2.4;
+				MARKETING_VERSION = 1.2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirreldebug.squirrelWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1458,7 +1458,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 75;
+				CURRENT_PROJECT_VERSION = 76;
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1473,7 +1473,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.2.4;
+				MARKETING_VERSION = 1.2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirrel.squirrelWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1618,7 +1618,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 75;
+				CURRENT_PROJECT_VERSION = 76;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
@@ -1638,7 +1638,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.4;
+				MARKETING_VERSION = 1.2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirreldebug;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1662,7 +1662,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 75;
+				CURRENT_PROJECT_VERSION = 76;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
@@ -1682,7 +1682,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.4;
+				MARKETING_VERSION = 1.2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirrel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

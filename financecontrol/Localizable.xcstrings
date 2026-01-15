@@ -541,9 +541,6 @@
     "Done" : {
 
     },
-    "Dynamic Type" : {
-
-    },
     "Edit" : {
 
     },
@@ -680,6 +677,9 @@
     "Hide Keyboard" : {
 
     },
+    "Hide Suggestions" : {
+
+    },
     "Historical exchange rates are presented as the stock exchange closed on the requested day" : {
 
     },
@@ -731,9 +731,6 @@
           }
         }
       }
-    },
-    "Improved large text size support" : {
-
     },
     "Indigo" : {
 
@@ -895,6 +892,9 @@
     "Place name is too long" : {
 
     },
+    "Place Suggestions" : {
+
+    },
     "Plays for the audience" : {
 
     },
@@ -933,12 +933,6 @@
 
     },
     "Recommended" : {
-
-    },
-    "Reduce Motion" : {
-
-    },
-    "Refreshed Icons" : {
 
     },
     "Remove from favorites" : {
@@ -1019,6 +1013,9 @@
     "Show Onboarding" : {
 
     },
+    "Show Suggestions" : {
+
+    },
     "Sign in your iCloud account on device or allow Squirrel to use iCloud in settings." : {
 
     },
@@ -1062,10 +1059,7 @@
     "Squirrel does not send any data or identifiers from your device." : {
 
     },
-    "Squirrel now better supports \"Reduce Motion\" setting" : {
-
-    },
-    "Squirrel now supports \"Reduce Motion\" setting" : {
+    "Squirrel will now show a list of suggestions while you entering place" : {
 
     },
     "Sqwoorl" : {
@@ -1075,6 +1069,9 @@
 
     },
     "Success" : {
+
+    },
+    "Suggestions" : {
 
     },
     "Swap" : {
@@ -1183,9 +1180,6 @@
           }
         }
       }
-    },
-    "Updated icons with Liquid Glass" : {
-
     },
     "Updating rates..." : {
 

@@ -1,15 +1,22 @@
 //
 //  AddSpendingView.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/06/27.
+//  Created by PinkXaciD on 2022/06/27.
 //
 
 import SwiftUI
 
 struct AddSpendingView: View {
     init(ratesViewModel rvm: RatesViewModel, codeDataModel cdm: CoreDataModel, shortcut: AddSpendingShortcut? = nil) {
-        self._vm = StateObject(wrappedValue: AddSpendingViewModel(ratesViewModel: rvm, coreDataModel: cdm, shortcut: shortcut))
+        self._vm = StateObject(
+            wrappedValue: AddSpendingViewModel(
+                ratesViewModel: rvm,
+                coreDataModel: cdm,
+                shortcut: shortcut,
+                places: cdm.places
+            )
+        )
     }
     
     @StateObject
@@ -63,13 +70,30 @@ struct AddSpendingView: View {
     private var hideContent: Bool = false
     @State
     private var isLoading: Bool = false
+    @State
+    private var minimizeSuggestions: Bool = false
 
     private let utils = InputUtils() /// For input validation
+    
+    private var showSuggestions: Bool {
+        !vm.place.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !vm.filteredSuggestions.isEmpty && focusedField == .place
+    }
+    
+    private var suggestionsAnimation: Animation {
+        if #available(iOS 26.0, *) {
+            return .bouncy
+        }
+        
+        return .snappy
+    }
     
     var body: some View {
         NavigationView {
             List {
                 reqiredSection
+                    .opacity((showSuggestions && !minimizeSuggestions) ? 0.5 : 1)
+                    .blur(radius: (showSuggestions && !minimizeSuggestions) ? 1 : 0)
+                    .animation(.default, value: showSuggestions)
                 
                 placeAndCommentSection
                 
@@ -92,6 +116,36 @@ struct AddSpendingView: View {
         .tint(colorIdentifier(color: tint))
         .accentColor(colorIdentifier(color: tint))
         .interactiveDismissDisabled(!vm.amount.isEmpty)
+        .overlay(alignment: .bottom) {
+            GeometryReader { geometry in
+                if showSuggestions {
+                    var padding: CGFloat {
+                        geometry.size.height - vm.placeFieldPosition
+                    }
+                    
+                    var transition: AnyTransition {
+                        if #available(iOS 26.0, *) {
+                            return .scale(scale: 0, anchor: .init(x: 0.15, y: vm.placeFieldPosition / geometry.size.height)).combined(with: .opacity)
+                        }
+                        
+                        return .maskFromTheTopWithOpacity(padding: padding)
+                    }
+                    
+                    VStack {
+                        Spacer()
+                        
+                        suggestionsOverlay
+                            .padding(.vertical, 10)
+                            .padding(.bottom, padding)
+                            .animation(suggestionsAnimation, value: vm.filteredSuggestions.count)
+                    }
+                    .transition(transition)
+                }
+            }
+        }
+        .animation(suggestionsAnimation, value: showSuggestions)
+        .animation(suggestionsAnimation, value: minimizeSuggestions)
+        .animation(suggestionsAnimation, value: vm.filteredSuggestions)
         .blur(radius: hideContent ? Vars.privacyBlur : 0)
         .onChange(of: scenePhase) { value in
             if privacyScreenIsEnabled {
@@ -174,6 +228,18 @@ struct AddSpendingView: View {
                 .onSubmit {
                     nextField()
                 }
+                .background {
+                    GeometryReader { geometry in
+                        Color.clear
+                            .preference(
+                                key: PlacePositionPreferenceKey.self,
+                                value: geometry.frame(in: .global).minY - geometry.frame(in: .global).height - (UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0)
+                            )
+                    }
+                }
+                .onPreferenceChange(PlacePositionPreferenceKey.self) { value in
+                    vm.placeFieldPosition = value
+                }
                 
             if #available(iOS 16.0, *) {
                 TextField("Comment", text: $vm.comment, axis: .vertical)
@@ -225,10 +291,92 @@ struct AddSpendingView: View {
         }
     }
     
+    @ViewBuilder
+    private var suggestionsOverlay: some View {
+        if #available(iOS 26.0, *) {
+            HStack {
+                VStack(alignment: .leading, spacing: 15) {
+                    Button {
+                        minimizeSuggestions.toggle()
+                    } label: {
+                        HStack {
+                            Text("Suggestions")
+                            
+                            Label(minimizeSuggestions ? "Show Suggestions" : "Hide Suggestions", systemImage: "chevron.down")
+                                .labelStyle(.iconOnly)
+                                .rotationEffect(.degrees(minimizeSuggestions ? 180 : 0))
+                        }
+                        .foregroundStyle(.secondary)
+                        .font(.footnote.bold())
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.horizontal, minimizeSuggestions ? 12 : 20)
+                    .padding(.top, minimizeSuggestions ? 9 : 17)
+                    .zIndex(2)
+                    
+                    if !minimizeSuggestions {
+                        ForEach(vm.filteredSuggestions, id: \.self) { suggestion in
+                            getSuggestionButton(value: suggestion)
+                                .id(UUID())
+                                .transition(.blurWithOpacity)
+                        }
+                        .padding(.horizontal, 20)
+                    }
+                }
+                .padding(.bottom, minimizeSuggestions ? 9 : 17)
+            }
+            .modifier(MenuBackgroundModifier(minimizeSuggestions: minimizeSuggestions))
+        } else {
+            VStack(alignment: .leading, spacing: 7.5) {
+                Button {
+                    minimizeSuggestions.toggle()
+                } label: {
+                    HStack {
+                        Text("Suggestions")
+                        
+                        Label(minimizeSuggestions ? "Show Suggestions" : "Hide Suggestions", systemImage: "chevron.down")
+                            .labelStyle(.iconOnly)
+                            .rotationEffect(.degrees(minimizeSuggestions ? 180 : 0))
+                    }
+                    .foregroundStyle(.secondary)
+                    .font(.footnote.bold())
+                }
+                .buttonStyle(.plain)
+                .padding(.horizontal, minimizeSuggestions ? 12 : 15)
+                .padding(.top, minimizeSuggestions ? 9 : 12)
+                .zIndex(2)
+                
+                if !minimizeSuggestions {
+                    ForEach(vm.filteredSuggestions.reversed(), id: \.self) { suggestion in
+                        getSuggestionButton(value: suggestion)
+                            .id(UUID())
+                            .transition(.blurWithOpacity)
+                    }
+                    .padding(.vertical, 2)
+                    .padding(.horizontal, 20)
+                }
+            }
+            .padding(.bottom, minimizeSuggestions ? 9 : 12)
+            .modifier(MenuBackgroundModifier(minimizeSuggestions: minimizeSuggestions))
+        }
+    }
+    
+    private func getSuggestionButton(value: String) -> some View {
+        Button(value) {
+            vm.place = value
+        }
+        .buttonStyle(.plain)
+        .lineLimit(1)
+    }
+    
 #if DEBUG
     private var debugSection: some View {
         Section {
             TextField("Timezone identifier", text: $vm.timeZoneIdentifier)
+            
+            Text("Show suggestions: \(showSuggestions.description)")
+            
+            Text("Suggestions count: \(vm.filteredSuggestions.count)")
         } header: {
             Text(verbatim: "Debug")
         }
@@ -305,48 +453,38 @@ extension AddSpendingView {
     }
 }
 
-//fileprivate struct PopularCategoryButtonView: View {
-//    @EnvironmentObject private var vm: AddSpendingViewModel
-//    let category: CategoryEntity
-//    @State private var isFocused: Bool = false
-//    
-//    var body: some View {
-//        Button {
-//            withAnimation {
-//                vm.selectedCategory = category
-//            }
-//        } label: {
-//            Text(category.name ?? "Error")
-//                .font(.body)
-//                .fontWeight(vm.selectedCategory?.id == category.id ? .semibold : .regular)
-//                .foregroundColor(vm.selectedCategory?.id == category.id ? Color(uiColor: .secondarySystemGroupedBackground) : Color[category.color ?? ""])
-//                .padding(.vertical, 6)
-//                .padding(.horizontal, 12)
-//                .background {
-//                    RoundedRectangle(cornerRadius: 10)
-//                        .fill(getBackgroundColor())
-//                }
-//                .brightness(isFocused ? 0.05 : 0)
-//                .animation(.default, value: vm.selectedCategory)
-//        }
-//        .buttonStyle(PlainButtonStyle())
-//        .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 10))
-//        .hoverEffect()
-//        .onHover { value in
-//            withAnimation {
-//                isFocused = value
-//            }
-//        }
-//    }
-//    
-//    private func getBackgroundColor() -> Color {
-//        if vm.selectedCategory?.id == category.id {
-//            return Color[category.color ?? ""]
-//        } else {
-//            return Color(uiColor: .secondarySystemGroupedBackground)
-//        }
-//    }
-//}
+fileprivate struct PlacePositionPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {}
+}
+
+fileprivate struct MenuBackgroundModifier: ViewModifier {
+    let minimizeSuggestions: Bool
+    
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content
+                .clipShape(RoundedRectangle(cornerRadius: 30))
+                .glassEffect(.regular.interactive(!minimizeSuggestions), in: RoundedRectangle(cornerRadius: 30))
+                .padding()
+        } else {
+            content
+                .background {
+                    RoundedRectangle(cornerRadius: 15)
+                        .fill(Color(uiColor: .systemBackground))
+                }
+                .overlay {
+                    RoundedRectangle(cornerRadius: 15)
+                        .stroke(lineWidth: 1)
+                        .fill(.primary.opacity(0.1))
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 15))
+                .padding()
+                .shadow(color: .black.opacity(0.25), radius: 5)
+        }
+    }
+}
 
 // MARK: Preview
 struct AmountInput_Previews: PreviewProvider {
