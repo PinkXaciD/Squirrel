@@ -125,7 +125,7 @@ struct AddSpendingView: View {
                     
                     var transition: AnyTransition {
                         if #available(iOS 26.0, *) {
-                            return .scale(scale: 0, anchor: .init(x: 0.15, y: vm.placeFieldPosition / geometry.size.height)).combined(with: .opacity)
+                            return .scale(scale: 0, anchor: .init(x: 0.15, y: vm.placeFieldPosition / max(geometry.size.height, 0.1))).combined(with: .opacity)
                         }
                         
                         return .maskFromTheTopWithOpacity(padding: padding)
