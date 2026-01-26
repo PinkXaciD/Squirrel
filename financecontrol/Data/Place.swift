@@ -8,8 +8,8 @@
 import Foundation
 
 struct Place {
-    var place: String
-    var normalized: String
+    let place: String
+    let normalized: String
     var weight: Int
 }
 

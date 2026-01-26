@@ -107,6 +107,7 @@ struct StatsView: View {
                         }
                         
                         StatsListView()
+                            .id(1)
                     }
                     .padding()
                     .sheet(isPresented: $showFilters) {
@@ -119,7 +120,7 @@ struct StatsView: View {
                         }
                         
                         withAnimation {
-                            scroll.scrollTo(0, anchor: .top)
+                            scroll.scrollTo((isSearching || !searchModel.input.isEmpty) ? 1 : 0, anchor: .top)
                         }
                         
                         self.scrollToTop = nil

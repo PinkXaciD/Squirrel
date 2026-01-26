@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct InputUtils {
+    static let shared = Self()
+    
     func checkAll(amount: String, place: String, comment: String) -> Bool {
         amountCheck(amount: amount)
         &&

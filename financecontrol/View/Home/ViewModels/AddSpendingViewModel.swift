@@ -12,7 +12,6 @@ import OSLog
 #endif
 
 final class AddSpendingViewModel: ViewModel {
-    
     var cdm: CoreDataModel
     
     private var rvm: RatesViewModel
@@ -36,7 +35,7 @@ final class AddSpendingViewModel: ViewModel {
     @Published
     var timeZoneIdentifier: String = TimeZone.autoupdatingCurrent.identifier
     @Published
-    var filteredSuggestions: [String] = .init()
+    var filteredSuggestions: [Suggestion] = .init()
     @Published
     var placeFieldPosition: CGFloat = 0
     
@@ -46,7 +45,17 @@ final class AddSpendingViewModel: ViewModel {
     
     private var subscription: AnyCancellable?
     
-    init(ratesViewModel rvm: RatesViewModel, coreDataModel cdm: CoreDataModel, shortcut: AddSpendingShortcut? = nil, places: [String: Place]) {
+    struct Suggestion: Identifiable, Hashable {
+        let value: String
+        let id: UUID
+    }
+    
+    init(
+        ratesViewModel rvm: RatesViewModel,
+        coreDataModel cdm: CoreDataModel,
+        shortcut: AddSpendingShortcut? = nil,
+        places: [String: Place]
+    ) {
 //        if let shortcut {
 //            var formatter: NumberFormatter {
 //                let formatter = NumberFormatter()
@@ -114,21 +123,33 @@ final class AddSpendingViewModel: ViewModel {
         return self.$place
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
-                self?.filteredSuggestions = self?.filterSuggestions(userInput: value.trimmingCharacters(in: .whitespacesAndNewlines)) ?? []
+                let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
+                
+                guard !trimmedValue.isEmpty else {
+                    return
+                }
+                
+                self?.filteredSuggestions = self?.filterSuggestions(userInput: trimmedValue) ?? []
             }
     }
     
-    private func filterSuggestions(userInput: String) -> [String] {
-        var result = [String]()
+    private func filterSuggestions(userInput: String) -> [Suggestion] {
+        #if DEBUG
+        logger.debug("\(#function) called")
+        #endif
+        var result = [Suggestion]()
         var count = 0
 
         for p in places.values.sorted() {
             if match(source: userInput.normalize(), target: p.normalized) {
                 #if DEBUG
-                result.append(p.weight.formatted() + " | " + p.place)
+                let value = p.weight.formatted() + " | " + p.place
                 #else
-                result.append(p.place)
+                let value = p.place
                 #endif
+                let suggestion = Suggestion(value: value, id: UUID())
+                result.append(suggestion)
+                
                 count += 1
                 
                 if count >= 5 {

@@ -45,7 +45,7 @@ struct HomeView: View {
                     .padding(.horizontal, -10)
                 
                 addButton
-                    #if DEBUG
+#if DEBUG
                     .swipeActions(edge: .leading) {
                         Button {
                             cdm.addTestSpending()
@@ -58,7 +58,7 @@ struct HomeView: View {
                             .labelStyle(.iconOnly)
                         }
                     }
-                    #endif
+#endif
                 
                 if latestLaunchedBuild < currentBuild {
                     whatsNewSection
@@ -76,13 +76,17 @@ struct HomeView: View {
             }
             .navigationTitle("Home")
             .sheet(isPresented: $showingSheet) {
-                AddSpendingView(ratesViewModel: rvm, codeDataModel: cdm, shortcut: shortcut)
+                AddSpendingView(
+                    ratesViewModel: rvm,
+                    codeDataModel: cdm,
+                    shortcut: shortcut
+                )
+                .addColorPresentationBackground()
             }
             .sheet(isPresented: $showWhatsNew) {
                 latestLaunchedBuild = currentBuild
             } content: {
                 WhatsNewView()
-                    .environmentObject(kvmManager)
             }
             .onChange(of: rvm.status) { newValue in
                 if newValue == .success || newValue == .failed {

@@ -380,6 +380,9 @@
     "Blue" : {
 
     },
+    "Bug Fixes" : {
+
+    },
     "Build: %@" : {
 
     },
@@ -665,6 +668,9 @@
     "Grouping Separator" : {
 
     },
+    "Hide" : {
+
+    },
     "Hide App Content" : {
 
     },
@@ -675,9 +681,6 @@
 
     },
     "Hide Keyboard" : {
-
-    },
-    "Hide Suggestions" : {
 
     },
     "Historical exchange rates are presented as the stock exchange closed on the requested day" : {
@@ -745,6 +748,9 @@
 
     },
     "Minimize" : {
+
+    },
+    "Minor bug fixes and general improvements" : {
 
     },
     "Mint" : {
@@ -1010,10 +1016,10 @@
     "Settings" : {
 
     },
-    "Show Onboarding" : {
+    "Show" : {
 
     },
-    "Show Suggestions" : {
+    "Show Onboarding" : {
 
     },
     "Sign in your iCloud account on device or allow Squirrel to use iCloud in settings." : {

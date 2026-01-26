@@ -29,13 +29,22 @@ extension View {
             return self
                 .presentationDetents([.fraction(fraction ?? 0.5), .large])
                 .presentationDragIndicator(.hidden)
-                .presentationBackground(Color(uiColor: .systemGroupedBackground))
+                .addColorPresentationBackground()
         }
         
         if #available(iOS 16.0, *) {
             return self
                 .presentationDetents([.fraction(fraction ?? 0.5), .large])
                 .presentationDragIndicator(.hidden)
+        }
+        
+        return self
+    }
+    
+    func addColorPresentationBackground(_ color: Color = Color(uiColor: .systemGroupedBackground)) -> some View {
+        if #available(iOS 26.0, *) {
+            return self
+                .presentationBackground(color)
         }
         
         return self

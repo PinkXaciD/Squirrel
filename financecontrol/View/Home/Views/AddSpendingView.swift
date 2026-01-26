@@ -8,7 +8,11 @@
 import SwiftUI
 
 struct AddSpendingView: View {
-    init(ratesViewModel rvm: RatesViewModel, codeDataModel cdm: CoreDataModel, shortcut: AddSpendingShortcut? = nil) {
+    init(
+        ratesViewModel rvm: RatesViewModel,
+        codeDataModel cdm: CoreDataModel,
+        shortcut: AddSpendingShortcut? = nil
+    ) {
         self._vm = StateObject(
             wrappedValue: AddSpendingViewModel(
                 ratesViewModel: rvm,
@@ -17,10 +21,14 @@ struct AddSpendingView: View {
                 places: cdm.places
             )
         )
+        
+        self.overlayManager = SuggestionsOverlayManager()
     }
     
     @StateObject
     private var vm: AddSpendingViewModel
+
+    private let overlayManager: SuggestionsOverlayManager
     
     @AppStorage(UDKey.color.rawValue)
     private var tint: String = "Orange"
@@ -73,7 +81,7 @@ struct AddSpendingView: View {
     @State
     private var minimizeSuggestions: Bool = false
 
-    private let utils = InputUtils() /// For input validation
+    private let utils = InputUtils.shared /// For input validation
     
     private var showSuggestions: Bool {
         !vm.place.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !vm.filteredSuggestions.isEmpty && focusedField == .place
@@ -111,38 +119,29 @@ struct AddSpendingView: View {
             }
             .navigationTitle("Add Expense")
             .navigationBarTitleDisplayMode(.inline)
+            .overlay(alignment: .bottom) {
+                GeometryReader { geometry in
+                    if showSuggestions {
+                        var transition: AnyTransition {
+                            if #available(iOS 26.0, *) {
+                                let anchor: UnitPoint = .init(x: 0.15, y: overlayManager.placeFieldPosition / max(geometry.size.height, 0.1))
+                                
+                                return .scale(scale: 0, anchor: anchor).combined(with: .opacity)
+                            }
+                            
+                            return .blurWithOpacity
+                        }
+                        
+                        SuggestionsOverlayView(vm: vm, manager: overlayManager, minimizeSuggestions: $minimizeSuggestions, geometry: geometry)
+                            .transition(transition)
+                    }
+                }
+            }
         }
         .navigationViewStyle(.stack)
         .tint(colorIdentifier(color: tint))
         .accentColor(colorIdentifier(color: tint))
         .interactiveDismissDisabled(!vm.amount.isEmpty)
-        .overlay(alignment: .bottom) {
-            GeometryReader { geometry in
-                if showSuggestions {
-                    var padding: CGFloat {
-                        geometry.size.height - vm.placeFieldPosition
-                    }
-                    
-                    var transition: AnyTransition {
-                        if #available(iOS 26.0, *) {
-                            return .scale(scale: 0, anchor: .init(x: 0.15, y: vm.placeFieldPosition / max(geometry.size.height, 0.1))).combined(with: .opacity)
-                        }
-                        
-                        return .maskFromTheTopWithOpacity(padding: padding)
-                    }
-                    
-                    VStack {
-                        Spacer()
-                        
-                        suggestionsOverlay
-                            .padding(.vertical, 10)
-                            .padding(.bottom, padding)
-                            .animation(suggestionsAnimation, value: vm.filteredSuggestions.count)
-                    }
-                    .transition(transition)
-                }
-            }
-        }
         .animation(suggestionsAnimation, value: showSuggestions)
         .animation(suggestionsAnimation, value: minimizeSuggestions)
         .animation(suggestionsAnimation, value: vm.filteredSuggestions)
@@ -230,15 +229,18 @@ struct AddSpendingView: View {
                 }
                 .background {
                     GeometryReader { geometry in
-                        Color.clear
+                        Color.black.opacity(0.001)
                             .preference(
                                 key: PlacePositionPreferenceKey.self,
-                                value: geometry.frame(in: .global).minY - geometry.frame(in: .global).height - (UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0)
+                                value: geometry.frame(in: .global).minY - (geometry.frame(in: .global).height * 4) - (UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0)
                             )
+                            .onChange(of: vm.place) { _ in
+                                overlayManager.placeFieldPosition = geometry.frame(in: .global).minY - (geometry.frame(in: .global).height * 4) - (UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0)
+                            }
                     }
                 }
                 .onPreferenceChange(PlacePositionPreferenceKey.self) { value in
-                    vm.placeFieldPosition = value
+                    overlayManager.placeFieldPosition = value
                 }
                 
             if #available(iOS 16.0, *) {
@@ -288,76 +290,6 @@ struct AddSpendingView: View {
                 Text("Comment is too long")
                     .foregroundColor(.red)
             }
-        }
-    }
-    
-    @ViewBuilder
-    private var suggestionsOverlay: some View {
-        if #available(iOS 26.0, *) {
-            HStack {
-                VStack(alignment: .leading, spacing: 15) {
-                    Button {
-                        minimizeSuggestions.toggle()
-                    } label: {
-                        HStack {
-                            Text("Suggestions")
-                            
-                            Label(minimizeSuggestions ? "Show Suggestions" : "Hide Suggestions", systemImage: "chevron.down")
-                                .labelStyle(.iconOnly)
-                                .rotationEffect(.degrees(minimizeSuggestions ? 180 : 0))
-                        }
-                        .foregroundStyle(.secondary)
-                        .font(.footnote.bold())
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.horizontal, minimizeSuggestions ? 12 : 20)
-                    .padding(.top, minimizeSuggestions ? 9 : 17)
-                    .zIndex(2)
-                    
-                    if !minimizeSuggestions {
-                        ForEach(vm.filteredSuggestions, id: \.self) { suggestion in
-                            getSuggestionButton(value: suggestion)
-                                .id(UUID())
-                                .transition(.blurWithOpacity)
-                        }
-                        .padding(.horizontal, 20)
-                    }
-                }
-                .padding(.bottom, minimizeSuggestions ? 9 : 17)
-            }
-            .modifier(MenuBackgroundModifier(minimizeSuggestions: minimizeSuggestions))
-        } else {
-            VStack(alignment: .leading, spacing: 7.5) {
-                Button {
-                    minimizeSuggestions.toggle()
-                } label: {
-                    HStack {
-                        Text("Suggestions")
-                        
-                        Label(minimizeSuggestions ? "Show Suggestions" : "Hide Suggestions", systemImage: "chevron.down")
-                            .labelStyle(.iconOnly)
-                            .rotationEffect(.degrees(minimizeSuggestions ? 180 : 0))
-                    }
-                    .foregroundStyle(.secondary)
-                    .font(.footnote.bold())
-                }
-                .buttonStyle(.plain)
-                .padding(.horizontal, minimizeSuggestions ? 12 : 15)
-                .padding(.top, minimizeSuggestions ? 9 : 12)
-                .zIndex(2)
-                
-                if !minimizeSuggestions {
-                    ForEach(vm.filteredSuggestions.reversed(), id: \.self) { suggestion in
-                        getSuggestionButton(value: suggestion)
-                            .id(UUID())
-                            .transition(.blurWithOpacity)
-                    }
-                    .padding(.vertical, 2)
-                    .padding(.horizontal, 20)
-                }
-            }
-            .padding(.bottom, minimizeSuggestions ? 9 : 12)
-            .modifier(MenuBackgroundModifier(minimizeSuggestions: minimizeSuggestions))
         }
     }
     
@@ -459,40 +391,13 @@ fileprivate struct PlacePositionPreferenceKey: PreferenceKey {
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {}
 }
 
-fileprivate struct MenuBackgroundModifier: ViewModifier {
-    let minimizeSuggestions: Bool
-    
-    func body(content: Content) -> some View {
-        if #available(iOS 26.0, *) {
-            content
-                .clipShape(RoundedRectangle(cornerRadius: 30))
-                .glassEffect(.regular.interactive(!minimizeSuggestions), in: RoundedRectangle(cornerRadius: 30))
-                .padding()
-        } else {
-            content
-                .background {
-                    RoundedRectangle(cornerRadius: 15)
-                        .fill(Color(uiColor: .systemBackground))
-                }
-                .overlay {
-                    RoundedRectangle(cornerRadius: 15)
-                        .stroke(lineWidth: 1)
-                        .fill(.primary.opacity(0.1))
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 15))
-                .padding()
-                .shadow(color: .black.opacity(0.25), radius: 5)
-        }
-    }
-}
-
 // MARK: Preview
-struct AmountInput_Previews: PreviewProvider {
-    static var previews: some View {
-        AddSpendingView(ratesViewModel: .init(), codeDataModel: .init())
-            .environmentObject(CoreDataModel())
-    }
-}
+//struct AmountInput_Previews: PreviewProvider {
+//    static var previews: some View {
+//        AddSpendingView(ratesViewModel: .init(), codeDataModel: .init())
+//            .environmentObject(CoreDataModel())
+//    }
+//}
 
 // MARK: Shortcuts (not yet implemented)
 struct AddSpendingShortcut: Identifiable {

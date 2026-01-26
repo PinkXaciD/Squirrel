@@ -168,6 +168,8 @@
 		8DCB60772B6E6FAA00B94872 /* ApplePie in Frameworks */ = {isa = PBXBuildFile; productRef = 8DCB60762B6E6FAA00B94872 /* ApplePie */; };
 		8DCD2C512D3A7975006A8F78 /* OtherExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCB302A2A971C2F00DC9ABB /* OtherExtensions.swift */; };
 		8DD0526D2C133E3F002F752E /* ToSafeUnsafeObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD0526C2C133E3F002F752E /* ToSafeUnsafeObject.swift */; };
+		8DD1C6F22F27BB0F00337689 /* SuggestionsOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD1C6F12F27BB0F00337689 /* SuggestionsOverlayView.swift */; };
+		8DD1C6F42F27BB8800337689 /* SuggestionsOverlayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD1C6F32F27BB8800337689 /* SuggestionsOverlayManager.swift */; };
 		8DD5C38C2A603F4500FC862C /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD5C38B2A603F4500FC862C /* Formatters.swift */; };
 		8DD5C38F2A607F1C00FC862C /* CategorySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD5C38E2A607F1C00FC862C /* CategorySelector.swift */; };
 		8DD772D92D2BEC9C009F5787 /* ICloudSyncViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD772D82D2BEC9C009F5787 /* ICloudSyncViewModel.swift */; };
@@ -379,6 +381,8 @@
 		8DCB302C2A97314400DC9ABB /* StatsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = StatsRow.swift; path = financecontrol/View/Stats/Views/StatsRow.swift; sourceTree = SOURCE_ROOT; };
 		8DCB302E2A97578F00DC9ABB /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "View+Extensions.swift"; path = "financecontrol/Extensions/View+Extensions.swift"; sourceTree = SOURCE_ROOT; };
 		8DD0526C2C133E3F002F752E /* ToSafeUnsafeObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToSafeUnsafeObject.swift; sourceTree = "<group>"; };
+		8DD1C6F12F27BB0F00337689 /* SuggestionsOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionsOverlayView.swift; sourceTree = "<group>"; };
+		8DD1C6F32F27BB8800337689 /* SuggestionsOverlayManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionsOverlayManager.swift; sourceTree = "<group>"; };
 		8DD5C38B2A603F4500FC862C /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
 		8DD5C38E2A607F1C00FC862C /* CategorySelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategorySelector.swift; sourceTree = "<group>"; };
 		8DD772D82D2BEC9C009F5787 /* ICloudSyncViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICloudSyncViewModel.swift; sourceTree = "<group>"; };
@@ -524,6 +528,7 @@
 			children = (
 				8D35AC952B0E62DE0030F7DF /* AddSpendingViewModel.swift */,
 				8D3542DB2D3ECE850065A5CE /* BarChartViewModel.swift */,
+				8DD1C6F32F27BB8800337689 /* SuggestionsOverlayManager.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -845,6 +850,7 @@
 				8D0429DA2A9B8D2400A09BB4 /* BarChartGenerator.swift */,
 				8D406EAB2A9A386E002D3ED1 /* BarChartData.swift */,
 				8D0763A22A4B07ED00D2C3FF /* AddSpendingView.swift */,
+				8DD1C6F12F27BB0F00337689 /* SuggestionsOverlayView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1319,6 +1325,7 @@
 				8D645DFC2D92D90C002CA06C /* ListHorizontalScrollView.swift in Sources */,
 				8D02AA792CBFE63300C4B4F6 /* ExportCSVView.swift in Sources */,
 				8D06810C2B6D45CD00195205 /* PieChartLegendView.swift in Sources */,
+				8DD1C6F42F27BB8800337689 /* SuggestionsOverlayManager.swift in Sources */,
 				8D91DB842B74EB990040C2CE /* ChartData.swift in Sources */,
 				8DFA1EE02B4C16DE00B97113 /* IconRow.swift in Sources */,
 				8DB42E6C2B0F6BE1000E7EA5 /* EditSpendingViewModel.swift in Sources */,
@@ -1339,6 +1346,7 @@
 				8D2AD7D02BA1CE28001DCC61 /* OnboardingCurrencyView.swift in Sources */,
 				8D88CDC02AA0E37000668DEC /* CategoryEntity+CoreDataClass.swift in Sources */,
 				8DD0526D2C133E3F002F752E /* ToSafeUnsafeObject.swift in Sources */,
+				8DD1C6F22F27BB0F00337689 /* SuggestionsOverlayView.swift in Sources */,
 				8DDFD4742A68249100493753 /* DefaultCurrencySelectorView.swift in Sources */,
 				8D51765B2C33029000141B6C /* CustomAlertViewExtension.swift in Sources */,
 			);
@@ -1419,7 +1427,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 77;
+				CURRENT_PROJECT_VERSION = 78;
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1458,7 +1466,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 77;
+				CURRENT_PROJECT_VERSION = 78;
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1618,7 +1626,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 77;
+				CURRENT_PROJECT_VERSION = 78;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
@@ -1662,7 +1670,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 77;
+				CURRENT_PROJECT_VERSION = 78;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
