@@ -84,7 +84,7 @@ struct AddSpendingView: View {
     private let utils = InputUtils.shared /// For input validation
     
     private var showSuggestions: Bool {
-        !vm.place.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !vm.filteredSuggestions.isEmpty && focusedField == .place
+        !vm.place.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !vm.filteredSuggestions.isEmpty && focusedField == .place && !vm.isSuggestionSelected
     }
     
     private var suggestionsAnimation: Animation {
@@ -136,6 +136,8 @@ struct AddSpendingView: View {
                             .transition(transition)
                     }
                 }
+                .animation(suggestionsAnimation, value: focusedField)
+                .ignoresSafeArea(.keyboard)
             }
         }
         .navigationViewStyle(.stack)
@@ -232,10 +234,12 @@ struct AddSpendingView: View {
                         Color.black.opacity(0.001)
                             .preference(
                                 key: PlacePositionPreferenceKey.self,
-                                value: geometry.frame(in: .global).minY - (geometry.frame(in: .global).height * 4) - (UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0)
+                                value: geometry.frame(in: .global).minY - geometry.frame(in: .global).height - 5
                             )
                             .onChange(of: vm.place) { _ in
-                                overlayManager.placeFieldPosition = geometry.frame(in: .global).minY - (geometry.frame(in: .global).height * 4) - (UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0)
+                                if overlayManager.placeFieldPosition == 0 {
+                                    overlayManager.placeFieldPosition = geometry.frame(in: .global).minY - geometry.frame(in: .global).height - 5
+                                }
                             }
                     }
                 }

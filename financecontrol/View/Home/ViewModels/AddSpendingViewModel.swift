@@ -38,6 +38,10 @@ final class AddSpendingViewModel: ViewModel {
     var filteredSuggestions: [Suggestion] = .init()
     @Published
     var placeFieldPosition: CGFloat = 0
+    @Published
+    var isSuggestionSelected: Bool = false
+    @Published
+    var selectedSuggestion: String = ""
     
     #if DEBUG
     let vmStateLogger: Logger
@@ -130,6 +134,13 @@ final class AddSpendingViewModel: ViewModel {
                 }
                 
                 self?.filteredSuggestions = self?.filterSuggestions(userInput: trimmedValue) ?? []
+                
+                if self?.selectedSuggestion == trimmedValue {
+                    self?.isSuggestionSelected = true
+                } else if self?.isSuggestionSelected == true {
+                    self?.isSuggestionSelected = false
+                    self?.selectedSuggestion = ""
+                }
             }
     }
     
@@ -142,11 +153,8 @@ final class AddSpendingViewModel: ViewModel {
 
         for p in places.values.sorted() {
             if match(source: userInput.normalize(), target: p.normalized) {
-                #if DEBUG
-                let value = p.weight.formatted() + " | " + p.place
-                #else
                 let value = p.place
-                #endif
+                
                 let suggestion = Suggestion(value: value, id: UUID())
                 result.append(suggestion)
                 

@@ -19,7 +19,7 @@ struct SuggestionsOverlayView: View {
     let geometry: GeometryProxy
 
     var padding: CGFloat {
-        geometry.size.height - manager.placeFieldPosition
+        geometry.size.height - manager.placeFieldPosition + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom
     }
 
     private var suggestionsAnimation: Animation {
@@ -100,6 +100,7 @@ struct SuggestionsOverlayView: View {
     private func getSuggestionButton(value: String) -> some View {
         Button(value) {
             vm.place = value
+            vm.selectedSuggestion = value
         }
         .buttonStyle(.plain)
         .lineLimit(1)
