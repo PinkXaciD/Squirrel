@@ -628,9 +628,6 @@
     "Filters" : {
 
     },
-    "Filters applied" : {
-
-    },
     "First Flight" : {
 
     },
@@ -977,6 +974,12 @@
     "Search by place or comment" : {
 
     },
+    "Searching Filtered Results" : {
+
+    },
+    "Searching For %@" : {
+
+    },
     "Select a tab from sidebar" : {
 
     },
@@ -1065,7 +1068,7 @@
     "Squirrel does not send any data or identifiers from your device." : {
 
     },
-    "Squirrel will now show a list of suggestions while you entering place" : {
+    "Squirrel will now show a list of suggestions while you're entering the place" : {
 
     },
     "Sqwoorl" : {

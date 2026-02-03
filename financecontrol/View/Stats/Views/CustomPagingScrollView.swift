@@ -19,8 +19,9 @@ struct CustomPagingScrollView: View {
     let data: [ChartData]
     let invert: Bool
     let viewScale: CGFloat
+    let spendingsCount: Int
     
-    init(selection: Binding<Int>, data: [ChartData], invert: Bool = false, viewScale: CGFloat = 0.5) {
+    init(selection: Binding<Int>, data: [ChartData], invert: Bool = false, viewScale: CGFloat = 0.5, spendingsCount: Int) {
         self._selection = selection
         self.data = data
         self.invert = invert
@@ -33,6 +34,7 @@ struct CustomPagingScrollView: View {
             self.viewScale = viewScale
         }
         
+        self.spendingsCount = spendingsCount
 //        print("ParentView \(selection.wrappedValue) init") // TODO: Remove
     }
     
@@ -43,7 +45,8 @@ struct CustomPagingScrollView: View {
                 data: data,
                 geometry: geometry,
                 invert: invert,
-                viewScale: viewScale
+                viewScale: viewScale,
+                spendingsCount: spendingsCount
             )
         }
         .invertLayoutDirection(invert)
@@ -59,6 +62,7 @@ fileprivate struct InternalCustomPagingScrollView: View {
     @StateObject private var scrollManager: PagingScrollViewManager
     @State private var reset: Bool = false
     let data: [ChartData]
+    let spendingsCount: Int
     
     var scrollAnimation: Animation {
         if UIAccessibility.prefersCrossFadeTransitions {
@@ -68,10 +72,11 @@ fileprivate struct InternalCustomPagingScrollView: View {
         return .smooth(duration: 0.3)
     }
     
-    init(selection: Binding<Int>, data: [ChartData], geometry: GeometryProxy, invert: Bool, viewScale: CGFloat) {
+    init(selection: Binding<Int>, data: [ChartData], geometry: GeometryProxy, invert: Bool, viewScale: CGFloat, spendingsCount: Int) {
         self._selection = selection
         self.data = data
         self._scrollManager = StateObject(wrappedValue: PagingScrollViewManager(geometry: geometry, viewScale: viewScale, invertedViewScale: 1 - viewScale, invert: invert))
+        self.spendingsCount = spendingsCount
         
 //        NotificationCenter.default.addObserver(forName: NSNotification.Name("TestingScroll"), object: nil, queue: .main) { [self] notification in
 //            self.scrollToPrevious()
@@ -85,7 +90,7 @@ fileprivate struct InternalCustomPagingScrollView: View {
             HStack(spacing: scrollManager.geometry.size.width * scrollManager.invertedViewScale) {
                 ForEach(data, id: \.id) { element in
                     if (selection > -element.id - 2 && selection < -element.id + 2) {
-                        PieChartCompleteView(data: element, size: self.scrollManager.geometry.size.width * self.scrollManager.viewScale)
+                        PieChartCompleteView(data: element, size: self.scrollManager.geometry.size.width * self.scrollManager.viewScale, spendingsCount: spendingsCount)
                             .frame(width: scrollManager.geometry.size.width * scrollManager.viewScale, height: scrollManager.geometry.size.height)
                             .invertLayoutDirection(scrollManager.invert)
                     } else {

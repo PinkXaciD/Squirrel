@@ -223,7 +223,7 @@ struct AddSpendingView: View {
     }
     
     private var placeAndCommentSection: some View {
-        Section(header: Text("Optional"), footer: placeAndCommentSectionFooter) {
+        Section(header: placeAndCommentSectionHeader, footer: placeAndCommentSectionFooter) {
             TextField("Place", text: $vm.place)
                 .focused($focusedField, equals: .place)
                 .onSubmit {
@@ -266,6 +266,13 @@ struct AddSpendingView: View {
             }
         }
         .disabled(isLoading)
+    }
+    
+    private var placeAndCommentSectionHeader: some View {
+        Text("Optional")
+            .opacity((showSuggestions && !minimizeSuggestions) ? 0.5 : 1)
+            .blur(radius: (showSuggestions && !minimizeSuggestions) ? 1 : 0)
+            .animation(.default, value: showSuggestions)
     }
     
     private var placeAndCommentSectionFooter: some View {

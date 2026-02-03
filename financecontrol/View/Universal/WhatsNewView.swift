@@ -26,9 +26,7 @@ struct WhatsNewView: View {
     @State
     private var showConfirmationDialog: Bool = false
     
-    var showSmallHeader: Bool {
-        UIApplication.shared.keyWindow?.safeAreaInsets.bottom == 0 // Check if device has a home button
-    }
+    let showSmallHeader: Bool = UIApplication.shared.keyWindow?.safeAreaInsets.bottom == 0 // Check if device has a home button
     
     var body: some View {
         NavigationView {
@@ -43,7 +41,7 @@ struct WhatsNewView: View {
                 
                 Spacer()
                 
-                getRow(imageName: "list.bullet", title: "Place Suggestions", subtitle: "Squirrel will now show a list of suggestions while you entering place")
+                getRow(imageName: "list.bullet", title: "Place Suggestions", subtitle: "Squirrel will now show a list of suggestions while you're entering the place")
                 
                 getRow(imageName: "gearshape.2.fill", title: "Bug Fixes", subtitle: "Minor bug fixes and general improvements")
                 

@@ -114,6 +114,11 @@ fileprivate struct MenuBackgroundModifier: ViewModifier {
         if #available(iOS 26.0, *) {
             content
                 .clipShape(RoundedRectangle(cornerRadius: 30))
+                .background {
+                    Color.black
+                        .opacity(0.001)
+                        .onTapGesture {}
+                }
                 .glassEffect(.regular.interactive(!minimizeSuggestions), in: RoundedRectangle(cornerRadius: 30))
                 .padding()
         } else {
@@ -121,6 +126,7 @@ fileprivate struct MenuBackgroundModifier: ViewModifier {
                 .background {
                     RoundedRectangle(cornerRadius: 15)
                         .fill(Color(uiColor: .systemBackground))
+                        .onTapGesture {}
                     
                     RoundedRectangle(cornerRadius: 15)
                         .stroke(lineWidth: 1)

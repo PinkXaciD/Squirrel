@@ -13,6 +13,7 @@ struct PieChartCompleteView: View {
     @EnvironmentObject private var vm: PieChartViewModel
     let data: ChartData
     let size: CGFloat
+    let spendingsCount: Int
     @State private var update: Bool = false
     
     var body: some View {
@@ -40,7 +41,8 @@ struct PieChartCompleteView: View {
             CenterChartView(
                 selectedMonth: data.date,
                 width: size,
-                operationsInMonth: vm.selectedCategory == nil ? data.sum : data.categoriesDict[vm.selectedCategory?.id ?? .init()]?.sum ?? 0
+                operationsInMonth: vm.selectedCategory == nil ? data.sum : data.categoriesDict[vm.selectedCategory?.id ?? .init()]?.sum ?? 0,
+                spendingsCount: spendingsCount
             )
         }
     }

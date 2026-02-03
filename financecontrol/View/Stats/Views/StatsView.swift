@@ -16,6 +16,9 @@ struct StatsView: View {
     private var isSearching
     @Environment(\.managedObjectContext)
     private var viewContext
+    @Environment(\.dynamicTypeSize)
+    private var dynamicTypeSize
+    
     @AppStorage(UDKey.color.rawValue)
     private var tint: String = "Orange"
     
@@ -49,6 +52,16 @@ struct StatsView: View {
         let width = windowBounds?.width ?? UIScreen.main.bounds.width
         let height = windowBounds?.height ?? UIScreen.main.bounds.height
         return min(height / 1.7, width / 1.7)
+    }
+    
+    private var dateText: Text {
+        let date = Calendar.autoupdatingCurrent.date(byAdding: .month, value: -pcvm.selection, to: .now) ?? .now
+        
+        if Calendar.current.isDate(date, equalTo: Date(), toGranularity: .year) {
+            return Text(date, format: .dateTime.month(.wide))
+        } else {
+            return Text(date, format: .dateTime.month(.wide).year())
+        }
     }
     
     #if DEBUG
@@ -101,9 +114,13 @@ struct StatsView: View {
                     LazyVStack {
                         if !isSearching, searchModel.input.isEmpty {
                             VStack {
-                                PieChartView(size: size, showMinimizeButton: true)
+                                PieChartView(size: size, showMinimizeButton: true, spendingsCount: listVM.spendingsCount)
                             }
                             .id(0)
+                        } else if fvm.applyFilters {
+                            getSearchNotificationRow("Searching Filtered Results", systemImage: "line.3.horizontal.decrease")
+                        } else if pcvm.selection != 0 {
+                            getSearchNotificationRow("Searching For \(dateText)", systemImage: "calendar")
                         }
                         
                         StatsListView()
@@ -249,9 +266,26 @@ struct StatsView: View {
                 usedCurrencies: cdm.usedCurrencies
             )
         }
+        .accentColor(colorIdentifier(color: tint))
         .environmentObject(fvm)
         .environmentObject(pcvm)
         .environmentObject(privacyMonitor)
+    }
+    
+    private func getSearchNotificationRow(_ text: LocalizedStringKey, systemImage: String) -> some View {
+        HStack {
+            Group {
+                Image(systemName: systemImage)
+                
+                Text(text)
+            }
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+            .multilineTextAlignment(.leading)
+            
+            Spacer()
+        }
+        .padding(.horizontal)
     }
 }
 
@@ -404,14 +438,14 @@ fileprivate struct IPadStatsView: View {
             Group {
                 if horizontalSizeClass == .compact {
                     List {
-                        PieChartView(size: size, showMinimizeButton: horizontalSizeClass == .compact)
+                        PieChartView(size: size, showMinimizeButton: horizontalSizeClass == .compact, spendingsCount: 0)
                         
                         listView
                     }
                 } else {
                     HStack(spacing: 0) {
                         List {
-                            PieChartView(size: UIScreen.main.bounds.width / 4.5, showMinimizeButton: horizontalSizeClass == .compact)
+                            PieChartView(size: UIScreen.main.bounds.width / 4.5, showMinimizeButton: horizontalSizeClass == .compact, spendingsCount: 0)
                         }
                         .frame(width: UIScreen.main.bounds.width / 3)
                         
