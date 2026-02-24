@@ -22,6 +22,7 @@ struct PieChartView: View {
     
     let size: CGFloat
     let showMinimizeButton: Bool
+    let spendingsCount: Int
     
     @AppStorage(UDKey.defaultCurrency.rawValue)
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
@@ -68,7 +69,7 @@ struct PieChartView: View {
     }
     
     private var chart: some View {
-        CustomPagingScrollView(selection: $pcvm.selection, data: pcvm.data, invert: true, viewScale: 0.65)
+        CustomPagingScrollView(selection: $pcvm.selection, data: pcvm.data, invert: true, viewScale: 0.65, spendingsCount: spendingsCount)
     }
     
     private var legend: some View {

@@ -1,8 +1,8 @@
 //
 //  AddSpendingViewModel.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/11/22.
+//  Created by PinkXaciD on 2022/11/22.
 //
 
 import SwiftUI
@@ -12,10 +12,11 @@ import OSLog
 #endif
 
 final class AddSpendingViewModel: ViewModel {
-    
     var cdm: CoreDataModel
     
     private var rvm: RatesViewModel
+    
+    private let places: [String: Place]
     
     @Published 
     var amount: String
@@ -33,14 +34,32 @@ final class AddSpendingViewModel: ViewModel {
     var dismiss: Bool = false
     @Published
     var timeZoneIdentifier: String = TimeZone.autoupdatingCurrent.identifier
+    @Published
+    var filteredSuggestions: [Suggestion] = .init()
+    @Published
+    var placeFieldPosition: CGFloat = 0
+    @Published
+    var isSuggestionSelected: Bool = false
+    @Published
+    var selectedSuggestion: String = ""
     
     #if DEBUG
     let vmStateLogger: Logger
     #endif
     
-    var cancellables = Set<AnyCancellable>()
+    private var subscription: AnyCancellable?
     
-    init(ratesViewModel rvm: RatesViewModel, coreDataModel cdm: CoreDataModel, shortcut: AddSpendingShortcut? = nil) {
+    struct Suggestion: Identifiable, Hashable {
+        let value: String
+        let id: UUID
+    }
+    
+    init(
+        ratesViewModel rvm: RatesViewModel,
+        coreDataModel cdm: CoreDataModel,
+        shortcut: AddSpendingShortcut? = nil,
+        places: [String: Place]
+    ) {
 //        if let shortcut {
 //            var formatter: NumberFormatter {
 //                let formatter = NumberFormatter()
@@ -80,11 +99,14 @@ final class AddSpendingViewModel: ViewModel {
         
         self.rvm = rvm
         self.cdm = cdm
+        self.places = places
         
         #if DEBUG
         self.vmStateLogger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
         vmStateLogger.debug("\(#function) called")
         #endif
+        
+        self.subscription = subscribeToInput()
     }
     
     deinit {
@@ -92,13 +114,86 @@ final class AddSpendingViewModel: ViewModel {
         vmStateLogger.debug("\(#function) called")
         #endif
         
-        cancellables.cancelAll()
+        subscription?.cancel()
     }
     
     private func dismissAction() {
         DispatchQueue.main.async {
             self.dismiss = true
         }
+    }
+    
+    private func subscribeToInput() -> AnyCancellable {
+        return self.$place
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in
+                let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
+                
+                guard !trimmedValue.isEmpty else {
+                    return
+                }
+                
+                self?.filteredSuggestions = self?.filterSuggestions(userInput: trimmedValue) ?? []
+                
+                if self?.selectedSuggestion == trimmedValue {
+                    self?.isSuggestionSelected = true
+                } else if self?.isSuggestionSelected == true {
+                    self?.isSuggestionSelected = false
+                    self?.selectedSuggestion = ""
+                }
+            }
+    }
+    
+    private func filterSuggestions(userInput: String) -> [Suggestion] {
+        #if DEBUG
+        logger.debug("\(#function) called")
+        #endif
+        var result = [Suggestion]()
+        var count = 0
+
+        for p in places.values.sorted() {
+            if match(source: userInput.normalize(), target: p.normalized) {
+                let value = p.place
+                
+                let suggestion = Suggestion(value: value, id: UUID())
+                result.append(suggestion)
+                
+                count += 1
+                
+                if count >= 5 {
+                    break
+                }
+            }
+        }
+        
+        return result
+    }
+    
+    private func match(source: String, target: String) -> Bool {
+        let lenDiff: Int = target.count - source.count
+
+        if lenDiff < 0 {
+            return false
+        }
+
+        if lenDiff == 0 && source == target {
+            return true
+        }
+
+        var target: String = target
+        
+        outerLoop: for char1 in source {
+            for (i, char2) in target.enumerated() {
+                if char1 == char2 {
+                    target = String(target.suffix(target.count - (i + 1)))
+                    continue outerLoop
+                }
+            }
+
+            return false
+        }
+
+        return true
     }
     
     func done() {

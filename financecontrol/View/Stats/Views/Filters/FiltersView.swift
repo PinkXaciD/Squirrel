@@ -99,8 +99,14 @@ struct FiltersView: View {
         showDismissButton: Bool = true,
         showDateSelection: Bool = true
     ) {
-        self._startDate = State(wrappedValue: fvm.startFilterDate)
-        self._endDate = State(wrappedValue: fvm.endFilterDate)
+        self._startDate = State(wrappedValue: max(fvm.startFilterDate, firstSpendingDate))
+        
+        if fvm.applyFilters {
+            self._endDate = State(wrappedValue: fvm.endFilterDate)
+        } else {
+            self._endDate = State(wrappedValue: .now)
+        }
+        
         self._dateType = State(wrappedValue: fvm.dateType)
         self._year = State(wrappedValue: fvm.year)
         self._month = State(wrappedValue: fvm.month)
@@ -113,6 +119,24 @@ struct FiltersView: View {
         self.showDismissButton = showDismissButton
         self.showDateSelection = showDateSelection
     }
+    
+    private var firstPickerDateRange: ClosedRange<Date> {
+        guard firstSpendingDate < endDate else {
+            return Date.firstAvailableDate...Date.now
+        }
+        
+        return firstSpendingDate...endDate
+    }
+    
+    private var secondPickerRange: ClosedRange<Date> {
+        guard startDate < Date() else {
+            return Date.firstAvailableDate...Date.now
+        }
+        
+        return startDate...Date.now
+    }
+    
+    private let singlePickerRange: ClosedRange<Date> = Date.firstAvailableDate...Date.now
     
     var body: some View {
         Group {
@@ -183,12 +207,12 @@ struct FiltersView: View {
                     YearPicker(selection: $year, addSpacer: true, firstAvailableDate: firstSpendingDate, calendar: gregorianCalendar)
                 }
             case .single:
-                DatePicker("Date", selection: $endDate, in: (firstSpendingDate.addingTimeInterval(-1))...(Date().addingTimeInterval(1)), displayedComponents: .date)
+                DatePicker("Date", selection: $endDate, in: singlePickerRange, displayedComponents: .date)
             default:
                 Group {
-                    DatePicker("From", selection: $startDate, in: (firstSpendingDate.addingTimeInterval(-1))...endDate, displayedComponents: .date)
+                    DatePicker("From", selection: $startDate, in: firstPickerDateRange, displayedComponents: .date)
                     
-                    DatePicker("To", selection: $endDate, in: startDate...(Date().addingTimeInterval(1)), displayedComponents: .date)
+                    DatePicker("To", selection: $endDate, in: secondPickerRange, displayedComponents: .date)
                 }
             }
         } header: {

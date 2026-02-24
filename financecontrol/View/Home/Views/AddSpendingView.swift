@@ -1,19 +1,34 @@
 //
 //  AddSpendingView.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/06/27.
+//  Created by PinkXaciD on 2022/06/27.
 //
 
 import SwiftUI
 
 struct AddSpendingView: View {
-    init(ratesViewModel rvm: RatesViewModel, codeDataModel cdm: CoreDataModel, shortcut: AddSpendingShortcut? = nil) {
-        self._vm = StateObject(wrappedValue: AddSpendingViewModel(ratesViewModel: rvm, coreDataModel: cdm, shortcut: shortcut))
+    init(
+        ratesViewModel rvm: RatesViewModel,
+        codeDataModel cdm: CoreDataModel,
+        shortcut: AddSpendingShortcut? = nil
+    ) {
+        self._vm = StateObject(
+            wrappedValue: AddSpendingViewModel(
+                ratesViewModel: rvm,
+                coreDataModel: cdm,
+                shortcut: shortcut,
+                places: cdm.places
+            )
+        )
+        
+        self.overlayManager = SuggestionsOverlayManager()
     }
     
     @StateObject
     private var vm: AddSpendingViewModel
+
+    private let overlayManager: SuggestionsOverlayManager
     
     @AppStorage(UDKey.color.rawValue)
     private var tint: String = "Orange"
@@ -63,13 +78,30 @@ struct AddSpendingView: View {
     private var hideContent: Bool = false
     @State
     private var isLoading: Bool = false
+    @State
+    private var minimizeSuggestions: Bool = false
 
-    private let utils = InputUtils() /// For input validation
+    private let utils = InputUtils.shared /// For input validation
+    
+    private var showSuggestions: Bool {
+        !vm.place.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !vm.filteredSuggestions.isEmpty && focusedField == .place && !vm.isSuggestionSelected
+    }
+    
+    private var suggestionsAnimation: Animation {
+        if #available(iOS 26.0, *) {
+            return .bouncy
+        }
+        
+        return .snappy
+    }
     
     var body: some View {
         NavigationView {
             List {
                 reqiredSection
+                    .opacity((showSuggestions && !minimizeSuggestions) ? 0.5 : 1)
+                    .blur(radius: (showSuggestions && !minimizeSuggestions) ? 1 : 0)
+                    .animation(.default, value: showSuggestions)
                 
                 placeAndCommentSection
                 
@@ -87,11 +119,34 @@ struct AddSpendingView: View {
             }
             .navigationTitle("Add Expense")
             .navigationBarTitleDisplayMode(.inline)
+            .overlay(alignment: .bottom) {
+                GeometryReader { geometry in
+                    if showSuggestions {
+                        var transition: AnyTransition {
+                            if #available(iOS 26.0, *) {
+                                let anchor: UnitPoint = .init(x: 0.15, y: overlayManager.placeFieldPosition / max(geometry.size.height, 0.1))
+                                
+                                return .scale(scale: 0, anchor: anchor).combined(with: .opacity)
+                            }
+                            
+                            return .blurWithOpacity
+                        }
+                        
+                        SuggestionsOverlayView(vm: vm, manager: overlayManager, minimizeSuggestions: $minimizeSuggestions, geometry: geometry)
+                            .transition(transition)
+                    }
+                }
+                .animation(suggestionsAnimation, value: focusedField)
+                .ignoresSafeArea(.keyboard)
+            }
         }
         .navigationViewStyle(.stack)
         .tint(colorIdentifier(color: tint))
         .accentColor(colorIdentifier(color: tint))
         .interactiveDismissDisabled(!vm.amount.isEmpty)
+        .animation(suggestionsAnimation, value: showSuggestions)
+        .animation(suggestionsAnimation, value: minimizeSuggestions)
+        .animation(suggestionsAnimation, value: vm.filteredSuggestions)
         .blur(radius: hideContent ? Vars.privacyBlur : 0)
         .onChange(of: scenePhase) { value in
             if privacyScreenIsEnabled {
@@ -168,11 +223,28 @@ struct AddSpendingView: View {
     }
     
     private var placeAndCommentSection: some View {
-        Section(header: Text("Optional"), footer: placeAndCommentSectionFooter) {
+        Section(header: placeAndCommentSectionHeader, footer: placeAndCommentSectionFooter) {
             TextField("Place", text: $vm.place)
                 .focused($focusedField, equals: .place)
                 .onSubmit {
                     nextField()
+                }
+                .background {
+                    GeometryReader { geometry in
+                        Color.black.opacity(0.001)
+                            .preference(
+                                key: PlacePositionPreferenceKey.self,
+                                value: geometry.frame(in: .global).minY - geometry.frame(in: .global).height - 5
+                            )
+                            .onChange(of: vm.place) { _ in
+                                if overlayManager.placeFieldPosition == 0 {
+                                    overlayManager.placeFieldPosition = geometry.frame(in: .global).minY - geometry.frame(in: .global).height - 5
+                                }
+                            }
+                    }
+                }
+                .onPreferenceChange(PlacePositionPreferenceKey.self) { value in
+                    overlayManager.placeFieldPosition = value
                 }
                 
             if #available(iOS 16.0, *) {
@@ -194,6 +266,13 @@ struct AddSpendingView: View {
             }
         }
         .disabled(isLoading)
+    }
+    
+    private var placeAndCommentSectionHeader: some View {
+        Text("Optional")
+            .opacity((showSuggestions && !minimizeSuggestions) ? 0.5 : 1)
+            .blur(radius: (showSuggestions && !minimizeSuggestions) ? 1 : 0)
+            .animation(.default, value: showSuggestions)
     }
     
     private var placeAndCommentSectionFooter: some View {
@@ -225,10 +304,22 @@ struct AddSpendingView: View {
         }
     }
     
+    private func getSuggestionButton(value: String) -> some View {
+        Button(value) {
+            vm.place = value
+        }
+        .buttonStyle(.plain)
+        .lineLimit(1)
+    }
+    
 #if DEBUG
     private var debugSection: some View {
         Section {
             TextField("Timezone identifier", text: $vm.timeZoneIdentifier)
+            
+            Text("Show suggestions: \(showSuggestions.description)")
+            
+            Text("Suggestions count: \(vm.filteredSuggestions.count)")
         } header: {
             Text(verbatim: "Debug")
         }
@@ -305,56 +396,19 @@ extension AddSpendingView {
     }
 }
 
-//fileprivate struct PopularCategoryButtonView: View {
-//    @EnvironmentObject private var vm: AddSpendingViewModel
-//    let category: CategoryEntity
-//    @State private var isFocused: Bool = false
-//    
-//    var body: some View {
-//        Button {
-//            withAnimation {
-//                vm.selectedCategory = category
-//            }
-//        } label: {
-//            Text(category.name ?? "Error")
-//                .font(.body)
-//                .fontWeight(vm.selectedCategory?.id == category.id ? .semibold : .regular)
-//                .foregroundColor(vm.selectedCategory?.id == category.id ? Color(uiColor: .secondarySystemGroupedBackground) : Color[category.color ?? ""])
-//                .padding(.vertical, 6)
-//                .padding(.horizontal, 12)
-//                .background {
-//                    RoundedRectangle(cornerRadius: 10)
-//                        .fill(getBackgroundColor())
-//                }
-//                .brightness(isFocused ? 0.05 : 0)
-//                .animation(.default, value: vm.selectedCategory)
-//        }
-//        .buttonStyle(PlainButtonStyle())
-//        .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 10))
-//        .hoverEffect()
-//        .onHover { value in
-//            withAnimation {
-//                isFocused = value
-//            }
-//        }
-//    }
-//    
-//    private func getBackgroundColor() -> Color {
-//        if vm.selectedCategory?.id == category.id {
-//            return Color[category.color ?? ""]
-//        } else {
-//            return Color(uiColor: .secondarySystemGroupedBackground)
-//        }
-//    }
-//}
+fileprivate struct PlacePositionPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {}
+}
 
 // MARK: Preview
-struct AmountInput_Previews: PreviewProvider {
-    static var previews: some View {
-        AddSpendingView(ratesViewModel: .init(), codeDataModel: .init())
-            .environmentObject(CoreDataModel())
-    }
-}
+//struct AmountInput_Previews: PreviewProvider {
+//    static var previews: some View {
+//        AddSpendingView(ratesViewModel: .init(), codeDataModel: .init())
+//            .environmentObject(CoreDataModel())
+//    }
+//}
 
 // MARK: Shortcuts (not yet implemented)
 struct AddSpendingShortcut: Identifiable {

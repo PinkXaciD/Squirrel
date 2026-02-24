@@ -64,17 +64,21 @@ extension TimeZone {
     }
     
     func getImage() -> String {
-        let offset = self.hoursFromGMT()
-        
-        switch offset {
-        case ...(-3):
-            return "globe.americas.fill"
-        case ...3:
-            return "globe.europe.africa.fill"
-        case ...7:
-            return "globe.central.south.asia.fill"
-        default:
-            return "globe.asia.australia.fill"
+        if #available(iOS 16.0, *) {
+            let offset = self.hoursFromGMT()
+            
+            switch offset {
+            case ...(-3):
+                return "globe.americas.fill"
+            case ...3:
+                return "globe.europe.africa.fill"
+            case ...7:
+                return "globe.central.south.asia.fill"
+            default:
+                return "globe.asia.australia.fill"
+            }
+        } else {
+            return "clock.fill"
         }
     }
 }

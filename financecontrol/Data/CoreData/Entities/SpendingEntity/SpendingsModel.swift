@@ -1,8 +1,8 @@
 //
 //  SpendingsModel.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/09/07.
+//  Created by PinkXaciD on 2022/09/07.
 //
 
 import CoreData
@@ -26,6 +26,7 @@ extension CoreDataModel {
             var currencies = Set<Currency>()
             let ratesFetchQueueSet = Set(UserDefaults.standard.getFetchQueue())
             var ratesFetchSpendings = [SpendingEntity]()
+            var places: [String:Place] = .init()
             
             do {
                 spendings = try self.context.fetch(request)
@@ -53,9 +54,7 @@ extension CoreDataModel {
                 let safeSpending = spending.safeObject()
                 let startOfDay = formatWithoutTimezones ? Calendar.current.startOfDay(for: safeSpending.wrappedDate) : Calendar.current.startOfDay(for: safeSpending.dateAdjustedToTimeZone)
                 
-                if !currencies.contains(Currency(code: safeSpending.wrappedCurrency)) {
-                    currencies.insert(Currency(code: safeSpending.wrappedCurrency))
-                }
+                currencies.insert(Currency(code: safeSpending.wrappedCurrency))
                 
                 // Pie chart data
                 pieChartData[startOfDay.getFirstDayOfMonth()]?.append(safeSpending)
@@ -64,13 +63,28 @@ extension CoreDataModel {
                 if ratesFetchQueueSet.contains(safeSpending.wrappedId) {
                     ratesFetchSpendings.append(spending)
                 }
+                
+                // Places for suggestions
+                if let place = spending.place  {
+                    let norm = place.normalize()
+                    
+                    if var p = places[norm] {
+                        p.weight += 1
+                        places[norm] = p
+                        
+                        continue
+                    }
+                    
+                    places[norm] = Place(place: place, normalized: norm, weight: 1)
+                }
             } // End of for loop
             
             self.usedCurrencies = currencies
             self.pieChartSpendings = pieChartData
             self.spendingsCount = spendings.count
             NotificationCenter.default.post(name: .UpdatePieChart, object: nil)
-            lastFetchDate = Date()
+            self.lastFetchDate = Date()
+            self.places = places
             
             if !ratesFetchSpendings.isEmpty {
                 updateRatesFromQueue(ratesFetchSpendings)

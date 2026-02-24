@@ -26,9 +26,7 @@ struct WhatsNewView: View {
     @State
     private var showConfirmationDialog: Bool = false
     
-    var showSmallHeader: Bool {
-        UIApplication.shared.keyWindow?.safeAreaInsets.bottom == 0 // Check if device has a home button
-    }
+    let showSmallHeader: Bool = UIApplication.shared.keyWindow?.safeAreaInsets.bottom == 0 // Check if device has a home button
     
     var body: some View {
         NavigationView {
@@ -43,15 +41,9 @@ struct WhatsNewView: View {
                 
                 Spacer()
                 
-                NewIconRow()
+                getRow(imageName: "list.bullet", title: "Place Suggestions", subtitle: "Squirrel will now show a list of suggestions while you're entering the place")
                 
-                getRow(imageName: "textformat.size", title: "Dynamic Type", subtitle: "Improved large text size support")
-                
-                if #available(iOS 17.0, *) {
-                    getRow(imageName: "circle.dotted.and.circle", title: "Reduce Motion", subtitle: "Squirrel now better supports \"Reduce Motion\" setting")
-                } else {
-                    getRow(imageName: "circle.dotted", title: "Reduce Motion", subtitle: "Squirrel now supports \"Reduce Motion\" setting")
-                }
+                getRow(imageName: "gearshape.2.fill", title: "Bug Fixes", subtitle: "Minor bug fixes and general improvements")
                 
                 Spacer()
                 
@@ -240,49 +232,49 @@ struct WhatsNewView: View {
     }
 }
 
-fileprivate struct NewIconRow: View {
-    @ScaledMetric
-    private var imageSize: CGFloat = 50
-    @State
-    private var imageResource: ImageResource = .appIcon
-    
-    let timer = Timer.publish(every: 2, on: .main, in: .common).autoconnect()
-    
-    var body: some View {
-        HStack(spacing: 15) {
-            Image(imageResource)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: imageSize, height: imageSize)
-                .foregroundStyle(.tint)
-                .shadow(color: .black.opacity(0.2), radius: 2.5, y: 1)
-                .animation(.default, value: imageResource)
-            
-            VStack(alignment: .leading) {
-                Text("Refreshed Icons")
-                    .font(.title3.bold())
-                    .foregroundColor(.primary)
-                    .multilineTextAlignment(.leading)
-                
-                Text("Updated icons with Liquid Glass")
-                    .foregroundColor(.secondary)
-            }
-            
-            Spacer()
-        }
-        .padding()
-        .onReceive(timer) { _ in
-            switch imageResource {
-            case .appIcon:
-                imageResource = .appIconFirstFlight
-            case .appIconFirstFlight:
-                imageResource = .appIconNA
-            default:
-                imageResource = .appIcon
-            }
-        }
-    }
-}
+//fileprivate struct NewIconRow: View {
+//    @ScaledMetric
+//    private var imageSize: CGFloat = 50
+//    @State
+//    private var imageResource: ImageResource = .appIcon
+//    
+//    let timer = Timer.publish(every: 2, on: .main, in: .common).autoconnect()
+//    
+//    var body: some View {
+//        HStack(spacing: 15) {
+//            Image(imageResource)
+//                .resizable()
+//                .aspectRatio(contentMode: .fit)
+//                .frame(width: imageSize, height: imageSize)
+//                .foregroundStyle(.tint)
+//                .shadow(color: .black.opacity(0.2), radius: 2.5, y: 1)
+//                .animation(.default, value: imageResource)
+//            
+//            VStack(alignment: .leading) {
+//                Text("Refreshed Icons")
+//                    .font(.title3.bold())
+//                    .foregroundColor(.primary)
+//                    .multilineTextAlignment(.leading)
+//                
+//                Text("Updated icons with Liquid Glass")
+//                    .foregroundColor(.secondary)
+//            }
+//            
+//            Spacer()
+//        }
+//        .padding()
+//        .onReceive(timer) { _ in
+//            switch imageResource {
+//            case .appIcon:
+//                imageResource = .appIconFirstFlight
+//            case .appIconFirstFlight:
+//                imageResource = .appIconNA
+//            default:
+//                imageResource = .appIcon
+//            }
+//        }
+//    }
+//}
 
 #Preview {
     NavigationView {

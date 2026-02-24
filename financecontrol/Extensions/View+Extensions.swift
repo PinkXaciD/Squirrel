@@ -1,8 +1,8 @@
 //
 //  TextFieldExtensions.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/08/24.
+//  Created by PinkXaciD on 2022/08/24.
 //
 
 import SwiftUI
@@ -29,13 +29,22 @@ extension View {
             return self
                 .presentationDetents([.fraction(fraction ?? 0.5), .large])
                 .presentationDragIndicator(.hidden)
-                .presentationBackground(Color(uiColor: .systemGroupedBackground))
+                .addColorPresentationBackground()
         }
         
         if #available(iOS 16.0, *) {
             return self
                 .presentationDetents([.fraction(fraction ?? 0.5), .large])
                 .presentationDragIndicator(.hidden)
+        }
+        
+        return self
+    }
+    
+    func addColorPresentationBackground(_ color: Color = Color(uiColor: .systemGroupedBackground)) -> some View {
+        if #available(iOS 26.0, *) {
+            return self
+                .presentationBackground(color)
         }
         
         return self
@@ -288,5 +297,38 @@ struct MaskFromTheBottomModifier: ViewModifier {
                     }
                 }
             }
+    }
+}
+
+struct MaskFromTheTopModifier: ViewModifier {
+    let isActive: Bool
+    let withOpacity: Bool
+    let padding: CGFloat
+    
+    func body(content: Content) -> some View {
+        content
+            .zIndex(isActive ? -1 : 1)
+            .opacity((isActive && withOpacity) ? 0 : 1)
+            .mask {
+                VStack(spacing: 0) {
+                    if isActive {
+                        Spacer()
+                    }
+                    
+                    Rectangle()
+                        .frame(maxHeight: isActive ? 0 : nil)
+                        .padding(.bottom, padding)
+                }
+            }
+    }
+}
+
+struct BlurWithOpacityModifier: ViewModifier {
+    let isActive: Bool
+    
+    func body(content: Content) -> some View {
+        content
+            .blur(radius: isActive ? 3 : 0)
+            .opacity(isActive ? 0 : 1)
     }
 }

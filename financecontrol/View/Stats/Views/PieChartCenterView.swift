@@ -28,6 +28,7 @@ struct CenterChartView: View {
     
     let width: CGFloat
     let operationsInMonth: Double
+    let spendingsCount: Int
     
     private var monthFormatWidth: Date.FormatStyle.Symbol.Month {
         if dynamicTypeSize > .accessibility2 {
@@ -77,16 +78,17 @@ struct CenterChartView: View {
 }
 
 extension CenterChartView {
-    internal init(selectedMonth: Date, width: CGFloat, operationsInMonth: Double) {
+    internal init(selectedMonth: Date, width: CGFloat, operationsInMonth: Double, spendingsCount: Int) {
         self.selectedMonth = selectedMonth
         self.width = width
         self.operationsInMonth = operationsInMonth
+        self.spendingsCount = spendingsCount
     }
     
     @ViewBuilder
     private func dateText(monthFormatWidth: Date.FormatStyle.Symbol.Month) -> some View {
         if fvm.applyFilters {
-            Text("Filters applied")
+            Text("\(spendingsCount) expenses")
         } else {
             if Calendar.current.isDate(selectedMonth, equalTo: Date(), toGranularity: .year) {
                 Text(selectedMonth, format: .dateTime.month(monthFormatWidth))

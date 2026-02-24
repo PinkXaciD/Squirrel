@@ -19,6 +19,7 @@ final class StatsListViewModel: ViewModel {
     @Published private(set) var selection: Int
     @Published private(set) var selectedCategoryId: UUID?
     @Published private(set) var data: [(key: Date, value: [StatsRowData])] = .init()
+    @Published private(set) var spendingsCount: Int = 0
     
     private var allSpendingsCount: Int
     
@@ -67,6 +68,8 @@ final class StatsListViewModel: ViewModel {
                 try self.context.fetch(request)
             }
             
+            let spendingsCount = result.count
+            
             let sectionedResult = Dictionary(grouping: result) { spending in
                 return self.context.performAndWait {
                     spending.startOfDay
@@ -94,6 +97,8 @@ final class StatsListViewModel: ViewModel {
                 withAnimation(animateChanges ? .default : .none) {
                     self.data = sortedResult
                 }
+                
+                self.spendingsCount = spendingsCount
             }
         } catch {
             ErrorType(error: error).publish()

@@ -1,8 +1,8 @@
 //
 //  OtherExtensions.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/08/24.
+//  Created by PinkXaciD on 2022/08/24.
 //
 
 import SwiftUI
@@ -101,5 +101,11 @@ extension Set<AnyCancellable> {
         for item in self {
             item.cancel()
         }
+    }
+}
+
+extension String {
+    func normalize() -> String {
+        return self.lowercased().folding(options: .diacriticInsensitive, locale: .autoupdatingCurrent)
     }
 }

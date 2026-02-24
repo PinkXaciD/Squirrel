@@ -1,8 +1,8 @@
 //
 //  CoreDataModel.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/12/25.
+//  Created by PinkXaciD on 2022/12/25.
 //
 
 import CoreData
@@ -90,6 +90,9 @@ final class CoreDataModel: ObservableObject {
     
     @Published
     var firstSpendingDate: Date?
+    
+    @Published
+    var places: [String:Place] = .init()
     
     var lastFetchDate: Date? = nil
     
