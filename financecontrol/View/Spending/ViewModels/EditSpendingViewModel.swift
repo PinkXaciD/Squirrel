@@ -2,7 +2,7 @@
 //  EditSpendingViewModel.swift
 //  financecontrol
 //
-//  Created by PinkXaciD on R 5/11/23.
+//  Created by PinkXaciD on 2023/11/23.
 //
 
 import SwiftUI
@@ -63,18 +63,21 @@ final class EditSpendingViewModel: ViewModel {
     func done() {
         guard let catID = self.category?.id else { return }
         
-        DispatchQueue.global(qos: .utility).async { [weak self, catID] in
+//        DispatchQueue.global(qos: .utility).async { [weak self, catID] in
+        Task { [weak self, catID] in
             guard let self else { return }
             
             let formatter = NumberFormatter()
             
             guard let number = formatter.number(from: amount) else {
-                ErrorType(
-                    errorDescription: "Failed to edit expense",
-                    failureReason: "Cannot convert amount to number",
-                    recoverySuggestion: "Try again"
-                )
-                .publish()
+                await MainActor.run {
+                    ErrorType(
+                        errorDescription: "Failed to edit expense",
+                        failureReason: "Cannot convert amount to number",
+                        recoverySuggestion: "Try again"
+                    )
+                    .publish()
+                }
                 
                 return
             }
@@ -96,8 +99,9 @@ final class EditSpendingViewModel: ViewModel {
             if self.currency == "USD" {
                 spending.amountUSD = doubleAmount
                 cdm.editSpending(spending: entity, newSpending: spending)
-                DispatchQueue.main.async {
-                    self.end()
+                
+                await MainActor.run { [weak self] in
+                    self?.end()
                 }
                 
                 #if DEBUG
@@ -108,38 +112,42 @@ final class EditSpendingViewModel: ViewModel {
                 return
             }
             
-            DispatchQueue.main.async {
-                if Calendar.gmt.isDate(self.entity.wrappedDate, inSameDayAs: self.date), self.entity.wrappedCurrency == self.currency {
-                    spending.amountUSD = (spending.amount / self.entity.amount) * self.entity.amountUSD
-                    self.cdm.editSpending(spending: self.entity, newSpending: spending, exchangeRate: spending.amount / self.entity.amount)
-                    self.end()
-                    return
+            if Calendar.gmt.isDate(self.entity.wrappedDate, inSameDayAs: self.date), self.entity.wrappedCurrency == self.currency {
+                spending.amountUSD = (spending.amount / self.entity.amount) * self.entity.amountUSD
+                self.cdm.editSpending(spending: self.entity, newSpending: spending, exchangeRate: spending.amount / self.entity.amount)
+                
+                await MainActor.run { [weak self] in
+                    self?.end()
                 }
+                
+                return
             }
             
             if !Calendar.gmt.isDateInToday(date) {
-                Task { [spending] in
-                    let oldRates = try? await self.rvm.getRates(self.date).rates.rates
-                    
-                    await MainActor.run { [spending] in
-                        let isHistoricalRatesUnavailable: Bool = oldRates == nil
-                        var spendingCopy = spending
-                        if let oldRates = oldRates {
-                            spendingCopy.amountUSD = doubleAmount / (oldRates[self.currency] ?? 1)
-                        } else {
-                            spendingCopy.amountUSD = doubleAmount / (self.rvm.rates[self.currency] ?? 1)
-                        }
-                        
-                        self.cdm.editSpending(spending: self.entity, newSpending: spendingCopy, addToFetchQueue: isHistoricalRatesUnavailable, exchangeRate: oldRates?[self.currency] ?? 1)
-                        self.end()
-                    }
+                let oldRates = try? await self.rvm.getRates(self.date).rates.rates
+            
+                let isHistoricalRatesUnavailable: Bool = oldRates == nil
+                
+                var spendingCopy = spending
+                
+                if let oldRates = oldRates {
+                    spendingCopy.amountUSD = doubleAmount / (oldRates[self.currency] ?? 1)
+                } else {
+                    spendingCopy.amountUSD = doubleAmount / (self.rvm.rates[self.currency] ?? 1)
+                }
+                
+                self.cdm.editSpending(spending: self.entity, newSpending: spendingCopy, addToFetchQueue: isHistoricalRatesUnavailable, exchangeRate: oldRates?[self.currency] ?? 1)
+                
+                await MainActor.run { [weak self] in
+                    self?.end()
                 }
             } else {
                 spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
                 
                 cdm.editSpending(spending: entity, newSpending: spending, exchangeRate: (rvm.rates[currency] ?? 1))
-                DispatchQueue.main.async {
-                    self.end()
+                
+                await MainActor.run { [weak self] in
+                    self?.end()
                 }
             }
         }

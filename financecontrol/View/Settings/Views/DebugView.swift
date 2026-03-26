@@ -400,6 +400,13 @@ struct DebugView: View {
             } label: {
                 Text("Clear fetch queue")
             }
+            
+            Button(role: .destructive) {
+                cdm.purgeHistory()
+            } label: {
+                Text(verbatim: "Purge Core Data History")
+            }
+
         }
     }
     

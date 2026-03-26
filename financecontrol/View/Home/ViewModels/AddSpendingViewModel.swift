@@ -118,9 +118,7 @@ final class AddSpendingViewModel: ViewModel {
     }
     
     private func dismissAction() {
-        DispatchQueue.main.async {
-            self.dismiss = true
-        }
+        self.dismiss = true
     }
     
     private func subscribeToInput() -> AnyCancellable {
@@ -199,13 +197,13 @@ final class AddSpendingViewModel: ViewModel {
     func done() {
         guard let catID = self.selectedCategory?.id else { return }
         
-        DispatchQueue.global(qos: .utility).async { [weak self, catID] in
+        Task { [weak self, catID] in
             guard let self else { return }
             
             let formatter = NumberFormatter.standard
             
             guard let number = formatter.number(from: amount) else {
-                DispatchQueue.main.async {
+                await MainActor.run {
                     ErrorType(
                         errorDescription: "Failed to add expense",
                         failureReason: "Cannot convert amount to number",
@@ -231,9 +229,11 @@ final class AddSpendingViewModel: ViewModel {
             if self.currency == "USD" {
                 spending.amountUSD = doubleAmount
                 cdm.addSpending(spending: spending, timeZoneIdentifier: self.timeZoneIdentifier)
-                DispatchQueue.main.async {
+                
+                await MainActor.run { [self] in
                     self.dismiss = true
                 }
+                
                 #if DEBUG
                 let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
                 logger.log("Currency is USD, skipping rates fetching...")
@@ -241,29 +241,29 @@ final class AddSpendingViewModel: ViewModel {
                 return
             }
             
-            if Calendar.gmt.isDateInToday(date) {
+            if Calendar.gmt.isDateInToday(date) && false {
                 spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
                 
                 cdm.addSpending(spending: spending, timeZoneIdentifier: self.timeZoneIdentifier)
-                DispatchQueue.main.async {
+                
+                await MainActor.run { [self] in
                     self.dismiss = true
                 }
             } else {
                 Task { [spending, self] in
                     let oldRates = try? await self.rvm.getRates(self.date).rates.rates
                     
-                    await MainActor.run { [spending, self] in
-                        let isHistoricalRatesUnvailable: Bool = oldRates == nil
-                        var spendingCopy = spending
-                        
-                        if let oldRates = oldRates {
-                            spendingCopy.amountUSD = doubleAmount / (oldRates[self.currency] ?? 1)
-                        } else {
-                            spendingCopy.amountUSD = doubleAmount / (self.rvm.rates[self.currency] ?? 1)
-                        }
-                        
-                        self.cdm.addSpending(spending: spendingCopy, timeZoneIdentifier: self.timeZoneIdentifier, addToFetchQueue: isHistoricalRatesUnvailable)
-                        
+                    var spendingCopy = spending
+                    
+                    if let oldRates {
+                        spendingCopy.amountUSD = doubleAmount / (oldRates[self.currency] ?? 1)
+                    } else {
+                        spendingCopy.amountUSD = doubleAmount / (self.rvm.rates[self.currency] ?? 1)
+                    }
+                    
+                    self.cdm.addSpending(spending: spendingCopy, timeZoneIdentifier: self.timeZoneIdentifier, addToFetchQueue: oldRates == nil)
+                    
+                    await MainActor.run { [self] in
                         self.dismissAction()
                     }
                 }

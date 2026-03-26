@@ -2,7 +2,7 @@
 //  EditSpendingView.swift
 //  financecontrol
 //
-//  Created by PinkXaciD on R 5/07/31.
+//  Created by PinkXaciD on 2023/07/31.
 //
 
 import SwiftUI
@@ -24,7 +24,7 @@ struct EditSpendingView: View {
     var entity: SpendingEntity
     @Binding
     var edit: Bool
-    var categoryColor: Color
+//    var categoryColor: Color
     
     @State
     private var confirmationDialogIsPresented: Bool = false
@@ -54,6 +54,10 @@ struct EditSpendingView: View {
     @Binding
     var toDismiss: Bool
     
+    var categoryColor: Color {
+        CustomColor.nordAurora[vm.category?.color ?? ""] ?? .secondary.opacity(0)
+    }
+    
     var body: some View {
         List {
             infoSection
@@ -76,6 +80,8 @@ struct EditSpendingView: View {
             cancelButtonAction()
         }
         .navigationBarTitleDisplayMode(.inline)
+        .tint(categoryColor)
+        .accentColor(categoryColor)
         .onAppear(perform: appearActions)
         .disabled(vm.isLoading)
     }
@@ -274,7 +280,7 @@ extension EditSpendingView {
     ) {
         self.entity = entity
         self._edit = edit
-        self.categoryColor = categoryColor
+//        self.categoryColor = categoryColor
         self.focus = focus
         self._entityToAddReturn = entityToAddReturn
         self._returnToEdit = returnToEdit

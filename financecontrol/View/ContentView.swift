@@ -221,6 +221,7 @@ struct ContentView: View {
             Label("Settings", systemImage: "gearshape.fill")
         }
         .tag(2)
+        .badge(cloudKitKVSManager.iCloudSync != cloudSyncWasEnabled ? 1 : 0)
     }
     
     private func setColorScheme() {

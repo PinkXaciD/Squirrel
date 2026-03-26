@@ -57,6 +57,28 @@ final class CoreDataModel: ObservableObject {
         self.fetchSpendings()
     }
     
+    func purgeHistory() {
+        guard let date = Calendar.current.date(byAdding: .day, value: -7, to: Date()) else {
+            return
+        }
+        
+        let purgeHistoryRequest = NSPersistentHistoryChangeRequest.deleteHistory(before: date)
+        let purgeHistoryRequest2 = NSPersistentHistoryChangeRequest.fetchHistory(after: .firstAvailableDate)
+        
+        let backgroundContext = manager.container.newBackgroundContext()
+        
+        backgroundContext.perform {
+            do {
+                let result = try backgroundContext.execute(purgeHistoryRequest)
+                let history = try backgroundContext.execute(purgeHistoryRequest2)
+                print(history.description)
+                print(result.description)
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
     /// An array containing all spendings from CoreData
     @available(*, deprecated, renamed: "FetchRequest", message: "")
     @Published

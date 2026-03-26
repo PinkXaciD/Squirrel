@@ -443,24 +443,6 @@ extension CoreDataModel {
         }
     }
     
-    // MARK: Operations for list
-    @available(*, deprecated, renamed: "CoreDataModel.statsListData", message: "Deprecated, use CoreDataModel's property instead")
-    func operationsForList() -> StatsListData {
-        context.performAndWait {
-            var result: StatsListData = [:]
-            
-            for spending in savedSpendings {
-                let day = Calendar.current.startOfDay(for: spending.wrappedDate)
-                var existingData = result[day] ?? []
-                existingData.append(spending.safeObject())
-                
-                result.updateValue(existingData, forKey: day)
-            }
-            
-            return result
-        }
-    }
-    
     func waitForRatesToBecomeAvailable() {
         if !waitingForRatesToBeAvailable {
             NotificationCenter.default.addObserver(
@@ -524,5 +506,3 @@ extension CoreDataModel {
         self.waitingForRatesToBeAvailable = false
     }
 }
-
-typealias StatsListData = [Date:[TSSpendingEntity]]

@@ -2,7 +2,7 @@
 //  RatesViewModel.swift
 //  financecontrol
 //
-//  Created by PinkXaciD on R 5/09/18.
+//  Created by PinkXaciD on 2023/09/18.
 //
 
 import SwiftUI
@@ -22,7 +22,7 @@ final class RatesViewModel: ViewModel {
     @Published
     private(set) var status: RatesDownloadStatus = .none
     
-    private(set) var cache = [Date:Rates]()
+    private var cache = [String:Rates]()
     private var updateTime: Date = Date()
     
     init() {
@@ -169,22 +169,32 @@ final class RatesViewModel: ViewModel {
 
 extension RatesViewModel {
     func getRates(_ timestamp: Date? = nil, checkURLVersion: Bool = false) async throws -> (editDate: Date, rates: Rates) {
-        if let timestamp, let cached = cache[Calendar.gmt.startOfDay(for: timestamp)] {
-            return (timestamp, cached)
+        guard let timestamp else {
+            return try await CloudKitManager.shared.fetchRates(timestamp: "latest")
         }
         
-        var timestampString: String? {
-            if let timestamp {
-                let dateFormatter = DateFormatter.forRatesTimestamp
-                return dateFormatter.string(from: Calendar.gmt.startOfDay(for: timestamp))
-            }
-            
-            return nil
+        let dateFormatter = DateFormatter.forRatesTimestamp
+        
+        // Check if latest needed
+        if Calendar.gmt.isDateInToday(timestamp) {
+            return (updateTime, Rates(timestamp: dateFormatter.string(from: updateTime), rates: rates))
+        }
+        
+        let timestampString: String = dateFormatter.string(from: Calendar.gmt.startOfDay(for: timestamp))
+        
+        // Check cache
+        if let cached = cache[timestampString] {
+            #if DEBUG
+            logger.info("Cached rates used")
+            #endif
+            return (timestamp, cached)
         }
         
         let ckManager = CloudKitManager.shared
         
-        let result = try await ckManager.fetchRates(timestamp: timestampString ?? "latest")
+        let result = try await ckManager.fetchRates(timestamp: timestampString)
+        
+        cache[timestampString] = result.rates
         
         return result
     }

@@ -15,8 +15,6 @@ struct HomeView: View {
     private var cdm: CoreDataModel
     @EnvironmentObject
     private var rvm: RatesViewModel
-    @EnvironmentObject
-    private var kvmManager: CloudKitKVSManager
     
     @AppStorage(UDKey.updateRates.rawValue)
     private var updateRates: Bool = false
@@ -124,15 +122,10 @@ struct HomeView: View {
             }
             .padding()
         } footer: {
-            if ratesAreFetching || cloudSyncWasEnabled != kvmManager.iCloudSync {
+            if ratesAreFetching {
                 VStack(alignment: .leading) {
                     if ratesAreFetching {
                         ratesFetchStatus
-                    }
-                    
-                    if cloudSyncWasEnabled != kvmManager.iCloudSync {
-                        Text("appication-restart-required-key")
-                            .foregroundStyle(.red)
                     }
                 }
             }
@@ -142,8 +135,6 @@ struct HomeView: View {
     private var whatsNewSection: some View {
         Section {
             Button("What's new in \(Bundle.main.releaseVersionNumber ?? "")") {
-//                latestLaunchedBuild = currentBuild
-                
                 showWhatsNew.toggle()
             }
         }
@@ -167,7 +158,7 @@ struct HomeView: View {
     }
     
     private var ratesFetchStatus: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 7) {
             switch rvm.status {
             case .downloading:
                 ProgressView()
@@ -205,10 +196,20 @@ struct HomeView: View {
                 Text("Trying again...")
                 
             default:
-                EmptyView()
+//                EmptyView()
+                ProgressView()
+                    .tint(.secondary)
+                
+                Text("Updating rates...")
             }
+            
+//            Image(systemName: "chevron.forward")
+//                .scaleEffect(0.9, anchor: .leading)
+//                .padding(.leading, -3)
         }
         .padding(.vertical, 3)
+        .foregroundStyle(Color.secondary)
+        .font(.footnote)
         .animation(.default, value: rvm.status)
     }
     
