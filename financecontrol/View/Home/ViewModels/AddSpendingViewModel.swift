@@ -131,14 +131,14 @@ final class AddSpendingViewModel: ViewModel {
                     return
                 }
                 
-                self?.filteredSuggestions = self?.filterSuggestions(userInput: trimmedValue) ?? []
-                
                 if self?.selectedSuggestion == trimmedValue {
                     self?.isSuggestionSelected = true
                 } else if self?.isSuggestionSelected == true {
                     self?.isSuggestionSelected = false
                     self?.selectedSuggestion = ""
                 }
+                
+                self?.filteredSuggestions = self?.filterSuggestions(userInput: trimmedValue) ?? []
             }
     }
     
@@ -231,42 +231,27 @@ final class AddSpendingViewModel: ViewModel {
                 cdm.addSpending(spending: spending, timeZoneIdentifier: self.timeZoneIdentifier)
                 
                 await MainActor.run { [self] in
-                    self.dismiss = true
+                    self.dismissAction()
                 }
                 
                 #if DEBUG
                 let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
                 logger.log("Currency is USD, skipping rates fetching...")
                 #endif
+                
                 return
             }
             
-            if Calendar.gmt.isDateInToday(date) && false {
-                spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
-                
-                cdm.addSpending(spending: spending, timeZoneIdentifier: self.timeZoneIdentifier)
-                
-                await MainActor.run { [self] in
-                    self.dismiss = true
-                }
-            } else {
-                Task { [spending, self] in
-                    let oldRates = try? await self.rvm.getRates(self.date).rates.rates
-                    
-                    var spendingCopy = spending
-                    
-                    if let oldRates {
-                        spendingCopy.amountUSD = doubleAmount / (oldRates[self.currency] ?? 1)
-                    } else {
-                        spendingCopy.amountUSD = doubleAmount / (self.rvm.rates[self.currency] ?? 1)
-                    }
-                    
-                    self.cdm.addSpending(spending: spendingCopy, timeZoneIdentifier: self.timeZoneIdentifier, addToFetchQueue: oldRates == nil)
-                    
-                    await MainActor.run { [self] in
-                        self.dismissAction()
-                    }
-                }
+            spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
+            
+            var addToFetchQueue: Bool {
+                !Calendar.gmt.isDateInToday(date) || !Calendar.gmt.isDateInToday(rvm.updateTime)
+            }
+            
+            cdm.addSpending(spending: spending, timeZoneIdentifier: self.timeZoneIdentifier, addToFetchQueue: addToFetchQueue)
+            
+            await MainActor.run { [self] in
+                self.dismissAction()
             }
         }
     }

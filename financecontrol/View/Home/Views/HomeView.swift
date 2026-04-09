@@ -58,9 +58,9 @@ struct HomeView: View {
                     }
 #endif
                 
-                if latestLaunchedBuild < currentBuild {
-                    whatsNewSection
-                }
+//                if latestLaunchedBuild < currentBuild {
+//                    whatsNewSection
+//                }
                 
 #if DEBUG
                 if latestLaunchedBuild >= currentBuild {

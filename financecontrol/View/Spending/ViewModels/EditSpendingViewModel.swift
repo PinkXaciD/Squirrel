@@ -63,7 +63,6 @@ final class EditSpendingViewModel: ViewModel {
     func done() {
         guard let catID = self.category?.id else { return }
         
-//        DispatchQueue.global(qos: .utility).async { [weak self, catID] in
         Task { [weak self, catID] in
             guard let self else { return }
             
@@ -112,43 +111,31 @@ final class EditSpendingViewModel: ViewModel {
                 return
             }
             
+            spending.amountUSD = (spending.amount / self.entity.amount) * self.entity.amountUSD
+            
+            // If Date and Currency hasn't changed
             if Calendar.gmt.isDate(self.entity.wrappedDate, inSameDayAs: self.date), self.entity.wrappedCurrency == self.currency {
-                spending.amountUSD = (spending.amount / self.entity.amount) * self.entity.amountUSD
                 self.cdm.editSpending(spending: self.entity, newSpending: spending, exchangeRate: spending.amount / self.entity.amount)
                 
-                await MainActor.run { [weak self] in
-                    self?.end()
+                await MainActor.run { [self] in
+                    self.end()
                 }
                 
                 return
             }
             
-            if !Calendar.gmt.isDateInToday(date) {
-                let oldRates = try? await self.rvm.getRates(self.date).rates.rates
-            
-                let isHistoricalRatesUnavailable: Bool = oldRates == nil
-                
-                var spendingCopy = spending
-                
-                if let oldRates = oldRates {
-                    spendingCopy.amountUSD = doubleAmount / (oldRates[self.currency] ?? 1)
-                } else {
-                    spendingCopy.amountUSD = doubleAmount / (self.rvm.rates[self.currency] ?? 1)
-                }
-                
-                self.cdm.editSpending(spending: self.entity, newSpending: spendingCopy, addToFetchQueue: isHistoricalRatesUnavailable, exchangeRate: oldRates?[self.currency] ?? 1)
-                
-                await MainActor.run { [weak self] in
-                    self?.end()
-                }
-            } else {
+            if Calendar.gmt.isDateInToday(self.date) {
                 spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
-                
-                cdm.editSpending(spending: entity, newSpending: spending, exchangeRate: (rvm.rates[currency] ?? 1))
-                
-                await MainActor.run { [weak self] in
-                    self?.end()
-                }
+            }
+            
+            var addToFetchQueue: Bool {
+                !Calendar.gmt.isDateInToday(date) || !Calendar.gmt.isDateInToday(rvm.updateTime)
+            }
+            
+            self.cdm.editSpending(spending: self.entity, newSpending: spending, addToFetchQueue: addToFetchQueue)
+            
+            await MainActor.run { [weak self] in
+                self?.end()
             }
         }
     }

@@ -23,7 +23,7 @@ final class RatesViewModel: ViewModel {
     private(set) var status: RatesDownloadStatus = .none
     
     private var cache = [String:Rates]()
-    private var updateTime: Date = Date()
+    private(set) var updateTime: Date = Date()
     
     init() {
         insertRates()
@@ -144,19 +144,19 @@ final class RatesViewModel: ViewModel {
     }
     
     func checkForUpdate() {
-        if !Calendar.current.isDate(updateTime, equalTo: Date(), toGranularity: .hour) {
+        if !Calendar.gmt.isDate(updateTime, equalTo: Date(), toGranularity: .hour) {
             updateRates()
         }
     }
     
     /// Will update exchange rates automatically every hour
     private func hourlyUpdate() {
-        let currentHour = Calendar.current.component(.hour, from: .now)
+        let currentHour = Calendar.gmt.component(.hour, from: .now)
         
-        let fireTime = Calendar.current.date(byAdding: .hour, value: currentHour + 1, to: Calendar.current.startOfDay(for: Date())) ?? Calendar.current.startOfDay(for: Date())
+        let fireTime = Calendar.gmt.date(byAdding: .hour, value: currentHour + 1, to: Calendar.gmt.startOfDay(for: Date())) ?? Calendar.gmt.startOfDay(for: Date())
         
         let timer = Timer(fire: fireTime, interval: .hour, repeats: true) { [weak self] timer in
-            if (self?.status != .downloading && self?.status != .waitingForNetwork), !Calendar.current.isDate(self?.updateTime ?? .distantPast, equalTo: Date(), toGranularity: .hour) {
+            if (self?.status != .downloading && self?.status != .waitingForNetwork), !Calendar.gmt.isDate(self?.updateTime ?? .distantPast, equalTo: Date(), toGranularity: .hour) {
                 self?.updateRates()
             }
         }
@@ -169,14 +169,14 @@ final class RatesViewModel: ViewModel {
 
 extension RatesViewModel {
     func getRates(_ timestamp: Date? = nil, checkURLVersion: Bool = false) async throws -> (editDate: Date, rates: Rates) {
-        guard let timestamp else {
-            return try await CloudKitManager.shared.fetchRates(timestamp: "latest")
-        }
+#if DEBUG
+        logger.info("Rates Fetch initiated for \(timestamp?.formatted(date: .abbreviated, time: .shortened) ?? "No timestamp")")
+#endif
         
         let dateFormatter = DateFormatter.forRatesTimestamp
         
         // Check if latest needed
-        if Calendar.gmt.isDateInToday(timestamp) {
+        guard let timestamp, !Calendar.gmt.isDateInToday(timestamp) else {
             return (updateTime, Rates(timestamp: dateFormatter.string(from: updateTime), rates: rates))
         }
         

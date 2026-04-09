@@ -2,7 +2,7 @@
 //  UserDefaultsExtensions.swift
 //  Squirrel
 //
-//  Created by PinkXaciD on R 6/03/29.
+//  Created by PinkXaciD on 2024/03/29.
 //
 
 import Foundation
@@ -83,7 +83,6 @@ extension UserDefaults {
     
     func deleteCurrency(_ currency: Currency) {
         guard var value = self.array(forKey: UDKey.savedCurrencies.rawValue) as? [String] else {
-            // TODO: Custom error
             return
         }
         

@@ -37,6 +37,7 @@ final class CloudKitManager {
     
     private let container = CKContainer(identifier: Vars.iCloudContainerIdentifier)
     private let cloudKitCoreDataZoneID = CKRecordZone.ID(zoneName: "com.apple.coredata.cloudkit.zone")
+    private let ckOperationConfig: CKOperation.Configuration
     
     #if DEBUG
     private let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
@@ -46,6 +47,12 @@ final class CloudKitManager {
         #if DEBUG
         logger.debug("CloudKitManager init")
         #endif
+        
+        let config = CKOperation.Configuration()
+        config.timeoutIntervalForRequest = 3
+        config.timeoutIntervalForResource = 10
+        config.isLongLived = false
+        self.ckOperationConfig = config
         
         container.accountStatus { [weak self] status, error in
             if let error {
@@ -78,12 +85,8 @@ final class CloudKitManager {
     
     func fetchRates(timestamp recordName: String) async throws -> (editDate: Date, rates: Rates) {
         func getRatesRecord(recordName: CKRecord.ID) async throws -> CKRecord {
-            let config = CKOperation.Configuration()
-            config.timeoutIntervalForRequest = 3
-            config.timeoutIntervalForResource = 3
-            
             do {
-                return try await container.publicCloudDatabase.configuredWith(configuration: config) { configuredDatabase in
+                return try await container.publicCloudDatabase.configuredWith(configuration: ckOperationConfig) { configuredDatabase in
                     return try await configuredDatabase.record(for: recordName)
                 }
             } catch CKError.unknownItem {

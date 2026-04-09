@@ -16,10 +16,14 @@ final class CoreDataModel: ObservableObject {
     let manager = DataManager.shared
     var localHistoryToken: NSPersistentHistoryToken?
     
-    init(isCloudSyncEnabled: Bool = true) {
+    let ratesViewModel: RatesViewModel
+    
+    init(isCloudSyncEnabled: Bool = true, ratesViewModel: RatesViewModel = .init()) {
         self.container = manager.container
         self.context = manager.context
         self.localHistoryToken = manager.container.persistentStoreCoordinator.currentPersistentHistoryToken(fromStores: container.persistentStoreCoordinator.persistentStores)
+        
+        self.ratesViewModel = ratesViewModel
         
         fetchSpendings(updateWidgets: false)
         timerUpdate()
@@ -53,10 +57,10 @@ final class CoreDataModel: ObservableObject {
     
     @objc
     private func contextDidSave(_ notification: Notification) {
-//        print(#function)
         self.fetchSpendings()
     }
     
+    #if DEBUG
     func purgeHistory() {
         guard let date = Calendar.current.date(byAdding: .day, value: -7, to: Date()) else {
             return
@@ -78,6 +82,7 @@ final class CoreDataModel: ObservableObject {
             }
         }
     }
+    #endif
     
     /// An array containing all spendings from CoreData
     @available(*, deprecated, renamed: "FetchRequest", message: "")
@@ -228,7 +233,7 @@ extension CoreDataModel {
     /// - Returns: URL to saved temporary file if save was successful
     /// - Important: This method is thread-safe
     func exportJSON() throws -> URL? {
-        try context.performAndWait {
+        return try context.performAndWait {
             do {
                 let encoder = JSONEncoder()
                 encoder.outputFormatting = [.sortedKeys, .prettyPrinted]
@@ -260,6 +265,7 @@ extension CoreDataModel {
                     HapticManager.shared.notification(.success)
                     return pathURL
                 }
+                
                 HapticManager.shared.notification(.error)
                 return nil
             } catch {
@@ -334,9 +340,6 @@ extension CoreDataModel {
                 }
                 
                 manager.save()
-                
-                fetchCategories()
-                fetchSpendings()
                 
                 return importedCount
             } else {

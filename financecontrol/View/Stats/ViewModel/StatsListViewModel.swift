@@ -42,9 +42,7 @@ final class StatsListViewModel: ViewModel {
         
         NotificationCenter.default.addObserver(self, selector: #selector(fetchFromNotification), name: .UpdatePieChart, object: nil)
         
-        Task {
-            await fetch()
-        }
+        fetch()
     }
     
     deinit {
@@ -53,55 +51,53 @@ final class StatsListViewModel: ViewModel {
     
     @objc
     private func fetchFromNotification() {
-        Task {
-            await self.fetch(animateChanges: true)
-        }
+        self.fetch(animateChanges: true)
     }
     
-    private func fetch(animateChanges: Bool = false) async {
-        let request = SpendingEntity.fetchRequest()
-        request.predicate = self.getPredicate()
-        request.sortDescriptors = [NSSortDescriptor(keyPath: \SpendingEntity.date, ascending: false)]
-        
-        do {
-            let result = try self.context.performAndWait {
-                try self.context.fetch(request)
-            }
+    private func fetch(animateChanges: Bool = false) {
+        context.perform { [weak self] in
+            guard let self else { return }
             
-            let spendingsCount = result.count
+            let request = SpendingEntity.fetchRequest()
+            request.predicate = self.getPredicate()
+            request.sortDescriptors = [NSSortDescriptor(keyPath: \SpendingEntity.date, ascending: false)]
             
-            let sectionedResult = Dictionary(grouping: result) { spending in
-                return self.context.performAndWait {
-                    spending.startOfDay
-                }
-            }
-            
-            let sortedResult = sectionedResult
-                .mapValues { arr in
-                    var result = [StatsRowData]()
-                    result.reserveCapacity(arr.count)
-                    
-                    for entity in arr {
-                        context.performAndWait {
-                            result.append(StatsRowData(entity: entity))
-                        }
-                    }
-                    
-                    return result
-                }
-                .sorted { (firstSection, secondSection) in
-                    firstSection.key > secondSection.key
-                }
-            
-            await MainActor.run {
-                withAnimation(animateChanges ? .default : .none) {
-                    self.data = sortedResult
+            do {
+                let result = try self.context.performAndWait { [request] in
+                    try self.context.fetch(request)
                 }
                 
-                self.spendingsCount = spendingsCount
+                let spendingsCount = result.count
+                
+                let sectionedResult = Dictionary(grouping: result) { spending in
+                    spending.startOfDay
+                }
+                
+                let sortedResult = sectionedResult
+                    .mapValues { arr in
+                        var result = [StatsRowData]()
+                        result.reserveCapacity(arr.count)
+                        
+                        for entity in arr {
+                            result.append(StatsRowData(entity: entity))
+                        }
+                        
+                        return result
+                    }
+                    .sorted { (firstSection, secondSection) in
+                        firstSection.key > secondSection.key
+                    }
+                
+                DispatchQueue.main.async {
+                    withAnimation(animateChanges ? .default : .none) {
+                        self.data = sortedResult
+                    }
+                    
+                    self.spendingsCount = spendingsCount
+                }
+            } catch {
+                ErrorType(error: error).publish()
             }
-        } catch {
-            ErrorType(error: error).publish()
         }
     }
     
@@ -160,9 +156,7 @@ final class StatsListViewModel: ViewModel {
             .sink { [weak self] newValue in
                 self?.selection = newValue
                 
-                Task {
-                    await self?.fetch()
-                }
+                self?.fetch()
             }
             .store(in: &cancellables)
     }
@@ -171,9 +165,7 @@ final class StatsListViewModel: ViewModel {
         pcvm.$selectedCategory
             .dropFirst()
             .sink { [weak self] _ in
-                Task {
-                    await self?.fetch()
-                }
+                self?.fetch()
             }
             .store(in: &cancellables)
     }
@@ -182,9 +174,7 @@ final class StatsListViewModel: ViewModel {
         searchModel.getPublisher()
             .dropFirst()
             .sink { [weak self] _ in
-                Task {
-                    await self?.fetch()
-                }
+                self?.fetch()
             }
             .store(in: &cancellables)
     }
