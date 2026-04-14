@@ -2,7 +2,7 @@
 //  RatesViewModel.swift
 //  financecontrol
 //
-//  Created by PinkXaciD on R 5/09/18.
+//  Created by PinkXaciD on 2023/09/18.
 //
 
 import SwiftUI
@@ -22,8 +22,8 @@ final class RatesViewModel: ViewModel {
     @Published
     private(set) var status: RatesDownloadStatus = .none
     
-    private(set) var cache = [Date:Rates]()
-    private var updateTime: Date = Date()
+    private var cache = [String:Rates]()
+    private(set) var updateTime: Date = Date()
     
     init() {
         insertRates()
@@ -144,19 +144,19 @@ final class RatesViewModel: ViewModel {
     }
     
     func checkForUpdate() {
-        if !Calendar.current.isDate(updateTime, equalTo: Date(), toGranularity: .hour) {
+        if !Calendar.gmt.isDate(updateTime, equalTo: Date(), toGranularity: .hour) {
             updateRates()
         }
     }
     
     /// Will update exchange rates automatically every hour
     private func hourlyUpdate() {
-        let currentHour = Calendar.current.component(.hour, from: .now)
+        let currentHour = Calendar.gmt.component(.hour, from: .now)
         
-        let fireTime = Calendar.current.date(byAdding: .hour, value: currentHour + 1, to: Calendar.current.startOfDay(for: Date())) ?? Calendar.current.startOfDay(for: Date())
+        let fireTime = Calendar.gmt.date(byAdding: .hour, value: currentHour + 1, to: Calendar.gmt.startOfDay(for: Date())) ?? Calendar.gmt.startOfDay(for: Date())
         
         let timer = Timer(fire: fireTime, interval: .hour, repeats: true) { [weak self] timer in
-            if (self?.status != .downloading && self?.status != .waitingForNetwork), !Calendar.current.isDate(self?.updateTime ?? .distantPast, equalTo: Date(), toGranularity: .hour) {
+            if (self?.status != .downloading && self?.status != .waitingForNetwork), !Calendar.gmt.isDate(self?.updateTime ?? .distantPast, equalTo: Date(), toGranularity: .hour) {
                 self?.updateRates()
             }
         }
@@ -169,22 +169,32 @@ final class RatesViewModel: ViewModel {
 
 extension RatesViewModel {
     func getRates(_ timestamp: Date? = nil, checkURLVersion: Bool = false) async throws -> (editDate: Date, rates: Rates) {
-        if let timestamp, let cached = cache[Calendar.gmt.startOfDay(for: timestamp)] {
-            return (timestamp, cached)
+#if DEBUG
+        logger.info("Rates Fetch initiated for \(timestamp?.formatted(date: .abbreviated, time: .shortened) ?? "No timestamp")")
+#endif
+        
+        let dateFormatter = DateFormatter.forRatesTimestamp
+        
+        // Check if latest needed
+        guard let timestamp, !Calendar.gmt.isDateInToday(timestamp) else {
+            return (updateTime, Rates(timestamp: dateFormatter.string(from: updateTime), rates: rates))
         }
         
-        var timestampString: String? {
-            if let timestamp {
-                let dateFormatter = DateFormatter.forRatesTimestamp
-                return dateFormatter.string(from: Calendar.gmt.startOfDay(for: timestamp))
-            }
-            
-            return nil
+        let timestampString: String = dateFormatter.string(from: Calendar.gmt.startOfDay(for: timestamp))
+        
+        // Check cache
+        if let cached = cache[timestampString] {
+            #if DEBUG
+            logger.info("Cached rates used")
+            #endif
+            return (timestamp, cached)
         }
         
         let ckManager = CloudKitManager.shared
         
-        let result = try await ckManager.fetchRates(timestamp: timestampString ?? "latest")
+        let result = try await ckManager.fetchRates(timestamp: timestampString)
+        
+        cache[timestampString] = result.rates
         
         return result
     }

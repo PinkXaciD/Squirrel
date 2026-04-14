@@ -2,7 +2,7 @@
 //  ReturnsModel.swift
 //  financecontrol
 //
-//  Created by PinkXaciD on R 5/11/30.
+//  Created by PinkXaciD on 2023/11/30.
 //
 
 import CoreData
@@ -25,8 +25,6 @@ extension CoreDataModel {
         
         spending.addToReturns(newReturn)
         manager.save()
-        
-        fetchSpendings()
         
         HapticManager.shared.notification(.success)
     }
@@ -57,7 +55,6 @@ extension CoreDataModel {
     func deleteReturn(spendingReturn: ReturnEntity) {
         context.delete(spendingReturn)
         manager.save()
-        fetchSpendings()
     }
     
     func editReturn(
@@ -74,7 +71,6 @@ extension CoreDataModel {
         returnEntity.date = date
         returnEntity.name = name
         manager.save()
-        fetchSpendings()
     }
     
     func editRerturnFromSpending(
@@ -107,7 +103,6 @@ extension CoreDataModel {
         
         if performSave {
             manager.save()
-            fetchSpendings()
         }
     }
 }

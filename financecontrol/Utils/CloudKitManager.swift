@@ -2,7 +2,7 @@
 //  CloudKitManager.swift
 //  Squirrel
 //
-//  Created by PinkXaciD on R 6/07/22.
+//  Created by PinkXaciD on 2024/07/22.
 //
 
 import CloudKit
@@ -35,8 +35,9 @@ final class CloudKitManager {
     @Published
     private(set) var accountStatus: CKAccountStatus?
     
-    private let container = CKContainer(identifier: "iCloud.dev.squirrelapp.squirrel")
+    private let container = CKContainer(identifier: Vars.iCloudContainerIdentifier)
     private let cloudKitCoreDataZoneID = CKRecordZone.ID(zoneName: "com.apple.coredata.cloudkit.zone")
+    private let ckOperationConfig: CKOperation.Configuration
     
     #if DEBUG
     private let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
@@ -46,6 +47,12 @@ final class CloudKitManager {
         #if DEBUG
         logger.debug("CloudKitManager init")
         #endif
+        
+        let config = CKOperation.Configuration()
+        config.timeoutIntervalForRequest = 3
+        config.timeoutIntervalForResource = 10
+        config.isLongLived = false
+        self.ckOperationConfig = config
         
         container.accountStatus { [weak self] status, error in
             if let error {
@@ -79,7 +86,9 @@ final class CloudKitManager {
     func fetchRates(timestamp recordName: String) async throws -> (editDate: Date, rates: Rates) {
         func getRatesRecord(recordName: CKRecord.ID) async throws -> CKRecord {
             do {
-                return try await container.publicCloudDatabase.record(for: recordName)
+                return try await container.publicCloudDatabase.configuredWith(configuration: ckOperationConfig) { configuredDatabase in
+                    return try await configuredDatabase.record(for: recordName)
+                }
             } catch CKError.unknownItem {
                 #if DEBUG
                 await MainActor.run {
@@ -88,7 +97,7 @@ final class CloudKitManager {
                 #endif
                 
                 return try await container.publicCloudDatabase.record(for: CKRecord.ID(recordName: "latest"))
-            } catch CKError.networkUnavailable, CKError.serviceUnavailable, CKError.networkFailure {
+            } catch CKError.networkUnavailable, CKError.serviceUnavailable, CKError.networkFailure, CKError.operationCancelled {
                 throw CloudKitError.networkUnavailable
             }
         }
@@ -103,17 +112,21 @@ final class CloudKitManager {
             throw CloudKitError.failedToDecodeResult
         }
         
-        guard let editDate = record.modificationDate else {
-            throw CloudKitError.noEditDateFound
-        }
+        let dateFormatter = DateFormatter.forRatesTimestamp
+        
+        let editDate: Date = {
+            if recordName == "latest" {
+                return .now
+            }
+            
+            return dateFormatter.date(from: recordName) ?? .firstAvailableDate
+        }()
         
         let decoder = JSONDecoder()
         
         let rates = try decoder.decode([String : Double].self, from: ratesData)
         
         if recordName == "latest" {
-            let dateFormatter = DateFormatter.forRatesTimestamp
-            
             let editDateString = dateFormatter.string(from: editDate)
             
             return (editDate, Rates(timestamp: editDateString, rates: rates))

@@ -45,8 +45,6 @@ struct SpendingCompleteView: View {
                         cdm: cdm,
                         rvm: rvm
                     )
-                    .tint(categoryColor)
-                    .accentColor(categoryColor)
                     .sheet(item: $entityToAddReturn, onDismiss: dismissAction) { entity in
                         AddReturnView(spending: entity, cdm: cdm, rvm: rvm)
                             .accentColor(colorIdentifier(color: tint))

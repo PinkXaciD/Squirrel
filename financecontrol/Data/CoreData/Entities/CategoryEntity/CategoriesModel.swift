@@ -2,7 +2,7 @@
 //  CategoriesModel.swift
 //  financecontrol
 //
-//  Created by PinkXaciD on R 5/09/07.
+//  Created by PinkXaciD on 2023/09/07.
 //
 
 import CoreData
@@ -11,25 +11,6 @@ import OSLog
 #endif
 
 extension CoreDataModel {
-    
-    func fetchCategories() {
-        
-//        let request = CategoryEntity.fetchRequest()
-//        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-//        request.predicate = NSPredicate(format: "isShadowed == false")
-//        
-//        let requestForShadowed = CategoryEntity.fetchRequest()
-//        requestForShadowed.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-//        requestForShadowed.predicate = NSPredicate(format: "isShadowed == true")
-//        
-//        do {
-//            savedCategories = try context.fetch(request)
-//            shadowedCategories = try context.fetch(requestForShadowed)
-//        } catch {
-//            ErrorType(error: error).publish()
-//        }
-    }
-    
     func findCategory(_ id: UUID, in context: NSManagedObjectContext = DataManager.shared.context) -> CategoryEntity? {
         context.performAndWait {
             let request = CategoryEntity.fetchRequest()
@@ -48,7 +29,6 @@ extension CoreDataModel {
     }
     
     func addCategory(name: String, color: String) -> CategoryEntity? {
-        
         if let description = NSEntityDescription.entity(forEntityName: "CategoryEntity", in: context) {
             
             let newCategory = CategoryEntity(entity: description, insertInto: context)
@@ -60,7 +40,6 @@ extension CoreDataModel {
             newCategory.isShadowed = false
             
             manager.save()
-            fetchCategories()
             
             return newCategory
         }
@@ -69,39 +48,28 @@ extension CoreDataModel {
     }
     
     func addToCategory(_ spending: SpendingEntity, _ category: CategoryEntity) {
-        
         category.addToSpendings(spending)
     }
     
     func editCategory(_ category: CategoryEntity, name: String, color: String) {
-        
         category.name = name
         category.color = color
         manager.save()
-        fetchCategories()
-        fetchSpendings()
     }
     
     func changeShadowStateOfCategory(_ category: CategoryEntity) {
-        
         category.isShadowed.toggle()
         category.isFavorite = false
         manager.save()
-        fetchCategories()
     }
     
     func changeFavoriteStateOfCategory(_ category: CategoryEntity) {
-        
         category.isFavorite.toggle()
         manager.save()
-        fetchCategories()
     }
     
     func deleteCategory(_ category: CategoryEntity) {
-        
         context.delete(category)
         manager.save()
-        fetchCategories()
-        fetchSpendings()
     }
 }

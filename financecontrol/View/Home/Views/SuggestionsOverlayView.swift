@@ -42,8 +42,13 @@ struct SuggestionsOverlayView: View {
                             .padding(.top, minimizeSuggestions ? 9 : 17)
                         
                         if !minimizeSuggestions {
-                            content
-                                .padding(.horizontal, 20)
+                            VStack(alignment: .leading, spacing: 15) {
+                                content
+                                    .padding(.horizontal, 20)
+                            }
+                            .background {
+                                buttonsHitboxFix
+                            }
                         }
                     }
                     .padding(.bottom, minimizeSuggestions ? 9 : 17)
@@ -55,9 +60,14 @@ struct SuggestionsOverlayView: View {
                             .padding(.top, minimizeSuggestions ? 9 : 12)
                         
                         if !minimizeSuggestions {
-                            content
-                                .padding(.vertical, 2)
-                                .padding(.horizontal, 20)
+                            VStack(alignment: .leading, spacing: 7.5) {
+                                content
+                                    .padding(.vertical, 2)
+                                    .padding(.horizontal, 20)
+                            }
+                            .background {
+                                buttonsHitboxFix
+                            }
                         }
                     }
                     .padding(.bottom, minimizeSuggestions ? 9 : 12)
@@ -67,7 +77,7 @@ struct SuggestionsOverlayView: View {
             .padding(.vertical, 10)
             .offset(x: 0, y: -padding)
             .animation(.none, value: padding)
-            .animation(suggestionsAnimation, value: vm.filteredSuggestions.count)
+            .animation(suggestionsAnimation, value: vm.filteredSuggestions)
         }
     }
     
@@ -76,6 +86,20 @@ struct SuggestionsOverlayView: View {
             getSuggestionButton(value: suggestion.value)
                 .id(suggestion.id)
                 .transition(.blurWithOpacity.animation(suggestionsAnimation))
+        }
+    }
+    
+    private var buttonsHitboxFix: some View {
+        VStack(spacing: 0) {
+            ForEach(vm.filteredSuggestions.reversed(), id: \.self) { suggestion in
+                Button {
+                    vm.place = suggestion.value
+                    vm.selectedSuggestion = suggestion.value
+                } label: {
+                    Rectangle()
+                        .fill(.clear)
+                }
+            }
         }
     }
 
@@ -114,11 +138,6 @@ fileprivate struct MenuBackgroundModifier: ViewModifier {
         if #available(iOS 26.0, *) {
             content
                 .clipShape(RoundedRectangle(cornerRadius: 30))
-                .background {
-                    Color.black
-                        .opacity(0.001)
-                        .onTapGesture {}
-                }
                 .glassEffect(.regular.interactive(!minimizeSuggestions), in: RoundedRectangle(cornerRadius: 30))
                 .padding()
         } else {
@@ -126,7 +145,6 @@ fileprivate struct MenuBackgroundModifier: ViewModifier {
                 .background {
                     RoundedRectangle(cornerRadius: 15)
                         .fill(Color(uiColor: .systemBackground))
-                        .onTapGesture {}
                     
                     RoundedRectangle(cornerRadius: 15)
                         .stroke(lineWidth: 1)

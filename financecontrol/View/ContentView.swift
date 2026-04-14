@@ -3,7 +3,7 @@
 //  ContentView.swift
 //  financecontrol
 //
-//  Created by PinkXaciD on R 5/06/26.
+//  Created by PinkXaciD on 2023/06/26.
 //
 
 import SwiftUI
@@ -31,7 +31,7 @@ struct ContentView: View {
     @StateObject
     private var cdm: CoreDataModel
     @StateObject
-    private var rvm: RatesViewModel = .init()
+    private var rvm: RatesViewModel
     @StateObject
     private var filtersViewModel: FiltersViewModel
     @StateObject
@@ -67,6 +67,7 @@ struct ContentView: View {
                 self.scrollToTop = $0
                 return
             }
+            
             self.selectionValue = $0
         })
     }
@@ -78,12 +79,14 @@ struct ContentView: View {
     let cloudSyncWasEnabled = NSUbiquitousKeyValueStore.default.bool(forKey: UDKey.iCloudSync.rawValue)
     
     init() {
+        let ratesViewModel = RatesViewModel()
         let cloudKitKVSManger = CloudKitKVSManager()
-        let coreDataModel = CoreDataModel(isCloudSyncEnabled: cloudKitKVSManger.iCloudSync)
+        let coreDataModel = CoreDataModel(isCloudSyncEnabled: cloudKitKVSManger.iCloudSync, ratesViewModel: ratesViewModel)
         let filtersViewModel = FiltersViewModel()
         let pieChartViewModel = PieChartViewModel(cdm: coreDataModel, fvm: filtersViewModel)
         let statsSearchViewModel = StatsSearchViewModel()
         let statsListViewModel = StatsListViewModel(cdm: coreDataModel, fvm: filtersViewModel, pcvm: pieChartViewModel, searchModel: statsSearchViewModel)
+        self._rvm = StateObject(wrappedValue: ratesViewModel)
         self._cloudKitKVSManager = StateObject(wrappedValue: cloudKitKVSManger)
         self._cdm = StateObject(wrappedValue: coreDataModel)
         self._pieChartViewModel = StateObject(wrappedValue: pieChartViewModel)
@@ -221,6 +224,7 @@ struct ContentView: View {
             Label("Settings", systemImage: "gearshape.fill")
         }
         .tag(2)
+        .badge(cloudKitKVSManager.iCloudSync != cloudSyncWasEnabled ? 1 : 0)
     }
     
     private func setColorScheme() {
@@ -252,7 +256,7 @@ struct ContentView: View {
             }
             
             #if DEBUG
-            Logger(subsystem: Vars.appIdentifier, category: #fileID).log("Moved to foreground, CD last fetch: \((cdm.lastFetchDate ?? .distantFuture).formatted())")
+            Logger(subsystem: Vars.appIdentifier, category: #fileID).log("Moved to foreground, CD last fetch: \((cdm.lastFetchDate ?? .distantFuture).formatted(date: .numeric, time: .standard))")
             #endif
         }
     }

@@ -15,7 +15,10 @@ extension CoreDataModel {
     ///
     /// This method is thread-safe and works on main thread asynchronously
     func fetchSpendings(updateWidgets: Bool = true) {        
-//        print("\(#function) called")
+        #if DEBUG
+        logger.info("\(#function) called")
+        #endif
+        
         context.perform { [weak self] in
             guard let self else { return }
             
@@ -86,7 +89,7 @@ extension CoreDataModel {
             self.lastFetchDate = Date()
             self.places = places
             
-            if !ratesFetchSpendings.isEmpty {
+            if !ratesFetchSpendings.isEmpty && !waitingForRatesToBeAvailable {
                 updateRatesFromQueue(ratesFetchSpendings)
             }
             
@@ -177,7 +180,7 @@ extension CoreDataModel {
     ///
     /// This method is thread-safe
     func addSpending(spending: SpendingEntityLocal, timeZoneIdentifier: String, playHaptic: Bool = true, addToFetchQueue: Bool = false) {
-        context.performAndWait {
+        context.perform { [self] in
             guard let description = NSEntityDescription.entity(forEntityName: "SpendingEntity", in: context) else {
                 ErrorType(CoreDataError.failedToGetEntityDescription).publish()
                 return
@@ -201,13 +204,12 @@ extension CoreDataModel {
             newSpending.comment = spending.comment
             
             addToCategory(newSpending, category)
-            try? context.save()
-            fetchSpendings()
             
             if addToFetchQueue {
                 UserDefaults.standard.addToFetchQueue(spendingID)
-                waitForRatesToBecomeAvailable()
             }
+            
+            try? context.save()
             
             if playHaptic {
                 HapticManager.shared.notification(.success)
@@ -250,7 +252,7 @@ extension CoreDataModel {
     ///   - newSpending: Object with values to be inserted into spending
     ///
     /// This method is thread-safe and works on main thread asynchronously
-    func editSpending(spending: SpendingEntity, newSpending: SpendingEntityLocal, addToFetchQueue: Bool = false, exchangeRate: Double = 1) {
+    func editSpending(spending: SpendingEntity, newSpending: SpendingEntityLocal, exchangeRate: Double = 1, addToFetchQueue: Bool = false) {
         context.perform { [weak self] in
             var check: Bool {
                 spending.amount != newSpending.amount ||
@@ -293,18 +295,15 @@ extension CoreDataModel {
                 )
             }
             
-            
-            self?.manager.save()
             #if DEBUG
             Logger(subsystem: Vars.appIdentifier, category: "\(#fileID)").log("\(self?.context.name ?? "") saved")
             #endif
             
-            self?.fetchSpendings()
-            
             if addToFetchQueue {
                 UserDefaults.standard.addToFetchQueue(spending.wrappedId)
-                self?.waitForRatesToBecomeAvailable()
             }
+            
+            self?.manager.save()
             
             HapticManager.shared.notification(.success)
         }
@@ -318,9 +317,8 @@ extension CoreDataModel {
         context.perform { [weak self] in
             let spendingID = spending.wrappedId
             self?.context.delete(spending)
-            self?.manager.save()
-            self?.fetchSpendings()
             UserDefaults.standard.removeFromFetchQueue(spendingID)
+            self?.manager.save()
         }
     }
     
@@ -443,24 +441,6 @@ extension CoreDataModel {
         }
     }
     
-    // MARK: Operations for list
-    @available(*, deprecated, renamed: "CoreDataModel.statsListData", message: "Deprecated, use CoreDataModel's property instead")
-    func operationsForList() -> StatsListData {
-        context.performAndWait {
-            var result: StatsListData = [:]
-            
-            for spending in savedSpendings {
-                let day = Calendar.current.startOfDay(for: spending.wrappedDate)
-                var existingData = result[day] ?? []
-                existingData.append(spending.safeObject())
-                
-                result.updateValue(existingData, forKey: day)
-            }
-            
-            return result
-        }
-    }
-    
     func waitForRatesToBecomeAvailable() {
         if !waitingForRatesToBeAvailable {
             NotificationCenter.default.addObserver(
@@ -481,15 +461,26 @@ extension CoreDataModel {
     
     func updateRatesFromQueue(_ spendings: [SpendingEntity]) {
         context.perform {
+            #if DEBUG
+            logger.info("Rates Fetch Queue count: \(spendings.count)")
+            #endif
+            
             for spending in spendings {
                 let safeSpending = spending.safeObject()
                 
                 // Goes away from safe thread
                 Task { [weak self, spending, safeSpending] in
                     do {
-                        let ckManager = CloudKitManager.shared
-                        let formattedDate = DateFormatter.forRatesTimestamp.string(from: safeSpending.wrappedDate)
-                        let rate = try await ckManager.fetchRates(timestamp: formattedDate).rates.rates[safeSpending.wrappedCurrency] ?? 1
+                        guard let self else { return }
+                        
+                        let rates = try await self.ratesViewModel.getRates(safeSpending.wrappedDate, checkURLVersion: false)
+                        
+                        guard
+                            Calendar.gmt.isDate(rates.editDate, inSameDayAs: safeSpending.wrappedDate),
+                            let rate = rates.rates.rates[safeSpending.wrappedCurrency]
+                        else {
+                            return
+                        }
                         
                         let localSpending = SpendingEntityLocal(
                             amount: safeSpending.amount,
@@ -501,28 +492,32 @@ extension CoreDataModel {
                             comment: safeSpending.comment ?? ""
                         )
                         
-                        self?.editSpending(spending: spending, newSpending: localSpending, exchangeRate: rate)
+                        UserDefaults.standard.removeFromFetchQueue(safeSpending.wrappedId)
+                        
+                        self.editSpending(spending: spending, newSpending: localSpending, exchangeRate: rate)
                         
                         #if DEBUG
-                        DispatchQueue.main.async {
+                        await MainActor.run {
                             HapticManager.shared.impact(.rigid)
                         }
-                        #endif
                         
-                        UserDefaults.standard.removeFromFetchQueue(safeSpending.wrappedId)
+                        logger.info("Rates Fetch Queue fired for \(safeSpending.wrappedId.uuidString)")
+                        #endif
                     } catch CloudKitManager.CloudKitError.networkUnavailable {
                         self?.waitForRatesToBecomeAvailable()
+                        return
                     } catch {
                         ErrorType(error: error).publish(file: #fileID, function: #function)
+                        return
                     }
                 }
             }
             
-            NotificationCenter.default.removeObserver(self, name: NSNotification.Name("ConnectionEstablished"), object: NetworkMonitor.shared)
+            if self.waitingForRatesToBeAvailable {
+                NotificationCenter.default.removeObserver(self, name: NSNotification.Name("ConnectionEstablished"), object: NetworkMonitor.shared)
+            }
         }
         
         self.waitingForRatesToBeAvailable = false
     }
 }
-
-typealias StatsListData = [Date:[TSSpendingEntity]]

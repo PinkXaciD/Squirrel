@@ -118,9 +118,7 @@ final class AddSpendingViewModel: ViewModel {
     }
     
     private func dismissAction() {
-        DispatchQueue.main.async {
-            self.dismiss = true
-        }
+        self.dismiss = true
     }
     
     private func subscribeToInput() -> AnyCancellable {
@@ -133,14 +131,14 @@ final class AddSpendingViewModel: ViewModel {
                     return
                 }
                 
-                self?.filteredSuggestions = self?.filterSuggestions(userInput: trimmedValue) ?? []
-                
                 if self?.selectedSuggestion == trimmedValue {
                     self?.isSuggestionSelected = true
                 } else if self?.isSuggestionSelected == true {
                     self?.isSuggestionSelected = false
                     self?.selectedSuggestion = ""
                 }
+                
+                self?.filteredSuggestions = self?.filterSuggestions(userInput: trimmedValue) ?? []
             }
     }
     
@@ -199,13 +197,13 @@ final class AddSpendingViewModel: ViewModel {
     func done() {
         guard let catID = self.selectedCategory?.id else { return }
         
-        DispatchQueue.global(qos: .utility).async { [weak self, catID] in
+        Task { [weak self, catID] in
             guard let self else { return }
             
             let formatter = NumberFormatter.standard
             
             guard let number = formatter.number(from: amount) else {
-                DispatchQueue.main.async {
+                await MainActor.run {
                     ErrorType(
                         errorDescription: "Failed to add expense",
                         failureReason: "Cannot convert amount to number",
@@ -231,42 +229,29 @@ final class AddSpendingViewModel: ViewModel {
             if self.currency == "USD" {
                 spending.amountUSD = doubleAmount
                 cdm.addSpending(spending: spending, timeZoneIdentifier: self.timeZoneIdentifier)
-                DispatchQueue.main.async {
-                    self.dismiss = true
+                
+                await MainActor.run { [self] in
+                    self.dismissAction()
                 }
+                
                 #if DEBUG
                 let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
                 logger.log("Currency is USD, skipping rates fetching...")
                 #endif
+                
                 return
             }
             
-            if Calendar.gmt.isDateInToday(date) {
-                spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
-                
-                cdm.addSpending(spending: spending, timeZoneIdentifier: self.timeZoneIdentifier)
-                DispatchQueue.main.async {
-                    self.dismiss = true
-                }
-            } else {
-                Task { [spending, self] in
-                    let oldRates = try? await self.rvm.getRates(self.date).rates.rates
-                    
-                    await MainActor.run { [spending, self] in
-                        let isHistoricalRatesUnvailable: Bool = oldRates == nil
-                        var spendingCopy = spending
-                        
-                        if let oldRates = oldRates {
-                            spendingCopy.amountUSD = doubleAmount / (oldRates[self.currency] ?? 1)
-                        } else {
-                            spendingCopy.amountUSD = doubleAmount / (self.rvm.rates[self.currency] ?? 1)
-                        }
-                        
-                        self.cdm.addSpending(spending: spendingCopy, timeZoneIdentifier: self.timeZoneIdentifier, addToFetchQueue: isHistoricalRatesUnvailable)
-                        
-                        self.dismissAction()
-                    }
-                }
+            spending.amountUSD = doubleAmount / (rvm.rates[currency] ?? 1)
+            
+            var addToFetchQueue: Bool {
+                !Calendar.gmt.isDateInToday(date) || !Calendar.gmt.isDateInToday(rvm.updateTime)
+            }
+            
+            cdm.addSpending(spending: spending, timeZoneIdentifier: self.timeZoneIdentifier, addToFetchQueue: addToFetchQueue)
+            
+            await MainActor.run { [self] in
+                self.dismissAction()
             }
         }
     }

@@ -124,7 +124,7 @@ struct AddSpendingView: View {
                     if showSuggestions {
                         var transition: AnyTransition {
                             if #available(iOS 26.0, *) {
-                                let anchor: UnitPoint = .init(x: 0.15, y: overlayManager.placeFieldPosition / max(geometry.size.height, 0.1))
+                                let anchor: UnitPoint = .init(x: 0.15, y: overlayManager.placeFieldPosition / max(geometry.size.height, 0.1) - 0.15)
                                 
                                 return .scale(scale: 0, anchor: anchor).combined(with: .opacity)
                             }

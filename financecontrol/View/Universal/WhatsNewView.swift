@@ -41,8 +41,6 @@ struct WhatsNewView: View {
                 
                 Spacer()
                 
-                getRow(imageName: "list.bullet", title: "Place Suggestions", subtitle: "Squirrel will now show a list of suggestions while you're entering the place")
-                
                 getRow(imageName: "gearshape.2.fill", title: "Bug Fixes", subtitle: "Minor bug fixes and general improvements")
                 
                 Spacer()
