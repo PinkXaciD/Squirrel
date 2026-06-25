@@ -6,17 +6,18 @@
 //
 
 import SwiftUI
+import Beige
 
 struct CategoryRow: View {
-    
 //    @EnvironmentObject private var cdm: CoreDataModel
     @Environment(\.managedObjectContext) private var viewContext
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.colorSchemeContrast) private var colorSchemeContrast
     
     @ObservedObject
     var category: CategoryEntity
     
     var body: some View {
-        
         NavigationLink {
             CategoryEditView(category: category)
         } label: {
@@ -45,7 +46,7 @@ struct CategoryRow: View {
         return HStack {
             Image(systemName: category.isFavorite ? "star.circle.fill" : "circle.fill")
                 .font(.title)
-                .foregroundStyle(Color[category.color ?? "nil"])
+                .foregroundStyle(category.resolveColor(colorScheme: colorScheme, increaseContrast: colorSchemeContrast))
             
             VStack(alignment: .leading) {
                 Text(category.name ?? "Error")
@@ -61,17 +62,13 @@ struct CategoryRow: View {
             Text("Edit")
                 .foregroundStyle(.secondary)
         }
-//        .foregroundStyle(Color.primary, Color.secondary, Color[category.color ?? "nil"])
         .padding(.vertical, 1) /// Strange behavior without padding
     }
     
     private var favoriteButton: some View {
         Button {
-//            withAnimation {
-                category.isFavorite.toggle()
-                try? viewContext.save()
-//                cdm.changeFavoriteStateOfCategory(category)
-//            }
+            category.isFavorite.toggle()
+            try? viewContext.save()
         } label: {
             Label(
                 category.isFavorite ? "Remove from favorites" : "Add to favorites", 
@@ -86,7 +83,6 @@ struct CategoryRow: View {
             withAnimation {
                 category.isShadowed.toggle()
                 try? viewContext.save()
-//                cdm.changeShadowStateOfCategory(category)
             }
         } label: {
             Label("Archive", systemImage: "archivebox.fill")

@@ -8,6 +8,10 @@
 import SwiftUI
 
 struct SpendingCompleteView: View {
+    @Environment(\.colorScheme)
+    private var colorScheme
+    @Environment(\.colorSchemeContrast)
+    private var colorSchemeContrast
     @AppStorage(UDKey.color.rawValue)
     private var tint: String = "Orange"
     @AppStorage(UDKey.privacyScreen.rawValue)
@@ -29,7 +33,8 @@ struct SpendingCompleteView: View {
     @State private var hideContent: Bool = false
     
     var body: some View {
-        let categoryColor = CustomColor.nordAurora[entity.category?.color ?? ""] ?? .secondary.opacity(0)
+//        let categoryColor = CustomColor.nordAurora[entity.category?.color ?? ""] ?? .secondary.opacity(0)
+        let categoryColor: Color = entity.category?.resolveColor(colorScheme: colorScheme, increaseContrast: colorSchemeContrast) ?? .secondary
         
         Group {
             if edit {
@@ -116,7 +121,7 @@ struct SpendingListRowButtonStyle: ButtonStyle {
     
     func makeBody(configuration: Configuration) -> some View {
         if dynamicTypeSize > .xLarge, horizontalSizeClass == .compact {
-            accesabilityLabel(configuration)
+            accesebilityLabel(configuration)
                 .overlay {
                     VStack {
                         Divider()
@@ -131,7 +136,7 @@ struct SpendingListRowButtonStyle: ButtonStyle {
         }
     }
     
-    private func accesabilityLabel(_ configuration: Configuration) -> some View {
+    private func accesebilityLabel(_ configuration: Configuration) -> some View {
         ZStack {
             RoundedRectangle(cornerRadius: 0)
                 .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
@@ -148,7 +153,7 @@ struct SpendingListRowButtonStyle: ButtonStyle {
     private func label(_ configuration: Configuration) -> some View {
         ZStack {
             RoundedRectangle(cornerRadius: Text.listCornerRadius)
-                .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
+                .foregroundColor(configuration.isPressed ? Color(uiColor: .systemGray3) : Color(uiColor: .secondarySystemGroupedBackground))
             
             configuration.label
                 .padding(10)

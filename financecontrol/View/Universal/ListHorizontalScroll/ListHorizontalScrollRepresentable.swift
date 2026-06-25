@@ -9,5 +9,6 @@ import SwiftUI
 
 protocol ListHorizontalScrollRepresentable {
     var label: Text { get }
-    var foregroundColor: Color { get }
+//    var foregroundColor: Color { get }
+    func foregroundColor(colorScheme: ColorScheme, increaseContrast: ColorSchemeContrast) -> Color
 }

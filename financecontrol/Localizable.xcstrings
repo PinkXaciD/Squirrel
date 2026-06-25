@@ -421,6 +421,9 @@
     "Close" : {
 
     },
+    "Color" : {
+
+    },
     "Color and Icon" : {
 
     },
@@ -614,6 +617,9 @@
 
     },
     "Failed to update rates" : {
+
+    },
+    "Favorite" : {
 
     },
     "Favorite categories" : {
@@ -1170,6 +1176,9 @@
 
     },
     "Unable to update exchange rates" : {
+
+    },
+    "Unfavorite" : {
 
     },
     "unknown-place-localized" : {

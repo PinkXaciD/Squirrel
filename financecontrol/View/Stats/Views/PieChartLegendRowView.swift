@@ -2,12 +2,17 @@
 //  PieChartLegendRowView.swift
 //  Squirrel
 //
-//  Created by PinkXaciD on R 6/02/09.
+//  Created by PinkXaciD on 2024/02/09.
 //
 
 import SwiftUI
 
 struct PieChartLegendRowView: View {
+    @Environment(\.colorScheme)
+    private var colorScheme
+    @Environment(\.colorSchemeContrast)
+    private var colorSchemeContrast
+    
     @AppStorage(UDKey.defaultCurrency.rawValue)
     private var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
     @EnvironmentObject
@@ -26,7 +31,7 @@ struct PieChartLegendRowView: View {
     
     @available(iOS 26.0, *)
     private var glass: Glass {
-        .regular.tint(Color[category.color].opacity(0.3)).interactive()
+        .regular.tint(category.resolveColor(colorScheme: colorScheme, increaseContrast: colorSchemeContrast).opacity(0.3)).interactive()
     }
     
     var body: some View {
@@ -49,7 +54,7 @@ struct PieChartLegendRowView: View {
                     .foregroundColor(.white)
                     .background {
                         RoundedRectangle(cornerRadius: 4)
-                            .fill(Color[category.color])
+                            .fill(category.resolveColor(colorScheme: .light, increaseContrast: colorSchemeContrast))
                     }
                 
                 Text(category.sum.formatted(.currency(code: defaultCurrency)))
@@ -60,7 +65,7 @@ struct PieChartLegendRowView: View {
             .padding(.leading, 3)
             .background {
                 RoundedRectangle(cornerRadius: 7)
-                    .fill(Color[category.color])
+                    .fill(category.resolveColor(colorScheme: colorScheme, increaseContrast: colorSchemeContrast))
                     .opacity(0.3)
             }
         }
@@ -82,7 +87,7 @@ struct PieChartLegendRowView: View {
                     .foregroundColor(.white)
                     .background {
                         RoundedRectangle(cornerRadius: 16)
-                            .fill(Color[category.color])
+                            .fill(category.resolveColor(colorScheme: .light, increaseContrast: colorSchemeContrast))
                     }
                 
                 Text(category.sum.formatted(.currency(code: defaultCurrency)))
@@ -95,7 +100,7 @@ struct PieChartLegendRowView: View {
         }
         .buttonStyle(.plain)
         .glassEffect(glass, in: RoundedRectangle(cornerRadius: 19))
-        .tint(Color[category.color])
+        .tint(category.resolveColor(colorScheme: colorScheme, increaseContrast: colorSchemeContrast))
         .hoverEffect()
     }
     

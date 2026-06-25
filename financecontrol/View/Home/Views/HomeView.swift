@@ -57,7 +57,9 @@ struct HomeView: View {
                         }
                     }
 #endif
-                
+//                NavigationLink("Currency Converter") {
+//                    CurrencyConvertView()
+//                }
 //                if latestLaunchedBuild < currentBuild {
 //                    whatsNewSection
 //                }

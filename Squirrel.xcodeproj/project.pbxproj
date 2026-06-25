@@ -62,6 +62,8 @@
 		8D4E08182AAA152A00B3544F /* SpendingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4E08172AAA152A00B3544F /* SpendingsModel.swift */; };
 		8D4E081A2AAA15B900B3544F /* CategoriesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4E08192AAA15B900B3544F /* CategoriesModel.swift */; };
 		8D4E081C2AAA163800B3544F /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4E081B2AAA163800B3544F /* Currency.swift */; };
+		8D4E1CE72FE97C5D00248BA7 /* Beige in Frameworks */ = {isa = PBXBuildFile; productRef = 8D4E1CE62FE97C5D00248BA7 /* Beige */; };
+		8D4E1CE92FE97F7000248BA7 /* CategoryEntity+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D4E1CE82FE97F7000248BA7 /* CategoryEntity+Extensions.swift */; };
 		8D4FE3002BA9D954001009F2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8DFF59662BA35D1F002DBB1B /* PrivacyInfo.xcprivacy */; };
 		8D4FE3022BA9DA11001009F2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8DFF59662BA35D1F002DBB1B /* PrivacyInfo.xcprivacy */; };
 		8D5176552C3300FD00141B6C /* CustomAlertManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5176542C3300FD00141B6C /* CustomAlertManager.swift */; };
@@ -112,7 +114,7 @@
 		8D803B112C4EA58200778B6C /* CloudKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D803B102C4EA58200778B6C /* CloudKitManager.swift */; };
 		8D803B132C4EA6AD00778B6C /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D803B122C4EA6AD00778B6C /* Keychain.swift */; };
 		8D830DF12AE00CE600EFB1E7 /* ShadowedCategoriesRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D830DF02AE00CE600EFB1E7 /* ShadowedCategoriesRow.swift */; };
-		8D8439E92CD120E700D2054D /* SocialNetworkModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8439E82CD120E700D2054D /* SocialNetworkModel.swift */; };
+		8D8439E92CD120E700D2054D /* SocialNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8439E82CD120E700D2054D /* SocialNetwork.swift */; };
 		8D8439EC2CD14C0F00D2054D /* PrivacyPolicyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8439EB2CD14C0F00D2054D /* PrivacyPolicyView.swift */; };
 		8D8439EE2CD14C3B00D2054D /* ContactUsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8439ED2CD14C3B00D2054D /* ContactUsView.swift */; };
 		8D8845022C57EEDB0066F87D /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD5C38B2A603F4500FC862C /* Formatters.swift */; };
@@ -278,6 +280,7 @@
 		8D4E08172AAA152A00B3544F /* SpendingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpendingsModel.swift; sourceTree = "<group>"; };
 		8D4E08192AAA15B900B3544F /* CategoriesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoriesModel.swift; sourceTree = "<group>"; };
 		8D4E081B2AAA163800B3544F /* Currency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
+		8D4E1CE82FE97F7000248BA7 /* CategoryEntity+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CategoryEntity+Extensions.swift"; sourceTree = "<group>"; };
 		8D5176542C3300FD00141B6C /* CustomAlertManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertManager.swift; sourceTree = "<group>"; };
 		8D5176562C33011900141B6C /* CustomAlertData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertData.swift; sourceTree = "<group>"; };
 		8D5176582C33021C00141B6C /* CustomAlertViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertViewModel.swift; sourceTree = "<group>"; };
@@ -325,7 +328,7 @@
 		8D803B102C4EA58200778B6C /* CloudKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitManager.swift; sourceTree = "<group>"; };
 		8D803B122C4EA6AD00778B6C /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
 		8D830DF02AE00CE600EFB1E7 /* ShadowedCategoriesRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowedCategoriesRow.swift; sourceTree = "<group>"; };
-		8D8439E82CD120E700D2054D /* SocialNetworkModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialNetworkModel.swift; sourceTree = "<group>"; };
+		8D8439E82CD120E700D2054D /* SocialNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialNetwork.swift; sourceTree = "<group>"; };
 		8D8439EB2CD14C0F00D2054D /* PrivacyPolicyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyView.swift; sourceTree = "<group>"; };
 		8D8439ED2CD14C3B00D2054D /* ContactUsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactUsView.swift; sourceTree = "<group>"; };
 		8D885B042B43F2D700CCA260 /* SpendingsCoreDataModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpendingsCoreDataModelTests.swift; sourceTree = "<group>"; };
@@ -429,6 +432,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8DCB60772B6E6FAA00B94872 /* ApplePie in Frameworks */,
+				8D4E1CE72FE97C5D00248BA7 /* Beige in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -602,7 +606,7 @@
 				8DAFF8A42B39CEA4001D5A9D /* CoreData */,
 				8D6059E02AB874C30043A293 /* Rates */,
 				8D4E081B2AAA163800B3544F /* Currency.swift */,
-				8D8439E82CD120E700D2054D /* SocialNetworkModel.swift */,
+				8D8439E82CD120E700D2054D /* SocialNetwork.swift */,
 				8D0F2FA82F193E7800F7E96E /* Place.swift */,
 			);
 			path = Data;
@@ -837,6 +841,7 @@
 				8D4E08192AAA15B900B3544F /* CategoriesModel.swift */,
 				8D88CDBC2AA0E37000668DEC /* CategoryEntity+CoreDataClass.swift */,
 				8D88CDBD2AA0E37000668DEC /* CategoryEntity+CoreDataProperties.swift */,
+				8D4E1CE82FE97F7000248BA7 /* CategoryEntity+Extensions.swift */,
 			);
 			path = CategoryEntity;
 			sourceTree = "<group>";
@@ -1076,6 +1081,7 @@
 			name = Squirrel;
 			packageProductDependencies = (
 				8DCB60762B6E6FAA00B94872 /* ApplePie */,
+				8D4E1CE62FE97C5D00248BA7 /* Beige */,
 			);
 			productName = financecontrol;
 			productReference = 8DBFEBCA2A49ED4800165414 /* Squirrel.app */;
@@ -1089,7 +1095,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1510;
-				LastUpgradeCheck = 1600;
+				LastUpgradeCheck = 2640;
 				TargetAttributes = {
 					8D292EF22B3D75DC00E69BA7 = {
 						CreatedOnToolsVersion = 15.1;
@@ -1114,6 +1120,7 @@
 			mainGroup = 8DBFEBC12A49ED4800165414;
 			packageReferences = (
 				8DE080192B6E6752003B5607 /* XCRemoteSwiftPackageReference "ApplePie" */,
+				8D4E1CE52FE97C5D00248BA7 /* XCRemoteSwiftPackageReference "Beige" */,
 			);
 			productRefGroup = 8DBFEBCB2A49ED4800165414 /* Products */;
 			projectDirPath = "";
@@ -1221,7 +1228,7 @@
 				8D88CDC32AA0E37000668DEC /* SpendingEntity+CoreDataProperties.swift in Sources */,
 				8DFE477E2D20315200AA3B9F /* ICloudSyncView.swift in Sources */,
 				8D6E441B2B18C6E800FDFF9D /* ReturnsModel.swift in Sources */,
-				8D8439E92CD120E700D2054D /* SocialNetworkModel.swift in Sources */,
+				8D8439E92CD120E700D2054D /* SocialNetwork.swift in Sources */,
 				8D2AD7CE2BA1CDA2001DCC61 /* OnboardingWelcomeView.swift in Sources */,
 				8D4372492DF1F148006F9632 /* CSVOptionsView.swift in Sources */,
 				8D6E44152B18C5AE00FDFF9D /* ReturnEntity+CoreDataProperties.swift in Sources */,
@@ -1302,6 +1309,7 @@
 				8DE80D8F2B8CF5E300B6ACA8 /* StatsListViewModel.swift in Sources */,
 				8D05C6D82AE0479E0097078A /* ExportAndBackupView.swift in Sources */,
 				8D5CBE782B84F68300435335 /* CoreDataErrors.swift in Sources */,
+				8D4E1CE92FE97F7000248BA7 /* CategoryEntity+Extensions.swift in Sources */,
 				8D0429DB2A9B8D2400A09BB4 /* BarChartGenerator.swift in Sources */,
 				8D9DD66F2D3173B50061DA6B /* ICloudLogoAnimatedView.swift in Sources */,
 				8D28C7F02A73DF7000F27CD4 /* Colors.swift in Sources */,
@@ -1427,7 +1435,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 83;
+				CURRENT_PROJECT_VERSION = 84;
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1442,7 +1450,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.2.6;
+				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirreldebug.squirrelWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1466,7 +1474,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 83;
+				CURRENT_PROJECT_VERSION = 84;
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1481,7 +1489,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.2.6;
+				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirrel.squirrelWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1554,6 +1562,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 6.0;
@@ -1611,6 +1620,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 6.0;
@@ -1628,7 +1638,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 83;
+				CURRENT_PROJECT_VERSION = 84;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
@@ -1648,7 +1658,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.6;
+				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirreldebug;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1672,7 +1682,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 83;
+				CURRENT_PROJECT_VERSION = 84;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
@@ -1692,7 +1702,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.6;
+				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirrel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1748,6 +1758,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		8D4E1CE52FE97C5D00248BA7 /* XCRemoteSwiftPackageReference "Beige" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/PinkXaciD/Beige";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.1;
+			};
+		};
 		8DE080192B6E6752003B5607 /* XCRemoteSwiftPackageReference "ApplePie" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/PinkXaciD/ApplePie";
@@ -1759,6 +1777,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		8D4E1CE62FE97C5D00248BA7 /* Beige */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8D4E1CE52FE97C5D00248BA7 /* XCRemoteSwiftPackageReference "Beige" */;
+			productName = Beige;
+		};
 		8DCB60762B6E6FAA00B94872 /* ApplePie */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 8DE080192B6E6752003B5607 /* XCRemoteSwiftPackageReference "ApplePie" */;

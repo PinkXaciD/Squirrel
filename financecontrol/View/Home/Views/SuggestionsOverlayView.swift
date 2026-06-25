@@ -96,9 +96,9 @@ struct SuggestionsOverlayView: View {
                     vm.place = suggestion.value
                     vm.selectedSuggestion = suggestion.value
                 } label: {
-                    Rectangle()
-                        .fill(.clear)
+                    Color.clear
                 }
+                .id(suggestion.id)
             }
         }
     }

@@ -1,38 +1,55 @@
 //
 //  CustomColorSelector.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/09/09.
+//  Created by PinkXaciD on 2023/09/09.
 //
 
-import Foundation
 import SwiftUI
+import Beige
 
 struct CustomColorSelector: View {
+    @Binding var oklch: OKLCH
     
-    @Binding var colorSelectedDescription: String
+    private var padding: CGFloat {
+        if #available(iOS 26.0, *) {
+            return 5
+        }
+        
+        return 0
+    }
+    @State var colorSelectedDescription: String = "nord1"
     let colors = CustomColor.nordAurora
+//    
+    let columns: [GridItem] = Array(repeating: .init(.flexible(minimum: 35, maximum: 50), spacing: 10, alignment: .center), count: 7)
     
     var body: some View {
+//        VStack {
+//            Section {
+//                LazyVGrid(columns: columns) {
+//                    ForEach(colors.compactMap{$0.key}.sorted{$0 < $1}, id: \.self) { colorDescription in
+//                        Button {
+//                            buttonAction(colorDescription)
+//                        } label: {
+//                            if #available(iOS 26.0, *) {
+//                                newButtonLabel(colorDescription)
+//                            } else {
+//                                buttonLabel(colorDescription)
+//                            }
+//                        }
+//                        .buttonStyle(.plain)
+//                        .contentShape(.hoverEffect, Circle())
+//                        .hoverEffect(.lift)
+//                    }
+//                }
+//            }
+//
+//            BeigeColorPicker(color: $oklch)
+//                .frame(height: 40)
+//        }
         
-        let columns: [GridItem] = Array(repeating: .init(.flexible(minimum: 35, maximum: 50), spacing: 10, alignment: .center), count: 7)
-        
-        LazyVGrid(columns: columns) {
-            ForEach(colors.compactMap{$0.key}.sorted{$0 < $1}, id: \.self) { colorDescription in
-                Button {
-                    buttonAction(colorDescription)
-                } label: {
-                    if #available(iOS 26.0, *) {
-                        newButtonLabel(colorDescription)
-                    } else {
-                        buttonLabel(colorDescription)
-                    }
-                }
-                .buttonStyle(.plain)
-                .contentShape(.hoverEffect, Circle())
-                .hoverEffect(.lift)
-            }
-        }
+        BeigeColorPicker(color: $oklch, cornerRadius: Self.listCornerRadius - padding)
+            .listRowInsets(.init(top: padding, leading: padding, bottom: padding, trailing: padding))
     }
     
     private func buttonLabel(_ colorDescription: String) -> some View {
@@ -81,7 +98,7 @@ fileprivate struct CustomColorSelectorPreview: View {
     
     var body: some View {
         List {
-            CustomColorSelector(colorSelectedDescription: $colorSelectedDescription)
+            CustomColorSelector(oklch: .constant(.init(lightness: 0.7)))
         }
     }
 }

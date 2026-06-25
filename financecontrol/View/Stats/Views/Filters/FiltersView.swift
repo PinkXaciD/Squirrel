@@ -85,7 +85,7 @@ struct FiltersView: View {
             }
         }
         
-        var foregroundColor: Color {
+        func foregroundColor(colorScheme: ColorScheme, increaseContrast: ColorSchemeContrast) -> Color {
             .accentColor
         }
     }

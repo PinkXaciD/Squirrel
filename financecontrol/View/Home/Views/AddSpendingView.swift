@@ -44,6 +44,8 @@ struct AddSpendingView: View {
     private var dismiss
     @Environment(\.colorScheme)
     private var colorScheme
+    @Environment(\.colorSchemeContrast)
+    private var colorSchemeContrast
     @Environment(\.scenePhase)
     private var scenePhase
     
@@ -53,15 +55,16 @@ struct AddSpendingView: View {
         case comment
     }
     
-    private struct WrappedCategory: ListHorizontalScrollRepresentable, Identifiable {
+    private struct WrappedCategory: @MainActor ListHorizontalScrollRepresentable, Identifiable {
         let category: CategoryEntity?
         
         var id: UUID {
             category?.id ?? .init()
         }
         
-        var foregroundColor: Color {
-            Color[self.category?.color ?? "secondary"]
+        @MainActor
+        func foregroundColor(colorScheme: ColorScheme, increaseContrast: ColorSchemeContrast) -> Color {
+            self.category?.resolveColor(colorScheme: colorScheme, increaseContrast: increaseContrast) ?? .secondary
         }
         
         var label: Text {

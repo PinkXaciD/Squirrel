@@ -9,7 +9,10 @@ import SwiftUI
 import ApplePie
 
 struct PieChartCompleteView: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.colorSchemeContrast) private var colorSchemeContrast
     @Environment(\.layoutDirection) private var layoutDirection
+    
     @EnvironmentObject private var vm: PieChartViewModel
     let data: ChartData
     let size: CGFloat
@@ -34,7 +37,7 @@ struct PieChartCompleteView: View {
                     innerRadius: 0.73,
                     animation: .default
                 ) { element in
-                    APChartSector(element.sum, color: Color[element.color], id: element.id)
+                    APChartSector(element.sum, color: element.resolveColor(colorScheme: colorScheme, increaseContrast: colorSchemeContrast), id: element.id)
                 }
             }
             

@@ -1,14 +1,14 @@
 //
 //  CategorySpendingsView.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/09/11.
+//  Created by PinkXaciD on 2023/09/11.
 //
 
 import SwiftUI
+import Beige
 
 struct CategoryEditView: View {
-    
     @Environment(\.dismiss) private var dismiss
     @State private var toDismiss: Bool = false
     
@@ -24,23 +24,48 @@ struct CategoryEditView: View {
 }
 
 struct CategoryEditSubView: View {
-        
+    @Environment(\.colorScheme)
+    private var colorScheme
+    
     let category: CategoryEntity
-    @Binding var dismiss: Bool
+    @Binding
+    var dismiss: Bool
     
-    @EnvironmentObject private var cdm: CoreDataModel
+    @EnvironmentObject
+    private var cdm: CoreDataModel
     
-    @State private var name: String
-    @State private var colorSelectedDescription: String
-    @State private var triedToSave: Bool = false
+    @State
+    private var name: String
+    @State
+    private var oklch: OKLCH
+    @State
+    private var triedToSave: Bool = false
     
-    @FocusState var nameIsFocused: Bool
+    @FocusState
+    var nameIsFocused: Bool
         
     init(category: CategoryEntity, dismiss: Binding<Bool>) {
         self.category = category
         self.name = category.name ?? "Error"
-        self.colorSelectedDescription = category.color ?? "Error"
         self._dismiss = dismiss
+        self._oklch = .init(initialValue: .init(lightness: 0.7, chroma: CategoryColorValues.chroma, hue: Double(category.color ?? "") ?? 0))
+    }
+    
+    private var tintColor: Color {
+        switch colorScheme {
+        case .dark:
+            return oklch.shift(lightness: CategoryColorValues.darkModeLightness - 0.7).color
+        default:
+            return oklch.shift(lightness: CategoryColorValues.lightModeLightness - 0.7).color
+        }
+    }
+    
+    private var namePadding: CGFloat {
+        if #available(iOS 26.0, *) {
+            return 0
+        }
+        
+        return 3
     }
     
     var body: some View {
@@ -48,10 +73,6 @@ struct CategoryEditSubView: View {
             nameSection
             
             colorSection
-            
-            favoriteSection
-            
-            archiveSection
             
             spendingsSection
         }
@@ -67,6 +88,13 @@ struct CategoryEditSubView: View {
         Section {
             TextField("Enter name", text: $name)
                 .focused($nameIsFocused)
+                .font(.largeTitle.bold())
+                .foregroundColor(tintColor)
+                .padding(.vertical, namePadding)
+//                .minimumScaleFactor(0.6)
+//                .scaledToFit()
+        } header: {
+            Text("Name")
         } footer: {
             if triedToSave && name.isEmpty {
                 Text("Required")
@@ -78,16 +106,18 @@ struct CategoryEditSubView: View {
                     .foregroundColor(name.count > 100 ? .red : .secondary)
             }
         }
+        .tint(tintColor)
+        .accentColor(tintColor)
     }
     
     private var colorSection: some View {
         Section {
-            CustomColorSelector(colorSelectedDescription: $colorSelectedDescription)
+            CustomColorSelector(oklch: $oklch)
+        } header: {
+            Text("Color")
         } footer: {
-            if triedToSave && colorSelectedDescription.isEmpty {
-                Text("Required")
-                    .foregroundColor(.red)
-            }
+            favoriteAndArchiveSection
+                .listRowInsets(.init(top: 20, leading: 0, bottom: 15, trailing: 0))
         }
     }
     
@@ -108,6 +138,21 @@ struct CategoryEditSubView: View {
                 cdm.changeShadowStateOfCategory(category)
             }
         }
+    }
+    
+    private var favoriteAndArchiveSection: some View {
+        HStack {
+            Button(category.isFavorite ? "Unfavorite" : "Favorite") {
+                cdm.changeFavoriteStateOfCategory(category)
+            }
+            .animation(.default, value: category.isFavorite)
+            
+            Button("Archive") {
+                dismiss = true
+                cdm.changeShadowStateOfCategory(category)
+            }
+        }
+        .buttonStyle(SpendingListRowButtonStyle())
     }
     
     private var spendingsSection: some View {
@@ -131,19 +176,20 @@ struct CategoryEditSubView: View {
     private var trailingToolbar: ToolbarItem<Void, some View> {
         ToolbarItem(placement: .topBarTrailing) {
             Button("Save") {
-                if name.isEmpty || colorSelectedDescription.isEmpty || name.count > 100 {
+                if name.isEmpty || name.count > 100 {
                     withAnimation {
                         triedToSave = true
                     }
+                    
                     HapticManager.shared.notification(.warning)
                 } else {
-                    cdm.editCategory(category, name: name, color: colorSelectedDescription)
+                    cdm.editCategory(category, name: name, color: /*colorSelectedDescription*/"\(oklch.h)")
                     dismiss.toggle()
                     HapticManager.shared.notification(.success)
                 }
             }
             .font(.body.bold())
-            .foregroundColor(name.isEmpty || colorSelectedDescription.isEmpty || name.count > 100 ? .secondary.opacity(0.7) : .accentColor)
+            .foregroundColor(name.isEmpty || name.count > 100 ? .secondary.opacity(0.7) : .accentColor)
         }
     }
     

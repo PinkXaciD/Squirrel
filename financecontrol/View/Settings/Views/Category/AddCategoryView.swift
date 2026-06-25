@@ -1,25 +1,52 @@
 //
 //  AddCategoryView.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/07/19.
+//  Created by PinkXaciD on 2023/07/19.
 //
 
 import SwiftUI
+import Beige
 
 struct AddCategoryView: View {
-    @EnvironmentObject private var cdm: CoreDataModel
+    @Environment(\.dismiss)
+    private var dismiss
+    @Environment(\.colorScheme)
+    private var colorScheme
     
-    @Binding var selectedCategory: CategoryEntity?
+    @EnvironmentObject
+    private var cdm: CoreDataModel
+    
+    @Binding
+    var selectedCategory: CategoryEntity?
     let insert: Bool
     
-    @State private var name: String = ""
-    @State private var colorSelectedDescription: String = ""
-    @State private var triedToSave: Bool = false
+    @State 
+    private var name: String = ""
+    @State
+    private var oklch = OKLCH(lightness: 0.7, chroma: 0.15, hue: 0)
+    @State
+    private var triedToSave: Bool = false
     
-    @FocusState private var isFocused: Bool
+    @FocusState
+    private var isFocused: Bool
     
-    @Environment(\.dismiss) private var dismiss
+    private var tintColor: Color {
+        switch colorScheme {
+        case .dark:
+            return oklch.shift(lightness: CategoryColorValues.darkModeLightness - 0.7).color
+        default:
+            return oklch.shift(lightness: CategoryColorValues.lightModeLightness - 0.7).color
+        }
+    }
+    
+    private var namePadding: CGFloat {
+        if #available(iOS 26.0, *) {
+            return 0
+        }
+        
+        return 3
+    }
     
     var body: some View {
         List {
@@ -29,8 +56,6 @@ struct AddCategoryView: View {
         }
         .navigationTitle("New Category")
         .toolbar {
-//            keyboardToolbar
-            
             trailingToolbar
         }
         .addKeyboardToolbar(showToolbar: isFocused) {
@@ -42,7 +67,14 @@ struct AddCategoryView: View {
         Section {
             TextField("Enter name", text: $name)
                 .focused($isFocused)
+                .font(.largeTitle.bold())
+                .foregroundColor(tintColor)
+                .padding(.vertical, namePadding)
+//                .minimumScaleFactor(0.6)
+//                .scaledToFit()
                 .onAppear(perform: fieldFocus)
+        } header: {
+            Text("Name")
         } footer: {
             if triedToSave && name.isEmpty {
                 Text("Required")
@@ -54,37 +86,29 @@ struct AddCategoryView: View {
                     .foregroundColor(name.count > 100 ? .red : .secondary)
             }
         }
+        .tint(tintColor)
+        .accentColor(tintColor)
     }
     
     private var colorSection: some View {
         Section {
-            CustomColorSelector(colorSelectedDescription: $colorSelectedDescription)
-                .padding(.vertical, 10)
-        } footer: {
-            if triedToSave && colorSelectedDescription.isEmpty {
-                Text("Required")
-                    .foregroundColor(.red)
-            }
-        }
-    }
-    
-    private var keyboardToolbar: ToolbarItemGroup<some View> {
-        hideKeyboardToolbar {
-            clearFocus()
+            CustomColorSelector(oklch: $oklch)
+        } header: {
+            Text("Color")
         }
     }
     
     private var trailingToolbar: ToolbarItem<Void, some View> {
         ToolbarItem(placement: .topBarTrailing) {
             Button("Save") {
-                if name.isEmpty || colorSelectedDescription.isEmpty || name.count > 100 {
+                if name.isEmpty || name.count > 100 {
                     triedToSave = true
                     HapticManager.shared.notification(.warning)
                 } else {
                     if insert {
-                        selectedCategory = cdm.addCategory(name: name, color: colorSelectedDescription)
+                        selectedCategory = cdm.addCategory(name: name, color: /*colorSelectedDescription*/"\(oklch.h)")
                     } else {
-                        _ = cdm.addCategory(name: name, color: colorSelectedDescription)
+                        _ = cdm.addCategory(name: name, color: /*colorSelectedDescription*/"\(oklch.h)")
                     }
                     
                     HapticManager.shared.notification(.success)
@@ -92,7 +116,7 @@ struct AddCategoryView: View {
                 }
             }
             .font(.body.bold())
-            .foregroundColor(name.isEmpty || colorSelectedDescription.isEmpty || name.count > 100 ? .secondary.opacity(0.7) : .accentColor)
+            .foregroundColor(name.isEmpty || name.count > 100 ? .secondary.opacity(0.7) : .accentColor)
         }
     }
     

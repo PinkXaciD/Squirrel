@@ -9,7 +9,6 @@
 import Foundation
 import CoreData
 
-
 extension CategoryEntity {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<CategoryEntity> {

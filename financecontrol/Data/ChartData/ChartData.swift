@@ -5,7 +5,7 @@
 //  Created by PinkXaciD on R 6/02/08.
 //
 
-import Foundation
+import SwiftUI
 
 struct ChartData: Equatable {
     let sum: Double
@@ -115,7 +115,7 @@ struct ChartData: Equatable {
 }
 
 // MARK: ChartCategory
-struct ChartCategory: Identifiable, SuitableForChart {
+struct ChartCategory: Identifiable, @MainActor SuitableForChart {
     var sum: Double
     let name: String
     let color: String
@@ -160,6 +160,32 @@ struct ChartCategory: Identifiable, SuitableForChart {
         place.increaseSum(amount)
         placesDict.updateValue(place, forKey: placeName)
     }
+    
+    @MainActor
+    func resolveColor(colorScheme: ColorScheme, increaseContrast: ColorSchemeContrast) -> Color {
+        let hue = Double(color) ?? Color[color].oklch().h
+        
+        var lightnessModifier: Double = 0
+        var chroma = CategoryColorValues.chroma
+        
+        if self.color == "secondary" {
+            chroma = 0
+        }
+        
+        if increaseContrast == .increased {
+            if colorScheme == .light {
+                lightnessModifier -= CategoryColorValues.lightnessModifier * 2
+            } else {
+                lightnessModifier += CategoryColorValues.lightnessModifier * 2
+            }
+        }
+        
+        return .init(
+            lightness: (colorScheme == .light ? CategoryColorValues.lightModeLightness : CategoryColorValues.darkModeLightness) + lightnessModifier,
+            chroma: chroma,
+            hue: hue
+        )
+    }
 }
 
 extension ChartCategory: Comparable {
@@ -173,7 +199,7 @@ extension ChartCategory: Comparable {
 }
 
 // MARK: ChartPlace
-struct ChartPlace: Identifiable, SuitableForChart {
+struct ChartPlace: Identifiable, @MainActor SuitableForChart {
     init(name: String, sum: Double = 0, color: String = "", isOther: Bool = false) {
         self.sum = sum
         self.name = name
@@ -191,6 +217,32 @@ struct ChartPlace: Identifiable, SuitableForChart {
     
     mutating func increaseSum(_ number: Double) {
         self.sum += number
+    }
+    
+    @MainActor
+    func resolveColor(colorScheme: ColorScheme, increaseContrast: ColorSchemeContrast) -> Color {
+        let hue = Double(color) ?? Color[color].oklch().h
+        
+        var lightnessModifier: Double = 0
+        var chroma = CategoryColorValues.chroma
+        
+        if self.color == "secondary" {
+            chroma = 0
+        }
+        
+        if increaseContrast == .increased {
+            if colorScheme == .light {
+                lightnessModifier -= CategoryColorValues.lightnessModifier * 2
+            } else {
+                lightnessModifier += CategoryColorValues.lightnessModifier * 2
+            }
+        }
+        
+        return .init(
+            lightness: (colorScheme == .light ? CategoryColorValues.lightModeLightness : CategoryColorValues.darkModeLightness) + lightnessModifier,
+            chroma: chroma,
+            hue: hue
+        )
     }
 }
 
@@ -211,4 +263,6 @@ protocol SuitableForChart: Identifiable {
     var id: UUID { get }
     var isPlace: Bool { get }
     var isOther: Bool { get }
+    
+    func resolveColor(colorScheme: ColorScheme, increaseContrast: ColorSchemeContrast) -> Color
 }

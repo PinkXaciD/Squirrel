@@ -1,8 +1,8 @@
 //
 //  IconRow.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 6/01/08.
+//  Created by PinkXaciD on 2024/01/08.
 //
 
 import SwiftUI
@@ -29,7 +29,6 @@ struct IconRow: View {
                 } label: {
                     Text("Set icon")
                 }
-
             }
     }
     
@@ -53,6 +52,7 @@ struct IconRow: View {
             .setDarkModeForIcon()
             .hoverEffect(.lift)
             .shadow(color: .black.opacity(0.2), radius: 5, y: 2)
+            .accessibilityIgnoresInvertColors()
     }
     
     private var text: some View {
