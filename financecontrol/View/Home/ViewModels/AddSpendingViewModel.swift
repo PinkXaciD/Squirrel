@@ -17,6 +17,7 @@ final class AddSpendingViewModel: ViewModel {
     private var rvm: RatesViewModel
     
     private let places: [String: Place]
+    private let unfilteredPlaces: [Suggestion]
     
     @Published 
     var amount: String
@@ -41,13 +42,14 @@ final class AddSpendingViewModel: ViewModel {
     @Published
     var isSuggestionSelected: Bool = false
     @Published
-    var selectedSuggestion: String = ""
+    var selectedSuggestion: String? = nil
     
     #if DEBUG
     let vmStateLogger: Logger
     #endif
     
     private var subscription: AnyCancellable?
+    private let id: UUID = .init()
     
     struct Suggestion: Identifiable, Hashable {
         let value: String
@@ -57,45 +59,14 @@ final class AddSpendingViewModel: ViewModel {
     init(
         ratesViewModel rvm: RatesViewModel,
         coreDataModel cdm: CoreDataModel,
-        shortcut: AddSpendingShortcut? = nil,
         places: [String: Place]
     ) {
-//        if let shortcut {
-//            var formatter: NumberFormatter {
-//                let formatter = NumberFormatter()
-//                formatter.maximumFractionDigits = 2
-//                formatter.minimumFractionDigits = 0
-//                formatter.decimalSeparator = Locale.current.decimalSeparator ?? "."
-//                return formatter
-//            }
-//            
-//            if let shortcutAmount = shortcut.amount {
-//                self.amount = formatter.string(from: shortcutAmount as NSNumber) ?? ""
-//            } else {
-//                self.amount = ""
-//            }
-//            
-//            self.currency = shortcut.currency ?? UserDefaults.standard.string(forKey: UDKeys.defaultSelectedCurrency.rawValue) ?? UserDefaults.standard.string(forKey: UDKeys.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
-//            self.date = Date()
-//            
-//            if let categoryID = shortcut.categoryID {
-//                self.selectedCategory = nil
-//                self.categoryHasChanged = true
-//            } else {
-//                self.selectedCategory = nil
-//                self.categoryHasChanged = false
-//            }
-//            
-//            self.place = shortcut.place ?? ""
-//            self.comment = shortcut.comment ?? ""
-//        } else {
-            self.amount = ""
-            self.currency = UserDefaults.standard.string(forKey: UDKey.defaultSelectedCurrency.rawValue) ?? UserDefaults.standard.string(forKey: UDKey.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
-            self.date = .now
-            self.selectedCategory = nil
-            self.place = ""
-            self.comment = ""
-//        }
+        self.amount = ""
+        self.currency = UserDefaults.standard.string(forKey: UDKey.defaultSelectedCurrency.rawValue) ?? UserDefaults.standard.string(forKey: UDKey.defaultCurrency.rawValue) ?? Locale.current.currencyCode ?? "USD"
+        self.date = .now
+        self.selectedCategory = nil
+        self.place = ""
+        self.comment = ""
         
         self.rvm = rvm
         self.cdm = cdm
@@ -106,6 +77,7 @@ final class AddSpendingViewModel: ViewModel {
         vmStateLogger.debug("\(#function) called")
         #endif
         
+        self.unfilteredPlaces = places.values.sorted().prefix(5).map({ Suggestion(value: $0.place, id: UUID()) })
         self.subscription = subscribeToInput()
     }
     
@@ -121,31 +93,36 @@ final class AddSpendingViewModel: ViewModel {
         self.dismiss = true
     }
     
+    func updateSuggestions(_ value: String) {
+        let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        if self.selectedSuggestion == trimmedValue {
+            self.isSuggestionSelected = true
+        } else if self.isSuggestionSelected == true {
+            self.isSuggestionSelected = false
+            self.selectedSuggestion = nil
+        }
+        
+        self.filteredSuggestions = self.filterSuggestions(userInput: trimmedValue)
+    }
+    
     private func subscribeToInput() -> AnyCancellable {
         return self.$place
             .receive(on: DispatchQueue.main)
             .sink { [weak self] value in
-                let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
-                
-                guard !trimmedValue.isEmpty else {
-                    return
-                }
-                
-                if self?.selectedSuggestion == trimmedValue {
-                    self?.isSuggestionSelected = true
-                } else if self?.isSuggestionSelected == true {
-                    self?.isSuggestionSelected = false
-                    self?.selectedSuggestion = ""
-                }
-                
-                self?.filteredSuggestions = self?.filterSuggestions(userInput: trimmedValue) ?? []
+                self?.updateSuggestions(value)
             }
     }
     
     private func filterSuggestions(userInput: String) -> [Suggestion] {
         #if DEBUG
-        logger.debug("\(#function) called")
+        logger.debug("\(#function)")
         #endif
+        
+        if userInput.isEmpty {
+            return unfilteredPlaces
+        }
+        
         var result = [Suggestion]()
         var count = 0
 

@@ -380,9 +380,6 @@
     "Blue" : {
 
     },
-    "Bug Fixes" : {
-
-    },
     "Build: %@" : {
 
     },
@@ -494,6 +491,9 @@
 
     },
     "Custom" : {
+
+    },
+    "Custom Colors for Categories" : {
 
     },
     "Dark Mode" : {
@@ -753,9 +753,6 @@
     "Minimize" : {
 
     },
-    "Minor bug fixes and general improvements" : {
-
-    },
     "Mint" : {
 
     },
@@ -864,6 +861,9 @@
     "Open in Browser" : {
 
     },
+    "Open in the App Store" : {
+
+    },
     "Optional" : {
 
     },
@@ -960,6 +960,9 @@
 
     },
     "Returns amount is greater then the expense amount" : {
+
+    },
+    "Review on the App Store" : {
 
     },
     "Save" : {
@@ -1266,6 +1269,9 @@
 
     },
     "You can choose a currency to be selected by default, different from display currency" : {
+
+    },
+    "You can now select custom colors for categories. Your existing categories were updated to match the new look" : {
 
     },
     "You can perform quick actions like editing or deleting via swipe actions or by holding row" : {

@@ -10,25 +10,24 @@ import SwiftUI
 struct AddSpendingView: View {
     init(
         ratesViewModel rvm: RatesViewModel,
-        codeDataModel cdm: CoreDataModel,
-        shortcut: AddSpendingShortcut? = nil
+        codeDataModel cdm: CoreDataModel
     ) {
         self._vm = StateObject(
             wrappedValue: AddSpendingViewModel(
                 ratesViewModel: rvm,
                 coreDataModel: cdm,
-                shortcut: shortcut,
                 places: cdm.places
             )
         )
         
-        self.overlayManager = SuggestionsOverlayManager()
+        self._overlayManager = StateObject(wrappedValue: SuggestionsOverlayManager())
     }
     
     @StateObject
     private var vm: AddSpendingViewModel
 
-    private let overlayManager: SuggestionsOverlayManager
+    @StateObject
+    private var overlayManager: SuggestionsOverlayManager
     
     @AppStorage(UDKey.color.rawValue)
     private var tint: String = "Orange"
@@ -87,15 +86,16 @@ struct AddSpendingView: View {
     private let utils = InputUtils.shared /// For input validation
     
     private var showSuggestions: Bool {
-        !vm.place.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !vm.filteredSuggestions.isEmpty && focusedField == .place && !vm.isSuggestionSelected
+//        !vm.place.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !vm.filteredSuggestions.isEmpty && focusedField == .place && !vm.isSuggestionSelected
+        !vm.filteredSuggestions.isEmpty && focusedField == .place && !vm.isSuggestionSelected
     }
     
     private var suggestionsAnimation: Animation {
         if #available(iOS 26.0, *) {
-            return .bouncy
+            return .bouncy.speed(1.25)
         }
         
-        return .snappy
+        return .snappy.speed(1.5)
     }
     
     var body: some View {
@@ -126,20 +126,15 @@ struct AddSpendingView: View {
                 GeometryReader { geometry in
                     if showSuggestions {
                         var transition: AnyTransition {
-                            if #available(iOS 26.0, *) {
-                                let anchor: UnitPoint = .init(x: 0.15, y: overlayManager.placeFieldPosition / max(geometry.size.height, 0.1) - 0.15)
-                                
-                                return .scale(scale: 0, anchor: anchor).combined(with: .opacity)
-                            }
+                            let anchor: UnitPoint = .init(x: 0.15, y: overlayManager.placeFieldPosition / max(geometry.size.height, 0.1) - 0.15)
                             
-                            return .blurWithOpacity
+                            return .scale(scale: 0.1, anchor: anchor).combined(with: .opacity)
                         }
                         
                         SuggestionsOverlayView(vm: vm, manager: overlayManager, minimizeSuggestions: $minimizeSuggestions, geometry: geometry)
-                            .transition(transition)
+                            .transition(transition.animation(suggestionsAnimation))
                     }
                 }
-                .animation(suggestionsAnimation, value: focusedField)
                 .ignoresSafeArea(.keyboard)
             }
         }
@@ -173,6 +168,21 @@ struct AddSpendingView: View {
     
 // MARK: Sections
     
+    private var overlayView: some View {
+        GeometryReader { geometry in
+            if showSuggestions {
+                SuggestionsOverlayView(
+                    vm: vm,
+                    manager: overlayManager,
+                    minimizeSuggestions: $minimizeSuggestions,
+                    geometry: geometry
+                )
+            }
+        }
+        .animation(suggestionsAnimation, value: focusedField)
+        .ignoresSafeArea(.keyboard)
+    }
+    
     private var reqiredSection: some View {
         Section {
             TextField(Locale.current.currencyNarrowFormat(0, currency: vm.currency) ?? "0.00", text: $vm.amount)
@@ -192,16 +202,19 @@ struct AddSpendingView: View {
                 
                 CurrencySelector(currency: $vm.currency)
             }
+            .disabled(showSuggestions && !minimizeSuggestions)
             
             DatePicker("Date", selection: $vm.date, in: .firstAvailableDate...Date.now)
                 .datePickerStyle(.compact)
                 .padding(.vertical, -10)
+                .disabled(showSuggestions && !minimizeSuggestions)
             
             HStack {
                 Text("Category")
                 
                 CategorySelector(selectedCategory: $vm.selectedCategory, categories: categories)
             }
+            .disabled(showSuggestions && !minimizeSuggestions)
             
         } header: {
             Text("Required")
@@ -213,6 +226,7 @@ struct AddSpendingView: View {
                     data: categories.sorted(by: { $0.spendings?.count ?? 0 > $1.spendings?.count ?? 0 }).prefix(5).map({ WrappedCategory(category: $0) }),
                     animation: .default
                 )
+                .disabled(showSuggestions && !minimizeSuggestions)
             }
             
             if !Calendar.current.isDateInToday(vm.date) && vm.currency != defaultCurrency {
@@ -239,7 +253,7 @@ struct AddSpendingView: View {
                                 key: PlacePositionPreferenceKey.self,
                                 value: geometry.frame(in: .global).minY - geometry.frame(in: .global).height - 5
                             )
-                            .onChange(of: vm.place) { _ in
+                            .onChange(of: focusedField) { newValue in
                                 if overlayManager.placeFieldPosition == 0 {
                                     overlayManager.placeFieldPosition = geometry.frame(in: .global).minY - geometry.frame(in: .global).height - 5
                                 }
@@ -405,24 +419,17 @@ fileprivate struct PlacePositionPreferenceKey: PreferenceKey {
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {}
 }
 
-// MARK: Preview
-//struct AmountInput_Previews: PreviewProvider {
-//    static var previews: some View {
-//        AddSpendingView(ratesViewModel: .init(), codeDataModel: .init())
-//            .environmentObject(CoreDataModel())
-//    }
-//}
-
 // MARK: Shortcuts (not yet implemented)
-struct AddSpendingShortcut: Identifiable {
-    var id: UUID = UUID()
-    var shortcutName: String
-    var amount: Double?
-    var currency: String?
-    var categoryID: UUID?
-    var place: String?
-    var comment: String?
-}
+
+//struct AddSpendingShortcut: Identifiable {
+//    var id: UUID = UUID()
+//    var shortcutName: String
+//    var amount: Double?
+//    var currency: String?
+//    var categoryID: UUID?
+//    var place: String?
+//    var comment: String?
+//}
 
 //struct AddSpendingShortcutListView: View {
 //    let shortcuts = UserDefaults.standard.value(forKey: "addSpendingShortcuts") as? [UUID:AddSpendingShortcut] ?? [:]

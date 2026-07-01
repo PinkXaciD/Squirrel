@@ -10,7 +10,7 @@ import CloudKit
 import OSLog
 #endif
 
-final class CloudKitManager {
+final class CloudKitManager: ObservableObject {
     enum CloudKitError: String, LocalizedError {
         case failedToDecodeResult, failedToGetResult, noValueFound, noEditDateFound, noRecordFound, networkUnavailable
         

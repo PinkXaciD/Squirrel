@@ -154,7 +154,7 @@
 		8DBED4D32ADC37660031DBA8 /* CurrencyRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DBED4D22ADC37660031DBA8 /* CurrencyRow.swift */; };
 		8DBEF1332ADD5BB8005D683D /* NewCurrencyRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DBEF1322ADD5BB8005D683D /* NewCurrencyRow.swift */; };
 		8DBEF1352ADD6D4F005D683D /* CategoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DBEF1342ADD6D4F005D683D /* CategoryRow.swift */; };
-		8DBFEBCE2A49ED4800165414 /* financecontrolApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DBFEBCD2A49ED4800165414 /* financecontrolApp.swift */; };
+		8DBFEBCE2A49ED4800165414 /* SquirrelApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DBFEBCD2A49ED4800165414 /* SquirrelApp.swift */; };
 		8DBFEBD02A49ED4800165414 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DBFEBCF2A49ED4800165414 /* ContentView.swift */; };
 		8DBFEBD22A49ED4900165414 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8DBFEBD12A49ED4900165414 /* Assets.xcassets */; };
 		8DBFEBF92A49ED9A00165414 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DBFEBF82A49ED9A00165414 /* HomeView.swift */; };
@@ -370,7 +370,7 @@
 		8DBEF1322ADD5BB8005D683D /* NewCurrencyRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCurrencyRow.swift; sourceTree = "<group>"; };
 		8DBEF1342ADD6D4F005D683D /* CategoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryRow.swift; sourceTree = "<group>"; };
 		8DBFEBCA2A49ED4800165414 /* Squirrel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Squirrel.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		8DBFEBCD2A49ED4800165414 /* financecontrolApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = financecontrolApp.swift; sourceTree = "<group>"; };
+		8DBFEBCD2A49ED4800165414 /* SquirrelApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquirrelApp.swift; sourceTree = "<group>"; };
 		8DBFEBCF2A49ED4800165414 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		8DBFEBD12A49ED4900165414 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8DBFEBF82A49ED9A00165414 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -980,7 +980,7 @@
 				8D7FCA542B16A59C009AAAEB /* Localizable.xcstrings */,
 				8DBFEBD12A49ED4900165414 /* Assets.xcassets */,
 				8DA2DC692EE1D32000EE3B47 /* Icons */,
-				8DBFEBCD2A49ED4800165414 /* financecontrolApp.swift */,
+				8DBFEBCD2A49ED4800165414 /* SquirrelApp.swift */,
 				8DBFEBF72A49ED7600165414 /* View */,
 				8D2240B92B0F947B00D5572B /* ViewModel */,
 				8DD0526B2C133E24002F752E /* Protocols */,
@@ -1263,7 +1263,7 @@
 				8D9DD6712D317EE60061DA6B /* WhatsNewView.swift in Sources */,
 				8D2316F82AD3112F00CEE8C1 /* ErrorHandler.swift in Sources */,
 				8DBEF1332ADD5BB8005D683D /* NewCurrencyRow.swift in Sources */,
-				8DBFEBCE2A49ED4800165414 /* financecontrolApp.swift in Sources */,
+				8DBFEBCE2A49ED4800165414 /* SquirrelApp.swift in Sources */,
 				8D6A5A192C18A15100322929 /* FiltersCurrenciesView.swift in Sources */,
 				8DEF69CB2D64E57D004C3384 /* StatsRowViewModel.swift in Sources */,
 				8D3876632A740F960005FFAF /* InputUtils.swift in Sources */,
@@ -1435,7 +1435,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 84;
+				CURRENT_PROJECT_VERSION = 85;
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1474,7 +1474,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 84;
+				CURRENT_PROJECT_VERSION = 85;
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1638,7 +1638,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 84;
+				CURRENT_PROJECT_VERSION = 85;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
@@ -1682,7 +1682,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 84;
+				CURRENT_PROJECT_VERSION = 85;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;

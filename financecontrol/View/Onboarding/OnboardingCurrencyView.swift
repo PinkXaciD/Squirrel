@@ -2,7 +2,7 @@
 //  OnboardingCurrencyView.swift
 //  Squirrel
 //
-//  Created by PinkXaciD on R 6/03/13.
+//  Created by PinkXaciD on 2024/03/13.
 //
 
 import SwiftUI
@@ -21,6 +21,11 @@ struct OnboardingCurrencyView: View {
         }
         
         return 40
+    }
+    
+    @available(iOS 26.0, *)
+    private var glass: Glass {
+        Glass.regular.tint(Color(uiColor: .secondarySystemGroupedBackground).opacity(0.5))
     }
     
     var body: some View {
@@ -127,9 +132,7 @@ struct OnboardingCurrencyView: View {
     
     @available(iOS 26.0, *)
     private var newSearchBar: some View {
-        let glass = Glass.regular.tint(Color(uiColor: .secondarySystemGroupedBackground).opacity(0.5))
-        
-        return GlassEffectContainer {
+        GlassEffectContainer {
             HStack {
                 HStack(spacing: 5) {
                     Image(systemName: "magnifyingglass")
@@ -146,6 +149,14 @@ struct OnboardingCurrencyView: View {
                 .padding(.horizontal, 3)
                 .glassEffect(glass, in: Capsule())
                 .glassEffectID("Bar", in: namespace)
+                .background {
+                    Button {
+                        searchIsFocused = true
+                    } label: {
+                        Rectangle()
+                            .fill(.clear)
+                    }
+                }
                 
                 if showButton {
                     Button {
@@ -211,7 +222,7 @@ struct OnboardingCurrencyView: View {
             }
         } label: {
             HStack {
-                Text(Locale.current.localizedString(forCurrencyCode: currencyCode) ?? currencyCode)
+                Text(Locale.current.localizedString(forCurrencyCode: currencyCode)?.capitalized(with: .autoupdatingCurrent) ?? currencyCode)
                     .foregroundColor(.primary)
                 
                 Spacer()

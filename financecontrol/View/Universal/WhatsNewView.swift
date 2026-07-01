@@ -41,7 +41,7 @@ struct WhatsNewView: View {
                 
                 Spacer()
                 
-                getRow(imageName: "gearshape.2.fill", title: "Bug Fixes", subtitle: "Minor bug fixes and general improvements")
+                getRow(imageName: "paintpalette.fill", title: "Custom Colors for Categories", subtitle: "You can now select custom colors for categories. Your existing categories were updated to match the new look")
                 
                 Spacer()
                 

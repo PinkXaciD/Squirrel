@@ -68,7 +68,7 @@ extension CoreDataModel {
                 }
                 
                 // Places for suggestions
-                if let place = spending.place  {
+                if let place = spending.place, !place.isEmpty {
                     let norm = place.normalize()
                     
                     if var p = places[norm] {
