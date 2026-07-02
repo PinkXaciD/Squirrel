@@ -150,10 +150,43 @@ struct FiltersView: View {
                     }
                     
                     categoriesSection
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            if !self.filterCategories.isEmpty {
+                                Button {
+                                    self.filterCategories = []
+                                } label: {
+                                    Label("Clear", systemImage: "xmark")
+                                        .labelStyle(.iconOnly)
+                                }
+                                .tint(.red)
+                            }
+                        }
                     
                     currenciesSection
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            if !self.currencies.isEmpty {
+                                Button {
+                                    self.currencies = []
+                                } label: {
+                                    Label("Clear", systemImage: "xmark")
+                                        .labelStyle(.iconOnly)
+                                }
+                                .tint(.red)
+                            }
+                        }
                     
                     returnsSection
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            if self.withReturns != nil {
+                                Button {
+                                    self.withReturns = nil
+                                } label: {
+                                    Label("Clear", systemImage: "xmark")
+                                        .labelStyle(.iconOnly)
+                                }
+                                .tint(.red)
+                            }
+                        }
                     
                     clearButton
                 }
