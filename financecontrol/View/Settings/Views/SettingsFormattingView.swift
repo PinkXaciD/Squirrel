@@ -2,7 +2,7 @@
 //  SettingsFormattingView.swift
 //  Squirrel
 //
-//  Created by PinkXaciD on R 6/09/03.
+//  Created by PinkXaciD on 2024/09/03.
 //
 
 import SwiftUI
@@ -13,7 +13,7 @@ struct SettingsFormattingView: View {
     
     @AppStorage(UDKey.formatWithoutTimeZones.rawValue)
     private var formatWithoutTimeZones: Bool = false
-    @AppStorage("timeZoneFormat")
+    @AppStorage(UDKey.timeZoneFormat.rawValue)
     private var timeZoneFormat: Int = 0
     
     @State
@@ -22,7 +22,7 @@ struct SettingsFormattingView: View {
     var body: some View {
         List {
             Section {
-                Toggle("Always Format Without Timezones", isOn: $formatWithoutTimeZones)
+                Toggle("Always Format Without Time Zones", isOn: $formatWithoutTimeZones)
             } footer: {
                 Text("format-without-timezones-description-key")
             }

@@ -105,6 +105,10 @@ final class CoreDataModel: ObservableObject {
     @Published
     var usedCurrencies: Set<Currency> = .init()
     
+    /// All time zones used by user
+    @Published
+    var usedTimeZones: Set<TimeZone> = .init()
+    
     /// An array containing not shadowed categories from CoreData
     @available(*, deprecated, renamed: "FetchRequest", message: "")
     @Published

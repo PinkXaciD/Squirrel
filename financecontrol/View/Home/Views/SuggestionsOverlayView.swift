@@ -22,7 +22,7 @@ struct SuggestionsOverlayView: View {
     private var buttonWidth: CGFloat = 100
 
     var padding: CGFloat {
-        geometry.size.height - manager.placeFieldPosition + geometry.safeAreaInsets.top + (geometry.safeAreaInsets.bottom * 0.5)
+        geometry.size.height - manager.placeFieldPosition + geometry.safeAreaInsets.top + (geometry.safeAreaInsets.bottom * 0.75)
     }
 
     private var suggestionsAnimation: Animation {
@@ -30,7 +30,7 @@ struct SuggestionsOverlayView: View {
             return .bouncy
         }
         
-        return .bouncy
+        return .snappy
     }
 
     var body: some View {

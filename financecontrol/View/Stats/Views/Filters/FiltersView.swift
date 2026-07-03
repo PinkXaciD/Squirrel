@@ -1,8 +1,8 @@
 //
 //  FiltersView.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/11/21.
+//  Created by PinkXaciD on 2023/11/21.
 //
 
 import SwiftUI
@@ -14,10 +14,13 @@ struct FiltersView: View {
     private var privacyMonitor: PrivacyMonitor
     @Environment(\.dismiss)
     private var dismiss
+    
     @AppStorage(UDKey.color.rawValue)
     private var tint: String = "Orange"
     @AppStorage(UDKey.privacyScreen.rawValue)
     private var privacyScreenIsEnabled: Bool = false
+    @AppStorage(UDKey.timeZoneFormat.rawValue)
+    private var timeZoneFormat: TimeZone.Format = .gmt
     
     @State
     private var hideContent: Bool = false
@@ -37,11 +40,14 @@ struct FiltersView: View {
     @State
     private var currencies: [String]
     @State
+    private var timeZones: [String]
+    @State
     private var withReturns: Bool?
     
     let spendingsCount: Int
     let firstSpendingDate: Date
     let usedCurrencies: Set<Currency>
+    let usedTimeZones: Set<TimeZone>
     let showDismissButton: Bool
     let showDateSelection: Bool
     let gregorianCalendar = Calendar(identifier: .gregorian)
@@ -96,6 +102,7 @@ struct FiltersView: View {
         spendingsCount: Int,
         firstSpendingDate: Date,
         usedCurrencies: Set<Currency>,
+        usedTimeZones: Set<TimeZone>,
         showDismissButton: Bool = true,
         showDateSelection: Bool = true
     ) {
@@ -112,10 +119,12 @@ struct FiltersView: View {
         self._month = State(wrappedValue: fvm.month)
         self._filterCategories = State(wrappedValue: fvm.filterCategories)
         self._currencies = State(wrappedValue: fvm.currencies)
+        self._timeZones = State(wrappedValue: fvm.timeZones)
         self._withReturns = State(wrappedValue: fvm.withReturns)
         self.spendingsCount = spendingsCount
         self.firstSpendingDate = firstSpendingDate
         self.usedCurrencies = usedCurrencies
+        self.usedTimeZones = usedTimeZones
         self.showDismissButton = showDismissButton
         self.showDateSelection = showDateSelection
     }
@@ -174,6 +183,21 @@ struct FiltersView: View {
                                 .tint(.red)
                             }
                         }
+                    
+                    if !usedTimeZones.isEmpty {
+                        timeZonesSection
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                if !self.timeZones.isEmpty {
+                                    Button {
+                                        self.timeZones = []
+                                    } label: {
+                                        Label("Clear", systemImage: "xmark")
+                                            .labelStyle(.iconOnly)
+                                    }
+                                    .tint(.red)
+                                }
+                            }
+                    }
                     
                     returnsSection
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
@@ -249,7 +273,7 @@ struct FiltersView: View {
                 }
             }
         } header: {
-            dateSectionHeader
+            Text("Date")
         } footer: {
             ListHorizontalScroll(selection: $dateType, data: DateType.allCases, id: \.hashValue, animation: .default) { type in
                 if let firstDate = type.dates.firstDate {
@@ -264,88 +288,102 @@ struct FiltersView: View {
         }
     }
     
-    private var dateSectionHeader: some View {
-        Text("Date")
-    }
-    
     // MARK: Categories
     private var categoriesSection: some View {
-        Section {
-            NavigationLink {
-                FiltersCategoriesView(categories: $filterCategories, applyFilters: $fvm.applyFilters)
-            } label: {
-                categoriesPickerLabel
+        NavigationLink {
+            FiltersCategoriesView(categories: $filterCategories, applyFilters: $fvm.applyFilters)
+        } label: {
+            HStack(spacing: 5) {
+                Text("Categories")
+                
+                Spacer()
+                
+                Text("\(filterCategories.count) selected")
+                    .foregroundColor(.secondary)
             }
-        } header: {
-            Text("Categories")
         }
     }
     
-    private var categoriesPickerLabel: some View {
-        HStack(spacing: 5) {
-            Text("Categories")
-            
-            Spacer()
-            
-            Text("\(filterCategories.count) selected")
-                .foregroundColor(.secondary)
+    // MARK: Currencies
+    private var currenciesSection: some View {
+        NavigationLink {
+            FiltersSelectionView(
+                selectedValues: $currencies,
+                possibleValues: usedCurrencies,
+                navigationTitle: "Currencies"
+            ) { currency in
+                Text(currency.name ?? currency.code)
+            }
+        } label: {
+            HStack {
+                Text("Currencies")
+                
+                Spacer()
+                
+                Text("\(currencies.count) selected")
+                    .foregroundColor(.secondary)
+            }
+        }
+    }
+    
+    private var timeZonesSection: some View {
+        NavigationLink {
+            FiltersSelectionView(
+                selectedValues: $timeZones,
+                possibleValues: usedTimeZones,
+                selecting: \.identifier,
+                navigationTitle: "Time Zones"
+            ) {
+                if timeZoneFormat == .gmt {
+                    Text("\($0.formatted(timeZoneFormat)) (\($0.formatted(.location)))")
+                } else {
+                    Text($0.formatted(timeZoneFormat))
+                }
+            }
+        } label: {
+            HStack {
+                Text("Time Zones")
+                
+                Spacer()
+                
+                Text("\(timeZones.count) selected")
+                    .foregroundColor(.secondary)
+            }
         }
     }
     
     // MARK: Returns
     private var returnsSection: some View {
-        Section {
-            NavigationLink {
-                FiltersReturnsView(withReturns: $withReturns)
-            } label: {
-                HStack {
-                    Text("Returns")
-                    
-                    Spacer()
-                    
-                    switch withReturns {
-                    case true:
-                        Text("With returns")
-                            .foregroundColor(.secondary)
-                    case false:
-                        Text("Without returns")
-                            .foregroundColor(.secondary)
-                    default:
-                        Text("Disabled")
-                            .foregroundColor(.secondary)
-                    }
-                }
-            }
-        } header: {
-            Text("Returns")
-        }
-    }
-    
-    private var currenciesSection: some View {
-        Section {
-            NavigationLink {
-                FiltersCurrenciesView(currencies: $currencies, usedCurrencies: usedCurrencies)
-                    .environmentObject(fvm)
-            } label: {
-                HStack {
-                    Text("Currencies")
-                    
-                    Spacer()
-                    
-                    Text("\(currencies.count) selected")
+        NavigationLink {
+            FiltersReturnsView(withReturns: $withReturns)
+        } label: {
+            HStack {
+                Text("Returns")
+                
+                Spacer()
+                
+                switch withReturns {
+                case true:
+                    Text("With returns")
+                        .foregroundColor(.secondary)
+                case false:
+                    Text("Without returns")
+                        .foregroundColor(.secondary)
+                default:
+                    Text("Disabled")
                         .foregroundColor(.secondary)
                 }
             }
-        } header: {
-            Text("Currencies")
         }
     }
     
     private var clearButton: some View {
-        Button("Clear", role: .destructive) {
-            clearFilters()
+        Section {
+            Button("Clear", role: .destructive) {
+                clearFilters()
+            }
+            .disabled(disableClearButton)
         }
-        .disabled(disableClearButton)
     }
     
     private var leadingToolbar: ToolbarItem<(), some View> {
@@ -419,6 +457,7 @@ extension FiltersView {
         fvm.month = month
         fvm.filterCategories = filterCategories
         fvm.currencies = currencies
+        fvm.timeZones = timeZones
         fvm.withReturns = withReturns
         
         fvm.applyFilters = true
@@ -441,6 +480,7 @@ extension FiltersView {
             
             self.filterCategories = []
             self.currencies = []
+            self.timeZones = []
             self.withReturns = nil
             fvm.clearFilters()
             NotificationCenter.default.post(name: .UpdatePieChart, object: nil)
@@ -452,6 +492,7 @@ extension FiltersView {
             self.filterCategories.isEmpty &&
             self.withReturns == nil &&
             self.currencies.isEmpty &&
+            self.timeZones.isEmpty &&
             self.dateType == .multi
         )
     }

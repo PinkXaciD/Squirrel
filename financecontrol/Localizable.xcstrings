@@ -17,6 +17,16 @@
         }
       }
     },
+    "%@ (%@)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ (%2$@)"
+          }
+        }
+      }
+    },
     "%@ = %@" : {
       "localizations" : {
         "en" : {
@@ -279,7 +289,7 @@
     "All Time" : {
 
     },
-    "Always Format Without Timezones" : {
+    "Always Format Without Time Zones" : {
 
     },
     "Amount" : {
@@ -1102,6 +1112,9 @@
 
     },
     "This policy is valid for this version of the app." : {
+
+    },
+    "Time Zones" : {
 
     },
     "time-timezone-separator-key" : {
