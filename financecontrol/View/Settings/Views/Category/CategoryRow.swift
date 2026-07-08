@@ -9,7 +9,6 @@ import SwiftUI
 import Beige
 
 struct CategoryRow: View {
-//    @EnvironmentObject private var cdm: CoreDataModel
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.colorSchemeContrast) private var colorSchemeContrast
@@ -17,9 +16,12 @@ struct CategoryRow: View {
     @ObservedObject
     var category: CategoryEntity
     
+    let usedColors: [OKLCH]
+    let unusedColors: [Double]
+    
     var body: some View {
         NavigationLink {
-            CategoryEditView(category: category)
+            CategoryEditView(category: category, usedColors: usedColors, unusedColors: unusedColors)
         } label: {
             navLinkLabel
         }

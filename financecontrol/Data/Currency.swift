@@ -11,7 +11,7 @@ struct Currency: Hashable {
     let code: String
     
     var name: String? {
-        Locale.autoupdatingCurrent.localizedString(forCurrencyCode: code)?.capitalized(with: .autoupdatingCurrent)
+        Locale.autoupdatingCurrent.localizedString(forCurrencyCode: code)
     }
     
     var fractionDigits: Int {

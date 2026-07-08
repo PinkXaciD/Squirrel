@@ -54,7 +54,7 @@ struct AboutView: View {
     private var aboutSection: some View {
         Section(header: aboutHeader) {
             VStack(alignment: .leading, spacing: 10) {
-                Text("An open-source expense tracker.")
+                Text("An open source expense tracker.")
                 
                 Text("Exchange rates are provided for reference purposes only.")
             }

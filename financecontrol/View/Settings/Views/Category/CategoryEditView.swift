@@ -13,9 +13,11 @@ struct CategoryEditView: View {
     @State private var toDismiss: Bool = false
     
     let category: CategoryEntity
+    let usedColors: [OKLCH]
+    let unusedColors: [Double]
     
     var body: some View {
-        CategoryEditSubView(category: category, dismiss: $toDismiss)
+        CategoryEditSubView(category: category, dismiss: $toDismiss, usedColors: usedColors, unusedColors: unusedColors)
             .onChange(of: toDismiss) { _ in
                 dismiss()
             }
@@ -27,7 +29,6 @@ struct CategoryEditSubView: View {
     @Environment(\.colorScheme)
     private var colorScheme
     
-    let category: CategoryEntity
     @Binding
     var dismiss: Bool
     
@@ -41,14 +42,20 @@ struct CategoryEditSubView: View {
     @State
     private var triedToSave: Bool = false
     
+    let category: CategoryEntity
+    let usedColors: [OKLCH]
+    let unusedColors: [Double]
+    
     @FocusState
     var nameIsFocused: Bool
         
-    init(category: CategoryEntity, dismiss: Binding<Bool>) {
+    init(category: CategoryEntity, dismiss: Binding<Bool>, usedColors: [OKLCH], unusedColors: [Double]) {
         self.category = category
         self.name = category.name ?? "Error"
         self._dismiss = dismiss
-        self._oklch = .init(initialValue: .init(lightness: 0.7, chroma: CategoryColorValues.chroma, hue: Double(category.color ?? "") ?? 0))
+        self._oklch = .init(initialValue: .init(lightness: 0.7, chroma: CategoryColorValues.chroma, hue: Double(category.color ?? "") ?? category.resolveColor(colorScheme: .light, increaseContrast: .standard).oklch().h))
+        self.usedColors = usedColors
+        self.unusedColors = unusedColors
     }
     
     private var tintColor: Color {
@@ -112,7 +119,7 @@ struct CategoryEditSubView: View {
     
     private var colorSection: some View {
         Section {
-            CustomColorSelector(oklch: $oklch)
+            CustomColorSelector(oklch: $oklch, usedColors: usedColors, unusedColors: unusedColors)
         } header: {
             Text("Color")
         } footer: {
@@ -183,7 +190,7 @@ struct CategoryEditSubView: View {
                     
                     HapticManager.shared.notification(.warning)
                 } else {
-                    cdm.editCategory(category, name: name, color: /*colorSelectedDescription*/"\(oklch.h)")
+                    cdm.editCategory(category, name: name, color: oklch.h.formatted(.number.precision(.fractionLength(3))))
                     dismiss.toggle()
                     HapticManager.shared.notification(.success)
                 }

@@ -2,19 +2,31 @@
 //  OnboardingCategoriesView.swift
 //  Squirrel
 //
-//  Created by PinkXaciD on R 6/03/13.
+//  Created by PinkXaciD on 2024/03/13.
 //
 
 import SwiftUI
+import Beige
 
 struct OnboardingCategoriesView: View {
-    @Binding var showOverlay: Bool
-    @Binding var screen: Int
-    @EnvironmentObject private var cdm: CoreDataModel
+    @Environment(\.colorScheme)
+    private var colorScheme
+    @Environment(\.colorSchemeContrast)
+    private var colorSchemeContrast
+    
+    @Binding
+    var showOverlay: Bool
+    @Binding
+    var screen: Int
+    
+    @EnvironmentObject
+    private var cdm: CoreDataModel
+    
     @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)], predicate: NSPredicate(format: "isShadowed == false"))
     var categories: FetchedResults<CategoryEntity>
     
-    @State private var presentImportSheet: Bool = false
+    @State
+    private var presentImportSheet: Bool = false
     
     private var topPadding: CGFloat {
         if #available(iOS 26.0, *) {
@@ -22,6 +34,44 @@ struct OnboardingCategoriesView: View {
         }
         
         return 40
+    }
+    
+    var usedColors: [OKLCH] {
+        var result = Set<OKLCH>()
+        
+        for category in categories {
+            result.insert(category.resolveColor(colorScheme: colorScheme, increaseContrast: colorSchemeContrast).oklch())
+        }
+        
+        let resultArray = result.sorted { val1, val2 in
+            val1.h < val2.h
+        }
+        
+        return resultArray
+    }
+    
+    var unusedColors: [Double] {
+        if usedColors.isEmpty {
+            return []
+        }
+        
+        var lastHue: Double = 0
+        var result: [Double] = []
+        
+        for color in usedColors {
+            guard color.h != lastHue, color.h - lastHue > 5 else {
+                continue
+            }
+            
+            result.append((color.h - lastHue) / 2 + lastHue)
+            lastHue = color.h
+        }
+        
+        if lastHue <= 355, !result.isEmpty {
+            result.append((360 - lastHue) / 2 + lastHue)
+        }
+        
+        return result
     }
     
     var body: some View {
@@ -75,7 +125,7 @@ struct OnboardingCategoriesView: View {
     private var addSection: some View {
         Section {
             NavigationLink("Add category") {
-                AddCategoryView(selectedCategory: .constant(.init()), insert: false)
+                AddCategoryView(selectedCategory: .constant(.init()), insert: false, colors: usedColors, unusedColors: unusedColors)
                     .onAppear {
                         withAnimation {
                             showOverlay = false

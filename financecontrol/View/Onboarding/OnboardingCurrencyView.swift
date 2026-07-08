@@ -222,7 +222,7 @@ struct OnboardingCurrencyView: View {
             }
         } label: {
             HStack {
-                Text(Locale.current.localizedString(forCurrencyCode: currencyCode)?.capitalized(with: .autoupdatingCurrent) ?? currencyCode)
+                Text(Locale.current.localizedString(forCurrencyCode: currencyCode) ?? currencyCode)
                     .foregroundColor(.primary)
                 
                 Spacer()

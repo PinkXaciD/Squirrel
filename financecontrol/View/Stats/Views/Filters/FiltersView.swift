@@ -106,21 +106,21 @@ struct FiltersView: View {
         showDismissButton: Bool = true,
         showDateSelection: Bool = true
     ) {
-        self._startDate = State(wrappedValue: max(fvm.startFilterDate, firstSpendingDate))
+        self._startDate = State(initialValue: max(fvm.startFilterDate, firstSpendingDate))
         
         if fvm.applyFilters {
-            self._endDate = State(wrappedValue: fvm.endFilterDate)
+            self._endDate = State(initialValue: fvm.endFilterDate)
         } else {
-            self._endDate = State(wrappedValue: .now)
+            self._endDate = State(initialValue: .now)
         }
         
-        self._dateType = State(wrappedValue: fvm.dateType)
-        self._year = State(wrappedValue: fvm.year)
-        self._month = State(wrappedValue: fvm.month)
-        self._filterCategories = State(wrappedValue: fvm.filterCategories)
-        self._currencies = State(wrappedValue: fvm.currencies)
-        self._timeZones = State(wrappedValue: fvm.timeZones)
-        self._withReturns = State(wrappedValue: fvm.withReturns)
+        self._dateType = State(initialValue: fvm.dateType)
+        self._year = State(initialValue: fvm.year)
+        self._month = State(initialValue: fvm.month)
+        self._filterCategories = State(initialValue: fvm.filterCategories)
+        self._currencies = State(initialValue: fvm.currencies)
+        self._timeZones = State(initialValue: fvm.timeZones)
+        self._withReturns = State(initialValue: fvm.withReturns)
         self.spendingsCount = spendingsCount
         self.firstSpendingDate = firstSpendingDate
         self.usedCurrencies = usedCurrencies
@@ -160,56 +160,40 @@ struct FiltersView: View {
                     
                     categoriesSection
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                            if !self.filterCategories.isEmpty {
-                                Button {
-                                    self.filterCategories = []
-                                } label: {
-                                    Label("Clear", systemImage: "xmark")
-                                        .labelStyle(.iconOnly)
-                                }
-                                .tint(.red)
-                            }
+                            clearCategoriesButton
+                                .labelStyle(.iconOnly)
+                        }
+                        .contextMenu {
+                            clearCategoriesButton
                         }
                     
                     currenciesSection
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                            if !self.currencies.isEmpty {
-                                Button {
-                                    self.currencies = []
-                                } label: {
-                                    Label("Clear", systemImage: "xmark")
-                                        .labelStyle(.iconOnly)
-                                }
-                                .tint(.red)
-                            }
+                            clearCurrenciesButton
+                                .labelStyle(.iconOnly)
+                        }
+                        .contextMenu {
+                            clearCurrenciesButton
                         }
                     
                     if !usedTimeZones.isEmpty {
                         timeZonesSection
                             .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                if !self.timeZones.isEmpty {
-                                    Button {
-                                        self.timeZones = []
-                                    } label: {
-                                        Label("Clear", systemImage: "xmark")
-                                            .labelStyle(.iconOnly)
-                                    }
-                                    .tint(.red)
-                                }
+                                clearTimeZonesButton
+                                    .labelStyle(.iconOnly)
+                            }
+                            .contextMenu {
+                                clearTimeZonesButton
                             }
                     }
                     
                     returnsSection
                         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                            if self.withReturns != nil {
-                                Button {
-                                    self.withReturns = nil
-                                } label: {
-                                    Label("Clear", systemImage: "xmark")
-                                        .labelStyle(.iconOnly)
-                                }
-                                .tint(.red)
-                            }
+                            clearReturnsButton
+                                .labelStyle(.iconOnly)
+                        }
+                        .contextMenu {
+                            clearReturnsButton
                         }
                     
                     clearButton
@@ -384,6 +368,43 @@ struct FiltersView: View {
             }
             .disabled(disableClearButton)
         }
+    }
+    
+    private var clearCategoriesButton: some View {
+        Button {
+            self.filterCategories = []
+        } label: {
+            Label("Clear", systemImage: "xmark")
+        }
+        .tint(self.filterCategories.isEmpty ? .gray : .red)
+    }
+    
+    private var clearCurrenciesButton: some View {
+        Button {
+            self.currencies = []
+        } label: {
+            Label("Clear", systemImage: "xmark")
+        }
+        .tint(self.currencies.isEmpty ? .gray : .red)
+    }
+    
+    private var clearTimeZonesButton: some View {
+        Button {
+            self.timeZones = []
+        } label: {
+            Label("Clear", systemImage: "xmark")
+                .labelStyle(.iconOnly)
+        }
+        .tint(self.timeZones.isEmpty ? .gray : .red)
+    }
+    
+    private var clearReturnsButton: some View {
+        Button {
+            self.withReturns = nil
+        } label: {
+            Label("Clear", systemImage: "xmark")
+        }
+        .tint(withReturns == nil ? .gray : .red)
     }
     
     private var leadingToolbar: ToolbarItem<(), some View> {

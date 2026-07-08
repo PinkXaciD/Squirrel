@@ -21,6 +21,9 @@ struct AddCategoryView: View {
     var selectedCategory: CategoryEntity?
     let insert: Bool
     
+    let colors: [OKLCH]
+    let unusedColors: [Double]
+    
     @State 
     private var name: String = ""
     @State
@@ -54,6 +57,11 @@ struct AddCategoryView: View {
             
             colorSection
         }
+        .onAppear {
+            if let randomHue = unusedColors.randomElement() {
+                self.oklch = .init(lightness: 0.7, chroma: 0.15, hue: randomHue)
+            }
+        }
         .navigationTitle("New Category")
         .toolbar {
             trailingToolbar
@@ -70,8 +78,6 @@ struct AddCategoryView: View {
                 .font(.largeTitle.bold())
                 .foregroundColor(tintColor)
                 .padding(.vertical, namePadding)
-//                .minimumScaleFactor(0.6)
-//                .scaledToFit()
                 .onAppear(perform: fieldFocus)
         } header: {
             Text("Name")
@@ -92,7 +98,7 @@ struct AddCategoryView: View {
     
     private var colorSection: some View {
         Section {
-            CustomColorSelector(oklch: $oklch)
+            CustomColorSelector(oklch: $oklch, usedColors: colors, unusedColors: unusedColors)
         } header: {
             Text("Color")
         }
@@ -106,9 +112,9 @@ struct AddCategoryView: View {
                     HapticManager.shared.notification(.warning)
                 } else {
                     if insert {
-                        selectedCategory = cdm.addCategory(name: name, color: /*colorSelectedDescription*/"\(oklch.h)")
+                        selectedCategory = cdm.addCategory(name: name, color: oklch.h.formatted(.number.precision(.fractionLength(3))))
                     } else {
-                        _ = cdm.addCategory(name: name, color: /*colorSelectedDescription*/"\(oklch.h)")
+                        _ = cdm.addCategory(name: name, color: oklch.h.formatted(.number.precision(.fractionLength(3))))
                     }
                     
                     HapticManager.shared.notification(.success)

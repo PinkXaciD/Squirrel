@@ -46,7 +46,7 @@ struct RatesView: View {
 
 struct RatesRowView: View, Identifiable {
     internal init(code: String, rate: Double) {
-        self.name = Locale.current.localizedString(forCurrencyCode: code)?.capitalized ?? "Error with: \(code)"
+        self.name = Locale.current.localizedString(forCurrencyCode: code) ?? "Error with: \(code)"
         self.code = code
         self.rate = rate
     }
