@@ -33,7 +33,7 @@ struct ContactUsView: View {
             return []
         }
         
-        return result
+        return result.sorted(by: { $0.name < $1.name })
     }
     
     var body: some View {

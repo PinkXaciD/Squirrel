@@ -46,7 +46,7 @@ extension CustomIcon {
         case .NA:
             "Everything that lives is designed to end. We are perpetually trapped in a never-ending spiral..."
         case .ghost:
-            "Plays for the audience"
+            "Plays to the audience"
         }
     }
     

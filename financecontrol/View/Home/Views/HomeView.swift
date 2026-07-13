@@ -146,9 +146,9 @@ struct HomeView: View {
                         .foregroundStyle(gradient)
                 }
             }
-            .hueRotation(.degrees(animateWhatsNewButton ? 360 : 0))
+            .hueRotation(.degrees(animateWhatsNewButton ? 720 : 0))
             .onAppear {
-                withAnimation(.easeOut(duration: 3).delay(0.5)) {
+                withAnimation(.linear(duration: 5).delay(0.5)) {
                     animateWhatsNewButton = true
                 }
             }

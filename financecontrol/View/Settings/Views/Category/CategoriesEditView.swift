@@ -23,7 +23,9 @@ struct CategoriesEditView: View {
         var result = Set<OKLCH>()
         
         for category in categories {
-            result.insert(category.resolveColor(colorScheme: colorScheme, increaseContrast: colorSchemeContrast).oklch())
+            if let categoryColor = category.color, let hueValue = Double(categoryColor) {
+                result.insert(.init(lightness: colorScheme == .light ? CategoryColorValues.lightModeLightness : CategoryColorValues.darkModeLightness, chroma: CategoryColorValues.chroma, hue: hueValue))
+            }
         }
         
         let resultArray = result.sorted { val1, val2 in

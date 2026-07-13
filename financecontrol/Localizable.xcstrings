@@ -672,9 +672,6 @@
     "Full Changelog" : {
 
     },
-    "Full Changelog on GitHub" : {
-
-    },
     "Gestures" : {
 
     },
@@ -911,7 +908,7 @@
     "Place name is too long" : {
 
     },
-    "Plays for the audience" : {
+    "Plays to the audience" : {
 
     },
     "Please submit a bug report and try to reinstall the app" : {
@@ -921,6 +918,9 @@
 
     },
     "Please submit a bug report and try to restart the app" : {
+
+    },
+    "Presets" : {
 
     },
     "Privacy" : {
@@ -973,6 +973,9 @@
 
     },
     "Review on the App Store" : {
+
+    },
+    "Review Squirrel on the App Store" : {
 
     },
     "Save" : {
@@ -1134,6 +1137,9 @@
     "Timezone" : {
 
     },
+    "Timezone Filters" : {
+
+    },
     "Timezone format" : {
 
     },
@@ -1212,6 +1218,9 @@
     "Use Amounts with Returns" : {
 
     },
+    "Used" : {
+
+    },
     "Ver. %@" : {
 
     },
@@ -1279,6 +1288,9 @@
 
     },
     "You can choose a currency to be selected by default, different from display currency" : {
+
+    },
+    "You can now filter expenses by the timezone they were made in." : {
 
     },
     "You can now select custom colors for categories. Your existing categories were updated to match the new look" : {

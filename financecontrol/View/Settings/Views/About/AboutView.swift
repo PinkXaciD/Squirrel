@@ -127,7 +127,7 @@ struct AboutView: View {
                 urlToOpen = .review
                 showReviewConfirmationDialog.toggle()
             }
-            .confirmationDialog("Review on the App Store", isPresented: $showReviewConfirmationDialog, titleVisibility: .visible, presenting: urlToOpen) { url in
+            .confirmationDialog("Review Squirrel on the App Store", isPresented: $showReviewConfirmationDialog, titleVisibility: .visible, presenting: urlToOpen) { url in
                 Button("Open in the App Store") {
                     openURL(url)
                 }
