@@ -161,7 +161,7 @@ struct HomeView: View {
     private var gradient: LinearGradient {
         let colors = stride(from: 0, to: 1, by: 0.05).map { value in
             Color(
-                lightness: colorScheme == .light ? CategoryColorValues.lightModeLightness : CategoryColorValues.darkModeLightness,
+                lightness: colorScheme.colorLightness,
                 chroma: 0.12,
                 hue: value * 360
             )

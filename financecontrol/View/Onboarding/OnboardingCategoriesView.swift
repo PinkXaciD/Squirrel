@@ -125,7 +125,7 @@ struct OnboardingCategoriesView: View {
     private var addSection: some View {
         Section {
             NavigationLink("Add category") {
-                AddCategoryView(selectedCategory: .constant(.init()), insert: false, colors: usedColors, unusedColors: unusedColors)
+                AddCategoryView(selectedCategory: .constant(.init()), insert: false, colors: usedColors, unusedColors: unusedColors, oklch: OKLCH(lightness: colorScheme.colorLightness, chroma: CategoryColorValues.chroma))
                     .onAppear {
                         withAnimation {
                             showOverlay = false

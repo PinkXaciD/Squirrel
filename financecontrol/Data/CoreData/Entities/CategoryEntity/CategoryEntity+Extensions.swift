@@ -28,7 +28,7 @@ extension CategoryEntity {
         }
         
         return .init(
-            lightness: (colorScheme == .light ? CategoryColorValues.lightModeLightness : CategoryColorValues.darkModeLightness) + lightnessModifier,
+            lightness: colorScheme.colorLightness + lightnessModifier,
             chroma: CategoryColorValues.chroma,
             hue: hue
         )

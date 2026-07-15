@@ -1,6 +1,6 @@
 //
 //  RatesViewModel.swift
-//  financecontrol
+//  Squirrel
 //
 //  Created by PinkXaciD on 2023/09/18.
 //
@@ -88,7 +88,6 @@ final class RatesViewModel: ViewModel {
                     self.waitForConnectionToEstablish()
                 }
             } catch {
-//                print(error)
                 await MainActor.run {
                     ErrorType(error: error).publish()
                     self.status = .failed

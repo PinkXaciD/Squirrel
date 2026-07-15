@@ -17,13 +17,14 @@ struct CustomColorSelector: View {
     @ScaledMetric
     private var pickerSize: CGFloat = 40
     
-    @Binding var oklch: OKLCH
+    @Binding
+    private var oklch: OKLCH
     
-    let usedColors: [OKLCH]
-    let unusedColors: [Double]
+    private let usedColors: [OKLCH]
+    private let unusedColors: [Double]
     
-    var presets: [OKLCH] {
-        let lightness = colorScheme == .light ? CategoryColorValues.lightModeLightness : CategoryColorValues.darkModeLightness
+    private var presets: [OKLCH] {
+        let lightness = colorScheme.colorLightness
         
         return [
             OKLCH(lightness: lightness, chroma: CategoryColorValues.chroma, hue: 15),
@@ -36,20 +37,19 @@ struct CustomColorSelector: View {
         ]
     }
     
-    private var padding: CGFloat {
-        if #available(iOS 26.0, *) {
-            return 5
-        }
-        
-        return 0
+    private var lightnessModifier: Double {
+        let lightness = colorScheme.colorLightness
+        return lightness - 0.7
     }
     
-    private var tintColor: Color {
-        switch colorScheme {
-        case .dark:
-            return oklch.shift(lightness: CategoryColorValues.darkModeLightness - 0.7).color
-        default:
-            return oklch.shift(lightness: CategoryColorValues.lightModeLightness - 0.7).color
+    init(oklch: Binding<OKLCH>, usedColors: [OKLCH], unusedColors: [Double]) {
+        self._oklch = oklch
+        self.unusedColors = unusedColors
+        
+        let presetsHueSet = CategoryColorValues.presetsHueSet
+        
+        self.usedColors = usedColors.filter { color in
+            !presetsHueSet.contains(color.h.rounded())
         }
     }
     
@@ -91,9 +91,11 @@ struct CustomColorSelector: View {
                 
                 if !usedColors.isEmpty {
                     Section {
-                        usedColorsView
-                            .frame(height: pickerSize + 10)
-                            .padding(.top, 10)
+                        HStack {
+                            usedColorsView
+                        }
+                        .frame(height: pickerSize + 10)
+                        .padding(.top, 10)
                     } header: {
                         Text("Used")
                             .font(.footnote)
@@ -104,6 +106,8 @@ struct CustomColorSelector: View {
                 } else {
                     Text("Already used colors will appear here")
                         .foregroundStyle(.secondary)
+                        .frame(height: pickerSize + 10)
+                        .padding(.top, 10)
                 }
             }
             .padding()
@@ -118,10 +122,10 @@ struct CustomColorSelector: View {
     
     private var randomButton: some View {
         Button {
-            oklch = .init(lightness: 0.7, chroma: 0.15, hue: getUnusedColor())
+            oklch = OKLCH(lightness: colorScheme.colorLightness, chroma: 0.15, hue: getUnusedColor())
         } label: {
             Circle()
-                .fill(tintColor)
+                .fill(OKLCH(lightness: colorScheme.colorLightness, chroma: CategoryColorValues.chroma, hue: oklch.h).color)
                 .overlay {
                     Image(systemName: "shuffle")
                         .foregroundStyle(.white)
@@ -134,10 +138,10 @@ struct CustomColorSelector: View {
     private var presetsView: some View {
         ForEach(presets, id: \.self) { color in
             Button {
-                oklch = color
+                oklch = OKLCH(lightness: colorScheme.colorLightness, chroma: 0.15, hue: color.h)
             } label: {
                 Circle()
-                    .fill(color.color)
+                    .fill(OKLCH(lightness: colorScheme.colorLightness, chroma: CategoryColorValues.chroma, hue: color.h).color)
                     .frame(width: pickerSize)
                     .overlay {
                         Circle()
@@ -149,16 +153,17 @@ struct CustomColorSelector: View {
                     .animation(.default, value: oklch)
             }
             .buttonStyle(.plain)
+            .id(color.h)
         }
     }
     
     private var usedColorsView: some View {
         ForEach(usedColors, id: \.self) { color in
             Button {
-                oklch = color
+                oklch = OKLCH(lightness: colorScheme.colorLightness, chroma: 0.15, hue: color.h)
             } label: {
                 Circle()
-                    .fill(color.color)
+                    .fill(OKLCH(lightness: colorScheme.colorLightness, chroma: CategoryColorValues.chroma, hue: color.h).color)
                     .frame(width: pickerSize)
                     .overlay {
                         Circle()
@@ -170,11 +175,12 @@ struct CustomColorSelector: View {
                     .animation(.default, value: oklch)
             }
             .buttonStyle(.plain)
+            .id(color.h)
         }
     }
     
     private func getUnusedColor() -> Double {
-        guard !unusedColors.isEmpty else {
+        guard unusedColors.count > 1 else {
             return Double((0...360).randomElement() ?? 0)
         }
         
@@ -197,8 +203,6 @@ struct CustomColorSelectorPreviews: PreviewProvider {
 }
 
 fileprivate struct CustomColorSelectorPreview: View {
-    @State var colorSelectedDescription: String = "nordRed"
-    
     var body: some View {
         List {
             CustomColorSelector(oklch: .constant(.init(lightness: 0.7)), usedColors: [], unusedColors: [])

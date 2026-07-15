@@ -10,6 +10,7 @@ import Beige
 
 struct CategoryEditView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
     @State private var toDismiss: Bool = false
     
     let category: CategoryEntity
@@ -17,7 +18,7 @@ struct CategoryEditView: View {
     let unusedColors: [Double]
     
     var body: some View {
-        CategoryEditSubView(category: category, dismiss: $toDismiss, usedColors: usedColors, unusedColors: unusedColors)
+        CategoryEditSubView(category: category, dismiss: $toDismiss, usedColors: usedColors, unusedColors: unusedColors, colorScheme: colorScheme)
             .onChange(of: toDismiss) { _ in
                 dismiss()
             }
@@ -49,22 +50,17 @@ struct CategoryEditSubView: View {
     @FocusState
     var nameIsFocused: Bool
         
-    init(category: CategoryEntity, dismiss: Binding<Bool>, usedColors: [OKLCH], unusedColors: [Double]) {
+    init(category: CategoryEntity, dismiss: Binding<Bool>, usedColors: [OKLCH], unusedColors: [Double], colorScheme: ColorScheme) {
         self.category = category
         self.name = category.name ?? "Error"
         self._dismiss = dismiss
-        self._oklch = .init(initialValue: .init(lightness: 0.7, chroma: CategoryColorValues.chroma, hue: Double(category.color ?? "") ?? category.resolveColor(colorScheme: .light, increaseContrast: .standard).oklch().h))
+        self._oklch = .init(initialValue: .init(lightness: colorScheme.colorLightness, chroma: CategoryColorValues.chroma, hue: Double(category.color ?? "") ?? category.resolveColor(colorScheme: .light, increaseContrast: .standard).oklch().h))
         self.usedColors = usedColors
         self.unusedColors = unusedColors
     }
     
     private var tintColor: Color {
-        switch colorScheme {
-        case .dark:
-            return oklch.shift(lightness: CategoryColorValues.darkModeLightness - 0.7).color
-        default:
-            return oklch.shift(lightness: CategoryColorValues.lightModeLightness - 0.7).color
-        }
+        OKLCH(lightness: colorScheme.colorLightness, chroma: CategoryColorValues.chroma, hue: oklch.h).color
     }
     
     private var namePadding: CGFloat {

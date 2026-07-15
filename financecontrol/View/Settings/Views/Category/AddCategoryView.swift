@@ -24,10 +24,11 @@ struct AddCategoryView: View {
     let colors: [OKLCH]
     let unusedColors: [Double]
     
+    @State
+    var oklch: OKLCH
+    
     @State 
     private var name: String = ""
-    @State
-    private var oklch = OKLCH(lightness: 0.7, chroma: 0.15, hue: 0)
     @State
     private var triedToSave: Bool = false
     
@@ -35,12 +36,7 @@ struct AddCategoryView: View {
     private var isFocused: Bool
     
     private var tintColor: Color {
-        switch colorScheme {
-        case .dark:
-            return oklch.shift(lightness: CategoryColorValues.darkModeLightness - 0.7).color
-        default:
-            return oklch.shift(lightness: CategoryColorValues.lightModeLightness - 0.7).color
-        }
+        OKLCH(lightness: colorScheme.colorLightness, chroma: CategoryColorValues.chroma, hue: oklch.h).color
     }
     
     private var namePadding: CGFloat {
@@ -59,7 +55,7 @@ struct AddCategoryView: View {
         }
         .onAppear {
             if let randomHue = unusedColors.randomElement() {
-                self.oklch = .init(lightness: 0.7, chroma: 0.15, hue: randomHue)
+                self.oklch = .init(lightness: colorScheme.colorLightness, chroma: CategoryColorValues.chroma, hue: randomHue)
             }
         }
         .navigationTitle("New Category")

@@ -1,8 +1,8 @@
 //
 //  SettingsView.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/07/10.
+//  Created by PinkXaciD on 2023/07/10.
 //
 
 import SwiftUI
@@ -188,7 +188,7 @@ struct SettingsView: View {
                 }
             }
             
-            NavigationLink("Rates", destination: RatesView())
+            NavigationLink("Exchange Rates", destination: RatesView())
             
 //            NavigationLink("Currency Converter", destination: CurrencyConvertView())
         }

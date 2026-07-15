@@ -50,6 +50,7 @@ struct WhatsNewView: View {
                 Spacer()
                 
                 reviewButton
+                    .saturation(0.9)
                     .confirmationDialog("Review Squirrel on the App Store", isPresented: $showReviewConfirmationDialog, titleVisibility: .visible) {
                         Button("Open in the App Store") {
                             openURL(.review)

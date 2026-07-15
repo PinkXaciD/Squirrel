@@ -181,7 +181,7 @@ struct ChartCategory: Identifiable, @MainActor SuitableForChart {
         }
         
         return .init(
-            lightness: (colorScheme == .light ? CategoryColorValues.lightModeLightness : CategoryColorValues.darkModeLightness) + lightnessModifier,
+            lightness: colorScheme.colorLightness + lightnessModifier,
             chroma: chroma,
             hue: hue
         )
@@ -239,7 +239,7 @@ struct ChartPlace: Identifiable, @MainActor SuitableForChart {
         }
         
         return .init(
-            lightness: (colorScheme == .light ? CategoryColorValues.lightModeLightness : CategoryColorValues.darkModeLightness) + lightnessModifier,
+            lightness: colorScheme.colorLightness + lightnessModifier,
             chroma: chroma,
             hue: hue
         )

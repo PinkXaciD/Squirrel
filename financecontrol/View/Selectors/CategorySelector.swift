@@ -103,13 +103,19 @@ struct CategorySelector: View {
         .background {
             Group {
                 NavigationLink(isActive: $editCategories) {
-                    AddCategoryView(selectedCategory: $selectedCategory, insert: true, colors: usedColors, unusedColors: unusedColors)
+                    AddCategoryView(
+                        selectedCategory: $selectedCategory,
+                        insert: true,
+                        colors: usedColors,
+                        unusedColors: unusedColors,
+                        oklch: OKLCH(lightness: colorScheme.colorLightness, chroma: CategoryColorValues.chroma)
+                    )
                 } label: {
                     EmptyView()
                 }
                 
                 NavigationLink(isActive: $showOther) {
-                    OtherCategorySelector(selectedCategory: $selectedCategory, categories: categories, usedColors: usedColors, unusedColors: unusedColors)
+                    OtherCategorySelector(selectedCategory: $selectedCategory, categories: categories, usedColors: usedColors, unusedColors: unusedColors, colorScheme: colorScheme)
                 } label: {
                     EmptyView()
                 }
@@ -152,6 +158,7 @@ fileprivate struct OtherCategorySelector: View {
     let categories: FetchedResults<CategoryEntity>
     let usedColors: [OKLCH]
     let unusedColors: [Double]
+    let colorScheme: ColorScheme
     
     @State private var search: String = ""
     
@@ -179,7 +186,13 @@ fileprivate struct OtherCategorySelector: View {
     private var addNewSection: some View {
         Section {
             NavigationLink {
-                AddCategoryView(selectedCategory: $selectedCategory, insert: true, colors: usedColors, unusedColors: unusedColors)
+                AddCategoryView(
+                    selectedCategory: $selectedCategory,
+                    insert: true,
+                    colors: usedColors,
+                    unusedColors: unusedColors,
+                    oklch: OKLCH(lightness: colorScheme.colorLightness, chroma: CategoryColorValues.chroma)
+                )
             } label: {
                 Text("Add new")
             }

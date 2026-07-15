@@ -1,15 +1,13 @@
 //
 //  Vars.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 6/01/17.
+//  Created by PinkXaciD on 2024/01/17.
 //
 
 import Foundation
 
-struct Vars {
-    private init() {}
-    
+enum Vars {
     static let groupName: String = "group.dev.squirrelapp.squirrel"
     
     static let appIdentifier: String = Bundle.main.bundleIdentifier ?? "dev.squirrelapp.squirrel"
@@ -21,13 +19,13 @@ struct Vars {
     static let privacyBlur: CGFloat = 10
 }
 
-struct CategoryColorValues {
-    private init() {}
-    
+enum CategoryColorValues {
     static let chroma: Double = 0.15
     
     static let darkModeLightness: Double = 0.73
     static let lightModeLightness: Double = 0.66
     
     static let lightnessModifier: Double = 0.06
+    
+    static let presetsHueSet: Set<Double> = [15, 55, 90, 130, 190, 260, 310]
 }

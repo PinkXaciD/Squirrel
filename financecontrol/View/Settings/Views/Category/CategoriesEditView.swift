@@ -24,7 +24,7 @@ struct CategoriesEditView: View {
         
         for category in categories {
             if let categoryColor = category.color, let hueValue = Double(categoryColor) {
-                result.insert(.init(lightness: colorScheme == .light ? CategoryColorValues.lightModeLightness : CategoryColorValues.darkModeLightness, chroma: CategoryColorValues.chroma, hue: hueValue))
+                result.insert(.init(lightness: colorScheme.colorLightness, chroma: CategoryColorValues.chroma, hue: hueValue))
             }
         }
         
@@ -115,7 +115,13 @@ struct CategoriesEditView: View {
     private var manageCategoriesSection: some View {
         Section {
             NavigationLink("Add New") {
-                AddCategoryView(selectedCategory: .constant(.init()), insert: false, colors: usedColors, unusedColors: unusedColors)
+                AddCategoryView(
+                    selectedCategory: .constant(.init()),
+                    insert: false,
+                    colors: usedColors,
+                    unusedColors: unusedColors,
+                    oklch: OKLCH(lightness: colorScheme.colorLightness, chroma: CategoryColorValues.chroma)
+                )
             }
             
             NavigationLink {
@@ -133,7 +139,13 @@ struct CategoriesEditView: View {
     
     private var addNewToolbarButton: some View {
         NavigationLink {
-            AddCategoryView(selectedCategory: .constant(.init()), insert: false, colors: usedColors, unusedColors: unusedColors)
+            AddCategoryView(
+                selectedCategory: .constant(.init()),
+                insert: false,
+                colors: usedColors,
+                unusedColors: unusedColors,
+                oklch: OKLCH(lightness: colorScheme.colorLightness, chroma: CategoryColorValues.chroma)
+            )
         } label: {
             Label("Add new category", systemImage: "plus")
         }

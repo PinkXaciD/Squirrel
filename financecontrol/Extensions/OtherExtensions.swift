@@ -109,3 +109,14 @@ extension String {
         return self.lowercased().folding(options: .diacriticInsensitive, locale: .autoupdatingCurrent)
     }
 }
+
+extension ColorScheme {
+    var colorLightness: Double {
+        switch self {
+        case .light:
+            CategoryColorValues.lightModeLightness
+        default:
+            CategoryColorValues.darkModeLightness
+        }
+    }
+}
