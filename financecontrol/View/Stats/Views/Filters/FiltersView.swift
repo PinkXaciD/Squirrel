@@ -317,11 +317,21 @@ struct FiltersView: View {
                 possibleValues: usedTimeZones,
                 selecting: \.identifier,
                 navigationTitle: "Time Zones"
-            ) {
-                if timeZoneFormat == .gmt {
-                    Text("\($0.formatted(timeZoneFormat)) (\($0.formatted(.location)))")
-                } else {
-                    Text($0.formatted(timeZoneFormat))
+            ) { value1, value2 in
+                if value1.secondsFromGMT() == value2.secondsFromGMT() {
+                    return value1.formatted(.location) < value2.formatted(.location)
+                }
+                
+                return value1.secondsFromGMT() < value2.secondsFromGMT()
+            } rowLabel: { timeZone in
+                VStack(alignment: .leading) {
+                    Text(timeZone.formatted(timeZoneFormat))
+                    
+                    if timeZoneFormat != .location {
+                        Text(timeZone.formatted(.location))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
         } label: {

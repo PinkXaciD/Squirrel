@@ -15,6 +15,7 @@ struct FiltersSelectionView<Value, Selection, RowLabel>: View where Value: Compa
     let possibleValues: Set<Value>
     let selection: KeyPath<Value, Selection>
     let rowLabel: (Value) -> (RowLabel)
+    let sortBy: (Value, Value) -> Bool
     
     let navigationTitle: LocalizedStringKey
     
@@ -23,6 +24,7 @@ struct FiltersSelectionView<Value, Selection, RowLabel>: View where Value: Compa
         possibleValues: Set<Value>,
         selecting code: KeyPath<Value, Selection>,
         navigationTitle: LocalizedStringKey,
+        sorting sortBy: ((Value, Value) -> Bool)? = nil,
         rowLabel: @escaping (Value) -> (RowLabel)
     ) {
         self._selectedValues = selectedValues
@@ -30,12 +32,21 @@ struct FiltersSelectionView<Value, Selection, RowLabel>: View where Value: Compa
         self.selection = code
         self.navigationTitle = navigationTitle
         self.rowLabel = rowLabel
+        
+        if let sortBy {
+            self.sortBy = sortBy
+        } else {
+            self.sortBy = {
+                $0 < $1
+            }
+        }
     }
     
     init(
         selectedValues: Binding<[Selection]>,
         possibleValues: Set<Value>,
         navigationTitle: LocalizedStringKey,
+        sorting sortBy: ((Value, Value) -> Bool)? = nil,
         rowLabel: @escaping (Value) -> (RowLabel)
     ) where Value: Identifiable, Value.ID == Selection {
         self._selectedValues = selectedValues
@@ -43,11 +54,19 @@ struct FiltersSelectionView<Value, Selection, RowLabel>: View where Value: Compa
         self.selection = \Value.id
         self.navigationTitle = navigationTitle
         self.rowLabel = rowLabel
+        
+        if let sortBy {
+            self.sortBy = sortBy
+        } else {
+            self.sortBy = {
+                $0 < $1
+            }
+        }
     }
     
     var body: some View {
         List {
-            ForEach(possibleValues.sorted(by: <), id: selection) { value in
+            ForEach(possibleValues.sorted(by: sortBy), id: selection) { value in
                 Button {
                     rowAction(value[keyPath: selection])
                 } label: {

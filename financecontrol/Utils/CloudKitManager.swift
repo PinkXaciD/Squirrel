@@ -116,7 +116,7 @@ final class CloudKitManager: ObservableObject {
         
         let editDate: Date = {
             if recordName == "latest" {
-                return .now
+                return record.modificationDate ?? .now
             }
             
             return dateFormatter.date(from: recordName) ?? .firstAvailableDate
