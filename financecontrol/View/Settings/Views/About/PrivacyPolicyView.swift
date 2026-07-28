@@ -146,7 +146,8 @@ struct PrivacyPolicyView: View {
                         Text("We respect your privacy and will not change our stance on tracking or storing data in your control. This clarification is here so that if we add any opt-in features this policy will be updated to reflect that.")
                             .font(.subheadline)
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, 10)
+                    .padding(.bottom, 5)
                 }
                 #if DEBUG
                 .onTapGesture {

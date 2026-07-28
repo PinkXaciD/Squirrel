@@ -2,28 +2,20 @@
 //  Currency.swift
 //  Squirrel
 //
-//  Created by PinkXaciD on R 5/09/07.
+//  Created by PinkXaciD on 2023/09/07.
 //
 
 import Foundation
 
-struct Currency: Hashable, Comparable, Identifiable {
-    static func < (lhs: Currency, rhs: Currency) -> Bool {
-        return (lhs.name ?? lhs.code) < (rhs.name ?? rhs.code)
-    }
-    
+struct Currency: Hashable {
     let code: String
     
-    var id: String {
-        self.code
-    }
-    
     var name: String? {
-        Locale.current.localizedString(forCurrencyCode: code)
+        Locale.autoupdatingCurrent.localizedString(forCurrencyCode: code)
     }
     
     var fractionDigits: Int {
-        Locale.current.currencyFractionDigits(currencyCode: self.code)
+        Locale.autoupdatingCurrent.currencyFractionDigits(currencyCode: self.code)
     }
     
     static func getAll() -> [Currency] {
@@ -31,11 +23,23 @@ struct Currency: Hashable, Comparable, Identifiable {
     }
     
     static var localeCurrency: Currency? {
-        if let code = Locale.current.currencyCode {
+        if let code = Locale.autoupdatingCurrent.currencyCode {
             return Currency(code: code)
         }
         
         return nil
+    }
+}
+
+extension Currency: Identifiable {
+    var id: String {
+        self.code
+    }
+}
+
+extension Currency: Comparable {
+    static func < (lhs: Currency, rhs: Currency) -> Bool {
+        return (lhs.name ?? lhs.code) < (rhs.name ?? rhs.code)
     }
 }
 

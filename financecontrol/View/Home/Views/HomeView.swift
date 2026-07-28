@@ -1,8 +1,8 @@
 //
 //  HomeView.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/06/26.
+//  Created by PinkXaciD on 2023/06/26.
 //
 
 import SwiftUI
@@ -10,6 +10,8 @@ import SwiftUI
 struct HomeView: View {
     @Environment(\.managedObjectContext)
     private var viewContext
+    @Environment(\.colorScheme)
+    private var colorScheme
     
     @EnvironmentObject
     private var cdm: CoreDataModel
@@ -24,9 +26,9 @@ struct HomeView: View {
     @State
     private var ratesAreFetching: Bool = UserDefaults.standard.bool(forKey: UDKey.updateRates.rawValue)
     @State
-    private var shortcut: AddSpendingShortcut? = nil
-    @State
     private var showWhatsNew: Bool = false
+    @State
+    private var animateWhatsNewButton: Bool = false
     
     @Binding
     var showingSheet: Bool
@@ -58,9 +60,9 @@ struct HomeView: View {
                     }
 #endif
                 
-//                if latestLaunchedBuild < currentBuild {
-//                    whatsNewSection
-//                }
+                if latestLaunchedBuild < currentBuild {
+                    whatsNewSection
+                }
                 
 #if DEBUG
                 if latestLaunchedBuild >= currentBuild {
@@ -69,15 +71,12 @@ struct HomeView: View {
                     }
                 }
 #endif
-                
-//                shortcutsSection
             }
             .navigationTitle("Home")
             .sheet(isPresented: $showingSheet) {
                 AddSpendingView(
                     ratesViewModel: rvm,
-                    codeDataModel: cdm,
-                    shortcut: shortcut
+                    codeDataModel: cdm
                 )
                 .addColorPresentationBackground()
             }
@@ -134,27 +133,41 @@ struct HomeView: View {
     
     private var whatsNewSection: some View {
         Section {
-            Button("What's new in \(Bundle.main.releaseVersionNumber ?? "")") {
+            Button {
                 showWhatsNew.toggle()
+            } label: {
+                ZStack {
+                    Text("What's new in \(Bundle.main.releaseVersionNumber ?? "")")
+                        .foregroundStyle(gradient)
+                        .opacity(animateWhatsNewButton ? 0 : 0.75)
+                        .blur(radius: 5)
+                    
+                    Text("What's new in \(Bundle.main.releaseVersionNumber ?? "")")
+                        .foregroundStyle(gradient)
+                }
+            }
+            .hueRotation(.degrees(animateWhatsNewButton ? 720 : 0))
+            .onAppear {
+                withAnimation(.linear(duration: 5).delay(0.5)) {
+                    animateWhatsNewButton = true
+                }
+            }
+            .onDisappear {
+                animateWhatsNewButton = false
             }
         }
     }
     
-    @ViewBuilder
-    private var shortcutsSection: some View {
-        if let shortcuts = UserDefaults.standard.value(forKey: "addSpendingShortcuts") as? [AddSpendingShortcut], !shortcuts.isEmpty {
-            Section {
-                ForEach(shortcuts) { shortcut in
-                    Button {
-                        self.shortcut = shortcut
-                        showingSheet.toggle()
-                    } label: {
-                        Text(shortcut.shortcutName)
-                    }
-
-                }
-            }
+    private var gradient: LinearGradient {
+        let colors = stride(from: 0, to: 1, by: 0.05).map { value in
+            Color(
+                lightness: colorScheme.colorLightness,
+                chroma: 0.12,
+                hue: value * 360
+            )
         }
+        
+        return .init(colors: colors, startPoint: .leading, endPoint: .trailing)
     }
     
     private var ratesFetchStatus: some View {

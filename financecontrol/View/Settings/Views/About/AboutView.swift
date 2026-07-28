@@ -1,8 +1,8 @@
 //
 //  AboutView.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/10/09.
+//  Created by PinkXaciD on 2023/10/09.
 //
 
 import SwiftUI
@@ -16,7 +16,9 @@ struct AboutView: View {
     var presentOnboarding: Bool
     
     @State
-    private var showConfirmationDialog: Bool = false
+    private var showWebsiteConfirmationDialog: Bool = false
+    @State
+    private var showReviewConfirmationDialog: Bool = false
     @State
     private var urlToOpen: URL? = nil
     @State
@@ -36,11 +38,13 @@ struct AboutView: View {
             
             contactSection
             
+            reviewSection
+            
             onboardingSection
               
-            #if DEBUG
+#if DEBUG
             debugSection
-            #endif
+#endif
         }
         .sheet(isPresented: $showWhatsNew) {
             WhatsNewView()
@@ -50,16 +54,17 @@ struct AboutView: View {
     private var aboutSection: some View {
         Section(header: aboutHeader) {
             VStack(alignment: .leading, spacing: 10) {
-                Text("An open-source expense tracker.")
+                Text("An open source expense tracker.")
                 
                 Text("Exchange rates are provided for reference purposes only.")
             }
             .normalizePadding()
             
             Button("Our Website") {
-                openURLButtonAction(.appWebsite)
+                urlToOpen = .appWebsite
+                showWebsiteConfirmationDialog.toggle()
             }
-            .confirmationDialog("\(urlToOpen?.absoluteString ?? "")", isPresented: $showConfirmationDialog, titleVisibility: .visible, presenting: urlToOpen) { url in
+            .confirmationDialog("\(urlToOpen?.absoluteString ?? "")", isPresented: $showWebsiteConfirmationDialog, titleVisibility: .visible, presenting: urlToOpen) { url in
                 Button("Open in browser") {
                     openURL(url)
                 }
@@ -116,6 +121,20 @@ struct AboutView: View {
         }
     }
     
+    private var reviewSection: some View {
+        Section {
+            Button("Review on the App Store") {
+                urlToOpen = .review
+                showReviewConfirmationDialog.toggle()
+            }
+            .confirmationDialog("Review Squirrel on the App Store", isPresented: $showReviewConfirmationDialog, titleVisibility: .visible, presenting: urlToOpen) { url in
+                Button("Open in the App Store") {
+                    openURL(url)
+                }
+            }
+        }
+    }
+    
     private var contactSection: some View {
         Section {
             NavigationLink("Contact Us") {
@@ -124,7 +143,7 @@ struct AboutView: View {
         }
     }
     
-    #if DEBUG
+#if DEBUG
     private var debugSection: some View {
         Section {
             NavigationLink("Debug") {
@@ -132,17 +151,12 @@ struct AboutView: View {
             }
         }
     }
-    #endif
+#endif
     
     private var copyrightText: Text {
         Text(verbatim: "© \(Date().formatted(.dateTime.year())) PinkXaciD")
             .font(.caption)
             .foregroundColor(.secondary)
-    }
-    
-    private func openURLButtonAction(_ url: URL) {
-        urlToOpen = url
-        showConfirmationDialog.toggle()
     }
 }
 

@@ -1,72 +1,198 @@
 //
 //  CustomColorSelector.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/09/09.
+//  Created by PinkXaciD on 2023/09/09.
 //
 
-import Foundation
 import SwiftUI
+import Beige
 
 struct CustomColorSelector: View {
+    @Environment(\.colorScheme)
+    private var colorScheme
+    @Environment(\.colorSchemeContrast)
+    private var colorSchemeContrast
     
-    @Binding var colorSelectedDescription: String
-    let colors = CustomColor.nordAurora
+    @ScaledMetric
+    private var pickerSize: CGFloat = 40
+    
+    @Binding
+    private var oklch: OKLCH
+    
+    private let usedColors: [OKLCH]
+    private let unusedColors: [Double]
+    
+    private var presets: [OKLCH] {
+        let lightness = colorScheme.colorLightness
+        
+        return [
+            OKLCH(lightness: lightness, chroma: CategoryColorValues.chroma, hue: 15),
+            OKLCH(lightness: lightness, chroma: CategoryColorValues.chroma, hue: 55),
+            OKLCH(lightness: lightness, chroma: CategoryColorValues.chroma, hue: 90),
+            OKLCH(lightness: lightness, chroma: CategoryColorValues.chroma, hue: 130),
+            OKLCH(lightness: lightness, chroma: CategoryColorValues.chroma, hue: 190),
+            OKLCH(lightness: lightness, chroma: CategoryColorValues.chroma, hue: 260),
+            OKLCH(lightness: lightness, chroma: CategoryColorValues.chroma, hue: 310)
+        ]
+    }
+    
+    private var lightnessModifier: Double {
+        let lightness = colorScheme.colorLightness
+        return lightness - 0.7
+    }
+    
+    init(oklch: Binding<OKLCH>, usedColors: [OKLCH], unusedColors: [Double]) {
+        self._oklch = oklch
+        self.unusedColors = unusedColors
+        
+        let presetsHueSet = CategoryColorValues.presetsHueSet
+        
+        self.usedColors = usedColors.filter { color in
+            !presetsHueSet.contains(color.h.rounded())
+        }
+    }
     
     var body: some View {
-        
-        let columns: [GridItem] = Array(repeating: .init(.flexible(minimum: 35, maximum: 50), spacing: 10, alignment: .center), count: 7)
-        
-        LazyVGrid(columns: columns) {
-            ForEach(colors.compactMap{$0.key}.sorted{$0 < $1}, id: \.self) { colorDescription in
-                Button {
-                    buttonAction(colorDescription)
-                } label: {
-                    if #available(iOS 26.0, *) {
-                        newButtonLabel(colorDescription)
-                    } else {
-                        buttonLabel(colorDescription)
-                    }
+        ScrollView(.horizontal, showsIndicators: false) {
+            LazyHStack(alignment: .top, pinnedViews: .sectionHeaders) {
+                Section {
+                    randomButton
+                        .padding(.top, 15)
                 }
-                .buttonStyle(.plain)
-                .contentShape(.hoverEffect, Circle())
-                .hoverEffect(.lift)
+                
+                HStack(spacing: 0) {
+                    Divider()
+                        .padding(.top, 10)
+                        .padding(.leading, 3)
+                        .padding(.trailing, -2)
+                }
+                
+                Section {
+                    HStack {
+                        presetsView
+                            .frame(height: pickerSize + 10)
+                            .padding(.top, 10)
+                    }
+                    .padding(.leading, -45)
+                } header: {
+                    Text("Presets")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .offset(x: 9, y: -8)
+                }
+                
+                HStack(spacing: 0) {
+                    Divider()
+                        .padding(.top, 10)
+                        .padding(.leading, 3)
+                        .padding(.trailing, -2)
+                }
+                
+                if !usedColors.isEmpty {
+                    Section {
+                        HStack {
+                            usedColorsView
+                        }
+                        .frame(height: pickerSize + 10)
+                        .padding(.top, 10)
+                    } header: {
+                        Text("Used")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .offset(x: 9, y: -8)
+                            .padding(.trailing, -100)
+                    }
+                } else {
+                    Text("Already used colors will appear here")
+                        .foregroundStyle(.secondary)
+                        .frame(height: pickerSize + 10)
+                        .padding(.top, 10)
+                }
             }
+            .padding()
+        }
+        .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+        
+        BeigeColorPicker(color: $oklch)
+            .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
+            .frame(height: pickerSize)
+            .padding()
+    }
+    
+    private var randomButton: some View {
+        Button {
+            oklch = OKLCH(lightness: colorScheme.colorLightness, chroma: 0.15, hue: getUnusedColor())
+        } label: {
+            Circle()
+                .fill(OKLCH(lightness: colorScheme.colorLightness, chroma: CategoryColorValues.chroma, hue: oklch.h).color)
+                .overlay {
+                    Image(systemName: "shuffle")
+                        .foregroundStyle(.white)
+                }
+        }
+        .buttonStyle(.plain)
+        .frame(height: pickerSize)
+    }
+    
+    private var presetsView: some View {
+        ForEach(presets, id: \.self) { color in
+            Button {
+                oklch = OKLCH(lightness: colorScheme.colorLightness, chroma: 0.15, hue: color.h)
+            } label: {
+                Circle()
+                    .fill(OKLCH(lightness: colorScheme.colorLightness, chroma: CategoryColorValues.chroma, hue: color.h).color)
+                    .frame(width: pickerSize)
+                    .overlay {
+                        Circle()
+                            .stroke(lineWidth: oklch.h == color.h ? 3 : 0)
+                            .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
+                            .opacity(oklch.h == color.h ? 1 : 0)
+                            .scaleEffect(oklch.h == color.h ? 0.8 : 1)
+                    }
+                    .animation(.default, value: oklch)
+            }
+            .buttonStyle(.plain)
+            .id(color.h)
         }
     }
     
-    private func buttonLabel(_ colorDescription: String) -> some View {
-        Circle()
-            .fill(colors[colorDescription] ?? .black)
-            .overlay {
+    private var usedColorsView: some View {
+        ForEach(usedColors, id: \.self) { color in
+            Button {
+                oklch = OKLCH(lightness: colorScheme.colorLightness, chroma: 0.15, hue: color.h)
+            } label: {
                 Circle()
-                    .stroke(lineWidth: colorDescription == colorSelectedDescription ? 3 : 0)
-                    .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
-                    .opacity(colorDescription == colorSelectedDescription ? 1 : 0)
-                    .scaleEffect(colorDescription == colorSelectedDescription ? 0.8 : 1)
+                    .fill(OKLCH(lightness: colorScheme.colorLightness, chroma: CategoryColorValues.chroma, hue: color.h).color)
+                    .frame(width: pickerSize)
+                    .overlay {
+                        Circle()
+                            .stroke(lineWidth: oklch.h == color.h ? 3 : 0)
+                            .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
+                            .opacity(oklch.h == color.h ? 1 : 0)
+                            .scaleEffect(oklch.h == color.h ? 0.8 : 1)
+                    }
+                    .animation(.default, value: oklch)
             }
-            .frame(minWidth: 35, maxWidth: 50, minHeight: 35, maxHeight: 50)
-    }
-    
-    @available(iOS 26.0, *)
-    private func newButtonLabel(_ colorDescription: String) -> some View {
-        Circle()
-            .fill(colors[colorDescription] ?? .black)
-            .overlay {
-                Circle()
-                    .stroke(lineWidth: colorDescription == colorSelectedDescription ? 3 : 0)
-                    .foregroundColor(Color(uiColor: .secondarySystemGroupedBackground))
-                    .opacity(colorDescription == colorSelectedDescription ? 1 : 0)
-                    .scaleEffect(colorDescription == colorSelectedDescription ? 0.8 : 1)
-            }
-            .glassEffect(.regular, in: Circle())
-            .frame(minWidth: 35, maxWidth: 50, minHeight: 35, maxHeight: 50)
-    }
-    
-    private func buttonAction(_ colorDescription: String) {
-        withAnimation(.bouncy) {
-            colorSelectedDescription = colorDescription
+            .buttonStyle(.plain)
+            .id(color.h)
         }
+    }
+    
+    private func getUnusedColor() -> Double {
+        guard unusedColors.count > 1 else {
+            return Double((0...360).randomElement() ?? 0)
+        }
+        
+        guard var result = unusedColors.randomElement() else {
+            return 0
+        }
+        
+        while result == oklch.h {
+            result = unusedColors.randomElement() ?? -1
+        }
+        
+        return result
     }
 }
 
@@ -77,11 +203,9 @@ struct CustomColorSelectorPreviews: PreviewProvider {
 }
 
 fileprivate struct CustomColorSelectorPreview: View {
-    @State var colorSelectedDescription: String = "nordRed"
-    
     var body: some View {
         List {
-            CustomColorSelector(colorSelectedDescription: $colorSelectedDescription)
+            CustomColorSelector(oklch: .constant(.init(lightness: 0.7)), usedColors: [], unusedColors: [])
         }
     }
 }

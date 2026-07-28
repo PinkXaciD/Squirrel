@@ -14,6 +14,11 @@ struct ListHorizontalScroll<Data, ID, Selection>: View where Data: RandomAccessC
     let animation: Animation
     let action: (Data.Element) -> Void
     
+    @Environment(\.colorScheme)
+    private var colorScheme
+    @Environment(\.colorSchemeContrast)
+    private var increaseContrast
+    
     @Binding
     var selection: Selection
     
@@ -95,11 +100,11 @@ struct ListHorizontalScroll<Data, ID, Selection>: View where Data: RandomAccessC
                             
                             return element.label
                                 .font(isSelected ? .body.bold() : .body)
-                                .foregroundColor(isSelected ? Color(uiColor: .secondarySystemGroupedBackground) : element.foregroundColor)
+                                .foregroundColor(isSelected ? Color(uiColor: .secondarySystemGroupedBackground) : element.foregroundColor(colorScheme: colorScheme, increaseContrast: increaseContrast))
                                 .addButtonPadding()
                                 .background {
                                     RoundedRectangle(cornerRadius: Self.listCornerRadius)
-                                        .fill(isSelected ? element.foregroundColor : Color(uiColor: .secondarySystemGroupedBackground))
+                                        .fill(isSelected ? element.foregroundColor(colorScheme: colorScheme, increaseContrast: increaseContrast) : Color(uiColor: .secondarySystemGroupedBackground))
                                 }
                         }
                         .id(element[keyPath: selectingValue])

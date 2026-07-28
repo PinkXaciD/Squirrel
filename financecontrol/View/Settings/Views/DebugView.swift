@@ -258,7 +258,7 @@ struct DebugView: View {
             .normalizePadding()
             
             Button(role: .destructive) {
-                rvm.checkForUpdate()
+                rvm.checkForUpdate(force: true)
             } label: {
                 Text(verbatim: "Update rates")
             }

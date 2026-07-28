@@ -1,5 +1,5 @@
 {
-  "originHash" : "41422fc659ac624129ff9736794086adf81192e1d0196ff6c690a23d6a134cd3",
+  "originHash" : "0e2832636fd85e7798818644f3dcef2ee440bc0c08e698baaa44217a533a0c16",
   "pins" : [
     {
       "identity" : "applepie",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "815b1914ad5fee3485f6ec3deb1198b4c1447c9b",
         "version" : "2.0.0"
+      }
+    },
+    {
+      "identity" : "beige",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/PinkXaciD/Beige",
+      "state" : {
+        "revision" : "2f6e3110b3022b1183b7b51ce74d9e072f8cae34",
+        "version" : "1.0.1"
       }
     }
   ],

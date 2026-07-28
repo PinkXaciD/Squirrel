@@ -1,16 +1,18 @@
 //
-//  financecontrolApp.swift
-//  financecontrol
+//  SquirrelApp.swift
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/06/26.
+//  Created by PinkXaciD on 2023/06/26.
 //
 
 import SwiftUI
 
 @main
-struct financecontrolApp: App {
+struct SquirrelApp: App {
     init() {
-        launch()
+        Task { @MainActor in
+            launch()
+        }
     }
     
     var body: some Scene {

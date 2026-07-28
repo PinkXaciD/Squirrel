@@ -25,6 +25,8 @@ struct WhatsNewView: View {
     
     @State
     private var showConfirmationDialog: Bool = false
+    @State
+    private var showReviewConfirmationDialog: Bool = false
     
     let showSmallHeader: Bool = UIApplication.shared.keyWindow?.safeAreaInsets.bottom == 0 // Check if device has a home button
     
@@ -41,24 +43,19 @@ struct WhatsNewView: View {
                 
                 Spacer()
                 
-                getRow(imageName: "gearshape.2.fill", title: "Bug Fixes", subtitle: "Minor bug fixes and general improvements")
+                getRow(imageName: "paintpalette.fill", title: "Custom Colors for Categories", subtitle: "You can now select custom colors for categories. Your existing categories were updated to match the new look")
+                
+                getRow(imageName: "line.3.horizontal.decrease", title: "Timezone Filters", subtitle: "You can now filter expenses by the timezone they were made in.")
                 
                 Spacer()
                 
-                Button("Full Changelog on GitHub") {
-                    showConfirmationDialog.toggle()
-                }
-                .confirmationDialog(URL.githubChangelog.absoluteString, isPresented: $showConfirmationDialog, titleVisibility: .visible) {
-                    Button("Open in Browser") {
-                        openURL(URL.githubChangelog)
+                reviewButton
+                    .saturation(0.9)
+                    .confirmationDialog("Review Squirrel on the App Store", isPresented: $showReviewConfirmationDialog, titleVisibility: .visible) {
+                        Button("Open in the App Store") {
+                            openURL(.review)
+                        }
                     }
-                    
-                    Button("Copy to Clipboard") {
-                        UIPasteboard.general.url = URL.githubChangelog
-                    }
-                } message: {
-                    Text("Full Changelog")
-                }
             }
             .padding()
             .toolbar {
@@ -67,6 +64,21 @@ struct WhatsNewView: View {
                         dismiss()
                     }
                     .font(.body.bold())
+                }
+                
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Full Changelog") { showConfirmationDialog.toggle() }
+                        .confirmationDialog(URL.githubChangelog.absoluteString, isPresented: $showConfirmationDialog, titleVisibility: .visible) {
+                            Button("Open in Browser") {
+                                openURL(URL.githubChangelog)
+                            }
+                            
+                            Button("Copy to Clipboard") {
+                                UIPasteboard.general.url = URL.githubChangelog
+                            }
+                        } message: {
+                            Text("Full Changelog")
+                        }
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
@@ -121,6 +133,9 @@ struct WhatsNewView: View {
                         .aspectRatio(contentMode: .fit)
                         .glassEffect(.clear.interactive(), in: RoundedRectangle(cornerRadius: 30))
                 }
+                .saturation(showConfirmationDialog ? 0.5 : 1)
+                .opacity(showConfirmationDialog ? 0.5 : 1)
+                .animation(.snappy, value: showConfirmationDialog)
                 
             } else if #available(iOS 16.0, *) {
                 ViewThatFits {
@@ -163,6 +178,30 @@ struct WhatsNewView: View {
                 .padding()
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+    
+    @ViewBuilder
+    private var reviewButton: some View {
+        if #available(iOS 26.0, *) {
+            Button {
+                showReviewConfirmationDialog.toggle()
+            } label: {
+                Text("Review Squirrel on the App Store")
+                    .padding(.vertical, 3.5)
+                    .padding(.horizontal, 7)
+            }
+            .buttonStyle(.glassProminent)
+        } else {
+            Button {
+                showReviewConfirmationDialog.toggle()
+            } label: {
+                Text("Review Squirrel on the App Store")
+                    .padding(.vertical, 3.5)
+                    .padding(.horizontal, 7)
+            }
+            .buttonStyle(.borderedProminent)
+            .clipShape(.capsule)
         }
     }
     

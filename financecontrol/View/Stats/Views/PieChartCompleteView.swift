@@ -1,20 +1,30 @@
 //
 //  PieChartCompleteView.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 6/02/03.
+//  Created by PinkXaciD on 2024/02/03.
 //
 
 import SwiftUI
 import ApplePie
 
 struct PieChartCompleteView: View {
-    @Environment(\.layoutDirection) private var layoutDirection
-    @EnvironmentObject private var vm: PieChartViewModel
+    @Environment(\.colorScheme)
+    private var colorScheme
+    @Environment(\.colorSchemeContrast)
+    private var colorSchemeContrast
+    @Environment(\.layoutDirection)
+    private var layoutDirection
+    
+    @EnvironmentObject
+    private var vm: PieChartViewModel
+    
     let data: ChartData
     let size: CGFloat
     let spendingsCount: Int
-    @State private var update: Bool = false
+    
+    @State
+    private var id: UUID = .init()
     
     var body: some View {
         ZStack {
@@ -27,6 +37,7 @@ struct PieChartCompleteView: View {
                 ) { element in
                     APChartSector(element.sum, color: Color[element.color], id: element.id)
                 }
+                .id(id)
             } else {
                 APChart(
                     categories(),
@@ -34,8 +45,9 @@ struct PieChartCompleteView: View {
                     innerRadius: 0.73,
                     animation: .default
                 ) { element in
-                    APChartSector(element.sum, color: Color[element.color], id: element.id)
+                    APChartSector(element.sum, color: element.resolveColor(colorScheme: colorScheme, increaseContrast: colorSchemeContrast), id: element.id)
                 }
+                .id(id)
             }
             
             CenterChartView(
@@ -44,6 +56,12 @@ struct PieChartCompleteView: View {
                 operationsInMonth: vm.selectedCategory == nil ? data.sum : data.categoriesDict[vm.selectedCategory?.id ?? .init()]?.sum ?? 0,
                 spendingsCount: spendingsCount
             )
+        }
+        .onChange(of: colorScheme) { _ in
+            id = .init() // Force chart update on color scheme change
+        }
+        .onChange(of: data) { _ in
+            id = .init() // Force chart update on data change
         }
     }
     

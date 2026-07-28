@@ -1,8 +1,8 @@
 //
 //  RatesView.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/09/18.
+//  Created by PinkXaciD on 2023/09/18.
 //
 
 import SwiftUI
@@ -20,7 +20,7 @@ struct RatesView: View {
                 ratesHeader
             }
         }
-        .navigationTitle("Rates")
+        .navigationTitle("Exchange Rates")
         .navigationBarTitleDisplayMode(.inline)
     }
     
@@ -46,7 +46,7 @@ struct RatesView: View {
 
 struct RatesRowView: View, Identifiable {
     internal init(code: String, rate: Double) {
-        self.name = Locale.current.localizedString(forCurrencyCode: code)?.capitalized ?? "Error with: \(code)"
+        self.name = Locale.current.localizedString(forCurrencyCode: code) ?? "Error with: \(code)"
         self.code = code
         self.rate = rate
     }
@@ -69,6 +69,7 @@ struct RatesRowView: View, Identifiable {
     }
 }
 
+// MARK: Not yet implemented
 struct CurrencyConvertView: View {
     @EnvironmentObject private var rvm: RatesViewModel
     

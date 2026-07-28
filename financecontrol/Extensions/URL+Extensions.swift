@@ -31,4 +31,6 @@ extension URL {
         
         return "contact@\(websiteURLString)"
     }()
+    
+    static let review: URL! = URL(string: "https://apps.apple.com/us/app/id6477331498?action=write-review")
 }

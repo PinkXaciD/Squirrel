@@ -17,6 +17,10 @@ struct EditSpendingView: View {
     private var dismiss
     @Environment(\.dynamicTypeSize)
     private var dynamicTypeSize
+    @Environment(\.colorScheme)
+    private var colorScheme
+    @Environment(\.colorSchemeContrast)
+    private var colorSchemeContrast
     
     @StateObject
     private var vm: EditSpendingViewModel
@@ -55,7 +59,8 @@ struct EditSpendingView: View {
     var toDismiss: Bool
     
     var categoryColor: Color {
-        CustomColor.nordAurora[vm.category?.color ?? ""] ?? .secondary.opacity(0)
+//        CustomColor.nordAurora[vm.category?.color ?? ""] ?? .secondary.opacity(0)
+        vm.category?.resolveColor(colorScheme: colorScheme, increaseContrast: colorSchemeContrast) ?? .secondary
     }
     
     var body: some View {

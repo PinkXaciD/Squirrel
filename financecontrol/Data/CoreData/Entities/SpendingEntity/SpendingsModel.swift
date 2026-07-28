@@ -27,6 +27,7 @@ extension CoreDataModel {
             
             var spendings = [SpendingEntity]()
             var currencies = Set<Currency>()
+            var timeZones = Set<TimeZone>()
             let ratesFetchQueueSet = Set(UserDefaults.standard.getFetchQueue())
             var ratesFetchSpendings = [SpendingEntity]()
             var places: [String:Place] = .init()
@@ -59,6 +60,10 @@ extension CoreDataModel {
                 
                 currencies.insert(Currency(code: safeSpending.wrappedCurrency))
                 
+                if let timezone = safeSpending.timeZone {
+                    timeZones.insert(timezone)
+                }
+                
                 // Pie chart data
                 pieChartData[startOfDay.getFirstDayOfMonth()]?.append(safeSpending)
                 
@@ -68,7 +73,7 @@ extension CoreDataModel {
                 }
                 
                 // Places for suggestions
-                if let place = spending.place  {
+                if let place = spending.place, !place.isEmpty {
                     let norm = place.normalize()
                     
                     if var p = places[norm] {
@@ -83,6 +88,7 @@ extension CoreDataModel {
             } // End of for loop
             
             self.usedCurrencies = currencies
+            self.usedTimeZones = timeZones
             self.pieChartSpendings = pieChartData
             self.spendingsCount = spendings.count
             NotificationCenter.default.post(name: .UpdatePieChart, object: nil)
@@ -383,7 +389,8 @@ extension CoreDataModel {
         secondDate: Date,
         categories: [UUID],
         withReturns: Bool?,
-        currencies: [String]
+        currencies: [String],
+        timeZones: [String]
     ) -> [ChartData] {
         context.performAndWait {
             var chartData = [ChartData]()
@@ -417,6 +424,14 @@ extension CoreDataModel {
                     
                     if !currencies.isEmpty, result {
                         result = currencies.contains(safeSpending.wrappedCurrency)
+                    }
+                    
+                    if !timeZones.isEmpty, result {
+                        if let timeZoneIdentifier = safeSpending.timeZoneIdentifier {
+                            result = timeZones.contains(timeZoneIdentifier)
+                        } else {
+                            result = false
+                        }
                     }
                     
                     if result {

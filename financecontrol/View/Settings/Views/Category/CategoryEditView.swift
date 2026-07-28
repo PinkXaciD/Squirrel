@@ -1,21 +1,24 @@
 //
 //  CategorySpendingsView.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/09/11.
+//  Created by PinkXaciD on 2023/09/11.
 //
 
 import SwiftUI
+import Beige
 
 struct CategoryEditView: View {
-    
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
     @State private var toDismiss: Bool = false
     
     let category: CategoryEntity
+    let usedColors: [OKLCH]
+    let unusedColors: [Double]
     
     var body: some View {
-        CategoryEditSubView(category: category, dismiss: $toDismiss)
+        CategoryEditSubView(category: category, dismiss: $toDismiss, usedColors: usedColors, unusedColors: unusedColors, colorScheme: colorScheme)
             .onChange(of: toDismiss) { _ in
                 dismiss()
             }
@@ -24,23 +27,48 @@ struct CategoryEditView: View {
 }
 
 struct CategoryEditSubView: View {
-        
+    @Environment(\.colorScheme)
+    private var colorScheme
+    
+    @Binding
+    var dismiss: Bool
+    
+    @EnvironmentObject
+    private var cdm: CoreDataModel
+    
+    @State
+    private var name: String
+    @State
+    private var oklch: OKLCH
+    @State
+    private var triedToSave: Bool = false
+    
     let category: CategoryEntity
-    @Binding var dismiss: Bool
+    let usedColors: [OKLCH]
+    let unusedColors: [Double]
     
-    @EnvironmentObject private var cdm: CoreDataModel
-    
-    @State private var name: String
-    @State private var colorSelectedDescription: String
-    @State private var triedToSave: Bool = false
-    
-    @FocusState var nameIsFocused: Bool
+    @FocusState
+    var nameIsFocused: Bool
         
-    init(category: CategoryEntity, dismiss: Binding<Bool>) {
+    init(category: CategoryEntity, dismiss: Binding<Bool>, usedColors: [OKLCH], unusedColors: [Double], colorScheme: ColorScheme) {
         self.category = category
         self.name = category.name ?? "Error"
-        self.colorSelectedDescription = category.color ?? "Error"
         self._dismiss = dismiss
+        self._oklch = .init(initialValue: .init(lightness: colorScheme.colorLightness, chroma: CategoryColorValues.chroma, hue: Double(category.color ?? "") ?? category.resolveColor(colorScheme: .light, increaseContrast: .standard).oklch().h))
+        self.usedColors = usedColors
+        self.unusedColors = unusedColors
+    }
+    
+    private var tintColor: Color {
+        OKLCH(lightness: colorScheme.colorLightness, chroma: CategoryColorValues.chroma, hue: oklch.h).color
+    }
+    
+    private var namePadding: CGFloat {
+        if #available(iOS 26.0, *) {
+            return 0
+        }
+        
+        return 3
     }
     
     var body: some View {
@@ -48,10 +76,6 @@ struct CategoryEditSubView: View {
             nameSection
             
             colorSection
-            
-            favoriteSection
-            
-            archiveSection
             
             spendingsSection
         }
@@ -67,6 +91,13 @@ struct CategoryEditSubView: View {
         Section {
             TextField("Enter name", text: $name)
                 .focused($nameIsFocused)
+                .font(.largeTitle.bold())
+                .foregroundColor(tintColor)
+                .padding(.vertical, namePadding)
+//                .minimumScaleFactor(0.6)
+//                .scaledToFit()
+        } header: {
+            Text("Name")
         } footer: {
             if triedToSave && name.isEmpty {
                 Text("Required")
@@ -78,16 +109,18 @@ struct CategoryEditSubView: View {
                     .foregroundColor(name.count > 100 ? .red : .secondary)
             }
         }
+        .tint(tintColor)
+        .accentColor(tintColor)
     }
     
     private var colorSection: some View {
         Section {
-            CustomColorSelector(colorSelectedDescription: $colorSelectedDescription)
+            CustomColorSelector(oklch: $oklch, usedColors: usedColors, unusedColors: unusedColors)
+        } header: {
+            Text("Color")
         } footer: {
-            if triedToSave && colorSelectedDescription.isEmpty {
-                Text("Required")
-                    .foregroundColor(.red)
-            }
+            favoriteAndArchiveSection
+                .listRowInsets(.init(top: 20, leading: 0, bottom: 15, trailing: 0))
         }
     }
     
@@ -108,6 +141,21 @@ struct CategoryEditSubView: View {
                 cdm.changeShadowStateOfCategory(category)
             }
         }
+    }
+    
+    private var favoriteAndArchiveSection: some View {
+        HStack {
+            Button(category.isFavorite ? "Unfavorite" : "Favorite") {
+                cdm.changeFavoriteStateOfCategory(category)
+            }
+            .animation(.default, value: category.isFavorite)
+            
+            Button("Archive") {
+                dismiss = true
+                cdm.changeShadowStateOfCategory(category)
+            }
+        }
+        .buttonStyle(SpendingListRowButtonStyle())
     }
     
     private var spendingsSection: some View {
@@ -131,19 +179,20 @@ struct CategoryEditSubView: View {
     private var trailingToolbar: ToolbarItem<Void, some View> {
         ToolbarItem(placement: .topBarTrailing) {
             Button("Save") {
-                if name.isEmpty || colorSelectedDescription.isEmpty || name.count > 100 {
+                if name.isEmpty || name.count > 100 {
                     withAnimation {
                         triedToSave = true
                     }
+                    
                     HapticManager.shared.notification(.warning)
                 } else {
-                    cdm.editCategory(category, name: name, color: colorSelectedDescription)
+                    cdm.editCategory(category, name: name, color: oklch.h.formatted(.number.precision(.fractionLength(3))))
                     dismiss.toggle()
                     HapticManager.shared.notification(.success)
                 }
             }
             .font(.body.bold())
-            .foregroundColor(name.isEmpty || colorSelectedDescription.isEmpty || name.count > 100 ? .secondary.opacity(0.7) : .accentColor)
+            .foregroundColor(name.isEmpty || name.count > 100 ? .secondary.opacity(0.7) : .accentColor)
         }
     }
     

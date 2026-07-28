@@ -52,7 +52,7 @@ final class PieChartViewModel: ViewModel {
 // MARK: Methods
 extension PieChartViewModel {
     @objc func updateData() {
-        DispatchQueue.main.async { [weak self] in
+        Task { @MainActor [weak self] in
             guard let self else { return }
             
             let chartData: [ChartData] = {
@@ -69,7 +69,8 @@ extension PieChartViewModel {
                         secondDate: self.fvm.endFilterDate,
                         categories: self.fvm.filterCategories,
                         withReturns: self.fvm.withReturns,
-                        currencies: self.fvm.currencies
+                        currencies: self.fvm.currencies,
+                        timeZones: self.fvm.timeZones
                     )
                 }
                 

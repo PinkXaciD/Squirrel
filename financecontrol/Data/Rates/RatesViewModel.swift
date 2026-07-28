@@ -1,6 +1,6 @@
 //
 //  RatesViewModel.swift
-//  financecontrol
+//  Squirrel
 //
 //  Created by PinkXaciD on 2023/09/18.
 //
@@ -43,7 +43,7 @@ final class RatesViewModel: ViewModel {
             guard let self else { return }
             
             do {
-                let (cloudKitUpdateDate, safeRates) = try await getRates(checkURLVersion: checkURLVersion)
+                let (cloudKitUpdateDate, safeRates) = try await getRates(checkURLVersion: checkURLVersion, isUpdating: true)
                 
                 // MARK: Is latest check
                 guard
@@ -88,7 +88,6 @@ final class RatesViewModel: ViewModel {
                     self.waitForConnectionToEstablish()
                 }
             } catch {
-//                print(error)
                 await MainActor.run {
                     ErrorType(error: error).publish()
                     self.status = .failed
@@ -143,8 +142,8 @@ final class RatesViewModel: ViewModel {
         self.status = .success
     }
     
-    func checkForUpdate() {
-        if !Calendar.gmt.isDate(updateTime, equalTo: Date(), toGranularity: .hour) {
+    func checkForUpdate(force: Bool = false) {
+        if !Calendar.gmt.isDate(updateTime, equalTo: Date(), toGranularity: .hour) || force {
             updateRates()
         }
     }
@@ -168,12 +167,17 @@ final class RatesViewModel: ViewModel {
 // MARK: Rates View Model networking
 
 extension RatesViewModel {
-    func getRates(_ timestamp: Date? = nil, checkURLVersion: Bool = false) async throws -> (editDate: Date, rates: Rates) {
+    func getRates(_ timestamp: Date? = nil, checkURLVersion: Bool = false, isUpdating: Bool = false) async throws -> (editDate: Date, rates: Rates) {
 #if DEBUG
         logger.info("Rates Fetch initiated for \(timestamp?.formatted(date: .abbreviated, time: .shortened) ?? "No timestamp")")
 #endif
         
+        let ckManager = CloudKitManager.shared
         let dateFormatter = DateFormatter.forRatesTimestamp
+        
+        if isUpdating {
+            return try await ckManager.fetchRates(timestamp: "latest")
+        }
         
         // Check if latest needed
         guard let timestamp, !Calendar.gmt.isDateInToday(timestamp) else {
@@ -189,8 +193,6 @@ extension RatesViewModel {
             #endif
             return (timestamp, cached)
         }
-        
-        let ckManager = CloudKitManager.shared
         
         let result = try await ckManager.fetchRates(timestamp: timestampString)
         

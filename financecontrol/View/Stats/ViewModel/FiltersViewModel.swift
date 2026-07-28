@@ -20,6 +20,8 @@ final class FiltersViewModel: ViewModel {
     @Published
     var currencies: [String]
     @Published
+    var timeZones: [String]
+    @Published
     var month: Int
     @Published
     var year: Int
@@ -42,6 +44,7 @@ final class FiltersViewModel: ViewModel {
         self.endFilterDate = endFilterDate
         self.filterCategories = []
         self.currencies = []
+        self.timeZones = []
         self.dateType = dateType
         self.month = Calendar.current.component(.month, from: .now)
         self.year = Calendar(identifier: .gregorian).component(.year, from: .now)
@@ -68,6 +71,7 @@ final class FiltersViewModel: ViewModel {
         self.updateList = true
         self.withReturns = nil
         self.currencies = []
+        self.timeZones = []
         self.dateType = .multi
         self.year = Calendar(identifier: .gregorian).component(.year, from: .now)
         self.month = Calendar.current.component(.month, from: .now)
@@ -134,6 +138,11 @@ final class FiltersViewModel: ViewModel {
         if !self.currencies.isEmpty {
             let currenciesPredicate = NSPredicate(format: "currency IN %@", self.currencies as CVarArg)
             predicates.append(currenciesPredicate)
+        }
+        
+        if !self.timeZones.isEmpty {
+            let timeZonePredicate = NSPredicate(format: "timeZoneIdentifier IN %@", self.timeZones as CVarArg)
+            predicates.append(timeZonePredicate)
         }
         
         if let withReturns = self.withReturns {

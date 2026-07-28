@@ -123,23 +123,8 @@ final class StatsListViewModel: ViewModel {
         }
         
         if fvm.applyFilters {
-            let datePredicate = NSPredicate(format: "date >= %@ AND date < %@", fvm.startFilterDate as CVarArg, fvm.endFilterDate as CVarArg)
-            predicates.append(datePredicate)
-            
-            if !fvm.filterCategories.isEmpty {
-                let filterCategoriesPredicate = NSPredicate(format: "category.id IN %@", fvm.filterCategories as CVarArg)
-                predicates.append(filterCategoriesPredicate)
-            }
-            
-            if !fvm.currencies.isEmpty {
-                let currenciesPredicate = NSPredicate(format: "currency IN %@", fvm.currencies as CVarArg)
-                predicates.append(currenciesPredicate)
-            }
-            
-            if let withReturns = fvm.withReturns {
-                let returnsPredicate = NSPredicate(format: "returns.@count \(withReturns ? ">" : "==") 0")
-                predicates.append(returnsPredicate)
-            }
+            let filterPredicate = fvm.getPredicate()
+            predicates.append(filterPredicate)
         }
         
         if !searchModel.search.isEmpty {

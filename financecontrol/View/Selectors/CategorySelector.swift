@@ -1,21 +1,65 @@
 //
 //  CategorySelector.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/07/13.
+//  Created by PinkXaciD on 2023/07/13.
 //
 
 import SwiftUI
+import Beige
 
 struct CategorySelector: View {
-    @Environment(\.dismiss) private var dismiss
-    @Binding var selectedCategory: CategoryEntity?
+    @Environment(\.dismiss)
+    private var dismiss
+    @Environment(\.colorScheme)
+    private var colorScheme
+    @Environment(\.colorSchemeContrast)
+    private var colorSchemeContrast
     
-//    @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)], predicate: NSPredicate(format: "isShadowed == false"))
-//    private var categories: FetchedResults<CategoryEntity>
+    @Binding
+    var selectedCategory: CategoryEntity?
+    
     let categories: FetchedResults<CategoryEntity>
     @State private var editCategories: Bool = false
     @State private var showOther: Bool = false
+    
+    var usedColors: [OKLCH] {
+        var result = Set<OKLCH>()
+        
+        for category in categories {
+            result.insert(category.resolveColor(colorScheme: colorScheme, increaseContrast: colorSchemeContrast).oklch())
+        }
+        
+        let resultArray = result.sorted { val1, val2 in
+            val1.h < val2.h
+        }
+        
+        return resultArray
+    }
+    
+    var unusedColors: [Double] {
+        if usedColors.isEmpty {
+            return []
+        }
+        
+        var lastHue: Double = 0
+        var result: [Double] = []
+        
+        for color in usedColors {
+            guard color.h != lastHue, color.h - lastHue > 5 else {
+                continue
+            }
+            
+            result.append((color.h - lastHue) / 2 + lastHue)
+            lastHue = color.h
+        }
+        
+        if lastHue <= 355, !result.isEmpty {
+            result.append((360 - lastHue) / 2 + lastHue)
+        }
+        
+        return result
+    }
     
     var body: some View {
         
@@ -59,13 +103,19 @@ struct CategorySelector: View {
         .background {
             Group {
                 NavigationLink(isActive: $editCategories) {
-                    AddCategoryView(selectedCategory: $selectedCategory, insert: true)
+                    AddCategoryView(
+                        selectedCategory: $selectedCategory,
+                        insert: true,
+                        colors: usedColors,
+                        unusedColors: unusedColors,
+                        oklch: OKLCH(lightness: colorScheme.colorLightness, chroma: CategoryColorValues.chroma)
+                    )
                 } label: {
                     EmptyView()
                 }
                 
                 NavigationLink(isActive: $showOther) {
-                    OtherCategorySelector(selectedCategory: $selectedCategory, categories: categories)
+                    OtherCategorySelector(selectedCategory: $selectedCategory, categories: categories, usedColors: usedColors, unusedColors: unusedColors, colorScheme: colorScheme)
                 } label: {
                     EmptyView()
                 }
@@ -106,6 +156,10 @@ fileprivate struct OtherCategorySelector: View {
     @Binding var selectedCategory: CategoryEntity?
     
     let categories: FetchedResults<CategoryEntity>
+    let usedColors: [OKLCH]
+    let unusedColors: [Double]
+    let colorScheme: ColorScheme
+    
     @State private var search: String = ""
     
     var body: some View {
@@ -132,7 +186,13 @@ fileprivate struct OtherCategorySelector: View {
     private var addNewSection: some View {
         Section {
             NavigationLink {
-                AddCategoryView(selectedCategory: $selectedCategory, insert: true)
+                AddCategoryView(
+                    selectedCategory: $selectedCategory,
+                    insert: true,
+                    colors: usedColors,
+                    unusedColors: unusedColors,
+                    oklch: OKLCH(lightness: colorScheme.colorLightness, chroma: CategoryColorValues.chroma)
+                )
             } label: {
                 Text("Add new")
             }

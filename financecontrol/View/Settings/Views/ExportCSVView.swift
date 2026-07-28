@@ -159,6 +159,7 @@ struct ExportCSVView: View {
                         spendingsCount: cdm.spendingsCount,
                         firstSpendingDate: cdm.firstSpendingDate ?? .firstAvailableDate,
                         usedCurrencies: cdm.usedCurrencies,
+                        usedTimeZones: cdm.usedTimeZones,
                         showDismissButton: false,
                         showDateSelection: false
                     )

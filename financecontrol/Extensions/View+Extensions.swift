@@ -330,5 +330,6 @@ struct BlurWithOpacityModifier: ViewModifier {
         content
             .blur(radius: isActive ? 3 : 0)
             .opacity(isActive ? 0 : 1)
+            .disabled(isActive)
     }
 }

@@ -17,9 +17,12 @@ struct SuggestionsOverlayView: View {
     var minimizeSuggestions: Bool
 
     let geometry: GeometryProxy
+    
+    @ScaledMetric(relativeTo: .footnote)
+    private var buttonWidth: CGFloat = 100
 
     var padding: CGFloat {
-        geometry.size.height - manager.placeFieldPosition + geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom
+        geometry.size.height - manager.placeFieldPosition + geometry.safeAreaInsets.top + (geometry.safeAreaInsets.bottom * 0.75)
     }
 
     private var suggestionsAnimation: Animation {
@@ -38,26 +41,23 @@ struct SuggestionsOverlayView: View {
                 if #available(iOS 26.0, *) {
                     VStack(alignment: .leading, spacing: 15) {
                         minimizeButton
-                            .padding(.horizontal, minimizeSuggestions ? 12 : 20)
-                            .padding(.top, minimizeSuggestions ? 9 : 17)
                         
                         if !minimizeSuggestions {
                             VStack(alignment: .leading, spacing: 15) {
                                 content
                                     .padding(.horizontal, 20)
                             }
-                            .background {
+                            .background(alignment: .leading) {
                                 buttonsHitboxFix
+                                    .padding(.vertical, -7.5)
                             }
                         }
                     }
-                    .padding(.bottom, minimizeSuggestions ? 9 : 17)
+                    .padding(.bottom, minimizeSuggestions ? 0 : 17)
                     .modifier(MenuBackgroundModifier(minimizeSuggestions: minimizeSuggestions))
                 } else {
                     VStack(alignment: .leading, spacing: 7.5) {
                         minimizeButton
-                            .padding(.horizontal, minimizeSuggestions ? 12 : 15)
-                            .padding(.top, minimizeSuggestions ? 9 : 12)
                         
                         if !minimizeSuggestions {
                             VStack(alignment: .leading, spacing: 7.5) {
@@ -65,12 +65,14 @@ struct SuggestionsOverlayView: View {
                                     .padding(.vertical, 2)
                                     .padding(.horizontal, 20)
                             }
-                            .background {
+                            .background(alignment: .leading) {
                                 buttonsHitboxFix
+                                    .padding(.vertical, -3.75)
                             }
+                            .transition(.move(edge: .bottom).combined(with: .opacity))
                         }
                     }
-                    .padding(.bottom, minimizeSuggestions ? 9 : 12)
+                    .padding(.bottom, minimizeSuggestions ? 0 : 12)
                     .modifier(MenuBackgroundModifier(minimizeSuggestions: minimizeSuggestions))
                 }
             }
@@ -90,32 +92,63 @@ struct SuggestionsOverlayView: View {
     }
     
     private var buttonsHitboxFix: some View {
-        VStack(spacing: 0) {
+        var horizontalPadding: CGFloat {
+            if #available(iOS 26.0, *) {
+                return 40
+            }
+            
+            return 30
+        }
+        
+        return VStack(spacing: 0) {
             ForEach(vm.filteredSuggestions.reversed(), id: \.self) { suggestion in
                 Button {
                     vm.place = suggestion.value
                     vm.selectedSuggestion = suggestion.value
                 } label: {
-                    Rectangle()
-                        .fill(.clear)
+                    Color.clear
+                        .frame(minWidth: buttonWidth + horizontalPadding)
                 }
+                .id(suggestion.id)
+                .transition(.blurWithOpacity.animation(suggestionsAnimation))
             }
         }
     }
 
     private var minimizeButton: some View {
-        Button {
+        var horizontalPadding: CGFloat {
+            if #available(iOS 26.0, *) {
+                return 20
+            }
+            
+            return 15
+        }
+        
+        var verticalPadding: CGFloat {
+            if #available(iOS 26.0, *) {
+                return 17
+            }
+            
+            return 12
+        }
+        
+        return Button {
             minimizeSuggestions.toggle()
         } label: {
             HStack {
                 Text("Suggestions")
                 
-                Label(minimizeSuggestions ? "Show" : "Hide", systemImage: "chevron.down")
-                    .labelStyle(.iconOnly)
+                Image(systemName: "chevron.down")
                     .rotationEffect(.degrees(minimizeSuggestions ? 180 : 0))
             }
             .foregroundStyle(.secondary)
             .font(.footnote.bold())
+            .padding(.horizontal, minimizeSuggestions ? 12 : horizontalPadding)
+            .padding(.top, minimizeSuggestions ? 9 : verticalPadding)
+            .padding(.bottom, minimizeSuggestions ? 9 : 0)
+            .background {
+                Color.black.opacity(0.001) // Hitbox fix
+            }
         }
         .buttonStyle(.plain)
         .zIndex(2)
@@ -143,7 +176,7 @@ fileprivate struct MenuBackgroundModifier: ViewModifier {
         } else {
             content
                 .background {
-                    RoundedRectangle(cornerRadius: 15)
+                    Rectangle()
                         .fill(Color(uiColor: .systemBackground))
                     
                     RoundedRectangle(cornerRadius: 15)

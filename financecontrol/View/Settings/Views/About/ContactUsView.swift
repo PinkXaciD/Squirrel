@@ -14,7 +14,7 @@ struct ContactUsView: View {
     @State
     private var showSocialNetworkConfirmationDialog: Bool = false
     @State
-    private var socialNetworkToOpen: SocialNetworkModel? = nil
+    private var socialNetworkToOpen: SocialNetwork? = nil
     @State
     private var showEmailConfirmationDialog: Bool = false
     @State
@@ -22,18 +22,18 @@ struct ContactUsView: View {
     @State
     private var showGitHubIssueURLConfirmationDialog: Bool = false
     
-    var socialNetworks: [SocialNetworkModel] {
+    var socialNetworks: [SocialNetwork] {
         guard let data = UserDefaults.standard.data(forKey: UDKey.socialNetworksJSON.rawValue) else {
             return []
         }
         
-        let result = try? JSONDecoder().decode([SocialNetworkModel].self, from: data)
+        let result = try? JSONDecoder().decode([SocialNetwork].self, from: data)
         
         guard let result else {
             return []
         }
         
-        return result
+        return result.sorted(by: { $0.name < $1.name })
     }
     
     var body: some View {
@@ -115,7 +115,7 @@ fileprivate struct SocialNetworkRow: View {
     @State
     private var showConfirmationDialog: Bool = false
     
-    let network: SocialNetworkModel
+    let network: SocialNetwork
     
     var body: some View {
         Button(network.name) {

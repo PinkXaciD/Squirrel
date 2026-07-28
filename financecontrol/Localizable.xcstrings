@@ -279,7 +279,10 @@
     "All Time" : {
 
     },
-    "Always Format Without Timezones" : {
+    "Already used colors will appear here" : {
+
+    },
+    "Always Format Without Time Zones" : {
 
     },
     "Amount" : {
@@ -295,7 +298,7 @@
     "Amount in USD" : {
 
     },
-    "An open-source expense tracker." : {
+    "An open source expense tracker." : {
 
     },
     "App of the rising sun" : {
@@ -380,9 +383,6 @@
     "Blue" : {
 
     },
-    "Bug Fixes" : {
-
-    },
     "Build: %@" : {
 
     },
@@ -419,6 +419,9 @@
 
     },
     "Close" : {
+
+    },
+    "Color" : {
 
     },
     "Color and Icon" : {
@@ -491,6 +494,9 @@
 
     },
     "Custom" : {
+
+    },
+    "Custom Colors for Categories" : {
 
     },
     "Dark Mode" : {
@@ -571,6 +577,9 @@
     "Everything that lives is designed to end. We are perpetually trapped in a never-ending spiral..." : {
 
     },
+    "Exchange Rates" : {
+
+    },
     "Exchange rates are provided for reference purposes only." : {
 
     },
@@ -616,6 +625,9 @@
     "Failed to update rates" : {
 
     },
+    "Favorite" : {
+
+    },
     "Favorite categories" : {
 
     },
@@ -653,9 +665,6 @@
     "Full Changelog" : {
 
     },
-    "Full Changelog on GitHub" : {
-
-    },
     "Gestures" : {
 
     },
@@ -663,9 +672,6 @@
 
     },
     "Grouping Separator" : {
-
-    },
-    "Hide" : {
 
     },
     "Hide App Content" : {
@@ -745,9 +751,6 @@
 
     },
     "Minimize" : {
-
-    },
-    "Minor bug fixes and general improvements" : {
 
     },
     "Mint" : {
@@ -858,6 +861,9 @@
     "Open in Browser" : {
 
     },
+    "Open in the App Store" : {
+
+    },
     "Optional" : {
 
     },
@@ -895,7 +901,7 @@
     "Place name is too long" : {
 
     },
-    "Plays for the audience" : {
+    "Plays to the audience" : {
 
     },
     "Please submit a bug report and try to reinstall the app" : {
@@ -905,6 +911,9 @@
 
     },
     "Please submit a bug report and try to restart the app" : {
+
+    },
+    "Presets" : {
 
     },
     "Privacy" : {
@@ -924,9 +933,6 @@
       }
     },
     "Purple" : {
-
-    },
-    "Rates" : {
 
     },
     "Rates updated" : {
@@ -954,6 +960,12 @@
 
     },
     "Returns amount is greater then the expense amount" : {
+
+    },
+    "Review on the App Store" : {
+
+    },
+    "Review Squirrel on the App Store" : {
 
     },
     "Save" : {
@@ -1014,9 +1026,6 @@
 
     },
     "Settings" : {
-
-    },
-    "Show" : {
 
     },
     "Show Onboarding" : {
@@ -1101,6 +1110,9 @@
     "This policy is valid for this version of the app." : {
 
     },
+    "Time Zones" : {
+
+    },
     "time-timezone-separator-key" : {
       "comment" : "Stats row with/without timezone time separator",
       "localizations" : {
@@ -1113,6 +1125,9 @@
       }
     },
     "Timezone" : {
+
+    },
+    "Timezone Filters" : {
 
     },
     "Timezone format" : {
@@ -1172,6 +1187,9 @@
     "Unable to update exchange rates" : {
 
     },
+    "Unfavorite" : {
+
+    },
     "unknown-place-localized" : {
       "comment" : "Unknown place",
       "extractionState" : "manual",
@@ -1188,6 +1206,9 @@
 
     },
     "Use Amounts with Returns" : {
+
+    },
+    "Used" : {
 
     },
     "Ver. %@" : {
@@ -1257,6 +1278,12 @@
 
     },
     "You can choose a currency to be selected by default, different from display currency" : {
+
+    },
+    "You can now filter expenses by the timezone they were made in." : {
+
+    },
+    "You can now select custom colors for categories. Your existing categories were updated to match the new look" : {
 
     },
     "You can perform quick actions like editing or deleting via swipe actions or by holding row" : {

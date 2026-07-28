@@ -6,9 +6,14 @@
 //
 
 import SwiftUI
+import Beige
 
 extension Color {
     static subscript(name: String) -> Color {
+        if let hueValue = Double(name) {
+            return Color(lightness: 0.7, chroma: 0.15, hue: hueValue)
+        }
+        
         switch name {
         case "red":
             return .red

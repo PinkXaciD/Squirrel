@@ -25,7 +25,7 @@ struct NewCurrencyRow: View {
     
     private var buttonLabel: some View {
         VStack(alignment: .leading) {
-            Text(name.capitalized)
+            Text(name)
                 .foregroundStyle(.primary)
             
             if rvm.rates[code] != nil, rvm.rates[defaultCurrency] != nil {
