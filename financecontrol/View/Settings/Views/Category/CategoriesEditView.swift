@@ -14,18 +14,16 @@ struct CategoriesEditView: View {
     @Environment(\.colorSchemeContrast)
     private var colorSchemeContrast
     
-    @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)], predicate: NSPredicate(format: "isShadowed == false"), animation: .default)
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.caseInsensitiveCompare))], predicate: NSPredicate(format: "isShadowed == false"), animation: .default)
     private var categories: FetchedResults<CategoryEntity>
-    @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)], predicate: NSPredicate(format: "isShadowed == true"), animation: .default)
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.caseInsensitiveCompare))], predicate: NSPredicate(format: "isShadowed == true"), animation: .default)
     private var shadowedCategories: FetchedResults<CategoryEntity>
     
-    private var usedColors: [OKLCH] {
+    var usedColors: [OKLCH] {
         var result = Set<OKLCH>()
         
         for category in categories {
-            if let categoryColor = category.color, let hueValue = Double(categoryColor) {
-                result.insert(.init(lightness: colorScheme.colorLightness, chroma: CategoryColorValues.chroma, hue: hueValue))
-            }
+            result.insert(category.resolveColor(colorScheme: colorScheme, increaseContrast: colorSchemeContrast).oklch())
         }
         
         let resultArray = result.sorted { val1, val2 in
@@ -80,7 +78,7 @@ struct CategoriesEditView: View {
                         shadowedCategoriesToolbarButton
                     }
 
-                    ToolbarItem {
+                    ToolbarItem(placement: .confirmationAction) {
                         addNewToolbarButton
                     }
                 }
@@ -148,6 +146,7 @@ struct CategoriesEditView: View {
             )
         } label: {
             Label("Add new category", systemImage: "plus")
+                .font(.body.weight(.regular))
         }
     }
     
@@ -157,6 +156,10 @@ struct CategoriesEditView: View {
         } label: {
             Label("Archived categories", systemImage: "archivebox")
         }
+    }
+    
+    private func sortCategories() {
+        
     }
 }
 

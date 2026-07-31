@@ -25,6 +25,10 @@ final class RatesViewModel: ViewModel {
     private var cache = [String:Rates]()
     private(set) var updateTime: Date = Date()
     
+#if DEBUG
+    let logger = Logger(subsystem: Vars.appIdentifier, category: "RatesViewModel info")
+#endif
+    
     init() {
         insertRates()
         
@@ -77,14 +81,12 @@ final class RatesViewModel: ViewModel {
                     self.status = .success
                 }
                 
-                #if DEBUG
-                let logger = Logger(subsystem: Vars.appIdentifier, category: "RatesViewModel info")
+#if DEBUG
                 logger.debug("Rates fetched from web")
-                #endif
+#endif
                 
             } catch CloudKitManager.CloudKitError.networkUnavailable {
                 await MainActor.run {
-                    CustomAlertManager.shared.addAlert(.noConnection("Unable to update exchange rates"))
                     self.waitForConnectionToEstablish()
                 }
             } catch {
@@ -125,9 +127,9 @@ final class RatesViewModel: ViewModel {
     private func updateOnNetworkConnection() {
         updateRates()
         
-        #if DEBUG
+#if DEBUG
         CustomAlertManager.shared.addAlert(.init(type: .info, title: "\(#function)", description: "Function called", systemImage: "info.circle"))
-        #endif
+#endif
         
         NotificationCenter.default.removeObserver(
             self,
@@ -135,11 +137,9 @@ final class RatesViewModel: ViewModel {
             object: NetworkMonitor.shared
         )
         
-        #if DEBUG
+#if DEBUG
         CustomAlertManager.shared.addAlert(.init(type: .info, title: "Observer removed", systemImage: "info.circle"))
-        #endif
-        
-        self.status = .success
+#endif
     }
     
     func checkForUpdate(force: Bool = false) {
@@ -188,9 +188,9 @@ extension RatesViewModel {
         
         // Check cache
         if let cached = cache[timestampString] {
-            #if DEBUG
+#if DEBUG
             logger.info("Cached rates used")
-            #endif
+#endif
             return (timestamp, cached)
         }
         

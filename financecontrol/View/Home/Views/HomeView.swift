@@ -60,15 +60,13 @@ struct HomeView: View {
                     }
 #endif
                 
-                if latestLaunchedBuild < currentBuild {
+                if latestLaunchedBuild < 91 { // TODO: Update to current version
                     whatsNewSection
                 }
                 
 #if DEBUG
-                if latestLaunchedBuild >= currentBuild {
-                    Button("Drop last version to 0") {
-                        latestLaunchedBuild = 0
-                    }
+                Button("Drop last version to 0") {
+                    latestLaunchedBuild = 0
                 }
 #endif
             }
@@ -116,17 +114,14 @@ struct HomeView: View {
                 HStack(spacing: 15) {
                     Image(systemName: "plus")
                         .imageScale(.large)
+                    
                     Text("Add Expense")
                 }
             }
             .padding()
         } footer: {
             if ratesAreFetching {
-                VStack(alignment: .leading) {
-                    if ratesAreFetching {
-                        ratesFetchStatus
-                    }
-                }
+                ratesFetchStatus
             }
         }
     }
@@ -147,6 +142,26 @@ struct HomeView: View {
                 }
             }
             .hueRotation(.degrees(animateWhatsNewButton ? 720 : 0))
+            .swipeActions(edge: .trailing) {
+                Button(role: .destructive) {
+                    withAnimation {
+                        latestLaunchedBuild = currentBuild
+                    }
+                } label: {
+                    Label("Hide", systemImage: "xmark")
+                        .labelStyle(.iconOnly)
+                        .tint(.secondary)
+                }
+            }
+            .contextMenu {
+                Button {
+                    withAnimation {
+                        latestLaunchedBuild = currentBuild
+                    }
+                } label: {
+                    Label("Hide", systemImage: "xmark")
+                }
+            }
             .onAppear {
                 withAnimation(.linear(duration: 5).delay(0.5)) {
                     animateWhatsNewButton = true
@@ -209,16 +224,11 @@ struct HomeView: View {
                 Text("Trying again...")
                 
             default:
-//                EmptyView()
                 ProgressView()
                     .tint(.secondary)
                 
                 Text("Updating rates...")
             }
-            
-//            Image(systemName: "chevron.forward")
-//                .scaleEffect(0.9, anchor: .leading)
-//                .padding(.leading, -3)
         }
         .padding(.vertical, 3)
         .foregroundStyle(Color.secondary)

@@ -11,7 +11,6 @@ import Combine
 
 #if DEBUG
 import OSLog
-let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
 #endif
 
 struct CustomPagingScrollView: View {
@@ -63,6 +62,10 @@ fileprivate struct InternalCustomPagingScrollView: View {
     @State private var reset: Bool = false
     let data: [ChartData]
     let spendingsCount: Int
+    
+    #if DEBUG
+    let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
+    #endif
     
     var scrollAnimation: Animation {
         if UIAccessibility.prefersCrossFadeTransitions {

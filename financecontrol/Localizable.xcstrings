@@ -153,6 +153,9 @@
     "%lld selected" : {
 
     },
+    "%lld Time Zones" : {
+
+    },
     "1 USD" : {
       "localizations" : {
         "en" : {
@@ -674,6 +677,9 @@
     "Grouping Separator" : {
 
     },
+    "Hide" : {
+
+    },
     "Hide App Content" : {
 
     },
@@ -1182,9 +1188,6 @@
 
     },
     "Trying again..." : {
-
-    },
-    "Unable to update exchange rates" : {
 
     },
     "Unfavorite" : {

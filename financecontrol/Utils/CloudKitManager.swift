@@ -54,21 +54,25 @@ final class CloudKitManager: ObservableObject {
         config.isLongLived = false
         self.ckOperationConfig = config
         
-        container.accountStatus { [weak self] status, error in
-            if let error {
-                ErrorType(error: error).publish()
-            }
-            
-            self?.accountStatus = status
-            
-            if NSUbiquitousKeyValueStore.default.bool(forKey: UDKey.iCloudSync.rawValue), status != .available {
-                NSUbiquitousKeyValueStore.default.set(false, forKey: UDKey.iCloudSync.rawValue)
+        Task { [weak self, container] in
+            do {
+                let status = try await container.accountStatus()
                 
-                DispatchQueue.main.async {
-                    CustomAlertManager.shared.addAlert(
-                        .init(type: .error, title: "iCloud sync turned off", description: "Sign in your iCloud account on device or allow Squirrel to use iCloud in settings.", systemImage: "exclamationmark.icloud.fill")
-                    )
+                await MainActor.run { [weak self] in
+                    self?.accountStatus = status
                 }
+                
+                if NSUbiquitousKeyValueStore.default.bool(forKey: UDKey.iCloudSync.rawValue), status != .available {
+                    NSUbiquitousKeyValueStore.default.set(false, forKey: UDKey.iCloudSync.rawValue)
+                    
+                    await MainActor.run {
+                        CustomAlertManager.shared.addAlert(
+                            .init(type: .error, title: "iCloud sync turned off", description: "Sign in your iCloud account on device or allow Squirrel to use iCloud in settings.", systemImage: "exclamationmark.icloud.fill")
+                        )
+                    }
+                }
+            } catch {
+                print(error)
             }
         }
         

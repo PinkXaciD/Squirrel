@@ -477,6 +477,7 @@ extension CoreDataModel {
     func updateRatesFromQueue(_ spendings: [SpendingEntity]) {
         context.perform {
             #if DEBUG
+            let logger = Logger(subsystem: #fileID, category: Vars.appIdentifier)
             logger.info("Rates Fetch Queue count: \(spendings.count)")
             #endif
             

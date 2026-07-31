@@ -115,10 +115,6 @@ final class AddSpendingViewModel: ViewModel {
     }
     
     private func filterSuggestions(userInput: String) -> [Suggestion] {
-        #if DEBUG
-        logger.debug("\(#function)")
-        #endif
-        
         if userInput.isEmpty {
             return unfilteredPlaces
         }
