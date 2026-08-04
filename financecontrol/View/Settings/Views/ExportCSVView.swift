@@ -167,7 +167,7 @@ struct ExportCSVView: View {
                     .environmentObject(privacyMonitor)
                 } label: {
                     var text: Text {
-                        let count = (fvm.filterCategories.isEmpty ? 0 : 1) + (fvm.currencies.isEmpty ? 0 : 1) + (fvm.withReturns == nil ? 0 : 1)
+                        let count = (fvm.filterCategories.isEmpty ? 0 : 1) + (fvm.currencies.isEmpty ? 0 : 1) + (fvm.withReturns == nil ? 0 : 1) + (fvm.timeZones.isEmpty ? 0 : 1)
                         
                         switch count {
                         case 0:
@@ -184,14 +184,16 @@ struct ExportCSVView: View {
                             if let withReturns = fvm.withReturns {
                                 return withReturns ? Text("With Returns") : Text("Without Returns")
                             }
+                            
+                            if !fvm.timeZones.isEmpty {
+                                return Text("\(fvm.timeZones.count) Time Zones")
+                            }
                         default:
                             return Text("\(count) Filters Applied")
                         }
                         
                         return Text("")
                     }
-                    
-//                    let count = (fvm.filterCategories.isEmpty ? 0 : 1) + (fvm.currencies.isEmpty ? 0 : 1) + (fvm.withReturns == nil ? 0 : 1)
                     
                     return HStack {
                         Text("More Filters")

@@ -17,7 +17,7 @@ struct FiltersCategoriesView: View {
     var applyFilters: Bool
     
 //    let listData: [CategoryEntity]
-    @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true)])
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(key: "name", ascending: true, selector: #selector(NSString.caseInsensitiveCompare))])
     private var fetchedCategories: FetchedResults<CategoryEntity>
     
     var body: some View {

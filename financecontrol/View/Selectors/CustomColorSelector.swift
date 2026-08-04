@@ -58,6 +58,7 @@ struct CustomColorSelector: View {
             LazyHStack(alignment: .top, pinnedViews: .sectionHeaders) {
                 Section {
                     randomButton
+                        .frame(width: pickerSize)
                         .padding(.top, 15)
                 }
                 
@@ -96,12 +97,12 @@ struct CustomColorSelector: View {
                         }
                         .frame(height: pickerSize + 10)
                         .padding(.top, 10)
+                        .padding(.leading, -30)
                     } header: {
                         Text("Used")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                             .offset(x: 9, y: -8)
-                            .padding(.trailing, -100)
                     }
                 } else {
                     Text("Already used colors will appear here")

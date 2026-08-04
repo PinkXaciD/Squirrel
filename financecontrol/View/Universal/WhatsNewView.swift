@@ -258,7 +258,6 @@ struct WhatsNewView: View {
             Spacer()
         }
         .padding()
-//        .minimumScaleFactor(0.8)
     }
     
     struct CustomButtonStyle: ButtonStyle {
@@ -268,50 +267,6 @@ struct WhatsNewView: View {
         }
     }
 }
-
-//fileprivate struct NewIconRow: View {
-//    @ScaledMetric
-//    private var imageSize: CGFloat = 50
-//    @State
-//    private var imageResource: ImageResource = .appIcon
-//    
-//    let timer = Timer.publish(every: 2, on: .main, in: .common).autoconnect()
-//    
-//    var body: some View {
-//        HStack(spacing: 15) {
-//            Image(imageResource)
-//                .resizable()
-//                .aspectRatio(contentMode: .fit)
-//                .frame(width: imageSize, height: imageSize)
-//                .foregroundStyle(.tint)
-//                .shadow(color: .black.opacity(0.2), radius: 2.5, y: 1)
-//                .animation(.default, value: imageResource)
-//            
-//            VStack(alignment: .leading) {
-//                Text("Refreshed Icons")
-//                    .font(.title3.bold())
-//                    .foregroundColor(.primary)
-//                    .multilineTextAlignment(.leading)
-//                
-//                Text("Updated icons with Liquid Glass")
-//                    .foregroundColor(.secondary)
-//            }
-//            
-//            Spacer()
-//        }
-//        .padding()
-//        .onReceive(timer) { _ in
-//            switch imageResource {
-//            case .appIcon:
-//                imageResource = .appIconFirstFlight
-//            case .appIconFirstFlight:
-//                imageResource = .appIconNA
-//            default:
-//                imageResource = .appIcon
-//            }
-//        }
-//    }
-//}
 
 #Preview {
     NavigationView {

@@ -6,6 +6,9 @@
 //
 
 import CoreData
+#if DEBUG
+import OSLog
+#endif
 
 /// Main class for interacting with CoreData within the app
 ///
@@ -17,6 +20,10 @@ final class CoreDataModel: ObservableObject {
     var localHistoryToken: NSPersistentHistoryToken?
     
     let ratesViewModel: RatesViewModel
+    
+#if DEBUG
+    let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
+#endif
     
     init(isCloudSyncEnabled: Bool = true, ratesViewModel: RatesViewModel = .init()) {
         self.container = manager.container

@@ -34,7 +34,7 @@ final class BarChartViewModel: ViewModel {
             
             let weekAgo = Calendar.autoupdatingCurrent.startOfDay(for: Date()).addingTimeInterval(.day * -6)
             let defaultCurrency = UserDefaults.standard.string(forKey: UDKey.defaultCurrency.rawValue) ?? "USD"
-            let defaultRate = UserDefaults.standard.getRates()?[defaultCurrency] ?? 1
+            let defaultRate = (UserDefaults.standard.getRates() ?? Rates.fallback.rates)[defaultCurrency] ?? 1
             
             let request = SpendingEntity.fetchRequest()
             request.sortDescriptors = [NSSortDescriptor(keyPath: \SpendingEntity.date, ascending: false)]
