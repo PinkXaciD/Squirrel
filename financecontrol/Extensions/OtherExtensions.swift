@@ -94,6 +94,10 @@ extension NumberFormatter {
 
 extension NSNotification.Name {
     static let UpdatePieChart = NSNotification.Name("UpdatePieChart")
+    
+    static let PieChartScrollNext = NSNotification.Name("PieChartScrollNext")
+    
+    static let PieChartScrollPrevious = NSNotification.Name("PieChartScrollPrevious")
 }
 
 extension Set<AnyCancellable> {

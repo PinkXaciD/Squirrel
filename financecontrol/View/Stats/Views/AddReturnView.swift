@@ -1,23 +1,27 @@
 //
 //  AddReturnView.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/11/30.
+//  Created by PinkXaciD on 2023/11/30.
 //
 
 import SwiftUI
 
 struct AddReturnView: View {
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss)
+    private var dismiss
     
     var spending: SpendingEntity
-    @StateObject private var vm: AddReturnViewModel
+    
+    @StateObject
+    private var vm: AddReturnViewModel
     
     enum Field {
         case amount, name
     }
     
-    @FocusState private var focusedField: Field?
+    @FocusState
+    private var focusedField: Field?
     
     var body: some View {
         NavigationView {
@@ -29,13 +33,11 @@ struct AddReturnView: View {
                 addFullButton
             }
             .toolbar {
-//                keyboardToolbar
-                
                 leadingToolbar
                 
                 trailingToolbar
             }
-            .addKeyboardToolbar(showToolbar: focusedField != nil) {
+            .addKeyboardToolbar(showToolbar: focusedField != nil && UIDevice.current.isIPhone) {
                 clearFocus()
             }
             .onAppear {
@@ -119,12 +121,6 @@ struct AddReturnView: View {
             Button("Cancel") {
                 dismiss()
             }
-        }
-    }
-    
-    private var keyboardToolbar: ToolbarItemGroup<some View> {
-        hideKeyboardToolbar {
-            clearFocus()
         }
     }
 }

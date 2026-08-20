@@ -2,7 +2,7 @@
 //  CustomPagingScrollView.swift
 //  Squirrel
 //
-//  Created by PinkXaciD on R 6/05/08.
+//  Created by PinkXaciD on 2024/05/08.
 //
 
 import SwiftUI
@@ -19,8 +19,16 @@ struct CustomPagingScrollView: View {
     let invert: Bool
     let viewScale: CGFloat
     let spendingsCount: Int
+    let inSidebar: Bool
     
-    init(selection: Binding<Int>, data: [ChartData], invert: Bool = false, viewScale: CGFloat = 0.5, spendingsCount: Int) {
+    init(
+        selection: Binding<Int>,
+        data: [ChartData],
+        invert: Bool = false,
+        viewScale: CGFloat = 0.5,
+        spendingsCount: Int,
+        inSidebar: Bool
+    ) {
         self._selection = selection
         self.data = data
         self.invert = invert
@@ -34,7 +42,7 @@ struct CustomPagingScrollView: View {
         }
         
         self.spendingsCount = spendingsCount
-//        print("ParentView \(selection.wrappedValue) init") // TODO: Remove
+        self.inSidebar = inSidebar
     }
     
     var body: some View {
@@ -45,7 +53,8 @@ struct CustomPagingScrollView: View {
                 geometry: geometry,
                 invert: invert,
                 viewScale: viewScale,
-                spendingsCount: spendingsCount
+                spendingsCount: spendingsCount,
+                inSidebar: inSidebar
             )
         }
         .invertLayoutDirection(invert)
@@ -62,6 +71,7 @@ fileprivate struct InternalCustomPagingScrollView: View {
     @State private var reset: Bool = false
     let data: [ChartData]
     let spendingsCount: Int
+    let inSidebar: Bool
     
     #if DEBUG
     let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)
@@ -75,17 +85,20 @@ fileprivate struct InternalCustomPagingScrollView: View {
         return .smooth(duration: 0.3)
     }
     
-    init(selection: Binding<Int>, data: [ChartData], geometry: GeometryProxy, invert: Bool, viewScale: CGFloat, spendingsCount: Int) {
+    init(
+        selection: Binding<Int>,
+        data: [ChartData],
+        geometry: GeometryProxy,
+        invert: Bool,
+        viewScale: CGFloat,
+        spendingsCount: Int,
+        inSidebar: Bool
+    ) {
         self._selection = selection
         self.data = data
         self._scrollManager = StateObject(wrappedValue: PagingScrollViewManager(geometry: geometry, viewScale: viewScale, invertedViewScale: 1 - viewScale, invert: invert))
         self.spendingsCount = spendingsCount
-        
-//        NotificationCenter.default.addObserver(forName: NSNotification.Name("TestingScroll"), object: nil, queue: .main) { [self] notification in
-//            self.scrollToPrevious()
-//            print("Test")
-//        }
-//        print("ChildView \(selection.wrappedValue) init") // TODO: Remove
+        self.inSidebar = inSidebar
     }
     
     var body: some View {
@@ -93,9 +106,14 @@ fileprivate struct InternalCustomPagingScrollView: View {
             HStack(spacing: scrollManager.geometry.size.width * scrollManager.invertedViewScale) {
                 ForEach(data, id: \.id) { element in
                     if (selection > -element.id - 2 && selection < -element.id + 2) {
-                        PieChartCompleteView(data: element, size: self.scrollManager.geometry.size.width * self.scrollManager.viewScale, spendingsCount: spendingsCount)
-                            .frame(width: scrollManager.geometry.size.width * scrollManager.viewScale, height: scrollManager.geometry.size.height)
-                            .invertLayoutDirection(scrollManager.invert)
+                        PieChartCompleteView(
+                            data: element,
+                            size: self.scrollManager.geometry.size.width * self.scrollManager.viewScale,
+                            spendingsCount: spendingsCount,
+                            inSidebar: inSidebar
+                        )
+                        .frame(width: scrollManager.geometry.size.width * scrollManager.viewScale, height: scrollManager.geometry.size.height)
+                        .invertLayoutDirection(scrollManager.invert)
                     } else {
                         Rectangle()
                             .fill(Color.clear)
@@ -105,10 +123,18 @@ fileprivate struct InternalCustomPagingScrollView: View {
                 }
             }
             .padding(.horizontal, scrollManager.geometry.size.width * scrollManager.invertedViewScale * 0.5)
-//            .background(Color.red)
             .offset(x: scrollManager.hOffset)
             .onAppear {
 //                print("Appeared") // TODO: Remove
+                let viewOffset = self.countViewOffset(selection + 1)
+                if abs(viewOffset) > (self.scrollManager.geometry.size.width * CGFloat(data.count - 1)) {
+                    resetOffsets()
+                } else {
+                    self.scrollManager.hOffset = viewOffset
+                    self.scrollManager.oldHOffset = self.scrollManager.hOffset
+                }
+            }
+            .onChange(of: scrollManager.geometry.size) { newValue in
                 let viewOffset = self.countViewOffset(selection + 1)
                 if abs(viewOffset) > (self.scrollManager.geometry.size.width * CGFloat(data.count - 1)) {
                     resetOffsets()
@@ -159,41 +185,57 @@ fileprivate struct InternalCustomPagingScrollView: View {
             )
         }
         .overlay(alignment: .center) {
-            HStack {
-                Button {
-                    scrollToPrevious()
-                } label: {
-                    ZStack {
-                        getGradient(isLeading: layoutDirection == .leftToRight)
-                            .frame(width: scrollManager.geometry.size.width * scrollManager.invertedViewScale * 0.5)
-                        
-                        Image(systemName: "chevron.backward")
-                            .foregroundColor(.accentColor)
+            if !inSidebar {
+                HStack {
+                    Button {
+                        scrollToPrevious()
+                    } label: {
+                        ZStack {
+                            getGradient(isLeading: layoutDirection == .leftToRight)
+                                .frame(width: scrollManager.geometry.size.width * scrollManager.invertedViewScale * 0.5)
+                            
+                            Image(systemName: "chevron.backward")
+                                .foregroundColor(.accentColor)
+                        }
                     }
-                }
-                .disabled(selection < 1)
-                .buttonStyle(.plain)
-                
-                Rectangle()
-                    .fill(Color.clear)
-                    .frame(width: scrollManager.geometry.size.width * scrollManager.viewScale)
-                
-                Button {
-                    scrollToNext()
-                } label: {
-                    ZStack {
-                        getGradient(isLeading: layoutDirection != .leftToRight)
-                            .frame(width: scrollManager.geometry.size.width * scrollManager.invertedViewScale * 0.5)
-                        
-                        Image(systemName: "chevron.forward")
-                            .foregroundColor(.accentColor)
+                    .disabled(selection < 1)
+                    .buttonStyle(.plain)
+                    
+                    Rectangle()
+                        .fill(Color.clear)
+                        .frame(width: scrollManager.geometry.size.width * scrollManager.viewScale)
+                    
+                    Button {
+                        scrollToNext()
+                    } label: {
+                        ZStack {
+                            getGradient(isLeading: layoutDirection != .leftToRight)
+                                .frame(width: scrollManager.geometry.size.width * scrollManager.invertedViewScale * 0.5)
+                            
+                            Image(systemName: "chevron.forward")
+                                .foregroundColor(.accentColor)
+                        }
                     }
+                    .disabled(selection >= data.count - 1)
+                    .buttonStyle(.plain)
                 }
-                .disabled(selection >= data.count - 1)
-                .buttonStyle(.plain)
+                .font(.largeTitle.bold())
+                .offset(x: (-scrollManager.geometry.size.width * CGFloat(data.count) * 0.5 + scrollManager.geometry.size.width * 0.5))
             }
-            .font(.largeTitle.bold())
-            .offset(x: (-scrollManager.geometry.size.width * CGFloat(data.count) * 0.5 + scrollManager.geometry.size.width * 0.5))
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .PieChartScrollPrevious)) { _ in
+            guard selection < data.count - 1 else {
+                return
+            }
+            
+            scrollToNext()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .PieChartScrollNext)) { _ in
+            guard selection > 0 else {
+                return
+            }
+            
+            scrollToPrevious()
         }
     }
 }

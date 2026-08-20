@@ -1,8 +1,8 @@
 //
 //  StatsView.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/07/06.
+//  Created by PinkXaciD on 2023/07/06.
 //
 
 import SwiftUI
@@ -18,6 +18,8 @@ struct StatsView: View {
     private var viewContext
     @Environment(\.dynamicTypeSize)
     private var dynamicTypeSize
+    @Environment(\.horizontalSizeClass)
+    private var horizontalSizeClass
     
     @AppStorage(UDKey.color.rawValue)
     private var tint: String = "Orange"
@@ -46,12 +48,19 @@ struct StatsView: View {
     @Binding
     var scrollToTop: Int?
     
-    private var size: CGFloat {
+    private var windowSize: CGSize {
         let currentScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
         let windowBounds = currentScene?.windows.first(where: { $0.isKeyWindow })?.bounds
-        let width = windowBounds?.width ?? UIScreen.main.bounds.width
-        let height = windowBounds?.height ?? UIScreen.main.bounds.height
-        return min(height / 1.7, width / 1.7)
+        return windowBounds?.size ?? .init(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+    }
+    
+    private var size: CGFloat {
+        if horizontalSizeClass == .compact {
+//            return min(min(windowSize.width, windowSize.height) / 1.7, 225)
+            return min(min(windowSize.width, windowSize.height) / 1.7, 250)
+        } else {
+            return min(windowSize.height * 0.3, 250)
+        }
     }
     
     private var dateText: Text {
@@ -69,31 +78,31 @@ struct StatsView: View {
     #endif
     
     var body: some View {
-        if UIDevice.current.isIPad {
-            IPadStatsView(size: size)
-        } else {
-            NavigationView {
-                if #available(iOS 26.0, *) {
-                    iPhoneStatsView
+        switch horizontalSizeClass {
+        case .compact:
+            if #available(iOS 26.0, *) {
+                NavigationView {
+                    compactStatsView
                         .toolbar {
-                            ToolbarItem(placement: .topBarLeading) {
-                                if fvm.applyFilters {
+                            if fvm.applyFilters {
+                                ToolbarItem(placement: .topBarLeading) {
                                     clearToolbarButton
                                 }
-                            }
-                            
-                            ToolbarSpacer(.fixed, placement: .topBarLeading)
-                            
-                            ToolbarItem(placement: .topBarLeading) {
-                                if fvm.applyFilters, !listVM.data.isEmpty {
+                                
+                                ToolbarSpacer(.fixed, placement: .topBarLeading)
+                                
+                                ToolbarItem(placement: .topBarLeading) {
                                     exportToolbarButton
                                 }
                             }
-                            
+                        }
+                        .toolbar {
                             newTrailingToolbar
                         }
-                } else {
-                    iPhoneStatsView
+                }
+            } else {
+                NavigationView {
+                    compactStatsView
                         .toolbar {
                             leadingToolbar
                             
@@ -101,10 +110,12 @@ struct StatsView: View {
                         }
                 }
             }
+        default:
+            expandedStatsView
         }
     }
     
-    private var iPhoneStatsView: some View {
+    private var compactStatsView: some View {
         ZStack {
             Color(uiColor: .systemGroupedBackground)
                 .ignoresSafeArea(.all)
@@ -152,11 +163,123 @@ struct StatsView: View {
         }
 #endif
         .sheet(isPresented: $presentExportSheet) {
-            NavigationView {
+            WrappedNavigationStack {
                 ExportCSVView(cdm: cdm, predicate: listVM.getPredicate(), showTimePicker: false)
             }
         }
-        .navigationViewStyle(.stack)
+        .navigationTitle("Stats")
+    }
+    
+    private var expandedStatsView: some View {
+        WrappedNavigationSplitView(style: .balanced) {
+            ZStack {
+                if #unavailable(iOS 26.0) {
+                    Color(uiColor: .systemGroupedBackground)
+                        .ignoresSafeArea()
+                }
+                
+                ScrollViewReader { scroll in
+                    ScrollView(.vertical, showsIndicators: false) {
+                        VStack(alignment: .leading) {
+                            VStack {
+                                PieChartView(
+                                    size: size,
+                                    showMinimizeButton: false,
+                                    spendingsCount: listVM.spendingsCount,
+                                    inSidebar: true
+                                )
+                            }
+                            .id(0)
+                            
+                            if fvm.applyFilters {
+                                getSearchNotificationRow("Searching Filtered Results", systemImage: "line.3.horizontal.decrease")
+                            } else if !searchModel.input.isEmpty, pcvm.selection != 0 {
+                                getSearchNotificationRow("Searching For \(dateText)", systemImage: "calendar")
+                            }
+                        }
+                        .padding()
+                    }
+                    .onChange(of: scrollToTop) { value in
+                        guard value == 1 else {
+                            return
+                        }
+                        
+                        withAnimation {
+                            scroll.scrollTo(0, anchor: .top)
+                        }
+                        
+                        self.scrollToTop = nil
+                    }
+                }
+            }
+            .navigationTitle("Stats")
+        } detail: {
+            Group {
+                if #available(iOS 26.0, *) {
+                    list
+                        .toolbar {
+                            if fvm.applyFilters {
+                                ToolbarItem(placement: .topBarLeading) {
+                                    clearToolbarButton
+                                }
+                                
+                                ToolbarSpacer(.fixed, placement: .topBarLeading)
+                                
+                                ToolbarItem(placement: .topBarLeading) {
+                                    exportToolbarButton
+                                }
+                            }
+                        }
+                        .toolbar {
+                            newTrailingToolbar
+                        }
+                } else {
+                    list
+                        .toolbar {
+                            leadingToolbar
+                            
+                            trailingToolbar
+                        }
+                }
+            }
+        }
+        .sheet(isPresented: $showFilters) {
+            filters
+        }
+        .sheet(isPresented: $presentExportSheet) {
+            WrappedNavigationStack {
+                ExportCSVView(cdm: cdm, predicate: listVM.getPredicate(), showTimePicker: false)
+            }
+        }
+    }
+    
+    private var list: some View {
+        ZStack {
+            Color(uiColor: .systemGroupedBackground)
+                .ignoresSafeArea(.all)
+            
+            ScrollViewReader { scroll in
+                ScrollView (.vertical) {
+                    LazyVStack {
+                        StatsListView()
+                            .id(0)
+                    }
+                    .padding(.horizontal)
+                    .onChange(of: scrollToTop) { value in
+                        guard value == 1 else {
+                            return
+                        }
+                        
+                        withAnimation {
+                            scroll.scrollTo(0, anchor: .top)
+                        }
+                        
+                        self.scrollToTop = nil
+                    }
+                }
+                .searchable(text: $searchModel.input, placement: .automatic, prompt: "Search by place or comment")
+            }
+        }
     }
     
     @available(iOS 26.0, *)
@@ -321,173 +444,6 @@ extension StatsView {
                 formatter.setLocalizedDateFormatFromTemplate("Md")
             } else {
                 formatter.setLocalizedDateFormatFromTemplate("yM")
-            }
-            
-            return "\(formatter.string(from: fvm.startFilterDate)) - \(formatter.string(from: fvm.endFilterDate))"
-        }
-    }
-    
-    private func clearFilters() {
-        withAnimation {
-            pcvm.selectedCategory = nil
-            fvm.clearFilters()
-        }
-        
-        pcvm.updateData()
-        pcvm.isScrollDisabled = false
-    }
-}
-
-fileprivate struct IPadStatsView: View {
-    @Environment(\.horizontalSizeClass) 
-    private var horizontalSizeClass
-    @EnvironmentObject
-    private var vm: StatsViewModel
-    @EnvironmentObject
-    private var statsSearchViewModel: StatsSearchViewModel
-    @EnvironmentObject
-    private var pcvm: PieChartViewModel
-    @EnvironmentObject
-    private var cdm: CoreDataModel
-    @EnvironmentObject
-    private var fvm: FiltersViewModel
-    @EnvironmentObject
-    private var privacyMonitor: PrivacyMonitor
-    
-    @State
-    private var showFilters: Bool = false
-    
-    let size: CGFloat
-    
-    var body: some View {
-        NavigationView {
-            Group {
-                if horizontalSizeClass == .compact {
-                    List {
-                        PieChartView(size: size, showMinimizeButton: horizontalSizeClass == .compact, spendingsCount: 0)
-                        
-                        listView
-                    }
-                } else {
-                    HStack(spacing: 0) {
-                        List {
-                            PieChartView(size: UIScreen.main.bounds.width / 4.5, showMinimizeButton: horizontalSizeClass == .compact, spendingsCount: 0)
-                        }
-                        .frame(width: UIScreen.main.bounds.width / 3)
-                        
-                        List {
-                            listView
-                        }
-                    }
-                }
-            }
-            .navigationTitle("Stats")
-            .navigationBarTitleDisplayMode(.inline)
-            .searchable(text: $statsSearchViewModel.input, placement: .automatic, prompt: "Search by place or comment")
-            .toolbar {
-                leadingToolbar
-                
-                trailingToolbar
-            }
-            .sheet(isPresented: $showFilters) {
-                filters
-            }
-        }
-        .listStyle(.insetGrouped)
-        .navigationViewStyle(.stack)
-    }
-    
-    private var listView: some View {
-        StatsListView(
-//            spendings: SectionedFetchRequest(
-//                sectionIdentifier: \SpendingEntity.startOfDay,
-//                sortDescriptors: [
-//                    SortDescriptor(\SpendingEntity.date, order: .reverse)
-//                ],
-////                predicate: getListPredicate(),
-//                predicate: NSPredicate(value: true),
-//                animation: .default
-//            )
-        )
-    }
-    
-    private var filters: some View {
-        FiltersView(
-            startDate: max(cdm.firstSpendingDate ?? Date().getFirstDayOfMonth(), Date().getFirstDayOfMonth()),
-            fvm: fvm,
-            spendingsCount: cdm.spendingsCount,
-            firstSpendingDate: cdm.firstSpendingDate ?? .firstAvailableDate,
-            usedCurrencies: cdm.usedCurrencies,
-            usedTimeZones: cdm.usedTimeZones
-        )
-        .environmentObject(fvm)
-        .environmentObject(pcvm)
-        .environmentObject(privacyMonitor)
-    }
-    
-    private var leadingToolbar: ToolbarItem<Void, some View> {
-        ToolbarItem(placement: .topBarLeading) {
-            if fvm.applyFilters {
-                Button {
-                    clearFilters()
-                } label: {
-                    Label("Clear filters", systemImage: "xmark")
-                }
-                .disabled(!fvm.applyFilters)
-                .buttonStyle(BorderedButtonStyle())
-                .hoverEffect()
-            }
-        }
-    }
-    
-    private var trailingToolbar: ToolbarItemGroup<some View> {
-        ToolbarItemGroup(placement: horizontalSizeClass == .compact ? .topBarTrailing : .topBarLeading) {
-            if fvm.applyFilters {
-                Button {
-                    showFilters.toggle()
-                } label: {
-                    HStack(spacing: 5) {
-                        Text(formatDateForFilterButton())
-                    }
-                    .font(.footnote)
-                }
-                .buttonStyle(BorderedButtonStyle())
-                .hoverEffect()
-            } else {
-                Button {
-                    showFilters.toggle()
-                } label: {
-                    Label("Filter", systemImage: "line.3.horizontal.decrease")
-                }
-                .buttonStyle(BorderedButtonStyle())
-                .hoverEffect()
-            }
-        }
-    }
-    
-    private func formatDateForFilterButton() -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale.autoupdatingCurrent
-        
-        switch fvm.dateType {
-        case .single:
-            formatter.dateStyle = .short
-            formatter.timeStyle = .none
-            return formatter.string(from: fvm.endFilterDate)
-        case .month:
-            return (DateComponents(calendar: .current, month: fvm.month).date ?? Date()).formatted(.dateTime.month(.wide))
-        case .year:
-            return (DateComponents(calendar: .init(identifier: .gregorian), year: fvm.year).date ?? Date()).formatted(.dateTime.year())
-        default:
-            if horizontalSizeClass == .compact {
-                if Calendar.current.isDate(fvm.startFilterDate, equalTo: fvm.endFilterDate, toGranularity: .year) {
-                    formatter.setLocalizedDateFormatFromTemplate("Md")
-                } else {
-                    formatter.setLocalizedDateFormatFromTemplate("yM")
-                }
-            } else {
-                formatter.timeStyle = .none
-                formatter.dateStyle = .medium
             }
             
             return "\(formatter.string(from: fvm.startFilterDate)) - \(formatter.string(from: fvm.endFilterDate))"

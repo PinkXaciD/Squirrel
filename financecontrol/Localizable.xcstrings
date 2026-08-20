@@ -499,9 +499,6 @@
     "Custom" : {
 
     },
-    "Custom Colors for Categories" : {
-
-    },
     "Dark Mode" : {
 
     },
@@ -745,6 +742,9 @@
       }
     },
     "Indigo" : {
+
+    },
+    "iPad Support" : {
 
     },
     "It seems some system files are corrupted" : {
@@ -995,9 +995,6 @@
     "Searching For %@" : {
 
     },
-    "Select a tab from sidebar" : {
-
-    },
     "Select All" : {
 
     },
@@ -1080,6 +1077,9 @@
     "Squirrel does not send any data or identifiers from your device." : {
 
     },
+    "Squirrel is now available on iPad and Mac (as an iPad app)." : {
+
+    },
     "Sqwoorl" : {
 
     },
@@ -1131,9 +1131,6 @@
       }
     },
     "Timezone" : {
-
-    },
-    "Timezone Filters" : {
 
     },
     "Timezone format" : {
@@ -1281,12 +1278,6 @@
 
     },
     "You can choose a currency to be selected by default, different from display currency" : {
-
-    },
-    "You can now filter expenses by the timezone they were made in." : {
-
-    },
-    "You can now select custom colors for categories. Your existing categories were updated to match the new look" : {
 
     },
     "You can perform quick actions like editing or deleting via swipe actions or by holding row" : {

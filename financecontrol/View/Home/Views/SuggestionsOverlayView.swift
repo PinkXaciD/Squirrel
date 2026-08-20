@@ -22,7 +22,7 @@ struct SuggestionsOverlayView: View {
     private var buttonWidth: CGFloat = 100
 
     var padding: CGFloat {
-        geometry.size.height - manager.placeFieldPosition + geometry.safeAreaInsets.top + (geometry.safeAreaInsets.bottom * 0.75)
+        geometry.size.height - manager.placeFieldPosition + geometry.safeAreaInsets.top + (geometry.safeAreaInsets.bottom * 0.75) + (UIDevice.current.isIPhone ? 0 : 25)
     }
 
     private var suggestionsAnimation: Animation {
@@ -111,6 +111,8 @@ struct SuggestionsOverlayView: View {
                 }
                 .id(suggestion.id)
                 .transition(.blurWithOpacity.animation(suggestionsAnimation))
+                .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: Self.listCornerRadius))
+                .hoverEffect()
             }
         }
     }

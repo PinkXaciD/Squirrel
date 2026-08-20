@@ -101,6 +101,7 @@ struct PieChartLegendRowView: View {
         .buttonStyle(.plain)
         .glassEffect(glass, in: RoundedRectangle(cornerRadius: 19))
         .tint(category.resolveColor(colorScheme: colorScheme, increaseContrast: colorSchemeContrast))
+        .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 19))
         .hoverEffect()
     }
     

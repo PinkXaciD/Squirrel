@@ -1,8 +1,8 @@
 //
 //  ColorAndIconView.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/07/19.
+//  Created by PinkXaciD on 2023/07/19.
 //
 
 import SwiftUI
@@ -30,9 +30,11 @@ struct ColorAndIconView: View {
         List {
             colorSection
             
-            iconSection
+            if UIApplication.shared.supportsAlternateIcons {
+                iconSection
+            }
         }
-        .navigationTitle("Color and Icon")
+        .navigationTitle(UIApplication.shared.supportsAlternateIcons ? "Color and Icon" : "Accent Color")
         .navigationBarTitleDisplayMode(.inline)
     }
     
@@ -54,15 +56,6 @@ struct ColorAndIconView: View {
                     }
                 }
             }
-//            Picker("Color", selection: $defaultColor) {
-//                ForEach(colors, id: \.1) { name, color in
-//                    Text(name)
-//                        .tag("\(color.description.capitalized)")
-//                        .foregroundColor(color)
-//                }
-//            }
-//            .pickerStyle(.inline)
-//            .labelsHidden()
         } header: {
             Text("Accent Color")
         }

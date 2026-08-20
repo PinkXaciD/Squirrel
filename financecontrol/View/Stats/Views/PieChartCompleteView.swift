@@ -22,6 +22,7 @@ struct PieChartCompleteView: View {
     let data: ChartData
     let size: CGFloat
     let spendingsCount: Int
+    let inSidebar: Bool
     
     @State
     private var id: UUID = .init()
@@ -66,7 +67,7 @@ struct PieChartCompleteView: View {
     }
     
     private func categories() -> [ChartCategory] {
-        if vm.showOther {
+        if vm.showOther || inSidebar {
             return data.categories + data.otherCategories
         }
         

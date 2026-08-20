@@ -25,7 +25,6 @@ struct OnboardingWelcomeView: View {
                                 .foregroundColor(.primary)
                                 .opacity(0.3)
                         }
-                        .hoverEffect(.lift)
                         .padding(.vertical)
                         .transition(.moveFromBottom)
                         .rotationEffect(.degrees(rotateIcon ? 720 : 0), anchor: .center)

@@ -38,15 +38,17 @@ struct ExportCSVView: View {
     private var hideContent: Bool = false
     
     let showTimePicker: Bool
+    let showDismissButton: Bool
     
     let gregorianCalendar = Calendar(identifier: .gregorian)
     let firstSpendingDate: Date
     
-    init(cdm: CoreDataModel, predicate: NSPredicate? = nil, showTimePicker: Bool = true) {
+    init(cdm: CoreDataModel, predicate: NSPredicate? = nil, showTimePicker: Bool = true, showDismissButton: Bool = true) {
         self._cdm = .init(wrappedValue: cdm)
         self._vm = .init(wrappedValue: ExportCSVViewModel(cdm: cdm, predicate: predicate))
         self._fvm = .init(wrappedValue: .init(startFilterDate: cdm.firstSpendingDate ?? .firstAvailableDate, dateType: .all))
         self.showTimePicker = showTimePicker
+        self.showDismissButton = showDismissButton
         self.firstSpendingDate = cdm.firstSpendingDate ?? .firstAvailableDate
     }
     
@@ -85,18 +87,19 @@ struct ExportCSVView: View {
             }
         }
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button("Cancel") {
-                    dismiss()
+            ToolbarItem(placement: .cancellationAction) {
+                if showDismissButton {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .disabled(startedExporting)
                 }
-                .disabled(startedExporting)
             }
             
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .confirmationAction) {
                 Button("Export") {
                     exportButtonAction()
                 }
-                .font(.body.bold())
                 .disabled(vm.selectedFieldsCount == 0 || startedExporting)
             }
         }

@@ -24,21 +24,9 @@ extension View {
             .modifier(NumbersViewModifier(text: text, currency: Currency(code: currencyCode)))
     }
     
-    func smallSheet(_ fraction: CGFloat? = nil) -> some View {
-        if #available(iOS 26.0, *) {
-            return self
-                .presentationDetents([.fraction(fraction ?? 0.5), .large])
-                .presentationDragIndicator(.hidden)
-                .addColorPresentationBackground()
-        }
-        
-        if #available(iOS 16.0, *) {
-            return self
-                .presentationDetents([.fraction(fraction ?? 0.5), .large])
-                .presentationDragIndicator(.hidden)
-        }
-        
-        return self
+    func smallSheet(_ fraction: CGFloat = 0.5) -> some View {
+        self
+            .modifier(SmallSheetViewModifier(fraction: fraction))
     }
     
     func addColorPresentationBackground(_ color: Color = Color(uiColor: .systemGroupedBackground)) -> some View {
@@ -186,6 +174,30 @@ fileprivate struct AmountStyleViewModifier: ViewModifier {
             .padding(.vertical, 2)
             .keyboardType(.decimalPad)
             .font(.system(size: fontSize, weight: .semibold, design: .rounded))
+    }
+}
+
+fileprivate struct SmallSheetViewModifier: ViewModifier {
+    @Environment(\.horizontalSizeClass)
+    private var horizontalSizeClass
+    
+    let fraction: CGFloat
+    
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            return content
+                .presentationDetents(horizontalSizeClass == .regular ? [.large] : [.fraction(fraction), .large])
+                .presentationDragIndicator(.hidden)
+                .addColorPresentationBackground()
+        }
+        
+        if #available(iOS 16.0, *) {
+            return content
+                .presentationDetents(horizontalSizeClass == .regular ? [.large] : [.fraction(fraction), .large])
+                .presentationDragIndicator(.hidden)
+        }
+        
+        return content
     }
 }
 

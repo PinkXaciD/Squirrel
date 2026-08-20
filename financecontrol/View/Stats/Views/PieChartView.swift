@@ -1,8 +1,8 @@
 //
 //  PieChartView.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/08/26.
+//  Created by PinkXaciD on 2023/08/26.
 //
 
 import SwiftUI
@@ -23,6 +23,7 @@ struct PieChartView: View {
     let size: CGFloat
     let showMinimizeButton: Bool
     let spendingsCount: Int
+    let inSidebar: Bool
     
     @AppStorage(UDKey.defaultCurrency.rawValue)
     var defaultCurrency: String = Locale.current.currencyCode ?? "USD"
@@ -41,6 +42,25 @@ struct PieChartView: View {
         return 8
     }
     
+    private var useAlternativeBackground: Bool {
+        if #available(iOS 26.0, *) {
+            return inSidebar
+        }
+        
+        return false
+    }
+    
+    private var selectedDate: Date {
+        Calendar.current.date(byAdding: .month, value: -pcvm.selection, to: Date()) ?? Date()
+    }
+    
+    init(size: CGFloat, showMinimizeButton: Bool, spendingsCount: Int, inSidebar: Bool = false) {
+        self.size = size
+        self.showMinimizeButton = showMinimizeButton
+        self.spendingsCount = spendingsCount
+        self.inSidebar = inSidebar
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             chart
@@ -49,12 +69,21 @@ struct PieChartView: View {
                 .clipped()
                 .padding(.bottom, padding)
             
+            if inSidebar {
+                buttons
+                    .padding(.bottom)
+            }
+            
             legend
         }
         .padding(.top, padding)
         .background {
-            RoundedRectangle(cornerRadius: Self.listCornerRadius)
-                .foregroundStyle(Color(uiColor: .secondarySystemGroupedBackground))
+            if useAlternativeBackground {
+                Color.secondary
+                    .opacity(0.1)
+            } else {
+                Color(uiColor: .secondarySystemGroupedBackground)
+            }
         }
         .clipShape(RoundedRectangle(cornerRadius: Self.listCornerRadius))
         .onChange(of: pcvm.selection) { _ in
@@ -63,17 +92,74 @@ struct PieChartView: View {
             }
         }
         
-        if showMinimizeButton {
-            footer
-        }
+        footer
     }
     
     private var chart: some View {
-        CustomPagingScrollView(selection: $pcvm.selection, data: pcvm.data, invert: true, viewScale: 0.65, spendingsCount: spendingsCount)
+        CustomPagingScrollView(
+            selection: $pcvm.selection,
+            data: pcvm.data,
+            invert: true,
+            viewScale: inSidebar ? 0.8 : 0.65,
+            spendingsCount: spendingsCount,
+            inSidebar: inSidebar
+        )
+    }
+    
+    private var buttons: some View {
+        HStack {
+            Button {
+                NotificationCenter.default.post(.init(name: .PieChartScrollPrevious))
+            } label: {
+                HStack {
+                    Image(systemName: "chevron.backward")
+                    
+                    dateText(adjustDate: -1)
+                }
+                .padding(.vertical, 8)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .background {
+                    RoundedRectangle(cornerRadius: Self.listCornerRadius)
+                        .fill(Color(uiColor: .systemGray3).opacity(0.3))
+                }
+            }
+            .disabled(pcvm.selection >= pcvm.data.count - 1)
+            
+            Spacer()
+            
+            Button {
+                NotificationCenter.default.post(.init(name: .PieChartScrollNext))
+            } label: {
+                HStack {
+                    dateText(adjustDate: 1)
+                    
+                    Image(systemName: "chevron.forward")
+                }
+                .padding(.vertical, 8)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .background {
+                    RoundedRectangle(cornerRadius: Self.listCornerRadius)
+                        .fill(Color(uiColor: .systemGray3).opacity(0.3))
+                }
+            }
+            .disabled(pcvm.selection <= 0)
+        }
+        .padding(.horizontal, 8)
+    }
+    
+    @ViewBuilder
+    private func dateText(monthFormatWidth: Date.FormatStyle.Symbol.Month = .wide, adjustDate: Int) -> some View {
+        let adjustedDate = Calendar.autoupdatingCurrent.date(byAdding: .month, value: adjustDate, to: selectedDate) ?? .distantPast
+        
+        if Calendar.current.isDate(adjustedDate, equalTo: Date(), toGranularity: .year) {
+            Text(adjustedDate, format: .dateTime.month(monthFormatWidth))
+        } else {
+            Text(adjustedDate, format: .dateTime.month().year())
+        }
     }
     
     private var legend: some View {
-        PieChartLegendView(minimize: showMinimizeButton ? $minimizeLegend : .constant(true), selection: $pcvm.selection)
+        PieChartLegendView(minimize: showMinimizeButton ? $minimizeLegend : .constant(false), selection: $pcvm.selection, inSidebar: inSidebar)
     }
     
     @ViewBuilder
@@ -98,7 +184,9 @@ struct PieChartView: View {
                     
                     Spacer()
                     
-                    Button(action: toggleLegend, label: expandButtonLabel)
+                    if showMinimizeButton {
+                        Button(action: toggleLegend, label: expandButtonLabel)
+                    }
                 }
                 .padding(.horizontal)
                 
@@ -123,7 +211,9 @@ struct PieChartView: View {
                 
                 Spacer()
                 
-                Button(action: toggleLegend, label: expandButtonLabel)
+                if showMinimizeButton {
+                    Button(action: toggleLegend, label: expandButtonLabel)
+                }
             }
             .padding(.horizontal)
         }

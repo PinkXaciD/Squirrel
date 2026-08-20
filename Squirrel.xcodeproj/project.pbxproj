@@ -93,6 +93,8 @@
 		8D6A5A1B2C18A16B00322929 /* FiltersCategoriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6A5A1A2C18A16B00322929 /* FiltersCategoriesView.swift */; };
 		8D6A5A1D2C18A1A100322929 /* PrivacyMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6A5A1C2C18A1A100322929 /* PrivacyMonitor.swift */; };
 		8D6B3E602C0DE77D00C4A97A /* Line.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6B3E5F2C0DE77D00C4A97A /* Line.swift */; };
+		8D6BBA8C3037611F0091FA23 /* WrappedNavigationStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6BBA8B3037611F0091FA23 /* WrappedNavigationStack.swift */; };
+		8D6BBA8E3037614B0091FA23 /* WrappedNavigationSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6BBA8D3037614B0091FA23 /* WrappedNavigationSplitView.swift */; };
 		8D6E44102B18C53100FDFF9D /* ReturnEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6E440E2B18C53100FDFF9D /* ReturnEntity+CoreDataClass.swift */; };
 		8D6E44152B18C5AE00FDFF9D /* ReturnEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6E44132B18C5AE00FDFF9D /* ReturnEntity+CoreDataProperties.swift */; };
 		8D6E441B2B18C6E800FDFF9D /* ReturnsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D6E441A2B18C6E800FDFF9D /* ReturnsModel.swift */; };
@@ -308,6 +310,8 @@
 		8D6A5A1A2C18A16B00322929 /* FiltersCategoriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersCategoriesView.swift; sourceTree = "<group>"; };
 		8D6A5A1C2C18A1A100322929 /* PrivacyMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyMonitor.swift; sourceTree = "<group>"; };
 		8D6B3E5F2C0DE77D00C4A97A /* Line.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Line.swift; sourceTree = "<group>"; };
+		8D6BBA8B3037611F0091FA23 /* WrappedNavigationStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrappedNavigationStack.swift; sourceTree = "<group>"; };
+		8D6BBA8D3037614B0091FA23 /* WrappedNavigationSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WrappedNavigationSplitView.swift; sourceTree = "<group>"; };
 		8D6E440E2B18C53100FDFF9D /* ReturnEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReturnEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
 		8D6E44132B18C5AE00FDFF9D /* ReturnEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReturnEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		8D6E441A2B18C6E800FDFF9D /* ReturnsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReturnsModel.swift; sourceTree = "<group>"; };
@@ -635,6 +639,8 @@
 				8D54F4FA2B96335100B17886 /* CustomContentUnavailableView.swift */,
 				8D9DD66E2D3173B50061DA6B /* ICloudLogoAnimatedView.swift */,
 				8D9DD6702D317EE60061DA6B /* WhatsNewView.swift */,
+				8D6BBA8B3037611F0091FA23 /* WrappedNavigationStack.swift */,
+				8D6BBA8D3037614B0091FA23 /* WrappedNavigationSplitView.swift */,
 			);
 			path = Universal;
 			sourceTree = "<group>";
@@ -1271,6 +1277,7 @@
 				8D6E44102B18C53100FDFF9D /* ReturnEntity+CoreDataClass.swift in Sources */,
 				8DFA1EE32B4C1F7A00B97113 /* IconRowViewModel.swift in Sources */,
 				8D88CDC22AA0E37000668DEC /* SpendingEntity+CoreDataClass.swift in Sources */,
+				8D6BBA8E3037614B0091FA23 /* WrappedNavigationSplitView.swift in Sources */,
 				8D4E081C2AAA163800B3544F /* Currency.swift in Sources */,
 				8D591EA82A93AAF700A9CD07 /* LaunchActions.swift in Sources */,
 				8D6E441F2B18D6AE00FDFF9D /* AddReturnViewModel.swift in Sources */,
@@ -1338,6 +1345,7 @@
 				8DFA1EE02B4C16DE00B97113 /* IconRow.swift in Sources */,
 				8DB42E6C2B0F6BE1000E7EA5 /* EditSpendingViewModel.swift in Sources */,
 				8D9DD66D2D315E390061DA6B /* OnboardingCloudSyncView.swift in Sources */,
+				8D6BBA8C3037611F0091FA23 /* WrappedNavigationStack.swift in Sources */,
 				8D02AA7B2CBFE69900C4B4F6 /* ExportCSVViewModel.swift in Sources */,
 				8D54F4FB2B96335100B17886 /* CustomContentUnavailableView.swift in Sources */,
 				8DE48D122A72DA88008A2DD4 /* CategoriesEditView.swift in Sources */,
@@ -1435,7 +1443,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 92;
+				CURRENT_PROJECT_VERSION = 93;
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1450,7 +1458,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.3.1;
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirreldebug.squirrelWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1474,7 +1482,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrolWidget/financecontrolWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 92;
+				CURRENT_PROJECT_VERSION = 93;
 				DEVELOPMENT_TEAM = "";
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1489,7 +1497,7 @@
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.3.1;
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirrel.squirrelWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1638,7 +1646,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 92;
+				CURRENT_PROJECT_VERSION = 93;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
@@ -1646,7 +1654,7 @@
 				INFOPLIST_FILE = financecontrol/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Squirrel_Dev;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2024, PinkXaciD";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2026, PinkXaciD";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIRequiresFullScreen = NO;
@@ -1658,17 +1666,17 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.1;
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirreldebug;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -1682,7 +1690,7 @@
 				CODE_SIGN_ENTITLEMENTS = financecontrol/financecontrol.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 92;
+				CURRENT_PROJECT_VERSION = 93;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
@@ -1690,7 +1698,7 @@
 				INFOPLIST_FILE = financecontrol/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Squirrel;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2024, PinkXaciD";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2026, PinkXaciD";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIRequiresFullScreen = NO;
@@ -1702,17 +1710,17 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.1;
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.squirrelapp.squirrel;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

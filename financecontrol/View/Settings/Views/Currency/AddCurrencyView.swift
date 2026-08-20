@@ -1,16 +1,21 @@
 //
 //  AddCurrencyView.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/08/04.
+//  Created by PinkXaciD on 2023/08/04.
 //
 
 import SwiftUI
 
 struct AddCurrencyView: View {
-    @EnvironmentObject private var cdm: CoreDataModel
+    @Environment(\.horizontalSizeClass)
+    private var horizontalSizeClass
     
-    @State private var search: String = ""
+    @EnvironmentObject
+    private var cdm: CoreDataModel
+    
+    @State 
+    private var search: String = ""
     let currencyCodes = Dictionary(grouping: Locale.customCommonISOCurrencyCodes) { code in
         (Locale.current.localizedString(forCurrencyCode: code) ?? code).prefix(1).capitalized
     }
@@ -47,7 +52,6 @@ struct AddCurrencyView: View {
         .searchable(
             text: $search,
             placement: getSearchBarPlacement(),
-//            placement: .automatic, iOS 26
             prompt: "Currency name or ISO Code"
         )
         .navigationTitle("Add Currency")

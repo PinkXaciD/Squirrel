@@ -82,7 +82,7 @@ struct CategoryEditSubView: View {
         .toolbar {
             trailingToolbar
         }
-        .addKeyboardToolbar(showToolbar: nameIsFocused) {
+        .addKeyboardToolbar(showToolbar: nameIsFocused && UIDevice.current.isIPhone) {
             clearFocus()
         }
     }

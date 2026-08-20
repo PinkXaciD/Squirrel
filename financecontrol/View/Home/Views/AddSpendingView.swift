@@ -117,7 +117,7 @@ struct AddSpendingView: View {
                 
                 trailingToolbar
             }
-            .addKeyboardToolbar(showToolbar: focusedField != nil) {
+            .addKeyboardToolbar(showToolbar: focusedField != nil && UIDevice.current.isIPhone) {
                 clearFocus()
             }
             .navigationTitle("Add Expense")

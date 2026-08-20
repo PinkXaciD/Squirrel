@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @Environment(\.horizontalSizeClass)
+    private var horizontalSizeClass
+    
     @EnvironmentObject
     private var cdm: CoreDataModel
     @EnvironmentObject
@@ -40,43 +43,39 @@ struct SettingsView: View {
     let version: String? = Bundle.main.releaseVersionNumber
     let build: String? = Bundle.main.buildVersionNumber
     
+    enum ViewType: Codable, Hashable, CaseIterable {
+        case about, colorAndIcon, formatting, currency, rates, categories, hideContent, cloudSync, export
+    }
+    
     var body: some View {
-        if UIDevice.current.isIPad {
-            if #available(iOS 16.0, *) {
-                NavigationSplitView {
-                    list
-                } detail: {
-                    NavigationStack {
-                        ZStack {
-                            Color(uiColor: .systemGroupedBackground)
-                                .ignoresSafeArea()
-                                
-                            Text("Select a tab from sidebar")
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    .environmentObject(rvm)
-                    .environmentObject(cdm)
-                }
-            } else {
-                NavigationView {
-                    list
+        if horizontalSizeClass == .regular {
+            WrappedNavigationSplitView(style: .balanced) {
+                List {
+                    aboutSection
+                        .id(0)
                     
-                    ZStack {
-                        Color(uiColor: .systemGroupedBackground)
-                            .ignoresSafeArea()
-                            
-                        
-                        Text("Select a tab from sidebar")
-                            .foregroundStyle(.secondary)
+                    appearanceSection
+                    
+                    currencySection
+                    
+                    categorySection
+                    
+                    if !ProcessInfo.processInfo.isiOSAppOnMac {
+                        privacySection
                     }
+                    
+                    exportImportSection
+                }
+                .navigationTitle("Settings")
+            } detail: {
+                WrappedNavigationStack {
+                    aboutView
                 }
             }
         } else {
             NavigationView {
                 list
             }
-            .navigationViewStyle(.stack)
         }
     }
     
@@ -89,8 +88,6 @@ struct SettingsView: View {
                 appearanceSection
                 
                 currencySection
-                
-    //                shortcutsSection
                 
                 categorySection
                 
@@ -135,8 +132,10 @@ struct SettingsView: View {
                 ColorAndIconView()
             } label: {
                 HStack {
-                    Text("Color and Icon")
+                    Text(UIApplication.shared.supportsAlternateIcons ? "Color and Icon" : "Accent Color")
+                    
                     Spacer()
+                    
                     Text(LocalizedStringKey(defaultColor))
                         .foregroundStyle(.secondary)
                 }

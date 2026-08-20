@@ -131,6 +131,8 @@ struct CustomColorSelector: View {
                     Image(systemName: "shuffle")
                         .foregroundStyle(.white)
                 }
+                .contentShape(.hoverEffect, Circle())
+                .hoverEffect(.lift)
         }
         .buttonStyle(.plain)
         .frame(height: pickerSize)
@@ -152,6 +154,8 @@ struct CustomColorSelector: View {
                             .scaleEffect(oklch.h == color.h ? 0.8 : 1)
                     }
                     .animation(.default, value: oklch)
+                    .contentShape(.hoverEffect, Circle())
+                    .hoverEffect(.lift)
             }
             .buttonStyle(.plain)
             .id(color.h)
@@ -174,6 +178,8 @@ struct CustomColorSelector: View {
                             .scaleEffect(oklch.h == color.h ? 0.8 : 1)
                     }
                     .animation(.default, value: oklch)
+                    .contentShape(.hoverEffect, Circle())
+                    .hoverEffect(.lift)
             }
             .buttonStyle(.plain)
             .id(color.h)

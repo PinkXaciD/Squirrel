@@ -1,8 +1,8 @@
 //
 //  StatsRow.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/08/24.
+//  Created by PinkXaciD on 2023/08/24.
 //
 
 import SwiftUI
@@ -14,6 +14,9 @@ import OSLog
 struct StatsRow: View {
     @Environment(\.managedObjectContext)
     private var viewContext
+    @Environment(\.horizontalSizeClass)
+    private var horizontalSizeClass
+    
     @EnvironmentObject
     private var rvm: RatesViewModel
     @EnvironmentObject
@@ -32,11 +35,11 @@ struct StatsRow: View {
     
     let data: StatsRowData
     
-    var isDragging: Bool {
+    private var isDragging: Bool {
         rowDragging != nil && rowDragging == data.id
     }
     
-    let buttonWidth: CGFloat = {
+    private let buttonWidth: CGFloat = {
         if #available(iOS 26.0, *) {
             return 80
         }
@@ -44,8 +47,19 @@ struct StatsRow: View {
         return 70
     }()
     
-    let leadingTreshhold: CGFloat = ((UIApplication.shared.keyWindow?.bounds.width) ?? 300) * 0.5 - 10
-    let trailingTreshhold: CGFloat = ((UIApplication.shared.keyWindow?.bounds.width) ?? 300) * -(2/3) + 10
+    private var windowSize: CGSize {
+        let currentScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+        let windowBounds = currentScene?.windows.first(where: { $0.isKeyWindow })?.bounds
+        return windowBounds?.size ?? .init(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+    }
+    
+    private var leadingTreshhold: CGFloat {
+        windowSize.width * 0.5 - 10
+    }
+    
+    private var trailingTreshhold: CGFloat {
+        (horizontalSizeClass == .compact ? windowSize.width : windowSize.width * (2/3)) * -(2/3) + 10
+    }
     
     #if DEBUG
     let logger = Logger(subsystem: Vars.appIdentifier, category: #fileID)

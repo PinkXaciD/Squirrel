@@ -27,8 +27,6 @@ struct HomeView: View {
     private var ratesAreFetching: Bool = UserDefaults.standard.bool(forKey: UDKey.updateRates.rawValue)
     @State
     private var showWhatsNew: Bool = false
-    @State
-    private var animateWhatsNewButton: Bool = false
     
     @Binding
     var showingSheet: Bool
@@ -60,7 +58,7 @@ struct HomeView: View {
                     }
 #endif
                 
-                if latestLaunchedBuild < 91 { // TODO: Update to current version
+                if latestLaunchedBuild < currentBuild { // TODO: Update to current version
                     whatsNewSection
                 }
                 
@@ -131,17 +129,8 @@ struct HomeView: View {
             Button {
                 showWhatsNew.toggle()
             } label: {
-                ZStack {
-                    Text("What's new in \(Bundle.main.releaseVersionNumber ?? "")")
-                        .foregroundStyle(gradient)
-                        .opacity(animateWhatsNewButton ? 0 : 0.75)
-                        .blur(radius: 5)
-                    
-                    Text("What's new in \(Bundle.main.releaseVersionNumber ?? "")")
-                        .foregroundStyle(gradient)
-                }
+                Text("What's new in \(Bundle.main.releaseVersionNumber ?? "")")
             }
-            .hueRotation(.degrees(animateWhatsNewButton ? 720 : 0))
             .swipeActions(edge: .trailing) {
                 Button(role: .destructive) {
                     withAnimation {
@@ -162,27 +151,7 @@ struct HomeView: View {
                     Label("Hide", systemImage: "xmark")
                 }
             }
-            .onAppear {
-                withAnimation(.linear(duration: 5).delay(0.5)) {
-                    animateWhatsNewButton = true
-                }
-            }
-            .onDisappear {
-                animateWhatsNewButton = false
-            }
         }
-    }
-    
-    private var gradient: LinearGradient {
-        let colors = stride(from: 0, to: 1, by: 0.05).map { value in
-            Color(
-                lightness: colorScheme.colorLightness,
-                chroma: 0.12,
-                hue: value * 360
-            )
-        }
-        
-        return .init(colors: colors, startPoint: .leading, endPoint: .trailing)
     }
     
     private var ratesFetchStatus: some View {

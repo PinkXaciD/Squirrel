@@ -62,7 +62,7 @@ struct AddCategoryView: View {
         .toolbar {
             trailingToolbar
         }
-        .addKeyboardToolbar(showToolbar: isFocused) {
+        .addKeyboardToolbar(showToolbar: isFocused && UIDevice.current.isIPhone) {
             clearFocus()
         }
     }

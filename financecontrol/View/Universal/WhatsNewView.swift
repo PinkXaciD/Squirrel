@@ -43,9 +43,7 @@ struct WhatsNewView: View {
                 
                 Spacer()
                 
-                getRow(imageName: "paintpalette.fill", title: "Custom Colors for Categories", subtitle: "You can now select custom colors for categories. Your existing categories were updated to match the new look")
-                
-                getRow(imageName: "line.3.horizontal.decrease", title: "Timezone Filters", subtitle: "You can now filter expenses by the timezone they were made in.")
+                getRow(imageName: "ipad", title: "iPad Support", subtitle: "Squirrel is now available on iPad and Mac (as an iPad app).")
                 
                 Spacer()
                 

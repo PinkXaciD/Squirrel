@@ -16,6 +16,8 @@ struct PieChartLegendView: View {
     @Binding
     var selection: Int
     
+    let inSidebar: Bool
+    
     private var verticalPadding: CGFloat {
         if #available(iOS 26, *) {
             return 14
@@ -87,12 +89,12 @@ struct PieChartLegendView: View {
                     .fixedSize(horizontal: minimize, vertical: false)
             }
             
-            if let otherCategory = data.otherCategory, !pcvm.showOther {
+            if let otherCategory = data.otherCategory, !pcvm.showOther, !inSidebar {
                 PieChartLegendRowView(category: otherCategory)
                     .fixedSize(horizontal: minimize, vertical: false)
             }
             
-            if pcvm.showOther {
+            if pcvm.showOther || inSidebar {
                 ForEach(data.otherCategories) { category in
                     PieChartLegendRowView(category: category)
                         .fixedSize(horizontal: minimize, vertical: false)

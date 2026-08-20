@@ -78,7 +78,7 @@ struct EditSpendingView: View {
             
             leadingToolbar
         }
-        .addKeyboardToolbar(showToolbar: focusedField != nil) {
+        .addKeyboardToolbar(showToolbar: focusedField != nil && UIDevice.current.isIPhone) {
             clearFocus()
         }
         .onChange(of: toDismiss) { _ in

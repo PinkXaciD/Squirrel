@@ -10,6 +10,8 @@ import SwiftUI
 struct ExportAndBackupView: View {
     @Environment(\.dynamicTypeSize)
     private var dynamicTypeSize
+    @Environment(\.horizontalSizeClass)
+    private var horizontalSizeClass
     
     @AppStorage(UDKey.color.rawValue) 
     private var tint: String = "Orange"
@@ -69,26 +71,48 @@ struct ExportAndBackupView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
     
+    @ViewBuilder
     private var csvButton: some View {
-        Button {
-            presentExportCSVSheet.toggle()
-        } label: {
-            buttonLabel(title: "Export to Spreadsheet", subtitle: "Export to CSV", systemImage: "arrow.up.doc.fill")
-                .clipShape(RoundedRectangle(cornerRadius: dynamicTypeSize > .xLarge ? 0 : Self.listCornerRadius))
-                .overlay {
-                    if dynamicTypeSize > .xLarge {
-                        VStack {
-                            Divider()
-                            
-                            Spacer()
-                            
-                            Divider()
+        if horizontalSizeClass == .compact {
+            Button {
+                presentExportCSVSheet.toggle()
+            } label: {
+                buttonLabel(title: "Export to Spreadsheet", subtitle: "Export to CSV", systemImage: "arrow.up.doc.fill")
+                    .clipShape(RoundedRectangle(cornerRadius: dynamicTypeSize > .xLarge ? 0 : Self.listCornerRadius))
+                    .overlay {
+                        if dynamicTypeSize > .xLarge {
+                            VStack {
+                                Divider()
+                                
+                                Spacer()
+                                
+                                Divider()
+                            }
                         }
                     }
-                }
+            }
+            .buttonStyle(.plain)
+            .disabled(spendings.isEmpty)
+        } else {
+            NavigationLink {
+                ExportCSVView(cdm: cdm, showDismissButton: false)
+            } label: {
+                buttonLabel(title: "Export to Spreadsheet", subtitle: "Export to CSV", systemImage: "arrow.up.doc.fill")
+                    .clipShape(RoundedRectangle(cornerRadius: dynamicTypeSize > .xLarge ? 0 : Self.listCornerRadius))
+                    .overlay {
+                        if dynamicTypeSize > .xLarge {
+                            VStack {
+                                Divider()
+                                
+                                Spacer()
+                                
+                                Divider()
+                            }
+                        }
+                    }
+            }
+            .foregroundStyle(.primary)
         }
-        .buttonStyle(.plain)
-        .disabled(spendings.isEmpty)
     }
     
     private var jsonButtons: some View {
