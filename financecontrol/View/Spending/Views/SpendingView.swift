@@ -387,24 +387,24 @@ struct SpendingView: View {
     }
     
     private var editToolbar: ToolbarItem<(), some View> {
-        ToolbarItem {
+        ToolbarItem(placement: .topBarTrailing) {
             Button {
                 editAction()
             } label: {
                 Label("Edit", systemImage: "pencil")
-                    .labelStyle(.titleOnly)
             }
+            .labelStyle(toolbarLabelStyle)
         }
     }
     
     private var closeToolbar: ToolbarItem<(), some View> {
-        ToolbarItem(placement: .navigationBarLeading) {
+        ToolbarItem(placement: .cancellationAction) {
             Button {
                 dismiss()
             } label: {
                 Label("Close", systemImage: "xmark")
-                    .labelStyle(.titleOnly)
             }
+            .labelStyle(toolbarLabelStyle)
         }
     }
 }

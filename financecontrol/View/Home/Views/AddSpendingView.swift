@@ -352,14 +352,17 @@ struct AddSpendingView: View {
     }
     
     private var leadingToolbar: ToolbarItem<(), some View> {
-        ToolbarItem(placement: .navigationBarLeading) {
-            Button("Cancel", role: .cancel, action: dismissAction)
-                .disabled(isLoading)
+        ToolbarItem(placement: .cancellationAction) {
+            Button(role: .cancel, action: dismissAction) {
+                Label("Cancel", systemImage: "xmark")
+            }
+            .disabled(isLoading)
+            .labelStyle(toolbarLabelStyle)
         }
     }
     
     private var trailingToolbar: ToolbarItem<(), some View> {
-        ToolbarItem(placement: .navigationBarTrailing) {
+        ToolbarItem(placement: .confirmationAction) {
             Button {
                 done()
             } label: {
@@ -368,11 +371,11 @@ struct AddSpendingView: View {
                         .accentColor(.secondary)
                         .tint(.secondary)
                 } else {
-                    Text("Done")
-                        .font(Font.body.weight(.semibold))
+                    Label("Done", systemImage: "checkmark")
                 }
             }
             .disabled(!utils.checkAll(amount: vm.amount, place: vm.place, comment: vm.comment) || vm.selectedCategory == nil || isLoading)
+            .labelStyle(toolbarLabelStyle)
         }
     }
 }

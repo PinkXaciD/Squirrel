@@ -230,7 +230,7 @@ struct EditSpendingView: View {
     }
     
     private var trailingToolbar: ToolbarItem<Void, some View> {
-        ToolbarItem(placement: .navigationBarTrailing) {
+        ToolbarItem(placement: .confirmationAction) {
             Button(action: doneButtonAction) {
                 if vm.isLoading {
                     ProgressView()
@@ -239,11 +239,10 @@ struct EditSpendingView: View {
                 } else {
                     Label {
                         Text("Save")
-                            .fontWeight(.semibold)
                     } icon: {
                         Image(systemName: "checkmark")
                     }
-                    .labelStyle(.titleOnly)
+                    .labelStyle(toolbarLabelStyle)
 
                 }
             }
@@ -258,13 +257,13 @@ struct EditSpendingView: View {
     }
     
     private var leadingToolbar: ToolbarItem<Void, some View> {
-        ToolbarItem(placement: .navigationBarLeading) {
+        ToolbarItem(placement: .cancellationAction) {
             Button {
                 cancelButtonAction()
             } label: {
                 Label("Cancel", systemImage: "xmark")
-                    .labelStyle(.titleOnly)
             }
+            .labelStyle(toolbarLabelStyle)
         }
     }
 }

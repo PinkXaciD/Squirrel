@@ -89,18 +89,24 @@ struct ExportCSVView: View {
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 if showDismissButton {
-                    Button("Cancel") {
+                    Button {
                         dismiss()
+                    } label: {
+                        Label("Cancel", systemImage: "xmark")
                     }
                     .disabled(startedExporting)
+                    .labelStyle(toolbarLabelStyle)
                 }
             }
             
             ToolbarItem(placement: .confirmationAction) {
-                Button("Export") {
+                Button {
                     exportButtonAction()
+                } label: {
+                    Label("Export", systemImage: "arrow.up.doc")
                 }
                 .disabled(vm.selectedFieldsCount == 0 || startedExporting)
+                .labelStyle(toolbarLabelStyle)
             }
         }
         .disabled(presentExportSheet)

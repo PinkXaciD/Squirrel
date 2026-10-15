@@ -97,7 +97,15 @@ struct ContentView: View {
         
     var body: some View {
         Group {
-            if #available(iOS 18.0, *), UIDevice.current.isIPhone {
+            if #available(iOS 27.0, *), UIDevice.current.isIPhone {
+                TabView(selection: selection) {
+                    homeTab
+                    
+                    statsTab
+                    
+                    settingsTab
+                }
+            } else if #available(iOS 18.0, *), UIDevice.current.isIPhone {
                 NavigationStack {
                     TabView(selection: selection) {
                         homeTab

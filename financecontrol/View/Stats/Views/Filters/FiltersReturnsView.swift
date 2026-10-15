@@ -65,15 +65,15 @@ struct FiltersReturnsView: View {
         }
         .navigationTitle("Returns")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    dismiss()
-                } label: {
-                    Text("Done")
-                        .font(.body.bold())
-                }
-            }
-        }
+//        .toolbar {
+//            ToolbarItem(placement: .confirmationAction) {
+//                Button {
+//                    dismiss()
+//                } label: {
+//                    Label("Done", systemImage: "checkmark")
+//                }
+//                .labelStyle(toolbarLabelStyle)
+//            }
+//        }
     }
 }

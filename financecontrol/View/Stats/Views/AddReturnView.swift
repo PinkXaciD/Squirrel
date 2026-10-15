@@ -106,21 +106,26 @@ struct AddReturnView: View {
     }
     
     private var trailingToolbar: ToolbarItem<Void, some View> {
-        ToolbarItem(placement: .topBarTrailing) {
-            Button("Add") {
+        ToolbarItem(placement: .confirmationAction) {
+            Button {
                 vm.done()
                 dismiss()
+            } label: {
+                Label("Add", systemImage: "checkmark")
             }
-            .font(.body.bold())
             .disabled(vm.validate())
+            .labelStyle(toolbarLabelStyle)
         }
     }
     
     private var leadingToolbar: ToolbarItem<Void, some View> {
-        ToolbarItem(placement: .topBarLeading) {
-            Button("Cancel") {
+        ToolbarItem(placement: .cancellationAction) {
+            Button {
                 dismiss()
+            } label: {
+                Label("Cancel", systemImage: "xmark")
             }
+            .labelStyle(toolbarLabelStyle)
         }
     }
 }

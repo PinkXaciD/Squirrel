@@ -66,6 +66,8 @@ struct SettingsView: View {
                     
                     exportImportSection
                 }
+                .listStyle(.sidebar)
+                .removeSidebarButton()
                 .navigationTitle("Settings")
             } detail: {
                 WrappedNavigationStack {

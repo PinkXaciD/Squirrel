@@ -48,9 +48,9 @@ struct FiltersCategoriesView: View {
             }
         }
         .navigationTitle("Categories")
-        .toolbar {
-            trailingToolbar
-        }
+//        .toolbar {
+//            trailingToolbar
+//        }
         .overlay {
             if fetchedCategories.isEmpty {
                 CustomContentUnavailableView("No Categories", imageName: "list.bullet", description: "You can add categories in settings.")
@@ -59,11 +59,13 @@ struct FiltersCategoriesView: View {
     }
     
     private var trailingToolbar: ToolbarItem<Void, some View> {
-        ToolbarItem {
-            Button("Done") {
+        ToolbarItem(placement: .confirmationAction) {
+            Button {
                 dismiss()
+            } label: {
+                Label("Done", systemImage: "checkmark")
             }
-            .font(.body.bold())
+            .labelStyle(toolbarLabelStyle)
         }
     }
     

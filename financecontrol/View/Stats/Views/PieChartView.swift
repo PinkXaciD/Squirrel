@@ -69,7 +69,7 @@ struct PieChartView: View {
                 .clipped()
                 .padding(.bottom, padding)
             
-            if inSidebar {
+            if inSidebar, !pcvm.isScrollDisabled {
                 buttons
                     .padding(.bottom)
             }

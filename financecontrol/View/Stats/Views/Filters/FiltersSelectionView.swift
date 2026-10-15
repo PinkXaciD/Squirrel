@@ -91,9 +91,9 @@ struct FiltersSelectionView<Value, Selection, RowLabel>: View where Value: Compa
         }
         .navigationTitle(navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            trailingToolbar
-        }
+//        .toolbar {
+//            trailingToolbar
+//        }
         .overlay {
             if possibleValues.isEmpty {
                 CustomContentUnavailableView("No Expenses", imageName: "list.bullet", description: "You can add expenses from home screen.")
@@ -102,14 +102,13 @@ struct FiltersSelectionView<Value, Selection, RowLabel>: View where Value: Compa
     }
     
     private var trailingToolbar: ToolbarItem<Void, some View> {
-        ToolbarItem(placement: .topBarTrailing) {
+        ToolbarItem(placement: .confirmationAction) {
             Button {
                 dismiss()
             } label: {
-                Text("Done")
-                    .bold()
+                Label("Done", systemImage: "checkmark")
             }
-
+            .labelStyle(toolbarLabelStyle)
         }
     }
     

@@ -147,6 +147,23 @@ extension View {
         
         return 10
     }
+    
+    var toolbarLabelStyle: some LabelStyle {
+        if #available(iOS 26.0, *) {
+            return .iconOnly
+        }
+        
+        return .titleOnly
+    }
+    
+    func removeSidebarButton() -> some View {
+       if #available(iOS 17.0, *) {
+           return self
+               .toolbar(removing: .sidebarToggle)
+       }
+       
+       return self
+    }
 }
 
 extension Text {

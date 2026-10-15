@@ -10,6 +10,10 @@ import SwiftUI
 struct CurrencyRow: View {
     @EnvironmentObject private var cdm: CoreDataModel
     @EnvironmentObject private var rvm: RatesViewModel
+    
+    @AppStorage(UDKey.color.rawValue)
+    private var tintColor: TintColor = .orange
+    
     @Binding var defaultCurrency: String
     
     let currency: Currency
@@ -31,7 +35,7 @@ struct CurrencyRow: View {
                 if defaultCurrency == currency.code {
                     Image(systemName: "checkmark")
                         .font(.body.bold())
-                        .foregroundColor(.accentColor)
+                        .foregroundColor(tintColor.getColor())
                 }
             }
         }

@@ -101,8 +101,8 @@ struct AddCategoryView: View {
     }
     
     private var trailingToolbar: ToolbarItem<Void, some View> {
-        ToolbarItem(placement: .topBarTrailing) {
-            Button("Save") {
+        ToolbarItem(placement: .confirmationAction) {
+            Button {
                 if name.isEmpty || name.count > 100 {
                     triedToSave = true
                     HapticManager.shared.notification(.warning)
@@ -116,8 +116,10 @@ struct AddCategoryView: View {
                     HapticManager.shared.notification(.success)
                     dismiss()
                 }
+            } label: {
+                Label("Save", systemImage: "checkmark")
             }
-            .font(.body.bold())
+            .labelStyle(toolbarLabelStyle)
             .foregroundColor(name.isEmpty || name.count > 100 ? .secondary.opacity(0.7) : .accentColor)
         }
     }

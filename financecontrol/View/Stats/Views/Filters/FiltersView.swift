@@ -16,7 +16,7 @@ struct FiltersView: View {
     private var dismiss
     
     @AppStorage(UDKey.color.rawValue)
-    private var tint: String = "Orange"
+    private var tint: TintColor = .orange
     @AppStorage(UDKey.privacyScreen.rawValue)
     private var privacyScreenIsEnabled: Bool = false
     @AppStorage(UDKey.timeZoneFormat.rawValue)
@@ -92,7 +92,7 @@ struct FiltersView: View {
         }
         
         func foregroundColor(colorScheme: ColorScheme, increaseContrast: ColorSchemeContrast) -> Color {
-            .accentColor
+            TintColor(rawValue: UserDefaults.standard.string(forKey: UDKey.color.rawValue) ?? "orange")?.getColor() ?? .orange
         }
     }
     
@@ -268,7 +268,7 @@ struct FiltersView: View {
                     endDate = secondDate
                 }
             }
-            .accentColor(colorIdentifier(color: tint))
+            .accentColor(tint.getColor())
         }
     }
     
@@ -418,22 +418,27 @@ struct FiltersView: View {
     }
     
     private var leadingToolbar: ToolbarItem<(), some View> {
-        ToolbarItem(placement: .topBarLeading) {
+        ToolbarItem(placement: .cancellationAction) {
             if showDismissButton {
-                Button("Close") {
+                Button {
                     dismiss()
+                } label: {
+                    Label("Close", systemImage: "xmark")
                 }
+                .labelStyle(toolbarLabelStyle)
             }
         }
     }
     
     private var trailingToolbar: ToolbarItem<(), some View> {
-        ToolbarItem(placement: .topBarTrailing) {
-            Button("Apply") {
+        ToolbarItem(placement: .confirmationAction) {
+            Button {
                 applyFilters()
+            } label: {
+                Label("Apply", systemImage: "checkmark")
             }
-            .font(.body.bold())
             .disabled(spendingsCount == 0)
+            .labelStyle(toolbarLabelStyle)
         }
     }
 }

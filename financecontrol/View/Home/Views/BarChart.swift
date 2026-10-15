@@ -11,6 +11,9 @@ struct BarChart: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     
+    @AppStorage(UDKey.color.rawValue)
+    private var tint: String = "Orange"
+    
     @EnvironmentObject var vm: BarChartViewModel
     
     @Binding var itemSelected: Int
@@ -54,7 +57,7 @@ struct BarChart: View {
                             .onTapGesture {
                                 tapActions(index: countIndex(data.key))
                             }
-                            .foregroundStyle(isActive(index: countIndex(data.key)) ? Color.accentColor : Color.secondary, Color.secondary)
+                            .foregroundStyle(isActive(index: countIndex(data.key)) ? colorIdentifier(color: tint) : Color.secondary, Color.secondary)
                         }
                     }
                     

@@ -36,7 +36,7 @@ struct ShadowedCategoriesView: View {
                             description: "You can archive categories in settings, they will be hidden from selection when you add new expenses, but all old expenses will be saved."
                         )
                     }
-                    .ignoresSafeArea()
+                    .ignoresSafeArea(edges: .vertical)
                 }
             }
             .navigationTitle("Archived Categories")

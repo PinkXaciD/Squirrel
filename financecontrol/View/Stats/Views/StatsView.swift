@@ -191,7 +191,7 @@ struct StatsView: View {
                             }
                             .id(0)
                             
-                            if fvm.applyFilters {
+                            if fvm.applyFilters, !searchModel.input.isEmpty {
                                 getSearchNotificationRow("Searching Filtered Results", systemImage: "line.3.horizontal.decrease")
                             } else if !searchModel.input.isEmpty, pcvm.selection != 0 {
                                 getSearchNotificationRow("Searching For \(dateText)", systemImage: "calendar")
@@ -212,6 +212,7 @@ struct StatsView: View {
                     }
                 }
             }
+            .removeSidebarButton()
             .navigationTitle("Stats")
         } detail: {
             Group {
