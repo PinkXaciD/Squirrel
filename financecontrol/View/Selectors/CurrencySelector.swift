@@ -26,6 +26,7 @@ struct CurrencySelector: View {
                     }
                 }
             }
+            .pickerStyle(.inline)
             
             Divider()
             

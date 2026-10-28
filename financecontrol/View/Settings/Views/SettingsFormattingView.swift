@@ -64,8 +64,8 @@ struct SettingsFormattingView: View {
                             }
                             .tag(format.rawValue)
                         }
-                        .pickerStyle(.inline)
                     }
+                    .pickerStyle(.inline)
                 } label: {
                     HStack {
                         Spacer()

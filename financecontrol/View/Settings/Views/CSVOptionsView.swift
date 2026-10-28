@@ -36,6 +36,7 @@ struct CSVOptionsView: View {
                                     .tag(delimiter)
                             }
                         }
+                        .pickerStyle(.inline)
                     } label: {
                         HStack {
                             Spacer()
@@ -60,6 +61,7 @@ struct CSVOptionsView: View {
                                     .tag(delimiter)
                             }
                         }
+                        .pickerStyle(.inline)
                     } label: {
                         HStack {
                             Spacer()
@@ -80,6 +82,7 @@ struct CSVOptionsView: View {
                                     .tag(delimiter)
                             }
                         }
+                        .pickerStyle(.inline)
                     } label: {
                         HStack {
                             Spacer()

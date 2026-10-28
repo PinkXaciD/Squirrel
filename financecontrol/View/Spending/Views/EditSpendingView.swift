@@ -247,6 +247,7 @@ struct EditSpendingView: View {
                 }
             }
             .foregroundStyle(isTrailingButtonDisabled ? Color.secondary.opacity(0.7) : categoryColor)
+            .keyboardShortcut("s")
         }
     }
     
@@ -264,6 +265,7 @@ struct EditSpendingView: View {
                 Label("Cancel", systemImage: "xmark")
             }
             .labelStyle(toolbarLabelStyle)
+            .keyboardShortcut("z")
         }
     }
 }

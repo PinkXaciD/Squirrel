@@ -159,10 +159,14 @@ fileprivate struct InternalCustomPagingScrollView: View {
             .highPriorityGesture(
                 DragGesture()
                     .onChanged { value in
-                        changedDragGesture(value: value)
+                        if !inSidebar {
+                            changedDragGesture(value: value)
+                        }
                     }
                     .onEnded { value in
-                        endDragGesture(value: value)
+                        if !inSidebar {
+                            endDragGesture(value: value)
+                        }
                     }
             )
             .gesture(
@@ -192,6 +196,7 @@ fileprivate struct InternalCustomPagingScrollView: View {
                     } label: {
                         ZStack {
                             getGradient(isLeading: layoutDirection == .leftToRight)
+                                .invertLayoutDirection(layoutDirection == .rightToLeft)
                                 .frame(width: scrollManager.geometry.size.width * scrollManager.invertedViewScale * 0.5)
                             
                             Image(systemName: "chevron.backward")
@@ -210,6 +215,7 @@ fileprivate struct InternalCustomPagingScrollView: View {
                     } label: {
                         ZStack {
                             getGradient(isLeading: layoutDirection != .leftToRight)
+                                .invertLayoutDirection(layoutDirection == .rightToLeft)
                                 .frame(width: scrollManager.geometry.size.width * scrollManager.invertedViewScale * 0.5)
                             
                             Image(systemName: "chevron.forward")

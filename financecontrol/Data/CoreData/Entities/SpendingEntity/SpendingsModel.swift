@@ -260,19 +260,6 @@ extension CoreDataModel {
     /// This method is thread-safe and works on main thread asynchronously
     func editSpending(spending: SpendingEntity, newSpending: SpendingEntityLocal, exchangeRate: Double = 1, addToFetchQueue: Bool = false) {
         context.perform { [weak self] in
-            var check: Bool {
-                spending.amount != newSpending.amount ||
-                spending.currency != newSpending.currency ||
-                spending.place != newSpending.place ||
-                spending.date != newSpending.date ||
-                spending.comment != newSpending.comment ||
-                spending.category?.id != newSpending.categoryId
-            }
-            
-            guard check else {
-                return
-            }
-            
             spending.amount = newSpending.amount
             spending.amountUSD = newSpending.amountUSD
             spending.currency = newSpending.currency

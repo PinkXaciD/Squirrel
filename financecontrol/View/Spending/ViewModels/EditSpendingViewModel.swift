@@ -111,11 +111,10 @@ final class EditSpendingViewModel: ViewModel {
                 return
             }
             
-            spending.amountUSD = (spending.amount / self.entity.amount) * self.entity.amountUSD
-            
             // If Date and Currency hasn't changed
             if Calendar.gmt.isDate(self.entity.wrappedDate, inSameDayAs: self.date), self.entity.wrappedCurrency == self.currency {
-                self.cdm.editSpending(spending: self.entity, newSpending: spending, exchangeRate: spending.amount / self.entity.amount)
+                spending.amountUSD = (spending.amount / self.entity.amount) * self.entity.amountUSD
+                self.cdm.editSpending(spending: self.entity, newSpending: spending, exchangeRate: self.entity.amount / self.entity.amountUSD)
                 
                 await MainActor.run { [self] in
                     self.end()
@@ -129,7 +128,7 @@ final class EditSpendingViewModel: ViewModel {
             }
             
             var addToFetchQueue: Bool {
-                !Calendar.gmt.isDateInToday(date) || !Calendar.gmt.isDateInToday(rvm.updateTime)
+                !Calendar.gmt.isDateInToday(date) || !Calendar.gmt.isDateInToday(rvm.updateTime) || self.entity.wrappedCurrency != self.currency
             }
             
             self.cdm.editSpending(spending: self.entity, newSpending: spending, addToFetchQueue: addToFetchQueue)

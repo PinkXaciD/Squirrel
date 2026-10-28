@@ -114,9 +114,20 @@ struct HomeView: View {
                         .imageScale(.large)
                     
                     Text("Add Expense")
+                    
+                    if #available(iOS 16.4, *) {
+                        if UITextInputContext.current().isHardwareKeyboardInputExpected || ProcessInfo.processInfo.isiOSAppOnMac {
+                            Spacer()
+                            
+                            Text("\(Image(systemName: "shift")) N")
+//                                .font(.footnote)
+                                .foregroundStyle(Color.secondary)
+                        }
+                    }
                 }
             }
             .padding()
+            .keyboardShortcut("n", modifiers: .shift)
         } footer: {
             if ratesAreFetching {
                 ratesFetchStatus

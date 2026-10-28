@@ -9,8 +9,12 @@ import SwiftUI
 
 @MainActor
 struct ICloudSyncView: View {
+    @AppStorage(UDKey.color.rawValue)
+    private var tintColor: TintColor = .orange
+    
     @EnvironmentObject
     private var kvsManager: CloudKitKVSManager
+    
     @StateObject
     private var vm = ICloudSyncViewModel()
     
@@ -31,7 +35,7 @@ struct ICloudSyncView: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(height: imageSize)
-                        .foregroundColor(kvsManager.iCloudSync ? .accentColor : .secondary)
+                        .foregroundColor(kvsManager.iCloudSync ? tintColor.getColor() : .secondary)
                         .padding(15)
                         .wrappedContentTransition()
                     

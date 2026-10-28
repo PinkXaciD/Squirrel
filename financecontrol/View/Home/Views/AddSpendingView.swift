@@ -376,6 +376,7 @@ struct AddSpendingView: View {
             }
             .disabled(!utils.checkAll(amount: vm.amount, place: vm.place, comment: vm.comment) || vm.selectedCategory == nil || isLoading)
             .labelStyle(toolbarLabelStyle)
+            .keyboardShortcut(.return, modifiers: .command)
         }
     }
 }

@@ -556,6 +556,7 @@ struct MonthPicker: View {
                         .tag(month)
                 }
             }
+            .pickerStyle(.inline)
         } label: {
             HStack {
                 Spacer()
@@ -640,6 +641,7 @@ struct YearPicker: View {
                         .disabled(true)
                 }
             }
+            .pickerStyle(.inline)
         } label: {
             HStack {
                 if addSpacer {

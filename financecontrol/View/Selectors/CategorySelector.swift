@@ -83,6 +83,7 @@ struct CategorySelector: View {
                             .tag(category)
                     }
                 }
+                .pickerStyle(.inline)
             }
                 
             if !categories.isEmpty {
