@@ -1,6 +1,6 @@
 //
 //  EditSpendingView.swift
-//  financecontrol
+//  Squirrel
 //
 //  Created by PinkXaciD on 2023/07/31.
 //
@@ -28,7 +28,6 @@ struct EditSpendingView: View {
     var entity: SpendingEntity
     @Binding
     var edit: Bool
-//    var categoryColor: Color
     
     @State
     private var confirmationDialogIsPresented: Bool = false
@@ -58,9 +57,16 @@ struct EditSpendingView: View {
     @Binding
     var toDismiss: Bool
     
-    var categoryColor: Color {
-//        CustomColor.nordAurora[vm.category?.color ?? ""] ?? .secondary.opacity(0)
+    private var categoryColor: Color {
         vm.category?.resolveColor(colorScheme: colorScheme, increaseContrast: colorSchemeContrast) ?? .secondary
+    }
+    
+    private var topInset: CGFloat {
+        if #available(iOS 26.0, *) {
+            return 0
+        }
+        
+        return 10
     }
     
     var body: some View {
@@ -77,6 +83,12 @@ struct EditSpendingView: View {
             trailingToolbar
             
             leadingToolbar
+        }
+        .toolbar { // Top padding for the iPhone Duo
+            ToolbarItem(placement: .title) {
+                Rectangle()
+                    .opacity(0)
+            }
         }
         .addKeyboardToolbar(showToolbar: focusedField != nil && UIDevice.current.isIPhone) {
             clearFocus()
@@ -145,7 +157,7 @@ struct EditSpendingView: View {
         .textCase(nil)
         .foregroundColor(categoryColor)
         .frame(maxWidth: .infinity)
-        .listRowInsets(.init(top: 10, leading: 0, bottom: 40, trailing: 0))
+        .listRowInsets(.init(top: topInset, leading: 0, bottom: 40, trailing: 0))
     }
     
     private var commentSection: some View {
@@ -286,7 +298,6 @@ extension EditSpendingView {
     ) {
         self.entity = entity
         self._edit = edit
-//        self.categoryColor = categoryColor
         self.focus = focus
         self._entityToAddReturn = entityToAddReturn
         self._returnToEdit = returnToEdit
@@ -340,13 +351,3 @@ extension EditSpendingView {
         focusedField = .none
     }
 }
-
-// struct SpendingEditView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        @State var entity: SpendingEntity = CoreDataModel().savedSpendings[0]
-//        @State var edit: Bool = true
-//
-//        SpendingEditView(entity: $entity, update: true, edit: $edit, categoryColor: .accentColor, focus: "amount")
-//            .environmentObject(CoreDataModel())
-//    }
-// }

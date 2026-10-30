@@ -58,13 +58,10 @@ struct WhatsNewView: View {
             .padding()
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button {
+                    Button("Done") {
                         dismiss()
-                    } label: {
-                        Label("Done", systemImage: "checkmark")
                     }
-                    .labelStyle(toolbarLabelStyle)
-                    .buttonStyle(.borderless)
+                    .labelStyle(.automatic)
                 }
                 
                 ToolbarItem(placement: .topBarLeading) {

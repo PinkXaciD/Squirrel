@@ -75,8 +75,14 @@ struct SettingsView: View {
                 }
             }
         } else {
-            NavigationView {
-                list
+            if #available(iOS 27.0, *) {
+                NavigationStack {
+                    list
+                }
+            } else {
+                NavigationView {
+                    list
+                }
             }
         }
     }

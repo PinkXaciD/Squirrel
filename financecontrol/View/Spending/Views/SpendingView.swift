@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct SpendingView: View {
-    
     @EnvironmentObject 
     private var cdm: CoreDataModel
     @EnvironmentObject
@@ -42,7 +41,7 @@ struct SpendingView: View {
     @State
     private var alertIsPresented: Bool = false
     
-    var dateFormatStyle: Date.FormatStyle {
+    private var dateFormatStyle: Date.FormatStyle {
         var formatStyle = Date.FormatStyle.dateTime
             .year(.extended())
             .month(.wide).day()
@@ -54,6 +53,14 @@ struct SpendingView: View {
         }
         
         return formatStyle
+    }
+    
+    private var topInset: CGFloat {
+        if #available(iOS 26.0, *) {
+            return 0
+        }
+        
+        return 10
     }
     
     var body: some View {
@@ -74,6 +81,12 @@ struct SpendingView: View {
             closeToolbar
             
             editToolbar
+        }
+        .toolbar { // Top padding for the iPhone Duo
+            ToolbarItem(placement: .title) {
+                Rectangle()
+                    .opacity(0)
+            }
         }
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -156,7 +169,7 @@ struct SpendingView: View {
         .textCase(nil)
         .foregroundColor(categoryColor)
         .frame(maxWidth: .infinity)
-        .listRowInsets(.init(top: 10, leading: 20, bottom: 40, trailing: 20))
+        .listRowInsets(.init(top: topInset, leading: 20, bottom: 40, trailing: 20))
     }
     
     private var amountWithoutReturns: some View {
