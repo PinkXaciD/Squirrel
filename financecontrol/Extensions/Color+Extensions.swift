@@ -1,8 +1,8 @@
 //
 //  ColorExtensions.swift
-//  financecontrol
+//  Squirrel
 //
-//  Created by PinkXaciD on R 5/09/11.
+//  Created by PinkXaciD on 2023/09/11.
 //
 
 import SwiftUI
@@ -10,7 +10,15 @@ import Beige
 
 extension Color {
     static subscript(name: String) -> Color {
-        if let hueValue = Double(name) {
+        if name.hasPrefix("nord") {
+            return CustomColor.nordAurora[name] ?? .black
+        }
+        
+        let parsedNumber = name.split {
+            !CharacterSet(charactersIn: "\($0)").isSubset(of: CharacterSet.decimalDigits)
+        }.joined(separator: ".")
+            
+        if let hueValue = Double(parsedNumber) {
             return Color(lightness: 0.7, chroma: 0.15, hue: hueValue)
         }
         
@@ -31,8 +39,6 @@ extension Color {
             return .purple
         case "pink":
             return .pink
-        case "nord1", "nord2", "nord3", "nord4", "nord5", "nord6", "nord7", "nord8", "nord9", "nord91", "nord92", "nord93", "nord94", "nord95":
-            return CustomColor.nordAurora[name] ?? .black
         case "secondary":
             return .secondary
         default:

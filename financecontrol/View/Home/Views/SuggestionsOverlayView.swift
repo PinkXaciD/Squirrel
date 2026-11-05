@@ -16,14 +16,10 @@ struct SuggestionsOverlayView: View {
     @Binding
     var minimizeSuggestions: Bool
 
-    let geometry: GeometryProxy
+    let offset: CGFloat
     
     @ScaledMetric(relativeTo: .footnote)
     private var buttonWidth: CGFloat = 100
-
-    var padding: CGFloat {
-        geometry.size.height - manager.placeFieldPosition + geometry.safeAreaInsets.top + (geometry.safeAreaInsets.bottom * 0.75) + (UIDevice.current.isIPhone ? 0 : 25)
-    }
 
     private var suggestionsAnimation: Animation {
         if #available(iOS 26.0, *) {
@@ -74,11 +70,12 @@ struct SuggestionsOverlayView: View {
                     }
                     .padding(.bottom, minimizeSuggestions ? 0 : 12)
                     .modifier(MenuBackgroundModifier(minimizeSuggestions: minimizeSuggestions))
+                    .padding(.bottom, 5)
                 }
             }
             .padding(.vertical, 10)
-            .offset(x: 0, y: -padding)
-            .animation(.none, value: padding)
+            .offset(x: 0, y: -(offset - manager.placeFieldPosition))
+            .animation(.none, value: manager.placeFieldPosition)
             .animation(suggestionsAnimation, value: vm.filteredSuggestions)
         }
     }

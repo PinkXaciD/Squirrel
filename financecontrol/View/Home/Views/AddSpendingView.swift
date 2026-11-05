@@ -86,7 +86,6 @@ struct AddSpendingView: View {
     private let utils = InputUtils.shared /// For input validation
     
     private var showSuggestions: Bool {
-//        !vm.place.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !vm.filteredSuggestions.isEmpty && focusedField == .place && !vm.isSuggestionSelected
         !vm.filteredSuggestions.isEmpty && focusedField == .place && !vm.isSuggestionSelected
     }
     
@@ -96,6 +95,12 @@ struct AddSpendingView: View {
         }
         
         return .snappy.speed(1.5)
+    }
+    
+    private var windowHeight: CGFloat {
+        let scene = UIApplication.shared.connectedScenes.first as! UIWindowScene
+        let windowBounds = scene.windows.first(where: { $0.isKeyWindow })!.bounds
+        return windowBounds.height
     }
     
     var body: some View {
@@ -131,8 +136,13 @@ struct AddSpendingView: View {
                             return .scale(scale: 0.1, anchor: anchor).combined(with: .opacity)
                         }
                         
-                        SuggestionsOverlayView(vm: vm, manager: overlayManager, minimizeSuggestions: $minimizeSuggestions, geometry: geometry)
-                            .transition(transition.animation(suggestionsAnimation))
+                        SuggestionsOverlayView(
+                            vm: vm,
+                            manager: overlayManager,
+                            minimizeSuggestions: $minimizeSuggestions,
+                            offset: windowHeight - (windowHeight - geometry.size.height)/2
+                        )
+                        .transition(transition.animation(suggestionsAnimation))
                     }
                 }
                 .ignoresSafeArea(.keyboard)
@@ -167,21 +177,6 @@ struct AddSpendingView: View {
     }
     
 // MARK: Sections
-    
-    private var overlayView: some View {
-        GeometryReader { geometry in
-            if showSuggestions {
-                SuggestionsOverlayView(
-                    vm: vm,
-                    manager: overlayManager,
-                    minimizeSuggestions: $minimizeSuggestions,
-                    geometry: geometry
-                )
-            }
-        }
-        .animation(suggestionsAnimation, value: focusedField)
-        .ignoresSafeArea(.keyboard)
-    }
     
     private var reqiredSection: some View {
         Section {

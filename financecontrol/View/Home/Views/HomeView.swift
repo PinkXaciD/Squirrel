@@ -69,13 +69,6 @@ struct HomeView: View {
 #endif
             }
             .navigationTitle("Home")
-            .sheet(isPresented: $showingSheet) {
-                AddSpendingView(
-                    ratesViewModel: rvm,
-                    codeDataModel: cdm
-                )
-                .addColorPresentationBackground()
-            }
             .sheet(isPresented: $showWhatsNew) {
                 latestLaunchedBuild = currentBuild
             } content: {

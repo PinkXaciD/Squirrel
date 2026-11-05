@@ -138,6 +138,10 @@ struct ContentView: View {
         }
         .environmentObject(cdm)
         .environmentObject(rvm)
+        .sheet(isPresented: $addExpenseAction) {
+            AddSpendingView(ratesViewModel: rvm, codeDataModel: cdm)
+                .addColorPresentationBackground()
+        }
         .sheet(isPresented: $presentOnboarding) {
             OnboardingView()
                 .environmentObject(cdm)

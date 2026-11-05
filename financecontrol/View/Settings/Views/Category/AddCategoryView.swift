@@ -108,9 +108,9 @@ struct AddCategoryView: View {
                     HapticManager.shared.notification(.warning)
                 } else {
                     if insert {
-                        selectedCategory = cdm.addCategory(name: name, color: oklch.h.formatted(.number.precision(.fractionLength(3))))
+                        selectedCategory = cdm.addCategory(name: name, color: oklch.h.formatted(.number.precision(.fractionLength(3)).locale(.init(identifier: "en_US"))))
                     } else {
-                        _ = cdm.addCategory(name: name, color: oklch.h.formatted(.number.precision(.fractionLength(3))))
+                        _ = cdm.addCategory(name: name, color: oklch.h.formatted(.number.precision(.fractionLength(3)).locale(.init(identifier: "en_US"))))
                     }
                     
                     HapticManager.shared.notification(.success)

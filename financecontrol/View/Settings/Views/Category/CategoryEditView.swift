@@ -186,7 +186,7 @@ struct CategoryEditSubView: View {
                     
                     HapticManager.shared.notification(.warning)
                 } else {
-                    cdm.editCategory(category, name: name, color: oklch.h.formatted(.number.precision(.fractionLength(3))))
+                    cdm.editCategory(category, name: name, color: oklch.h.formatted(.number.precision(.fractionLength(3)).locale(.init(identifier: "en_US"))))
                     dismiss.toggle()
                     HapticManager.shared.notification(.success)
                 }
